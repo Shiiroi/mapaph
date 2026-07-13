@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HubNavbar from '../components/HubNavbar.astro';
 import ToolDirectoryGrid from '../components/ToolDirectoryGrid.astro';
+import ValuePropsStrip from '../components/ValuePropsStrip.astro';
 ---
 
 <BaseLayout 
@@ -10,7 +11,8 @@ import ToolDirectoryGrid from '../components/ToolDirectoryGrid.astro';
 >
 	<HubNavbar />
 	
-	<main class="max-w-7xl mx-auto px-6 lg:px-8 py-16 font-serif">
+	<!-- Hero Section -->
+	<section class="max-w-7xl mx-auto px-6 lg:px-8 pt-16 pb-20 font-serif">
 		<div class="max-w-2xl">
 			<h1 class="text-5xl font-extrabold tracking-tight text-mapa-ink sm:text-6xl">
 				The Topographic Hub
@@ -27,7 +29,13 @@ import ToolDirectoryGrid from '../components/ToolDirectoryGrid.astro';
 				</a>
 			</div>
 		</div>
+	</section>
 
+	<!-- Value Props Section -->
+	<ValuePropsStrip />
+
+	<!-- Directory Section -->
+	<main class="max-w-7xl mx-auto px-6 lg:px-8 py-16 font-serif">
 		<ToolDirectoryGrid />
 	</main>
 </BaseLayout>
