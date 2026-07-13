@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+@theme {
+  --color-mapa-canvas: #F7F3E9;
+  --color-mapa-ink: #2A241C;
+  --color-mapa-green: #3D4A34;
+  --color-mapa-clay: #8C6E4A;
+  --color-mapa-contour: #D8D1C4;
+  --color-mapa-navy: #1B2A4A;
+  --color-mapa-flag-blue: #0038A8;
+  --color-mapa-flag-red: #CE1126;
+  --color-mapa-flag-gold: #FCD116;
+}
+

@@ -1,19 +1,34 @@
 ---
-import '../styles/global.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HubNavbar from '../components/HubNavbar.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro + Tailwind</title>
-	</head>
-	<body class="bg-emerald-900 text-white p-4">
-		<h1 class="text-3xl font-bold">Astro + Tailwind CSS v4</h1>
-		<p class="mt-2 text-emerald-200">If you see a dark green background and white text, Tailwind CSS is wired up correctly!</p>
-	</body>
-</html>
+<BaseLayout 
+	title="mapaPH - Topographic Hub" 
+	description="A curated collection of beautiful static maps and geographic data of the Philippines."
+>
+	<HubNavbar />
+	
+	<main class="max-w-7xl mx-auto px-6 lg:px-8 py-16 font-serif">
+		<div class="max-w-2xl">
+			<h1 class="text-5xl font-extrabold tracking-tight text-mapa-ink sm:text-6xl">
+				The Topographic Hub
+			</h1>
+			<p class="mt-6 text-xl leading-relaxed text-mapa-ink/80">
+				Welcome to mapaPH, a curated collection of high-resolution topographic maps, geographic visualization projects, and static maps representing the rich terrain of the Philippines.
+			</p>
+			<div class="mt-10 flex flex-wrap gap-4">
+				<a href="/maps" class="px-6 py-3 bg-mapa-green text-mapa-canvas font-semibold rounded shadow hover:brightness-110 active:brightness-95 transition-all duration-200 cursor-pointer text-center">
+					Browse the Hub
+				</a>
+				<a href="/docs" class="px-6 py-3 border border-mapa-contour text-mapa-ink font-semibold rounded hover:bg-mapa-contour/10 transition-all duration-200 cursor-pointer text-center">
+					Read the Docs
+				</a>
+			</div>
+		</div>
+	</main>
+</BaseLayout>
+
+
+
 
