@@ -1,0 +1,52 @@
+---
+// src/components/HeroSection.astro
+---
+
+<section class="relative overflow-hidden">
+	<!-- BACKGROUND LAYER -->
+	<div class="absolute inset-0 -z-20">
+		<img src="/hero-bg.png" class="w-full h-full object-cover" alt="" />
+	</div>
+
+	<!-- background overlay deepens it toward mapa-ink so text stays legible -->
+	<div
+		class="absolute inset-0 -z-10 bg-mapa-ink/45 mix-blend-multiply"
+		aria-hidden="true"
+	>
+	</div>
+
+	<!-- CONTENT -->
+	<div class="max-w-7xl mx-auto px-6 lg:px-8 py-20 sm:py-28 font-serif">
+		<div class="max-w-2xl">
+			
+			<h1
+				class="text-4xl font-extrabold tracking-tight text-mapa-canvas sm:text-5xl md:text-6xl leading-tight"
+			>
+				Open-source tools built around the Philippine map.
+			</h1>
+
+			<p
+				class="mt-5 text-lg sm:text-xl leading-relaxed text-mapa-canvas/90 font-sans font-light"
+			>
+				Useful tools and data, developed and curated openly for the community.
+			</p>
+
+			<!-- Buttons: Explore Tools and Docs -->
+			<div class="mt-10 flex flex-wrap gap-4 font-sans text-sm">
+				<a
+					href="#tools"
+					class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-mapa-green text-mapa-canvas font-semibold hover:bg-mapa-green/90 transition-all duration-200 shadow-md shadow-mapa-ink/10"
+				>
+					Explore Tools
+				</a>
+
+				<a
+					href="/docs"
+					class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-mapa-canvas/10 border border-mapa-canvas/30 backdrop-blur-sm text-mapa-canvas font-semibold hover:bg-mapa-canvas/20 transition-all duration-200"
+				>
+					Read the Docs
+				</a>
+			</div>
+		</div>
+	</div>
+</section>

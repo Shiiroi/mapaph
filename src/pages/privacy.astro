@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HubNavbar from '../components/HubNavbar.astro';
+import HubFooter from '../components/HubFooter.astro';
+---
+
+<BaseLayout 
+	title="Privacy Policy — mapaPH" 
+	description="Read our straightforward privacy policy. mapaPH is designed to respect your privacy with zero tracking cookies and minimal, transparent data practices."
+>
+	<HubNavbar />
+
+	<main class="max-w-3xl mx-auto px-6 py-16 font-serif leading-relaxed">
+		<article class="prose prose-stone">
+			<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl">
+				Privacy Policy
+			</h1>
+			
+			<p class="mt-6 text-xl text-mapa-ink/80 font-medium">
+				At mapaPH, we believe that open-source mapping should respect your privacy.
+			</p>
+
+			<div class="mt-10 border-t border-mapa-contour/40 pt-8 flex flex-col gap-6 font-sans text-sm text-mapa-ink/90">
+				<div>
+					<h2 class="text-xl font-serif font-bold text-mapa-ink">1. Zero Cookies & Personal Data Collection</h2>
+					<p class="mt-2 leading-relaxed">
+						We do not run advertisements, set tracking cookies, or collect any personally identifiable information (PII) on the main mapaPH hub website. You do not need to create an account or provide an email address to browse our maps or use our tools.
+					</p>
+				</div>
+
+				<div>
+					<h2 class="text-xl font-serif font-bold text-mapa-ink">2. Server Logs & Request Data</h2>
+					<p class="mt-2 leading-relaxed">
+						Like standard web servers, our hosting infrastructure automatically collects standard logging parameters (such as your IP address, browser type, referral page, and timestamp of the request) when you visit the site. This data is collected purely to ensure network security, detect server load drops, and diagnose build/run errors. It is never linked to individual identities, compiled into profiles, or sold to third-party advertisers.
+					</p>
+				</div>
+
+				<div>
+					<h2 class="text-xl font-serif font-bold text-mapa-ink">3. External Links</h2>
+					<p class="mt-2 leading-relaxed">
+						Our applications connect you to subdomains (e.g., lens.mapaph.com) or external directories. These distinct tools follow their own minimal telemetry policies which are dedicated purely to local tool functionality.
+					</p>
+				</div>
+
+				<div class="mt-6 border-t border-mapa-contour/20 pt-6">
+					<p class="text-xs text-mapa-clay">
+						Last updated: July 2026. For questions regarding our data practices, please reach out via GitHub issues or email.
+					</p>
+				</div>
+			</div>
+		</article>
+	</main>
+
+	<HubFooter />
+</BaseLayout>

@@ -1,45 +1,23 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HubNavbar from '../components/HubNavbar.astro';
-import ToolDirectoryGrid from '../components/ToolDirectoryGrid.astro';
-import ValuePropsStrip from '../components/ValuePropsStrip.astro';
+import HeroSection from '../components/HeroSection.astro';
+import AboutIntro from '../components/AboutIntro.astro';
+import ToolsSection from '../components/ToolsSection.astro';
+import HubFooter from '../components/HubFooter.astro';
 ---
 
 <BaseLayout 
-	title="mapaPH - Topographic Hub" 
-	description="A curated collection of beautiful static maps and geographic data of the Philippines."
+	title="mapaPH — Open-source mapping tools for the Philippines" 
+	description="mapaPH is a community-driven, open-source mapping hub for the Philippines, providing high-resolution topographic charts, transit routing, and civic data visualizers."
 >
 	<HubNavbar />
 	
-	<!-- Hero Section -->
-	<section class="max-w-7xl mx-auto px-6 lg:px-8 pt-16 pb-20 font-serif">
-		<div class="max-w-2xl">
-			<h1 class="text-5xl font-extrabold tracking-tight text-mapa-ink sm:text-6xl">
-				The Topographic Hub
-			</h1>
-			<p class="mt-6 text-xl leading-relaxed text-mapa-ink/80">
-				Welcome to mapaPH, a curated collection of high-resolution topographic maps, geographic visualization projects, and static maps representing the rich terrain of the Philippines.
-			</p>
-			<div class="mt-10 flex flex-wrap gap-4">
-				<a href="/maps" class="px-6 py-3 bg-mapa-green text-mapa-canvas font-semibold rounded shadow hover:brightness-110 active:brightness-95 transition-all duration-200 cursor-pointer text-center">
-					Browse the Hub
-				</a>
-				<a href="/docs" class="px-6 py-3 border border-mapa-contour text-mapa-ink font-semibold rounded hover:bg-mapa-contour/10 transition-all duration-200 cursor-pointer text-center">
-					Read the Docs
-				</a>
-			</div>
-		</div>
-	</section>
+	<HeroSection />
 
-	<!-- Value Props Section -->
-	<ValuePropsStrip />
+	<AboutIntro />
 
-	<!-- Directory Section -->
-	<main class="max-w-7xl mx-auto px-6 lg:px-8 py-16 font-serif">
-		<ToolDirectoryGrid />
-	</main>
+	<ToolsSection />
+
+	<HubFooter />
 </BaseLayout>
-
-
-
-

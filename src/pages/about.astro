@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HubNavbar from '../components/HubNavbar.astro';
+import HubFooter from '../components/HubFooter.astro';
+---
+
+<BaseLayout 
+	title="About mapaPH — Open-source Philippine mapping collective" 
+	description="Learn about the origin, mission, and open-source principles of the mapaPH mapping and civic data visualization collective."
+>
+	<HubNavbar />
+
+	<main class="max-w-3xl mx-auto px-6 py-16 font-serif leading-relaxed">
+		<article class="prose prose-stone">
+			<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl">
+				About mapaPH
+			</h1>
+			
+			<p class="mt-6 text-xl text-mapa-ink/80 italic font-medium">
+				An independent, open-source collective dedicated to mapping the Philippines.
+			</p>
+
+			<div class="mt-10 border-t border-mapa-contour/40 pt-8 flex flex-col gap-8">
+				<div>
+					<h2 class="text-2xl font-bold text-mapa-ink">Our Origin</h2>
+					<p class="font-sans text-sm text-mapa-ink/90 mt-3">
+						mapaPH was founded in response to a common problem faced by commuters, researchers, and developers in the Philippines: the fragmentation of civic and geographic data. Valuable spatial datasets were often siloed, difficult to navigate, or trapped in outdated interfaces. We set out to create a unified hub where anyone could access clean, high-resolution topographic visuals, routing experiments, and civic data analysis without friction.
+					</p>
+				</div>
+
+				<div>
+					<h2 class="text-2xl font-bold text-mapa-ink">Our Mission</h2>
+					<p class="font-sans text-sm text-mapa-ink/90 mt-3">
+						Our mission is to translate complex geographic and civic datasets of the Philippines into open, beautiful, and highly intuitive web applications. By pairing robust geographic information systems (GIS) with modern web design practices, we aim to build interactive assets that empower local municipalities, support public researchers, and improve daily commutes.
+					</p>
+				</div>
+
+				<div>
+					<h2 class="text-2xl font-bold text-mapa-ink">What is an "Open-Source Mapping Hub"?</h2>
+					<p class="font-sans text-sm text-mapa-ink/90 mt-3">
+						To us, being an open-source hub means two core things:
+					</p>
+					<ul class="font-sans text-sm text-mapa-ink/90 mt-3 list-disc pl-5 flex flex-col gap-2">
+						<li>
+							<strong>Transparency and Accessibility:</strong> All codebases, cartographic assets, and data transformation scripts are publicly hosted on GitHub. Anyone can inspect, verify, and reuse our calculations and designs.
+						</li>
+						<li>
+							<strong>Community Driven:</strong> We leverage crowdsourced data from projects like OpenStreetMap and invite community issues, feedback, and pull requests to build tools that reflect the real, lived conditions of local Philippine neighborhoods.
+						</li>
+					</ul>
+				</div>
+			</div>
+		</article>
+	</main>
+
+	<HubFooter />
+</BaseLayout>

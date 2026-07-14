@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HubNavbar from '../components/HubNavbar.astro';
+import HubFooter from '../components/HubFooter.astro';
+---
+
+<BaseLayout 
+	title="Contact Us — Reach the mapaPH Team" 
+	description="Get in touch with the mapaPH mapping collective to suggest new tools, report bugs, or collaborate on Philippine geographic datasets."
+>
+	<HubNavbar />
+
+	<main class="max-w-3xl mx-auto px-6 py-16 font-serif leading-relaxed">
+		<article class="prose prose-stone">
+			<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl">
+				Contact Us
+			</h1>
+			
+			<p class="mt-6 text-xl text-mapa-ink/80 font-medium">
+				Have a suggestion, mapping request, or data contribution? We'd love to hear from you.
+			</p>
+
+			<div class="mt-10 border-t border-mapa-contour/40 pt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+				<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/35 flex flex-col justify-between">
+					<div>
+						<h2 class="text-xl font-bold text-mapa-ink">Email</h2>
+						<p class="font-sans text-sm text-mapa-ink/80 mt-2">
+							For inquiries, collaborations, and data partnership requests, drop us an email directly.
+						</p>
+					</div>
+					<a 
+						href="mailto:hello@mapaph.com" 
+						class="mt-6 inline-block w-full py-2.5 px-4 bg-mapa-green text-mapa-canvas font-sans text-center text-sm font-semibold rounded hover:brightness-110 active:brightness-95 transition-all duration-200"
+					>
+						hello@mapaph.com
+					</a>
+				</div>
+
+				<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/35 flex flex-col justify-between">
+					<div>
+						<h2 class="text-xl font-bold text-mapa-ink">GitHub Issues</h2>
+						<p class="font-sans text-sm text-mapa-ink/80 mt-2">
+							Since we are open-source, we track all application requests, bugs, and tool proposals publicly.
+						</p>
+					</div>
+					<a 
+						href="https://github.com/Shiiroi/mapaph/issues" 
+						target="_blank" 
+						rel="noopener noreferrer" 
+						class="mt-6 inline-block w-full py-2.5 px-4 border border-mapa-clay text-mapa-ink font-sans text-center text-sm font-semibold rounded hover:bg-mapa-contour/20 transition-all duration-200"
+					>
+						Open an Issue
+					</a>
+				</div>
+			</div>
+		</article>
+	</main>
+
+	<HubFooter />
+</BaseLayout>

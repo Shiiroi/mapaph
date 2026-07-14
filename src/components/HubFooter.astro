@@ -1,0 +1,97 @@
+---
+// src/components/HubFooter.astro
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="bg-mapa-green border-t border-mapa-clay/30 text-mapa-canvas">
+	<div class="max-w-7xl mx-auto px-6 lg:px-8 py-12 md:py-16">
+		<div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+			
+			<!-- Column 1: Branding -->
+			<div class="col-span-2 md:col-span-1 flex flex-col gap-3">
+				<a href="/" class="font-serif font-bold text-xl tracking-tight text-mapa-canvas hover:text-mapa-clay transition-colors duration-200">
+					mapaPH
+				</a>
+				<p class="font-sans text-xs text-mapa-clay uppercase tracking-wider font-semibold leading-normal">
+					Open-Source Mapping Hub
+				</p>
+				<p class="font-sans text-xs text-mapa-canvas/60 mt-1">
+					© {currentYear} mapaPH.
+				</p>
+			</div>
+
+			<!-- Column 2: Tools -->
+			<div class="flex flex-col gap-3.5">
+				<h4 class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-clay">
+					Tools
+				</h4>
+				<ul class="flex flex-col gap-2.5">
+					<li>
+						<a href="https://lens.mapaph.com" target="_blank" rel="noopener noreferrer" class="font-sans text-sm text-mapa-canvas/80 hover:text-mapa-clay transition-colors duration-200">
+							Lens
+						</a>
+					</li>
+					<li>
+						<a href="https://to-cubao.mapaph.com" target="_blank" rel="noopener noreferrer" class="font-sans text-sm text-mapa-canvas/80 hover:text-mapa-clay transition-colors duration-200">
+							To-Cubao
+						</a>
+					</li>
+					<li>
+						<a href="https://pet-friendly.mapaph.com" target="_blank" rel="noopener noreferrer" class="font-sans text-sm text-mapa-canvas/80 hover:text-mapa-clay transition-colors duration-200">
+							Pet Friendly
+						</a>
+					</li>
+				</ul>
+			</div>
+
+			<!-- Column 3: About -->
+			<div class="flex flex-col gap-3.5">
+				<h4 class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-clay">
+					About
+				</h4>
+				<ul class="flex flex-col gap-2.5">
+					<li>
+						<a href="/about" class="font-sans text-sm text-mapa-canvas/80 hover:text-mapa-clay transition-colors duration-200">
+							About
+						</a>
+					</li>
+					<li>
+						<a href="/docs" class="font-sans text-sm text-mapa-canvas/80 hover:text-mapa-clay transition-colors duration-200">
+							Documentation
+						</a>
+					</li>
+					<li>
+						<a href="https://github.com/Shiiroi/mapaph" target="_blank" rel="noopener noreferrer" class="font-sans text-sm text-mapa-canvas/80 hover:text-mapa-clay transition-colors duration-200">
+							GitHub
+						</a>
+					</li>
+				</ul>
+			</div>
+
+			<!-- Column 4: Legal & Contact -->
+			<div class="flex flex-col gap-3.5">
+				<h4 class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-clay">
+					Legal & Contact
+				</h4>
+				<ul class="flex flex-col gap-2.5">
+					<li>
+						<a href="/contact" class="font-sans text-sm text-mapa-canvas/80 hover:text-mapa-clay transition-colors duration-200">
+							Contact Us
+						</a>
+					</li>
+					<li>
+						<a href="/privacy" class="font-sans text-sm text-mapa-canvas/80 hover:text-mapa-clay transition-colors duration-200">
+							Privacy Policy
+						</a>
+					</li>
+					<li>
+						<a href="/privacy#terms" class="font-sans text-sm text-mapa-canvas/80 hover:text-mapa-clay transition-colors duration-200">
+							Terms of Use
+						</a>
+					</li>
+				</ul>
+			</div>
+			
+		</div>
+	</div>
+</footer>
