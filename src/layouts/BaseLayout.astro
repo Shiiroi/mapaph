@@ -5,6 +5,7 @@
  */
 
 import '../styles/global.css';
+import Analytics from '@vercel/analytics/astro';
 
 /**
  * Component properties for the BaseLayout.
@@ -106,5 +107,6 @@ const resolvedOgImage = ogImage || new URL('/default-og.png', Astro.url.origin).
 	</head>
 	<body class="bg-mapa-canvas text-mapa-ink min-h-screen">
 		<slot />
+		<Analytics />
 	</body>
 </html>
