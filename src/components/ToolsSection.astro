@@ -1,5 +1,9 @@
 ---
-// src/components/ToolsSection.astro
+/**
+ * @file ToolsSection.astro
+ * @description Grid directory of mapping applications. Entire card is clickable; GitHub icon link stacks above.
+ */
+
 import { Image } from 'astro:assets';
 import lensImg from '../assets/lens.png';
 
@@ -54,7 +58,7 @@ const tools = [
 			<div
 				class="flex flex-col bg-mapa-canvas border border-mapa-contour/80 rounded-lg overflow-hidden hover:border-mapa-clay hover:-translate-y-1 transition-all duration-300 group relative cursor-pointer"
 			>
-				<!-- Card Link Overlay: makes the entire card clickable without nested anchors -->
+				<!-- Overlay anchor covering the entire container block to enable global card clickability without nested anchor elements -->
 				<a
 					href={tool.url}
 					target="_blank"
@@ -103,7 +107,7 @@ const tools = [
 						{tool.description}
 					</p>
 
-					<!-- Actions: GitHub Icon only (placed at the bottom right, relative z-20 to allow direct click) -->
+					<!-- Actions: GitHub Icon (styled with relative positioning and high index to bypass the card overlay link context) -->
 					<div class="flex items-center justify-end mt-6 pt-4 border-t border-mapa-contour/40">
 						<a
 							href={tool.github}

@@ -1,5 +1,9 @@
 ---
-// src/components/HeroSection.astro
+/**
+ * @file HeroSection.astro
+ * @description Above-the-fold landing showcase with optimized background asset for LCP performance.
+ */
+
 import { Image } from 'astro:assets';
 import heroBg from '../assets/hero-bg.png';
 ---
@@ -10,7 +14,7 @@ import heroBg from '../assets/hero-bg.png';
 		<Image src={heroBg} class="w-full h-full object-cover" alt="" loading="eager" fetchpriority="high" />
 	</div>
 
-	<!-- background overlay deepens it toward mapa-ink so text stays legible -->
+	<!-- Mix-blend overlay to deepen colors toward mapa-ink, ensuring foreground text contrast remains legible -->
 	<div
 		class="absolute inset-0 -z-10 bg-mapa-ink/45 mix-blend-multiply"
 		aria-hidden="true"

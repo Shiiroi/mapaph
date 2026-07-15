@@ -1,9 +1,20 @@
 ---
+/**
+ * @file BaseLayout.astro
+ * @description Root HTML document shell. Configures global styling, SEO metadata, and JSON-LD schema.
+ */
+
 import '../styles/global.css';
 
+/**
+ * Component properties for the BaseLayout.
+ */
 interface Props {
+	/** The document title shown in browser tab headers and search index headlines. */
 	title: string;
+	/** The meta description summary for SEO search engine result snippets. */
 	description: string;
+	/** Optional URL path for the Open Graph sharing image snippet. Defaults to '/default-og.png'. */
 	ogImage?: string;
 }
 
