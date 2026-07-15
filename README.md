@@ -1,43 +1,73 @@
-# Astro Starter Kit: Minimal
+# mapaPH Hub
 
-```sh
-npm create astro@latest -- --template minimal
-```
+**mapaPH** is an open-source platform of mapping utilities built for the Philippines. This repository contains the **hub website** — the central landing page and documentation site for all mapaPH tools.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+> The individual tools (e.g. Lens) live on their own subdomains and repositories.
+
+---
+
+## Tools
+
+| Tool | Status | URL |
+| :--- | :----- | :-- |
+| **Lens** | Active | [lens.mapaph.com](https://lens.mapaph.com) |
+| **To-Cubao** | In Development | — |
+| **Pet Friendly** | In Development | — |
+
+---
 
 ## 🚀 Project Structure
 
-Inside of your Astro project, you'll see the following folders and files:
+This site is built with [Astro](https://astro.build) on top of the minimal starter template.
 
 ```text
 /
 ├── public/
+│   └── favicon.svg
 ├── src/
-│   └── pages/
-│       └── index.astro
+│   ├── assets/
+│   ├── components/
+│   │   ├── docs/          # Documentation page content components
+│   │   └── ...            # Shared UI components (Navbar, Footer, etc.)
+│   ├── layouts/
+│   │   ├── BaseLayout.astro
+│   │   └── DocsLayout.astro
+│   ├── pages/
+│   │   ├── docs/          # Documentation routes
+│   │   ├── index.astro
+│   │   ├── about.astro
+│   │   ├── contact.astro
+│   │   ├── privacy.astro
+│   │   └── terms.astro
+│   └── styles/
 └── package.json
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
+---
 
 ## 🧞 Commands
 
 All commands are run from the root of the project, from a terminal:
 
-| Command                   | Action                                           |
+| Command | Action |
 | :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+| `npm install` | Installs dependencies |
+| `npm run dev` | Starts local dev server at `localhost:4321` |
+| `npm run build` | Build your production site to `./dist/` |
+| `npm run preview` | Preview your build locally, before deploying |
+| `npm run astro ...` | Run CLI commands like `astro add`, `astro check` |
+| `npm run astro -- --help` | Get help using the Astro CLI |
 
-## 👀 Want to learn more?
+---
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Contributing
+
+We welcome contributions! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a pull request.
+
+## Code of Conduct
+
+This project follows the [Contributor Covenant](./CODE_OF_CONDUCT.md). By participating, you agree to uphold its standards.
+
+## License
+
+[MIT](./LICENSE) © mapaPH contributors
