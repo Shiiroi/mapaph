@@ -11,45 +11,52 @@ import Footer from '../components/Footer.astro';
 
 <BaseLayout 
 	title="Privacy Policy — mapaPH" 
-	description="Read our straightforward privacy policy. mapaPH is designed to respect your privacy with zero tracking cookies and minimal, transparent data practices."
+	description="Read our clear, straightforward privacy policy. No tracking, no cookies, and zero personal data collection."
 >
 	<Navbar />
 
-	<main class="max-w-3xl mx-auto px-6 py-16 font-serif leading-relaxed">
-		<article class="prose prose-stone">
-			<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl">
+	<main class="max-w-3xl mx-auto px-6 py-16 text-mapa-ink">
+		<article>
+			<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl font-serif">
 				Privacy Policy
 			</h1>
 			
-			<p class="mt-6 text-xl text-mapa-ink/80 font-medium">
-				At mapaPH, we believe that open-source mapping should respect your privacy.
+			<p class="mt-4 text-lg text-mapa-ink/80 italic leading-relaxed font-serif">
+				We believe in making tools that respect your privacy by default.
 			</p>
 
-			<div class="mt-10 border-t border-mapa-contour/40 pt-8 flex flex-col gap-6 font-sans text-sm text-mapa-ink/90">
-				<div>
-					<h2 class="text-xl font-serif font-bold text-mapa-ink">1. Zero Cookies & Personal Data Collection</h2>
-					<p class="mt-2 leading-relaxed">
-						We do not run advertisements, set tracking cookies, or collect any personally identifiable information (PII) on the main mapaPH hub website. You do not need to create an account or provide an email address to browse our maps or use our tools.
-					</p>
-				</div>
+			<div class="mt-10 border-t border-mapa-contour/60 pt-8">
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4">
+					Zero cookies and tracking
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					The mapaPH hub page (mapaph.com) does not use cookies, tracking scripts, or analytics tools. We do not monitor your behavior across the web, and we do not compile profiles of our visitors.
+				</p>
 
-				<div>
-					<h2 class="text-xl font-serif font-bold text-mapa-ink">2. Server Logs & Request Data</h2>
-					<p class="mt-2 leading-relaxed">
-						Like standard web servers, our hosting infrastructure automatically collects standard logging parameters (such as your IP address, browser type, referral page, and timestamp of the request) when you visit the site. This data is collected purely to ensure network security, detect server load drops, and diagnose build/run errors. It is never linked to individual identities, compiled into profiles, or sold to third-party advertisers.
-					</p>
-				</div>
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					No personal data collection
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					We do not collect personal details on this hub. There are no registration forms, contact inputs, or newsletter sign-ups. If you choose to contact us via email or by opening an issue on GitHub, we only use that information to reply to your inquiry or address your feedback.
+				</p>
 
-				<div>
-					<h2 class="text-xl font-serif font-bold text-mapa-ink">3. External Links</h2>
-					<p class="mt-2 leading-relaxed">
-						Our applications connect you to subdomains (e.g., lens.mapaph.com) or external directories. These distinct tools follow their own minimal telemetry policies which are dedicated purely to local tool functionality.
-					</p>
-				</div>
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					Server logs
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					Our hosting provider automatically collects standard server logs (such as request timestamps, IP addresses, and user-agent strings) to keep our servers secure and troubleshoot technical failures. This data is static, anonymized, and never linked to individual visitors.
+				</p>
 
-				<div class="mt-6 border-t border-mapa-contour/20 pt-6">
-					<p class="text-xs text-mapa-clay">
-						Last updated: July 2026. For questions regarding our data practices, please reach out via GitHub issues or email.
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					Individual tools and subdomains
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					Because mapaPH is a hub, our mapping projects live on separate subdomains (like lens.mapaph.com). Some of these tools may handle crowdsourced contributions or store basic parameters locally in your browser. Each individual tool is governed by its own minimal data policy, which you can read directly on that tool's site.
+				</p>
+
+				<div class="mt-12 pt-6 border-t border-mapa-contour/40">
+					<p class="font-sans text-xs text-mapa-clay">
+						Last updated: July 2026. If you have questions about these guidelines, you can open an issue on our GitHub repository.
 					</p>
 				</div>
 			</div>

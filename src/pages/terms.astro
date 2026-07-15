@@ -1,0 +1,70 @@
+---
+/**
+ * @file terms.astro
+ * @description Terms of Use page detailing independent project status and disclaimer.
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout 
+	title="Terms of Use — mapaPH" 
+	description="Read our terms of use. mapaPH is an independent, community-driven mapping hub provided without warranty."
+>
+	<Navbar />
+
+	<main class="max-w-3xl mx-auto px-6 py-16 text-mapa-ink">
+		<article>
+			<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl font-serif">
+				Terms of Use
+			</h1>
+			
+			<p class="mt-4 text-lg text-mapa-ink/80 italic leading-relaxed font-serif">
+				Please read our guidelines for using the mapaPH hub and tools.
+			</p>
+
+			<div class="mt-10 border-t border-mapa-contour/60 pt-8">
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4">
+					Independent project
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					mapaPH is a personal, independent, open-source project. We are not officially affiliated with, endorsed by, or representing any government agency, municipal office, or official institution of the Republic of the Philippines, even though our applications make use of public Philippine geographic and demographic datasets.
+				</p>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					Provided without warranty
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					All tools, maps, datasets, and files distributed through this hub are provided on an as-is basis, without warranties of any kind. Because this project is maintained entirely on a volunteer basis, we do not guarantee that the tools will remain online, function without errors, or stay updated. We reserve the right to modify, pause, or discontinue any tool or page at any time without prior notice.
+				</p>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					Open-source licensing
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					The source code for our projects is open source and hosted publicly. The main hub codebase is licensed under the MIT License. Each individual mapping application or dataset repository is published under its own license file (such as the MIT License or equivalent open-source licenses), which you can review in the respective GitHub repository.
+				</p>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					Crowdsourced data and accuracy
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					Some of our directory tools use data submitted directly by community contributors. We do not guarantee the completeness, accuracy, or reliability of this information. We reserve the right to review, edit, or remove any community-submitted entries at our sole discretion. 
+				</p>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					You should not rely on any data or routes provided by these tools for safety-critical activities, professional mapping requirements, or navigation without independent verification.
+				</p>
+
+				<div class="mt-12 pt-6 border-t border-mapa-contour/40">
+					<p class="font-sans text-xs text-mapa-clay">
+						Last updated: July 2026.
+					</p>
+				</div>
+			</div>
+		</article>
+	</main>
+
+	<Footer />
+</BaseLayout>
