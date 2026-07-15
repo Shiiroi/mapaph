@@ -1,0 +1,83 @@
+---
+/**
+ * @file DocsLens.astro
+ * @description Content component for the Lens user guide documentation page.
+ */
+---
+
+<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
+	Documentation: Lens
+</span>
+<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl font-serif mt-2">
+	Lens User Guide
+</h1>
+
+<p class="mt-4 text-lg text-mapa-ink/80 italic leading-relaxed font-serif">
+	Interactive mapping and demographic visualization for Philippine administrative divisions.
+</p>
+
+<div class="mt-10 border-t border-mapa-contour/60 pt-8">
+	<div class="flex flex-col sm:flex-row gap-4 mb-8">
+		<a href="https://lens.mapaph.com" target="_blank" rel="noopener noreferrer" class="inline-block px-5 py-2.5 bg-mapa-green text-mapa-canvas font-sans text-center text-sm font-semibold rounded hover:brightness-110 active:brightness-95 transition-all duration-200">
+			Open Lens App
+		</a>
+		<a href="https://github.com/Shiiroi/mapaph" target="_blank" rel="noopener noreferrer" class="inline-block px-5 py-2.5 border border-mapa-clay text-mapa-ink font-sans text-center text-sm font-semibold rounded hover:bg-mapa-contour/20 transition-all duration-200">
+			View on GitHub
+		</a>
+	</div>
+
+	<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4">What is Lens?</h2>
+	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+		Lens is an interactive map viewer designed to make Philippine geographic and civic data easy to explore. It is built for researchers, planners, developers, and anyone who needs to quickly check regional statistics or download boundary files.
+	</p>
+	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+		The tool compiles population census data, local financial statistics, economic indicators, and election records, projecting them directly onto a map of the Philippine administrative levels.
+	</p>
+
+	<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">Core features and how to use them</h2>
+
+	<h3 class="text-lg font-bold text-mapa-ink font-serif mb-2">Switching administrative levels</h3>
+	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+		You can adjust the boundary view to inspect different tiers of local government. Use the level control options on the map to switch views across the country, region, province, city or municipality, and barangay levels.
+	</p>
+
+	<h3 class="text-lg font-bold text-mapa-ink font-serif mb-2">Viewing civic data overlays</h3>
+	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
+		Lens overlays datasets onto boundary maps to show geographic distributions. You can toggle between several default data layers:
+	</p>
+	<ul class="font-sans text-sm text-mapa-ink/90 list-disc pl-5 mb-6 space-y-2">
+		<li><strong>Population Statistics:</strong> Total residents, age groupings, and sex distribution per area based on census logs.</li>
+		<li><strong>Economic Indicators:</strong> Gross Domestic Product (GDP) formatted in PSA constant 2018 prices.</li>
+		<li><strong>LGU Finances:</strong> Financial statements showing assets and revenue totals compiled from audit documents.</li>
+		<li><strong>Election Records:</strong> Built-in election results showing voting breakdowns from the 2022 presidential polls.</li>
+		<li><strong>Custom CSV Uploads:</strong> You can upload your own custom spreadsheet files, provided they are keyed using the standard Philippine Standard Geographic Code (PSGC).</li>
+	</ul>
+
+	<h3 class="text-lg font-bold text-mapa-ink font-serif mb-2">Comparing places side by side</h3>
+	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+		To analyze differences between two locations, use the comparison features. Select any two regions, provinces, or municipalities to display their charts, financial metrics, and demographic charts next to each other on the screen.
+	</p>
+
+	<h3 class="text-lg font-bold text-mapa-ink font-serif mb-2">Downloading GeoJSON boundary files</h3>
+	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+		For GIS developers and researchers, Lens exports standard GeoJSON files matching RFC 7946 and WGS 84 specifications. Select an administrative boundary and use the download option to export the coordinates, complete with integrated PSGC keys.
+	</p>
+
+	<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">Data sources</h2>
+	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+		The geographic and statistic information shown in Lens comes from public reports:
+	</p>
+	<ul class="font-sans text-sm text-mapa-ink/90 list-disc pl-5 mb-6 space-y-2">
+		<li>Population and GDP datasets are sourced from reports published by the Philippine Statistics Authority (PSA).</li>
+		<li>Election result numbers are compiled from the Commission on Elections (COMELEC) official tallies.</li>
+		<li>LGU asset figures are compiled from the Commission on Audit (COA) annual financial reports.</li>
+	</ul>
+	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+		For complete citations, licenses, and specific dataset files, visit the data sources documentation in the <a href="https://github.com/Shiiroi/mapaph/blob/main/docs/DATA_SOURCES.md" target="_blank" rel="noopener noreferrer" class="text-mapa-green hover:underline">Lens GitHub Repository</a>.
+	</p>
+
+	<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">Independence disclaimer</h2>
+	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6 italic border-l-2 border-mapa-green pl-4">
+		Lens is an independent open-source project. It is not affiliated with, endorsed by, or representative of the Philippine Statistics Authority (PSA), the Commission on Elections (COMELEC), or any official government agency.
+	</p>
+</div>
