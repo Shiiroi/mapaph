@@ -5,72 +5,98 @@
  */
 ---
 
-<section class="bg-mapa-canvas-dark border-t border-mapa-contour/60 py-16 md:py-24 font-serif">
+<section
+	class="bg-mapa-canvas-dark border-t border-mapa-contour/60 py-16 md:py-24 font-serif"
+>
 	<div class="max-w-7xl mx-auto px-6 lg:px-8">
 		<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-			
 			<!-- LEFT COLUMN: What mapaPH is -->
 			<div class="lg:col-span-5 flex flex-col justify-start">
 				<div class="flex items-center gap-2 mb-4">
-					<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
+					<span
+						class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green"
+					>
 						About the Project
 					</span>
 				</div>
-				
-				<h2 class="text-3xl sm:text-4xl font-extrabold text-mapa-ink leading-tight">
-					A collaborative ecosystem for spatial web tools.
+
+				<h2
+					class="text-3xl sm:text-4xl font-extrabold text-mapa-ink leading-tight"
+				>
+					A collaborative ecosystem for Philippine web tools.
 				</h2>
-				
-				<div class="font-sans text-sm text-mapa-ink/90 mt-6 space-y-4 leading-relaxed">
+
+				<div
+					class="font-sans text-sm text-mapa-ink/90 mt-6 space-y-4 leading-relaxed"
+				>
 					<p>
-						mapaPH is an open-source community dedicated to building practical tools that use the map of the Philippines as their foundation. From GeoJSON downloads and boundary datasets to route planners, data visualizations, and location-based applications, we create focused projects that make Philippine geographic information easier to access, understand, and use.
+						mapaPH is a hub for tools built around maps of the
+						Philippines. We build useful open-source utilities using
+						the Philippine map as basis to work with locations,
+						routes, transit, or anything else tied to a place.
 					</p>
 					<p>
-						Every project is developed in the open, encouraging collaboration, knowledge sharing, and community contributions. Whether you're a developer, researcher, student, or GIS enthusiast, mapaPH provides a place to build, improve, and share tools that make Philippine spatial data more useful for everyone.
+						Every project is built openly on GitHub. Anyone can look
+						at the code, contribute, or build their own tool on top
+						of what's already here.
 					</p>
 				</div>
 			</div>
-			
-			<!-- RIGHT COLUMN: Core principles -->
-			<div class="lg:col-span-7 flex flex-col justify-center">
+
+			<!-- RIGHT COLUMN: Core principles (separated with a vertical line on desktop) -->
+			<div class="lg:col-span-7 flex flex-col justify-center border-t border-mapa-contour/40 pt-12 mt-12 lg:border-t-0 lg:border-l lg:border-mapa-contour/60 lg:pt-0 lg:mt-0 lg:pl-16">
 				<div class="space-y-8">
-					<div class="border-t border-mapa-contour/80 pt-6">
+					<!-- First item aligns with the top of the left column content -->
+					<div>
 						<h3 class="font-serif text-lg font-bold text-mapa-ink">
-							Map-First by Default
+							Map-First
 						</h3>
-						<p class="font-sans text-sm text-mapa-ink/80 mt-2 leading-relaxed">
-							Every project starts with a map. Whether it's administrative boundaries, transportation networks, public facilities, demographic data, or geographic datasets, our applications are designed to help people explore, analyze, and interact with information through the Philippine map.
+						<p
+							class="font-sans text-sm text-mapa-ink/80 mt-2 leading-relaxed"
+						>
+							We build around the Philippine map to show
+							locations, transit, and data tied to a place.
 						</p>
 					</div>
 
 					<div class="border-t border-mapa-contour/80 pt-6">
 						<h3 class="font-serif text-lg font-bold text-mapa-ink">
-							Open-Source Collaboration
+							Lightweight
 						</h3>
-						<p class="font-sans text-sm text-mapa-ink/80 mt-2 leading-relaxed">
-							Our projects are developed transparently on GitHub, where anyone can contribute ideas, report issues, improve code, or create entirely new map-based tools. We believe community collaboration leads to better software and more accessible geographic resources.
+						<p
+							class="font-sans text-sm text-mapa-ink/80 mt-2 leading-relaxed"
+						>
+							Fast, simple tools that work well alone or combined
+							with the others.
 						</p>
 					</div>
 
 					<div class="border-t border-mapa-contour/80 pt-6">
 						<h3 class="font-serif text-lg font-bold text-mapa-ink">
-							Lightweight & Purpose-Driven
+							Community-driven
 						</h3>
-						<p class="font-sans text-sm text-mapa-ink/80 mt-2 leading-relaxed">
-							Rather than building one massive GIS platform, we create focused applications that solve a single problem well. Each tool is fast, simple to use, and designed to be combined with others as the open-source ecosystem continues to grow.
+						<p
+							class="font-sans text-sm text-mapa-ink/80 mt-2 leading-relaxed"
+						>
+							Anyone can shape what comes next. Contribute, share
+							local knowledge, or build a new tool on top of
+							what's already here.
 						</p>
 					</div>
 				</div>
 			</div>
-			
 		</div>
 
-		<!-- Bottom Disclaimer Note -->
+		<!-- Bottom Disclaimer Note (rendered full-width outside the columns layout) -->
 		<div class="mt-16 pt-8 border-t border-mapa-contour/60">
-			<p class="font-sans text-xs text-mapa-ink/60 leading-relaxed italic max-w-4xl mx-auto text-center">
-				Note: mapaPH is an independent, community-led open-source index. It is not affiliated with, endorsed by, or representative of the Philippine government or any of its municipal departments.
+			<p
+				class="font-sans text-xs text-mapa-ink/60 leading-relaxed italic max-w-4xl mx-auto text-center"
+			>
+				Note: mapaPH is an independent, community-led open-source
+				index. It is not affiliated with, endorsed by, or
+				representative of the Philippine government or any of its
+				municipal departments.
 			</p>
 		</div>
-		
 	</div>
 </section>
