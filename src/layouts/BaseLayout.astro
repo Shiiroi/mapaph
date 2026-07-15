@@ -20,8 +20,9 @@ interface Props {
 }
 
 const { title, description, ogImage } = Astro.props;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site || Astro.url.origin);
-const resolvedOgImage = ogImage || new URL('/default-og.png', Astro.url.origin).toString();
+const cleanPathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+const canonicalURL = new URL(cleanPathname, Astro.site || Astro.url.origin);
+const resolvedOgImage = new URL(ogImage || '/default-og.png', Astro.site || Astro.url.origin).toString();
 ---
 
 <!doctype html>
@@ -53,57 +54,17 @@ const resolvedOgImage = ogImage || new URL('/default-og.png', Astro.url.origin).
 		<meta property="twitter:description" content={description} />
 		<meta property="twitter:image" content={resolvedOgImage} />
 
-		<!-- JSON-LD Schema Markup -->
+		<!-- JSON-LD Global WebSite Schema -->
 		<script type="application/ld+json" is:inline>
 			{
 				"@context": "https://schema.org",
-				"@graph": [
-					{
-						"@type": "WebSite",
-						"name": "mapaPH",
-						"url": "https://mapaph.com",
-						"description": "Open-source mapping tools for the Philippines"
-					},
-					{
-						"@type": "ItemList",
-						"name": "mapaPH Tools Directory",
-						"description": "Suite of mapping, routing, and directory applications for the Philippines.",
-						"itemListElement": [
-							{
-								"@type": "ListItem",
-								"position": 1,
-								"item": {
-									"@type": "WebApplication",
-									"name": "Lens",
-									"url": "https://lens.mapaph.com",
-									"description": "An interactive visualizer that overlays civic data on Philippine regional maps using color-coded choropleth maps, enabling detailed demographic and socioeconomic analysis."
-								}
-							},
-							{
-								"@type": "ListItem",
-								"position": 2,
-								"item": {
-									"@type": "WebApplication",
-									"name": "To-Cubao",
-									"url": "https://to-cubao.mapaph.com",
-									"description": "A commute and transit routing application tailored for Metro Manila commuters, helping plan optimal public utility vehicle paths and travel times to Cubao and surrounding hubs."
-								}
-							},
-							{
-								"@type": "ListItem",
-								"position": 3,
-								"item": {
-									"@type": "WebApplication",
-									"name": "Pet friendly",
-									"url": "https://pet-friendly.mapaph.com",
-									"description": "A collaborative community directory indexing dog-friendly and cat-friendly establishments, parks, and restaurants across the Philippines, detailing pet policies and rules."
-								}
-							}
-						]
-					}
-				]
+				"@type": "WebSite",
+				"name": "mapaPH",
+				"url": "https://mapaph.com",
+				"description": "Open-source mapping tools for the Philippines"
 			}
 		</script>
+		<slot name="schema" />
 	</head>
 	<body class="bg-mapa-canvas text-mapa-ink min-h-screen">
 		<slot />

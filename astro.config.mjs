@@ -11,6 +11,7 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://mapaph.com',
+  trailingSlash: 'never',
   integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],

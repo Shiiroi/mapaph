@@ -16,6 +16,47 @@ import Footer from '../components/Footer.astro';
 	title="mapaPH — Open-source mapping tools for the Philippines" 
 	description="mapaPH is a community-driven, open-source mapping hub for the Philippines, providing high-resolution topographic charts, transit routing, and civic data visualizers."
 >
+	<script type="application/ld+json" slot="schema" is:inline>
+		{
+			"@context": "https://schema.org",
+			"@type": "ItemList",
+			"name": "mapaPH Tools Directory",
+			"description": "Suite of mapping, routing, and directory applications for the Philippines.",
+			"itemListElement": [
+				{
+					"@type": "ListItem",
+					"position": 1,
+					"item": {
+						"@type": "WebApplication",
+						"name": "Lens",
+						"url": "https://lens.mapaph.com",
+						"description": "An interactive visualizer that overlays civic data on Philippine regional maps using color-coded choropleth maps, enabling detailed demographic and socioeconomic analysis."
+					}
+				},
+				{
+					"@type": "ListItem",
+					"position": 2,
+					"item": {
+						"@type": "WebApplication",
+						"name": "To-Cubao",
+						"url": "https://to-cubao.mapaph.com",
+						"description": "A commute and transit routing application tailored for Metro Manila commuters, helping plan optimal public utility vehicle paths and travel times to Cubao and surrounding hubs."
+					}
+				},
+				{
+					"@type": "ListItem",
+					"position": 3,
+					"item": {
+						"@type": "WebApplication",
+						"name": "Pet Friendly",
+						"url": "https://pet-friendly.mapaph.com",
+						"description": "A collaborative community directory indexing dog-friendly and cat-friendly establishments, parks, and restaurants across the Philippines, detailing pet policies and rules."
+					}
+				}
+			]
+		}
+	</script>
+
 	<Navbar />
 	
 	<HeroSection />
