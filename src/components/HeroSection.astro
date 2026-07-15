@@ -1,11 +1,13 @@
 ---
 // src/components/HeroSection.astro
+import { Image } from 'astro:assets';
+import heroBg from '../assets/hero-bg.png';
 ---
 
 <section class="relative overflow-hidden">
 	<!-- BACKGROUND LAYER -->
 	<div class="absolute inset-0 -z-20">
-		<img src="/hero-bg.png" class="w-full h-full object-cover" alt="" />
+		<Image src={heroBg} class="w-full h-full object-cover" alt="" loading="eager" fetchpriority="high" />
 	</div>
 
 	<!-- background overlay deepens it toward mapa-ink so text stays legible -->

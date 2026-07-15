@@ -1,5 +1,7 @@
 ---
 // src/components/ToolsSection.astro
+import { Image } from 'astro:assets';
+import lensImg from '../assets/lens.png';
 
 const tools = [
 	{
@@ -9,7 +11,7 @@ const tools = [
 		url: "https://lens.mapaph.com",
 		github: "https://github.com/Shiiroi/mapaph",
 		description: "An interactive visualizer that projects civic data onto regional maps. Allows downloading Philippine GeoJSON boundary files, along with statistics like GDP, pollution, density, and local assets.",
-		image: "/lens.png",
+		image: lensImg,
 		hasImage: true
 	},
 	{
@@ -64,11 +66,10 @@ const tools = [
 				<!-- Card Preview Container -->
 				<div class="block border-b border-mapa-contour/50 overflow-hidden relative z-0">
 					{tool.hasImage ? (
-						<img
+						<Image
 							src={tool.image}
 							alt={`${tool.name} screenshot`}
 							class="w-full h-48 object-cover object-top transition-transform duration-500 group-hover:scale-105"
-							loading="lazy"
 						/>
 					) : (
 						<div class="h-48 bg-mapa-canvas-dark flex items-center justify-center transition-colors duration-500 group-hover:bg-mapa-contour/30">
