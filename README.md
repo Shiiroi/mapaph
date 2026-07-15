@@ -70,4 +70,4 @@ This project follows the [Contributor Covenant](./CODE_OF_CONDUCT.md). By partic
 
 ## License
 
-[MIT](./LICENSE) © mapaPH contributors
+[MIT](./LICENSE) © Vince Roi S. Magwili
