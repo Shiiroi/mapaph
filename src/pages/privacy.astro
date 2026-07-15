@@ -5,15 +5,15 @@
  */
 
 import BaseLayout from '../layouts/BaseLayout.astro';
-import HubNavbar from '../components/HubNavbar.astro';
-import HubFooter from '../components/HubFooter.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
 ---
 
 <BaseLayout 
 	title="Privacy Policy — mapaPH" 
 	description="Read our straightforward privacy policy. mapaPH is designed to respect your privacy with zero tracking cookies and minimal, transparent data practices."
 >
-	<HubNavbar />
+	<Navbar />
 
 	<main class="max-w-3xl mx-auto px-6 py-16 font-serif leading-relaxed">
 		<article class="prose prose-stone">
@@ -56,5 +56,5 @@ import HubFooter from '../components/HubFooter.astro';
 		</article>
 	</main>
 
-	<HubFooter />
+	<Footer />
 </BaseLayout>

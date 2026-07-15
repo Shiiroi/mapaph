@@ -1,28 +1,28 @@
 ---
 /**
  * @file index.astro
- * @description Landing page for the mapaPH hub. Composes navbar, hero, about intro, tools directory, and footer.
+ * @description Landing page for the mapaPH hub. Composes navbar, hero, about, tools directory, and footer.
  */
 
 import BaseLayout from '../layouts/BaseLayout.astro';
-import HubNavbar from '../components/HubNavbar.astro';
+import Navbar from '../components/Navbar.astro';
 import HeroSection from '../components/HeroSection.astro';
-import AboutIntro from '../components/AboutIntro.astro';
+import About from '../components/About.astro';
 import ToolsSection from '../components/ToolsSection.astro';
-import HubFooter from '../components/HubFooter.astro';
+import Footer from '../components/Footer.astro';
 ---
 
 <BaseLayout 
 	title="mapaPH — Open-source mapping tools for the Philippines" 
 	description="mapaPH is a community-driven, open-source mapping hub for the Philippines, providing high-resolution topographic charts, transit routing, and civic data visualizers."
 >
-	<HubNavbar />
+	<Navbar />
 	
 	<HeroSection />
 
-	<AboutIntro />
+	<About />
 
 	<ToolsSection />
 
-	<HubFooter />
+	<Footer />
 </BaseLayout>
