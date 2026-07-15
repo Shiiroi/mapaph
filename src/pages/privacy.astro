@@ -10,55 +10,105 @@ import Footer from '../components/Footer.astro';
 ---
 
 <BaseLayout 
-	title="Privacy Policy — mapaPH" 
-	description="Read our clear, straightforward privacy policy. No tracking, no cookies, and zero personal data collection."
+	title="Privacy Policy: mapaPH" 
+	description="Read the complete privacy policy for mapaPH. Learn how we handle logs, cookies, and crowdsourced tool data."
 >
 	<Navbar />
 
 	<main class="max-w-3xl mx-auto px-6 py-16 text-mapa-ink">
 		<article>
-			<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl font-serif">
+			<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
+				Legal
+			</span>
+			<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl font-serif mt-2">
 				Privacy Policy
 			</h1>
 			
-			<p class="mt-4 text-lg text-mapa-ink/80 italic leading-relaxed font-serif">
-				We believe in making tools that respect your privacy by default.
+			<p class="font-sans text-xs text-mapa-clay mt-2">
+				Last updated: July 15, 2026
 			</p>
 
 			<div class="mt-10 border-t border-mapa-contour/60 pt-8">
-				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4">
-					Zero cookies and tracking
-				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					The mapaPH hub page (mapaph.com) does not use cookies, tracking scripts, or analytics tools. We do not monitor your behavior across the web, and we do not compile profiles of our visitors.
+					At mapaPH, we believe in building tools that respect user privacy. This policy explains what information is processed when you visit our central hub (mapaph.com) and how we handle data across our open-source tools.
 				</p>
 
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					No personal data collection
+					1. Information we collect and process
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
+					Because this hub website is fully static, we do not require account registration, email sign-ups, or form submissions. We process only the following basic technical data:
+				</p>
+				<ul class="font-sans text-sm text-mapa-ink/90 list-disc pl-5 mb-6 space-y-2">
+					<li>
+						<strong>Server Logs:</strong> Our hosting provider, Vercel, automatically collects standard logging parameters when you make requests to our site. This includes anonymized IP addresses, request timestamps, browser types, and referral pages to monitor network stability and security.
+					</li>
+					<li>
+						<strong>Vercel Web Analytics:</strong> We use Vercel Web Analytics to track general traffic trends (such as page views and browser stats). This tool is completely cookie-free and does not collect or store any personally identifiable information.
+					</li>
+					<li>
+						<strong>Google Search Console:</strong> We use Google Search Console to monitor search ranking metrics and index quality. This tool does not track individual user identity on our website.
+					</li>
+					<li>
+						<strong>Correspondence:</strong> If you contact us directly via email (vrsmagwili@gmail.com) or by opening a public issue on GitHub, we process your contact information solely to reply to your questions.
+					</li>
+				</ul>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					2. Cookies and tracking
 				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					We do not collect personal details on this hub. There are no registration forms, contact inputs, or newsletter sign-ups. If you choose to contact us via email or by opening an issue on GitHub, we only use that information to reply to your inquiry or address your feedback.
+					The main mapaPH hub does not set or store tracking cookies. However, we plan to apply and implement Google AdSense or another ad network in the future. Once active, these ad networks may use cookies and web beacons to serve personalized or non-personalized advertisements based on your visits to this and other websites. We will update this policy to specify ad cookie choices once those networks are active.
 				</p>
 
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					Server logs
+					3. Third-party services
 				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					Our hosting provider automatically collects standard server logs (such as request timestamps, IP addresses, and user-agent strings) to keep our servers secure and troubleshoot technical failures. This data is static, anonymized, and never linked to individual visitors.
+					We rely on Vercel to host this hub site. Vercel processes request data to deliver site assets. You can review the Vercel Privacy Policy on their official website to understand how they secure their cloud infrastructure.
 				</p>
 
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					Individual tools and subdomains
+					4. Your rights under the Philippine Data Privacy Act
 				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					Because mapaPH is a hub, our mapping projects live on separate subdomains (like lens.mapaph.com). Some of these tools may handle crowdsourced contributions or store basic parameters locally in your browser. Each individual tool is governed by its own minimal data policy, which you can read directly on that tool's site.
+					Because we are focused on the Philippines, we align our privacy guidelines with the Philippine Data Privacy Act of 2012 (Republic Act No. 10173). You have the right to access, update, correct, or request the deletion of any personal email correspondence or GitHub inquiries you have submitted to us. Since we do not maintain a user database or store profiles, we do not have personal data files to export or modify.
 				</p>
 
-				<div class="mt-12 pt-6 border-t border-mapa-contour/40">
-					<p class="font-sans text-xs text-mapa-clay">
-						Last updated: July 2026. If you have questions about these guidelines, you can open an issue on our GitHub repository.
-					</p>
-				</div>
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					5. Data retention and security
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					Anonymized server log entries are automatically deleted or rotated by Vercel according to their standard network retention policies (typically under 90 days). Email correspondence is kept only as long as necessary to address your feedback.
+				</p>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					6. Children's privacy
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					Our tools are not directed at minors, and we do not knowingly collect or request personal details from children under the age of 13.
+				</p>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					7. Individual subdomains and crowdsourced tools
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					This policy applies only to mapaph.com. Individual mapping tools linked from this directory run on their own subdomains (such as lens.mapaph.com or pet-friendly.mapaph.com). Some of these tools may store custom settings locally in your browser or accept crowdsourced public contributions. Each subdomain is governed by its own minimal data policy which you can read on the respective subdomain site.
+				</p>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					8. Changes to this policy
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					We may update this policy occasionally to reflect changes in our tools or hosting setup. All revisions will be posted on this page with an updated date listed at the top.
+				</p>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					9. Contact information
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					If you have questions about this policy, you can contact us at vrsmagwili@gmail.com or file an issue in our public GitHub repository.
+				</p>
 			</div>
 		</article>
 	</main>

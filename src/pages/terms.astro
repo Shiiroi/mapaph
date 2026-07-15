@@ -10,58 +10,119 @@ import Footer from '../components/Footer.astro';
 ---
 
 <BaseLayout 
-	title="Terms of Use — mapaPH" 
-	description="Read our terms of use. mapaPH is an independent, community-driven mapping hub provided without warranty."
+	title="Terms of Use: mapaPH" 
+	description="Read the complete Terms of Use for mapaPH. Learn about open-source licenses, data warnings, and disclaimer of warranty."
 >
 	<Navbar />
 
 	<main class="max-w-3xl mx-auto px-6 py-16 text-mapa-ink">
 		<article>
-			<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl font-serif">
+			<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
+				Legal
+			</span>
+			<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl font-serif mt-2">
 				Terms of Use
 			</h1>
 			
-			<p class="mt-4 text-lg text-mapa-ink/80 italic leading-relaxed font-serif">
-				Please read our guidelines for using the mapaPH hub and tools.
+			<p class="font-sans text-xs text-mapa-clay mt-2">
+				Last updated: July 15, 2026
 			</p>
 
 			<div class="mt-10 border-t border-mapa-contour/60 pt-8">
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4">
-					Independent project
+					1. Acceptance of terms
 				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					mapaPH is a personal, independent, open-source project. We are not officially affiliated with, endorsed by, or representing any government agency, municipal office, or official institution of the Republic of the Philippines, even though our applications make use of public Philippine geographic and demographic datasets.
+					By accessing and browsing the mapaPH hub (mapaph.com) or using any of our linked tools, you agree to comply with and be bound by these Terms of Use. If you do not agree to these terms, you should not access or use the site.
 				</p>
 
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					Provided without warranty
+					2. Description of the service
 				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					All tools, maps, datasets, and files distributed through this hub are provided on an as-is basis, without warranties of any kind. Because this project is maintained entirely on a volunteer basis, we do not guarantee that the tools will remain online, function without errors, or stay updated. We reserve the right to modify, pause, or discontinue any tool or page at any time without prior notice.
+					mapaPH is an independent, community-driven hub that catalogs open-source utilities built around maps of the Philippines. Each tool listed in our directory is built as a separate application, hosted on its own repository and subdomain.
 				</p>
 
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					Open-source licensing
+					3. Independence disclaimer
 				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					The source code for our projects is open source and hosted publicly. The main hub codebase is licensed under the MIT License. Each individual mapping application or dataset repository is published under its own license file (such as the MIT License or equivalent open-source licenses), which you can review in the respective GitHub repository.
+					mapaPH is a personal, independent project developed and run by an individual. We are not officially affiliated with, endorsed by, or representing any government agency, municipal office, or official institution of the Republic of the Philippines (such as the Philippine Statistics Authority or the Commission on Elections), despite using public geographic and census data.
 				</p>
 
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					Crowdsourced data and accuracy
+					4. Intellectual property and licensing
 				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					Some of our directory tools use data submitted directly by community contributors. We do not guarantee the completeness, accuracy, or reliability of this information. We reserve the right to review, edit, or remove any community-submitted entries at our sole discretion. 
-				</p>
-				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					You should not rely on any data or routes provided by these tools for safety-critical activities, professional mapping requirements, or navigation without independent verification.
+					The source code for the hub and all our subprojects is open source and published under the MIT License. You are free to inspect, download, modify, and redistribute the code in accordance with the MIT License terms. The original site layouts, copy, and specific visual branding elements are owned by the project creator.
 				</p>
 
-				<div class="mt-12 pt-6 border-t border-mapa-contour/40">
-					<p class="font-sans text-xs text-mapa-clay">
-						Last updated: July 2026.
-					</p>
-				</div>
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					5. Warranty disclaimer
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					All tools, services, maps, and geographic datasets are provided strictly on an as-is and as-available basis, without warranties of any kind, either express or implied. Because this project is maintained on a volunteer basis, we do not guarantee that the tools will be accurate, error-free, uninterrupted, or secure. We reserve the right to alter, take offline, or discontinue any application or subdomain without notice.
+				</p>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					6. Limitation of liability
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					To the maximum extent permitted by applicable law, the project creator and contributors shall not be liable for any direct, indirect, incidental, special, or consequential damages resulting from the use of or the inability to use our tools, including but not limited to transit delays, incorrect routing parameters, or mapping inaccuracies.
+				</p>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					7. User conduct and prohibited uses
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
+					You agree to use our tools only for lawful purposes. You are explicitly prohibited from:
+				</p>
+				<ul class="font-sans text-sm text-mapa-ink/90 list-disc pl-5 mb-6 space-y-2">
+					<li>
+						Attempting to disrupt or overload our hosting servers or subdomains through automated scraping scripts or denial-of-service tactics.
+					</li>
+					<li>
+						Submitting false, offensive, or malicious datasets to any of our crowdsourced mapping directories.
+					</li>
+					<li>
+						Using our tools or geographical exports for any illegal, hazardous, or high-risk activity where spatial errors could lead to physical injury or property damage.
+					</li>
+				</ul>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					8. Crowdsourced data and content
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					Some directories display entries submitted by community contributors. We do not guarantee the validity or accuracy of these listings. We reserve the right to review, edit, or delete any community submissions at our discretion. You should independently verify any information (such as locations, routes, or pet policies) before relying on it.
+				</p>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					9. Third-party links
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					Our site links to external repositories and community sites. We are not responsible for the content, privacy practices, or terms of third-party resources.
+				</p>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					10. Governing law and jurisdiction
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					These terms are governed by and construed in accordance with the laws of the Republic of the Philippines. Any disputes arising out of these terms shall be subject to the exclusive jurisdiction of the courts of the Philippines.
+				</p>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					11. Changes to these terms
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					We reserve the right to update these terms at any time. Changes will be posted here with an updated revision date listed at the top.
+				</p>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					12. Contact
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					For questions regarding these terms, you can reach out via email at vrsmagwili@gmail.com or by filing an issue in our public GitHub repository.
+				</p>
 			</div>
 		</article>
 	</main>
