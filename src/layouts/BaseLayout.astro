@@ -56,16 +56,6 @@ const resolvedOgImage = new URL(ogImage || '/default-og.png', Astro.site || Astr
 		<meta property="twitter:description" content={description} />
 		<meta property="twitter:image" content={resolvedOgImage} />
 
-		<!-- JSON-LD Global WebSite Schema -->
-		<script type="application/ld+json" is:inline>
-			{
-				"@context": "https://schema.org",
-				"@type": "WebSite",
-				"name": "mapaPH",
-				"url": "https://mapaph.com",
-				"description": "Open-source mapping tools for the Philippines"
-			}
-		</script>
 		<slot name="schema" />
 	</head>
 	<body class="bg-mapa-canvas text-mapa-ink min-h-screen">
