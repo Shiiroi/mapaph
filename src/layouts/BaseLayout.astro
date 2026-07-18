@@ -17,9 +17,14 @@ interface Props {
 	description: string;
 	/** Optional URL path for the Open Graph sharing image snippet. Defaults to '/default-og.png'. */
 	ogImage?: string;
+	/** 
+	 * Optional flag to add a 'noindex, follow' robots directive. 
+	 * Used for in-development pages that shouldn't be indexed but whose link equity should be followed.
+	 */
+	noindex?: boolean;
 }
 
-const { title, description, ogImage } = Astro.props;
+const { title, description, ogImage, noindex = false } = Astro.props;
 const cleanPathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 const canonicalURL = new URL(cleanPathname, Astro.site || Astro.url.origin);
 const resolvedOgImage = new URL(ogImage || '/default-og.png', Astro.site || Astro.url.origin).toString();
@@ -32,6 +37,15 @@ const resolvedOgImage = new URL(ogImage || '/default-og.png', Astro.site || Astr
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/ph.svg" />
 		<meta name="generator" content={Astro.generator} />
+
+		{noindex && (
+			/* 
+				SEO Strategy: "noindex, follow" tells crawlers (like Googlebot) not to show 
+				this page in search results (preventing thin-content or placeholder penalties), 
+				but still allows them to crawl/follow links to preserve internal link equity (link juice).
+			*/
+			<meta name="robots" content="noindex, follow" />
+		)}
 
 		<!-- Google AdSense / Site Verification -->
 		<script is:inline async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7494033520495523" crossorigin="anonymous"></script>
