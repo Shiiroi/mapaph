@@ -9,7 +9,9 @@ import fallbackChangelog from "../data/changelog-fallback.json";
 
 // List of repositories in the ecosystem that we track.
 // Adding a new tool later is as simple as adding its 'owner/repo' string here.
-const TRACKED_REPOS = ["Shiiroi/mapa", "Shiiroi/compaws"];
+// Note: Fetching our own release info ('Shiiroi/mapaph') during our own build is completely safe and correct.
+// It is a read-only API call, not a build process depending on its own build output (no circular dependency risk).
+const TRACKED_REPOS = ["Shiiroi/mapa", "Shiiroi/compaws", "Shiiroi/mapaph"];
 
 // Structure of normalized release data used for UI rendering
 interface ReleaseEntry {
@@ -26,6 +28,7 @@ interface ReleaseEntry {
 const REPO_NAME_MAP: Record<string, string> = {
 	"Shiiroi/mapa": "Lens",
 	"Shiiroi/compaws": "Compaws",
+	"Shiiroi/mapaph": "Hub",
 };
 
 /**
