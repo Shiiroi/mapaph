@@ -12,9 +12,14 @@ interface Props {
 	title: string;
 	description: string;
 	activeSlug: 'index' | 'lens' | 'to-cubao' | 'compaws';
+	/**
+	 * Optional flag to add 'noindex, follow' robots directive.
+	 * Used for in-development pages that shouldn't be indexed yet.
+	 */
+	noindex?: boolean;
 }
 
-const { title, description, activeSlug } = Astro.props;
+const { title, description, activeSlug, noindex = false } = Astro.props;
 
 const tools = [
 	{ name: 'Lens',         slug: 'lens',         url: '/docs/lens',         active: true  },
@@ -34,7 +39,7 @@ const prevPage = currentIndex > 0 ? pages[currentIndex - 1] : null;
 const nextPage = currentIndex < pages.length - 1 ? pages[currentIndex + 1] : null;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} noindex={noindex}>
 	<Navbar />
 
 	<!-- Outer wrapper: border under navbar -->

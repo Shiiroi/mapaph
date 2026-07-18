@@ -1,4 +1,6 @@
 ---
+// TODO: Remove noindex from src/pages/docs/compaws.astro once the Compaws page has real/complete documentation content instead of placeholders.
+// This is currently noindexed to prevent thin-content SEO ranking penalties while the tool is under active development.
 import DocsLayout from '../../layouts/DocsLayout.astro';
 import DocsCompaws from '../../components/docs/DocsCompaws.astro';
 ---
@@ -7,6 +9,7 @@ import DocsCompaws from '../../components/docs/DocsCompaws.astro';
 	title="Compaws Project Status: mapaPH Documentation"
 	description="Learn about the development status of the Compaws directory mapping tool."
 	activeSlug="compaws"
+	noindex={true}
 >
 	<DocsCompaws />
 </DocsLayout>
