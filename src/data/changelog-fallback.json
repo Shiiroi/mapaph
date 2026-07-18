@@ -12,5 +12,12 @@
     "title": "Compaws Scaffolding & Beta",
     "description": "Released Compaws v0.5.0. Set up database configurations and crowdsourcing schemas for community-indexed, animal-welcoming parks and dining spots.",
     "url": "https://github.com/Shiiroi/compaws/releases/latest"
+  },
+  "Shiiroi/mapaph": {
+    "version": "v0.0.1",
+    "date": "2026-07-15T12:00:00Z",
+    "title": "Hub Directory Launch",
+    "description": "Launched the central mapaPH directory hub, linking development documentation and legal policies for all open-source utilities.",
+    "url": "https://github.com/Shiiroi/mapaph/releases/latest"
   }
 }
