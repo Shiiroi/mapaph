@@ -1,10 +1,133 @@
 ---
 /**
  * @file LatestUpdates.astro
- * @description Manual project changelog section highlighting active development across the ecosystem.
+ * @description Dynamic changelog section highlighting active development across the ecosystem.
+ * Fetches latest releases from GitHub API at build time, with try/catch wrapping and a local cache fallback.
  */
 
-import changelog from "../data/changelog.json";
+import fallbackChangelog from "../data/changelog-fallback.json";
+
+// List of repositories in the ecosystem that we track.
+// Adding a new tool later is as simple as adding its 'owner/repo' string here.
+const TRACKED_REPOS = ["Shiiroi/mapa", "Shiiroi/compaws"];
+
+// Structure of normalized release data used for UI rendering
+interface ReleaseEntry {
+	repo: string;
+	repoName: string;
+	version: string;
+	date: string;
+	title: string;
+	description: string;
+	url: string;
+}
+
+// Map tracked repo path to user-friendly project name for UI presentation
+const REPO_NAME_MAP: Record<string, string> = {
+	"Shiiroi/mapa": "Lens",
+	"Shiiroi/compaws": "Compaws",
+};
+
+/**
+ * Truncates markdown release descriptions to ~2-3 sentences.
+ * Strips basic markdown structures for clean plain-text presentation in the timeline card.
+ */
+function cleanAndTruncateDescription(bodyText: string): string {
+	if (!bodyText) return "";
+
+	let text = bodyText
+		.replace(/^#+\s+.+$/gm, "") // Remove headers
+		.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // Simplify markdown links to just their label
+		.replace(/[*_`~]/g, "") // Strip formatting symbols
+		.replace(/^\s*[-*+]\s+/gm, "") // Strip bullets
+		.replace(/^\s*>\s+/gm, "") // Strip blockquotes
+		.replace(/\s+/g, " ") // Normalize spaces
+		.trim();
+
+	// Match sentences ending in punctuation
+	const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+	const truncated = sentences.slice(0, 3).join(" ").trim();
+
+	if (sentences.length > 3) {
+		return truncated + "...";
+	}
+	return truncated || "View the release page on GitHub for full details.";
+}
+
+const releases: ReleaseEntry[] = [];
+
+// Fetch latest release details for each repository at build time.
+// Note: We use GITHUB_API_TOKEN to get a higher rate limit (5,000 requests/hour) in CI/Vercel.
+const apiToken = import.meta.env.GITHUB_API_TOKEN;
+
+for (const repo of TRACKED_REPOS) {
+	try {
+		// Fetch with standard User-Agent header (required by GitHub) and authenticated token if available
+		const headers: Record<string, string> = {
+			"User-Agent": "mapaph-hub-builder",
+		};
+		if (apiToken) {
+			headers["Authorization"] = `Bearer ${apiToken}`;
+		}
+
+		const response = await fetch(
+			`https://api.github.com/repos/${repo}/releases/latest`,
+			{
+				headers,
+			},
+		);
+
+		if (!response.ok) {
+			throw new Error(`GitHub API returned status ${response.status}`);
+		}
+
+		const data = await response.json();
+
+		releases.push({
+			repo,
+			repoName: REPO_NAME_MAP[repo] || repo,
+			version: data.tag_name || "v0.0.0",
+			date: data.published_at || new Date().toISOString(),
+			title: data.name || "Release",
+			description: cleanAndTruncateDescription(data.body),
+			url: data.html_url || `https://github.com/${repo}/releases`,
+		});
+	} catch (error) {
+		// Log warning but DO NOT fail the build. A flaky third-party API must not crash our production site.
+		console.warn(
+			`[Changelog Sync] Failed to fetch release details for '${repo}'. Falling back to local snapshot.`,
+			error,
+		);
+
+		// Fallback to the local cache snapshot
+		const cached = (fallbackChangelog as any)[repo];
+		if (cached) {
+			releases.push({
+				repo,
+				repoName: REPO_NAME_MAP[repo] || repo,
+				version: cached.version,
+				date: cached.date,
+				title: cached.title,
+				description: cached.description,
+				url: cached.url,
+			});
+		} else {
+			// Extremely safe backup if both API and fallback fail
+			releases.push({
+				repo,
+				repoName: REPO_NAME_MAP[repo] || repo,
+				version: "v0.0.0",
+				date: new Date().toISOString(),
+				title: "Release Pending",
+				description: "Release information is temporarily unavailable.",
+				url: `https://github.com/${repo}`,
+			});
+		}
+	}
+}
+
+// Sort compiled releases newest first across all tracked repositories
+releases.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 ---
 
 <section
@@ -38,10 +161,10 @@ import changelog from "../data/changelog.json";
 				<div class="flow-root font-sans">
 					<ul class="-mb-8">
 						{
-							changelog.map((entry, entryIdx) => (
+							releases.map((entry, entryIdx) => (
 								<li>
 									<div class="relative pb-8">
-										{entryIdx !== changelog.length - 1 ? (
+										{entryIdx !== releases.length - 1 ? (
 											<span
 												class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-mapa-contour"
 												aria-hidden="true"
@@ -71,9 +194,14 @@ import changelog from "../data/changelog.json";
 											<div class="min-w-0 flex-1 bg-mapa-canvas border border-mapa-contour/80 rounded-lg p-5 ml-4 hover:border-mapa-clay transition-colors duration-200">
 												<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-mapa-contour/40 pb-2.5 mb-3">
 													<div class="flex items-center gap-3">
-														<span class="uppercase text-[9px] font-bold tracking-wider px-2 py-0.5 rounded bg-mapa-green/10 text-mapa-green border border-mapa-green/20 select-none">
-															{entry.version}
-														</span>
+														<a
+															href={entry.url}
+															target="_blank"
+															rel="noopener noreferrer"
+															class="uppercase text-[9px] font-bold tracking-wider px-2 py-0.5 rounded bg-mapa-green/10 text-mapa-green border border-mapa-green/20 hover:bg-mapa-green/20 transition-all select-none"
+														>
+															{entry.repoName} {entry.version}
+														</a>
 														<h3 class="font-serif text-base font-bold text-mapa-ink">
 															{entry.title}
 														</h3>

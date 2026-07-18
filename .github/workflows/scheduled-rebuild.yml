@@ -1,0 +1,17 @@
+name: Scheduled Changelog Rebuild
+
+# Schedule the rebuild of mapaph-hub to pull the latest releases from the other repositories.
+# This keeps the static index up to date without manual commits or manual build triggers.
+on:
+  schedule:
+    - cron: "0 */12 * * *" # Runs every 12 hours to sync updates automatically
+  workflow_dispatch: {} # Allows manual trigger from the GitHub Actions UI tab for testing and immediate builds
+
+jobs:
+  trigger-rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Vercel Deploy Hook
+        # Pings the Vercel Deploy Hook to rebuild mapaph-hub at build-time.
+        # This will query the GitHub Releases API for Lens and Compaws and refresh the static HTML.
+        run: curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"
