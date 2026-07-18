@@ -12,7 +12,7 @@
 | :--- | :----- | :-- |
 | **Lens** | Active | [lens.mapaph.com](https://lens.mapaph.com) |
 | **To-Cubao** | In Development | — |
-| **Pet Friendly** | In Development | — |
+| **Compaws** | In Development | — |
 
 ---
 
