@@ -4,6 +4,11 @@
  * @description Main footer layout categorizing external links, pages, and legal notes.
  */
 
+// Import package.json to read the project version at build time.
+// Why: Exposing the version number subtly to the public signals active maintenance to search engine crawlers 
+// and users (indicating the site is not abandoned). This is a safe engineering practice as the version is public on GitHub anyway.
+import pkg from "../../package.json";
+
 const currentYear = new Date().getFullYear();
 ---
 
@@ -24,7 +29,7 @@ const currentYear = new Date().getFullYear();
 					Open-source tools built around the Philippine map.
 				</p>
 				<p class="font-sans text-xs text-mapa-canvas/60 mt-1">
-					© {currentYear} mapaPH.
+					© {currentYear} mapaPH. <span class="text-mapa-canvas/45 select-none font-medium ml-1.5">v{pkg.version}</span>
 				</p>
 			</div>
 
