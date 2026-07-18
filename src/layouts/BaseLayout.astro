@@ -34,7 +34,7 @@ const resolvedOgImage = new URL(ogImage || '/default-og.png', Astro.site || Astr
 		<meta name="generator" content={Astro.generator} />
 
 		<!-- Google AdSense / Site Verification -->
-		<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7494033520495523" crossorigin="anonymous"></script>
+		<script is:inline async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7494033520495523" crossorigin="anonymous"></script>
 
 		<!-- Primary Meta Tags -->
 		<title>{title}</title>
