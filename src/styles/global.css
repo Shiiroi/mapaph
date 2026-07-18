@@ -7,15 +7,15 @@
 @import "tailwindcss";
 
 @theme {
-  --color-mapa-canvas: #F7F3E9;
-  --color-mapa-canvas-dark: #ECE7DB;
-  --color-mapa-ink: #211D16;
-  --color-mapa-green: #3D5A45;
-  --color-mapa-clay: #C4AC7C;
-  --color-mapa-contour: #E5D9C3;
-  --color-mapa-navy: #1B2A4A;
-  --color-mapa-rust: #9E391A;
-  --color-mapa-flag-blue: #0038A8;
-  --color-mapa-flag-red: #CE1126;
-  --color-mapa-flag-gold: #FCD116;
+  --color-mapa-canvas: #f7f3e9;
+  --color-mapa-canvas-dark: #ece7db;
+  --color-mapa-ink: #211d16;
+  --color-mapa-green: #3d5a45;
+  --color-mapa-clay: #c4ac7c;
+  --color-mapa-contour: #e5d9c3;
+  --color-mapa-navy: #1b2a4a;
+  --color-mapa-rust: #9e391a;
+  --color-mapa-flag-blue: #0038a8;
+  --color-mapa-flag-red: #ce1126;
+  --color-mapa-flag-gold: #fcd116;
 }

@@ -50,6 +50,7 @@ The site will be available at `http://localhost:4321`.
 Refer to [README.md](./README.md#-project-structure) for a full breakdown of the folder structure.
 
 Key directories:
+
 - `src/components/docs/` — documentation page content components
 - `src/layouts/` — shared page layout shells
 - `src/pages/docs/` — thin route wrappers for documentation pages

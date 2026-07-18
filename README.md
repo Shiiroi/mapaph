@@ -8,11 +8,11 @@
 
 ## Tools
 
-| Tool | Status | URL |
-| :--- | :----- | :-- |
-| **Lens** | Active | [lens.mapaph.com](https://lens.mapaph.com) |
-| **To-Cubao** | In Development | — |
-| **Compaws** | In Development | — |
+| Tool         | Status         | URL                                        |
+| :----------- | :------------- | :----------------------------------------- |
+| **Lens**     | Active         | [lens.mapaph.com](https://lens.mapaph.com) |
+| **To-Cubao** | In Development | —                                          |
+| **Compaws**  | In Development | —                                          |
 
 ---
 
@@ -49,14 +49,14 @@ This site is built with [Astro](https://astro.build) on top of the minimal start
 
 All commands are run from the root of the project, from a terminal:
 
-| Command | Action |
+| Command                   | Action                                           |
 | :------------------------ | :----------------------------------------------- |
-| `npm install` | Installs dependencies |
-| `npm run dev` | Starts local dev server at `localhost:4321` |
-| `npm run build` | Build your production site to `./dist/` |
-| `npm run preview` | Preview your build locally, before deploying |
-| `npm run astro ...` | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI |
+| `npm install`             | Installs dependencies                            |
+| `npm run dev`             | Starts local dev server at `localhost:4321`      |
+| `npm run build`           | Build your production site to `./dist/`          |
+| `npm run preview`         | Preview your build locally, before deploying     |
+| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
+| `npm run astro -- --help` | Get help using the Astro CLI                     |
 
 ---
 
