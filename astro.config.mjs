@@ -10,7 +10,7 @@ import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
-  site: "https://mapaph.com",
+  site: "https://www.mapaph.com",
   trailingSlash: "never",
   integrations: [sitemap()],
   vite: {
