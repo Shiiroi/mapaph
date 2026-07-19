@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mapaph.com/sitemap-index.xml
+Sitemap: https://www.mapaph.com/sitemap-index.xml
