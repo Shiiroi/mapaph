@@ -12,7 +12,6 @@
 | :----------- | :------------- | :----------------------------------------- |
 | **Lens**     | Active         | [lens.mapaph.com](https://lens.mapaph.com) |
 | **To-Cubao** | In Development | —                                          |
-| **Compaws**  | In Development | —                                          |
 
 ---
 

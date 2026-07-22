@@ -6,13 +6,6 @@
     "description": "Released Lens v1.0.0. Added complete census demographics, local financial audit visualizations, election tallies, and high-fidelity GeoJSON exports matching PSA standards.",
     "url": "https://github.com/Shiiroi/mapa/releases/latest"
   },
-  "Shiiroi/compaws": {
-    "version": "v0.5.0",
-    "date": "2026-07-18T12:00:00Z",
-    "title": "Compaws Scaffolding & Beta",
-    "description": "Released Compaws v0.5.0. Set up database configurations and crowdsourcing schemas for community-indexed, animal-welcoming parks and dining spots.",
-    "url": "https://github.com/Shiiroi/compaws/releases/latest"
-  },
   "Shiiroi/mapaph": {
     "version": "v0.0.1",
     "date": "2026-07-15T12:00:00Z",
