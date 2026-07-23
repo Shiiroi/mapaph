@@ -27,16 +27,6 @@ const tools = [
 		description: "A transit routing application showing commute options to and from Cubao. Features a 3D view of Cubao to navigate, locate public utility vehicle terminals, and map route pathways.",
 		image: null,
 		hasImage: false
-	},
-	{
-		name: "Compaws",
-		status: "In Development",
-		category: "Directory",
-		url: "https://compaws.mapaph.com",
-		github: "https://github.com/Shiiroi/compaws",
-		description: "A crowdsourced directory mapping animal-welcoming parks, cafes, and establishments, indexing pet policies and rules nationwide.",
-		image: null,
-		hasImage: false
 	}
 ];
 ---
@@ -53,7 +43,7 @@ const tools = [
 	</div>
 
 	<!-- Card Grid -->
-	<div class="grid grid-cols-1 md:grid-cols-3 gap-8 font-sans">
+	<div class="grid grid-cols-1 md:grid-cols-2 gap-8 font-sans">
 		{tools.map((tool) => {
 			const targetLink = tool.status === "Active" ? tool.url : tool.github;
 			const isClickable = !!targetLink;

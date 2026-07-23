@@ -11,7 +11,7 @@ import Footer from '../components/Footer.astro';
 interface Props {
 	title: string;
 	description: string;
-	activeSlug: 'index' | 'lens' | 'to-cubao' | 'compaws';
+	activeSlug: 'index' | 'lens' | 'to-cubao';
 	/**
 	 * Optional flag to add 'noindex, follow' robots directive.
 	 * Used for in-development pages that shouldn't be indexed yet.
@@ -24,7 +24,6 @@ const { title, description, activeSlug, noindex = false } = Astro.props;
 const tools = [
 	{ name: 'Lens',         slug: 'lens',         url: '/docs/lens',         active: true  },
 	{ name: 'To-Cubao',     slug: 'to-cubao',     url: '/docs/to-cubao',     active: false },
-	{ name: 'Compaws',      slug: 'compaws',      url: '/docs/compaws',      active: false },
 ];
 
 // Ordered page list for prev/next navigation
@@ -32,7 +31,6 @@ const pages = [
 	{ slug: 'index',        name: 'Overview',      url: '/docs'              },
 	{ slug: 'lens',         name: 'Lens',          url: '/docs/lens'         },
 	{ slug: 'to-cubao',     name: 'To-Cubao',      url: '/docs/to-cubao'     },
-	{ slug: 'compaws',      name: 'Compaws',       url: '/docs/compaws'      },
 ];
 const currentIndex = pages.findIndex(p => p.slug === activeSlug);
 const prevPage = currentIndex > 0 ? pages[currentIndex - 1] : null;
