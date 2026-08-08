@@ -1,7 +1,7 @@
 ---
 /**
  * @file DocsLens.astro
- * @description Content component for the Lens user guide documentation page.
+ * @description Comprehensive user guide and technical documentation component for Lens.
  */
 ---
 
@@ -9,75 +9,135 @@
 	Documentation: Lens
 </span>
 <h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl font-serif mt-2">
-	Lens User Guide
+	Lens User Guide & Data Reference
 </h1>
 
 <p class="mt-4 text-lg text-mapa-ink/80 italic leading-relaxed font-serif">
-	Interactive mapping and demographic visualization for Philippine administrative divisions.
+	Interactive choropleth mapping, demographic analytics, and GeoJSON boundary export for Philippine administrative divisions.
 </p>
 
-<div class="mt-10 border-t border-mapa-contour/60 pt-8">
-	<div class="flex flex-col sm:flex-row gap-4 mb-8">
+<div class="mt-10 border-t border-mapa-contour/60 pt-8 space-y-10 font-serif">
+	<!-- Actions -->
+	<div class="flex flex-col sm:flex-row gap-4">
 		<a href="https://lens.mapaph.com" target="_blank" rel="noopener noreferrer" class="inline-block px-5 py-2.5 bg-mapa-green text-mapa-canvas font-sans text-center text-sm font-semibold rounded hover:brightness-110 active:brightness-95 transition-all duration-200">
-			Open Lens App
+			Launch Lens App &rarr;
 		</a>
-		<a href="https://github.com/Shiiroi/mapaph" target="_blank" rel="noopener noreferrer" class="inline-block px-5 py-2.5 border border-mapa-clay text-mapa-ink font-sans text-center text-sm font-semibold rounded hover:bg-mapa-contour/20 transition-all duration-200">
-			View on GitHub
+		<a href="https://github.com/Shiiroi/mapa" target="_blank" rel="noopener noreferrer" class="inline-block px-5 py-2.5 border border-mapa-clay text-mapa-ink font-sans text-center text-sm font-semibold rounded hover:bg-mapa-contour/20 transition-all duration-200">
+			View Source Code on GitHub
 		</a>
 	</div>
 
-	<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4">What is Lens?</h2>
-	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-		Lens is an interactive map viewer designed to make Philippine geographic and civic data easy to explore. It is built for researchers, planners, developers, and anyone who needs to quickly check regional statistics or download boundary files.
-	</p>
-	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-		The tool compiles population census data, local financial statistics, economic indicators, and election records, projecting them directly onto a map of the Philippine administrative levels.
-	</p>
+	<!-- SECTION 1: The Problem Lens Solves -->
+	<section>
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			The Problem Lens Solves
+		</h2>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
+			Before Lens, performing spatial analysis or visualizing socio-economic metrics across Philippine municipalities required downloading heavy GIS desktop software (such as QGIS or ArcGIS), searching through disparate government portals for boundary shapefiles, converting legacy coordinate projections (e.g. PRS92 / Luzon 1911 to WGS 84), and manually matching spreadsheet rows to spatial features.
+		</p>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed">
+			Lens eliminates this friction by serving pre-processed, PSGC-indexed vector boundaries directly in the browser. Anyone—from data journalists and urban planning students to software engineers—can instantly visualize demographic trends, compare municipal indicators side-by-side, or export clean GeoJSON files for custom application development.
+		</p>
+	</section>
 
-	<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">Core features and how to use them</h2>
+	<!-- SECTION 2: How Lens Works at a Glance -->
+	<section class="border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			How Lens Works at a Glance
+		</h2>
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-6 font-sans">
+			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<div class="text-mapa-green font-bold text-lg mb-1">1. Fast Vector Rendering</div>
+				<p class="text-xs text-mapa-ink/80 leading-relaxed">
+					Loads optimized GeoJSON and TopoJSON boundary layers dynamically as you pan and zoom, rendering crisp vector outlines at 60 FPS without server-side map tiling bottlenecks.
+				</p>
+			</div>
+			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<div class="text-mapa-green font-bold text-lg mb-1">2. Reactive PSGC Data Joins</div>
+				<p class="text-xs text-mapa-ink/80 leading-relaxed">
+					Joins public census, financial audit, and election data tables directly to spatial boundary polygons using standardized 9-digit PSGC numeric keys.
+				</p>
+			</div>
+			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<div class="text-mapa-green font-bold text-lg mb-1">3. Standards-Compliant Export</div>
+				<p class="text-xs text-mapa-ink/80 leading-relaxed">
+					Exports boundary polygons in RFC 7946 GeoJSON format (WGS 84 coordinate system), ready for instant drop-in use in Mapbox, Leaflet, Turf.js, or PostGIS.
+				</p>
+			</div>
+		</div>
+	</section>
 
-	<h3 class="text-lg font-bold text-mapa-ink font-serif mb-2">Switching administrative levels</h3>
-	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-		You can adjust the boundary view to inspect different tiers of local government. Use the level control options on the map to switch views across the country, region, province, city or municipality, and barangay levels.
-	</p>
+	<!-- SECTION 3: Step-by-Step Usage Guide -->
+	<section class="border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			First-Time Visitor Walkthrough & Key Features
+		</h2>
+		
+		<div class="space-y-6 font-sans text-sm text-mapa-ink/90">
+			<div class="p-5 rounded bg-mapa-canvas-dark border border-mapa-contour/40">
+				<h3 class="font-serif text-lg font-bold text-mapa-green mb-2">A. Navigating Administrative Tiers</h3>
+				<p class="leading-relaxed">
+					Use the administrative level selector in the top toolbar to switch between <strong>Regional</strong>, <strong>Provincial / HUC</strong>, <strong>Municipal / City</strong>, and <strong>Barangay</strong> boundary layers. Hovering over any polygon highlights its official name, PSGC code, and summary metric card.
+				</p>
+			</div>
 
-	<h3 class="text-lg font-bold text-mapa-ink font-serif mb-2">Viewing civic data overlays</h3>
-	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
-		Lens overlays datasets onto boundary maps to show geographic distributions. You can toggle between several default data layers:
-	</p>
-	<ul class="font-sans text-sm text-mapa-ink/90 list-disc pl-5 mb-6 space-y-2">
-		<li><strong>Population Statistics:</strong> Total residents, age groupings, and sex distribution per area based on census logs.</li>
-		<li><strong>Economic Indicators:</strong> Gross Domestic Product (GDP) formatted in PSA constant 2018 prices.</li>
-		<li><strong>LGU Finances:</strong> Financial statements showing assets and revenue totals compiled from audit documents.</li>
-		<li><strong>Election Records:</strong> Built-in election results showing voting breakdowns from the 2022 presidential polls.</li>
-		<li><strong>Custom CSV Uploads:</strong> You can upload your own custom spreadsheet files, provided they are keyed using the standard Philippine Standard Geographic Code (PSGC).</li>
-	</ul>
+			<div class="p-5 rounded bg-mapa-canvas-dark border border-mapa-contour/40">
+				<h3 class="font-serif text-lg font-bold text-mapa-green mb-2">B. Toggling Demographic & Civic Data Overlays</h3>
+				<p class="leading-relaxed mb-3">
+					Lens includes several pre-loaded dataset layers compiled from official Philippine public reports:
+				</p>
+				<ul class="list-disc pl-5 space-y-1.5 text-xs text-mapa-ink/80">
+					<li><strong>Population & Density (PSA 2020 CPH):</strong> Total headcounts, population density per sq km, and age/gender pyramids per municipality.</li>
+					<li><strong>Gross Domestic Product (PSA Provincial Accounts):</strong> GDP contributions formatted in constant 2018 prices.</li>
+					<li><strong>LGU Assets & Revenues (COA Financial Audit Reports):</strong> Annual municipal revenue, liabilities, and equity balances.</li>
+					<li><strong>2022 Presidential Election Tallies (COMELEC):</strong> Aggregated municipal vote breakdowns and turnout statistics.</li>
+				</ul>
+			</div>
 
-	<h3 class="text-lg font-bold text-mapa-ink font-serif mb-2">Comparing places side by side</h3>
-	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-		To analyze differences between two locations, use the comparison features. Select any two regions, provinces, or municipalities to display their charts, financial metrics, and demographic charts next to each other on the screen.
-	</p>
+			<div class="p-5 rounded bg-mapa-canvas-dark border border-mapa-contour/40">
+				<h3 class="font-serif text-lg font-bold text-mapa-green mb-2">C. Custom CSV Spreadsheet Uploads</h3>
+				<p class="leading-relaxed">
+					To visualize your own data, upload a CSV spreadsheet containing a <code>psgc</code> column (e.g. <code>psgc,value</code>). Lens automatically parses the codes, normalizes the numeric values into a color gradient choropleth, and renders your dataset on the interactive map canvas.
+				</p>
+			</div>
 
-	<h3 class="text-lg font-bold text-mapa-ink font-serif mb-2">Downloading GeoJSON boundary files</h3>
-	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-		For GIS developers and researchers, Lens exports standard GeoJSON files matching RFC 7946 and WGS 84 specifications. Select an administrative boundary and use the download option to export the coordinates, complete with integrated PSGC keys.
-	</p>
+			<div class="p-5 rounded bg-mapa-canvas-dark border border-mapa-contour/40">
+				<h3 class="font-serif text-lg font-bold text-mapa-green mb-2">D. Comparing Administrative Units Side-by-Side</h3>
+				<p class="leading-relaxed">
+					Click the <strong>Compare</strong> button and select any two provinces or cities. Lens splits the viewport to display side-by-side demographic comparisons, financial balance sheets, and geographic footprint overlays.
+				</p>
+			</div>
 
-	<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">Data sources</h2>
-	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-		The geographic and statistic information shown in Lens comes from public reports:
-	</p>
-	<ul class="font-sans text-sm text-mapa-ink/90 list-disc pl-5 mb-6 space-y-2">
-		<li>Population and GDP datasets are sourced from reports published by the Philippine Statistics Authority (PSA).</li>
-		<li>Election result numbers are compiled from the Commission on Elections (COMELEC) official tallies.</li>
-		<li>LGU asset figures are compiled from the Commission on Audit (COA) annual financial reports.</li>
-	</ul>
-	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-		For complete citations, licenses, and specific dataset files, visit the data sources documentation in the <a href="https://github.com/Shiiroi/mapaph/blob/main/docs/DATA_SOURCES.md" target="_blank" rel="noopener noreferrer" class="text-mapa-green hover:underline">Lens GitHub Repository</a>.
-	</p>
+			<div class="p-5 rounded bg-mapa-canvas-dark border border-mapa-contour/40">
+				<h3 class="font-serif text-lg font-bold text-mapa-green mb-2">E. Exporting Clean GeoJSON Boundary Files</h3>
+				<p class="leading-relaxed">
+					Select any province or municipality and click <strong>Export GeoJSON</strong> to download a clean, validated <code>.geojson</code> file containing polygon coordinates, bounding box metrics, and PSGC metadata properties.
+				</p>
+			</div>
+		</div>
+	</section>
 
-	<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">Independence disclaimer</h2>
-	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6 italic border-l-2 border-mapa-green pl-4">
-		Lens is an independent open-source project. It is not affiliated with, endorsed by, or representative of the Philippine Statistics Authority (PSA), the Commission on Elections (COMELEC), or any official government agency.
-	</p>
+	<!-- SECTION 4: Data Sources, Accuracy & Edge Cases -->
+	<section class="border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			Data Sources, Accuracy & Edge Cases
+		</h2>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
+			All demographic metrics in Lens are derived from public datasets published by the <strong>Philippine Statistics Authority (PSA)</strong>, the <strong>Commission on Elections (COMELEC)</strong>, and the <strong>Commission on Audit (COA)</strong>.
+		</p>
+
+		<div class="p-6 rounded border-l-4 border-mapa-clay bg-mapa-canvas-dark font-sans text-xs text-mapa-ink/85 space-y-2">
+			<div class="font-bold text-sm text-mapa-ink">Known Data Limitations & Handling:</div>
+			<p>
+				• <strong>Recent Administrative Reclassifications:</strong> Newly created LGUs (such as Carmona City converted in 2023, or the 8 new SGA municipalities in BARMM established in 2024) are continuously reconciled as official PSA PSGC releases are updated.
+			</p>
+			<p>
+				• <strong>Boundary Simplification:</strong> Cartographic polygons undergo Douglas-Peucker simplification to maintain high render performance on mobile devices. For high-precision legal cadastral surveying, consult official NAMRIA map sheets.
+			</p>
+			<p>
+				• <strong>Non-Government Disclaimer:</strong> Lens is an independent civic tech tool and is not affiliated with or endorsed by PSA, COMELEC, or any government agency.
+			</p>
+		</div>
+	</section>
 </div>
+

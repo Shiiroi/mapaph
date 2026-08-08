@@ -1,0 +1,187 @@
+---
+/**
+ * @file DocsPsgc.astro
+ * @description Reference documentation component explaining the Philippine Standard Geographic Code (PSGC).
+ */
+---
+
+<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
+	Reference Documentation
+</span>
+<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl font-serif mt-2">
+	Philippine Standard Geographic Code (PSGC) Guide
+</h1>
+
+<p class="mt-4 text-lg text-mapa-ink/80 italic leading-relaxed font-serif">
+	A comprehensive guide to the official coding system used to classify Philippine administrative divisions, census data, and GIS boundaries.
+</p>
+
+<div class="mt-10 border-t border-mapa-contour/60 pt-8 space-y-10 font-serif">
+	<!-- SECTION 1: What is PSGC -->
+	<section>
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			What is the PSGC?
+		</h2>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
+			The <strong>Philippine Standard Geographic Code (PSGC)</strong> is a systematic coding system created and maintained by the <strong>Philippine Statistics Authority (PSA)</strong>. It serves as the official national standard for classifying all geographic administrative units in the Philippines—from macro-regions down to individual barangays.
+		</p>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed">
+			For developers, researchers, and spatial data analysts, the PSGC is the essential join key that connects tabular data (such as census demographics, health statistics, or electoral results) directly to cartographic shapefiles and GeoJSON vector maps.
+		</p>
+	</section>
+
+	<!-- SECTION 2: Code Structure & Hierarchy -->
+	<section class="border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			PSGC Code Structure & Digit Breakdown
+		</h2>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+			Standard PSGC identifiers exist in 9-digit (legacy) and 10-digit (modern expanded) numeric formats. The digits represent a strict hierarchical nesting:
+		</p>
+
+		<!-- Visual Code Breakdown Box -->
+		<div class="bg-mapa-canvas-dark border border-mapa-contour/80 rounded-lg p-6 font-sans mb-8">
+			<div class="text-xs uppercase tracking-wider font-bold text-mapa-clay mb-2">Example: PSGC 04 56 18 000 (Subic, Zambales)</div>
+			<div class="grid grid-cols-4 gap-2 text-center font-mono font-bold text-sm sm:text-base">
+				<div class="bg-mapa-green/10 border border-mapa-green/30 text-mapa-green p-3 rounded">
+					<span class="block text-lg">04</span>
+					<span class="block text-[10px] font-sans font-normal uppercase text-mapa-ink/75 mt-1">Region (CALABARZON / Central Luzon)</span>
+				</div>
+				<div class="bg-mapa-clay/10 border border-mapa-clay/30 text-mapa-clay p-3 rounded">
+					<span class="block text-lg">56</span>
+					<span class="block text-[10px] font-sans font-normal uppercase text-mapa-ink/75 mt-1">Province (Zambales)</span>
+				</div>
+				<div class="bg-mapa-green/10 border border-mapa-green/30 text-mapa-green p-3 rounded">
+					<span class="block text-lg">18</span>
+					<span class="block text-[10px] font-sans font-normal uppercase text-mapa-ink/75 mt-1">City / Muni (Subic)</span>
+				</div>
+				<div class="bg-mapa-clay/10 border border-mapa-clay/30 text-mapa-clay p-3 rounded">
+					<span class="block text-lg">000</span>
+					<span class="block text-[10px] font-sans font-normal uppercase text-mapa-ink/75 mt-1">Barangay (Municipal Level)</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="space-y-4 font-sans text-sm text-mapa-ink/90">
+			<div class="border-l-2 border-mapa-green pl-4">
+				<strong class="text-mapa-green">Digits 1–2 (Region):</strong> Identifies the administrative region (e.g., <code>13</code> for NCR, <code>03</code> for Central Luzon, <code>07</code> for Central Visayas).
+			</div>
+			<div class="border-l-2 border-mapa-clay pl-4">
+				<strong class="text-mapa-clay">Digits 3–4 (Province / District / HUC):</strong> Identifies the province within the region. For independent cities or NCR, these digits designate administrative districts or independent city units.
+			</div>
+			<div class="border-l-2 border-mapa-green pl-4">
+				<strong class="text-mapa-green">Digits 5–6 (City / Municipality):</strong> Identifies the specific municipality or city within the province.
+			</div>
+			<div class="border-l-2 border-mapa-clay pl-4">
+				<strong class="text-mapa-clay">Digits 7–9 (Barangay):</strong> Identifies the specific barangay. A suffix of <code>000</code> indicates the code represents the city or municipality as a whole.
+			</div>
+		</div>
+	</section>
+
+	<!-- SECTION 3: Administrative Hierarchy Levels -->
+	<section class="border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			Philippine Administrative Levels Summary
+		</h2>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+			The Philippine political architecture is organized into distinct tiers governed by the Local Government Code (Republic Act No. 7160):
+		</p>
+
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
+			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<h3 class="font-serif font-bold text-lg text-mapa-green">1. Region (Rehiyon)</h3>
+				<p class="text-xs text-mapa-ink/80 mt-2 leading-relaxed">
+					Administrative groupings of provinces established for regional planning (e.g., Region III, Region IV-A). The Philippines contains 17 regions, including autonomous regions like BARMM.
+				</p>
+			</div>
+
+			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<h3 class="font-serif font-bold text-lg text-mapa-green">2. Province (Probinsya)</h3>
+				<p class="text-xs text-mapa-ink/80 mt-2 leading-relaxed">
+					Primary political corporate bodies consisting of component cities and municipalities. Governed by elected Provincial Governors and Sangguniang Panlalawigan boards.
+				</p>
+			</div>
+
+			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<h3 class="font-serif font-bold text-lg text-mapa-green">3. Cities & Municipalities</h3>
+				<p class="text-xs text-mapa-ink/80 mt-2 leading-relaxed">
+					Local Government Units (LGUs) containing clusters of barangays. Cities are categorized into <em>Highly Urbanized Cities (HUCs)</em>, <em>Independent Component Cities (ICCs)</em>, and <em>Component Cities</em>.
+				</p>
+			</div>
+
+			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<h3 class="font-serif font-bold text-lg text-mapa-green">4. Barangay</h3>
+				<p class="text-xs text-mapa-ink/80 mt-2 leading-relaxed">
+					The fundamental political unit of Philippine society. Over 42,000 barangays serve as the primary grassroots planning and administrative body.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- SECTION 4: Special Administrative Edge Cases -->
+	<section class="border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			Special Administrative & Boundary Edge Cases
+		</h2>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+			When working with PSGC datasets, developers must account for several unique administrative structures in the Philippines:
+		</p>
+
+		<ul class="font-sans text-sm text-mapa-ink/90 list-disc pl-5 space-y-3 leading-relaxed">
+			<li>
+				<strong>National Capital Region (NCR / Metro Manila):</strong> NCR does not contain any provinces. Instead, its 16 cities and 1 municipality are organized into 4 Non-Government Administrative Districts (e.g., Manila, Eastern District, Northern District, Southern District).
+			</li>
+			<li>
+				<strong>Highly Urbanized Cities (HUCs):</strong> Cities like Cebu City, Davao City, and Quezon City are legally and financially independent of their geographical provinces. In PSGC, they are assigned dedicated 4-digit province-level prefix blocks.
+			</li>
+			<li>
+				<strong>BARMM Special Geographic Area (SGA):</strong> 63 barangays in North Cotabato voted to join BARMM in 2019. In 2024, these barangays were formally organized into 8 new municipalities (Pawa, Kadayangan, Nabalawag, etc.), updating their PSGC codes.
+			</li>
+			<li>
+				<strong>Disputed Boundaries:</strong> Areas under territorial jurisdiction disputes (such as certain border barangays between Taguig and Makati) require careful spatial verification when matching historical census logs with current administrative geometry.
+			</li>
+		</ul>
+	</section>
+
+	<!-- SECTION 5: Developer Implementation Code -->
+	<section class="border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			Developer Guide: Parsing & Querying PSGC Codes
+		</h2>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+			Here is how you can parse a standard 9-digit PSGC string in JavaScript or TypeScript to extract geographic hierarchy attributes:
+		</p>
+
+		<pre class="bg-mapa-canvas-dark border border-mapa-contour/80 rounded p-4 text-xs font-mono overflow-x-auto text-mapa-ink leading-relaxed">{`interface PsgcHierarchy {
+  rawCode: string;
+  regionCode: string;
+  provinceCode: string;
+  cityMuniCode: string;
+  barangayCode: string;
+  isBarangayLevel: boolean;
+}
+
+/**
+ * Parses a 9-digit PSGC code into administrative hierarchy segments.
+ * @param psgc 9-digit PSGC string (e.g., "045618000")
+ */
+function parsePsgc(psgc: string): PsgcHierarchy {
+  const cleanCode = psgc.padStart(9, '0');
+  
+  return {
+    rawCode: cleanCode,
+    regionCode: cleanCode.substring(0, 2),
+    provinceCode: cleanCode.substring(0, 4),
+    cityMuniCode: cleanCode.substring(0, 6),
+    barangayCode: cleanCode.substring(6, 9),
+    isBarangayLevel: cleanCode.substring(6, 9) !== '000'
+  };
+}
+
+// Example Usage:
+const info = parsePsgc("045618000");
+console.log("Region Prefix:", info.regionCode);     // Output: "04"
+console.log("Province Prefix:", info.provinceCode); // Output: "0456"
+console.log("Is Barangay Level:", info.isBarangayLevel); // Output: false`}</pre>
+	</section>
+</div>

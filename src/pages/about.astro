@@ -1,7 +1,7 @@
 ---
 /**
  * @file about.astro
- * @description Collective background page detailing the project mission and open-source principles.
+ * @description Detailed methodology, data sourcing standards, and open-source principles for mapaPH.
  */
 
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -10,54 +10,129 @@ import Footer from '../components/Footer.astro';
 ---
 
 <BaseLayout 
-	title="About mapaPH: Open-source tools built around the Philippine map" 
-	description="Learn why we build open-source tools for transit, locations, and civic data in the Philippines."
+	title="About & Methodology — mapaPH Geographic Tools" 
+	description="Learn how mapaPH processes Philippine Statistics Authority (PSA) census data, PSGC codes, COMELEC election tallies, and open spatial boundary data."
 >
 	<Navbar />
 
-	<main class="max-w-3xl mx-auto px-6 py-16 text-mapa-ink">
-		<article>
+	<main class="max-w-4xl mx-auto px-6 py-16 text-mapa-ink font-serif">
+		<article class="prose prose-stone max-w-none">
 			<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
-				About the Project
+				About & Technical Methodology
 			</span>
 			<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl font-serif mt-2">
 				About mapaPH
 			</h1>
 			
-			<p class="mt-4 text-lg text-mapa-ink/80 italic leading-relaxed font-serif">
-				We build focused, map-based utilities for the Philippines, developed entirely in the open.
+			<p class="mt-4 text-xl text-mapa-ink/80 italic leading-relaxed font-serif">
+				Building accessible, open-source geographic infrastructure and civic data tools for the Philippines.
 			</p>
 
-			<div class="mt-10 border-t border-mapa-contour/60 pt-8">
-				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4">
-					Why mapaPH exists
-				</h2>
-				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					Finding clean, accessible geographic and civic data in the Philippines is often harder than it should be. Valuable datasets are frequently trapped inside complex file formats, siloed inside specific government departments, or presented in ways that make them difficult for everyday people to interpret.
-				</p>
-				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					We started mapaPH as an independent, personal project to address this. Instead of trying to build a single massive mapping application that tries to do everything, we create small, lightweight tools that solve specific problems well. Whether that means visualizing municipal statistics, planning commute routes, or finding pet-welcoming establishments, we want to make geographic data useful.
-				</p>
+			<div class="mt-10 border-t border-mapa-contour/60 pt-8 space-y-10">
+				<!-- SECTION 1: Why mapaPH Exists -->
+				<section>
+					<h2 class="text-2xl sm:text-3xl font-bold text-mapa-ink font-serif mb-4">
+						Why mapaPH Exists
+					</h2>
+					<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
+						Finding clean, accessible geographic and civic data in the Philippines is often far more difficult than it should be. Valuable public datasets—such as population census figures, municipal financial audits, election statistics, and transit routes—are frequently trapped inside static PDF reports, spread across fragmented departmental portals, or distributed in proprietary shapefile formats that require specialized GIS software to inspect.
+					</p>
+					<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
+						Furthermore, place names across Philippine public records suffer from severe orthographic inconsistency. A single municipality might be recorded as <em>"Sto. Tomas"</em> in one department's spreadsheet, <em>"Santo Tomas"</em> in a census publication, and <em>"St. Thomas"</em> in legacy cartographic files. Without standardized identifiers, joining socio-economic data with geographical maps causes significant friction for researchers, urban planners, journalists, and civic developers.
+					</p>
+					<p class="font-sans text-base text-mapa-ink/90 leading-relaxed">
+						We founded <strong>mapaPH</strong> as an independent, open-source project to solve this problem. Instead of constructing a monolithic application, we develop lightweight, specialized web tools that make Philippine spatial data accessible, interactive, and programmatically queryable.
+					</p>
+				</section>
 
-				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					Open source and collaborative
-				</h2>
-				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					Every tool we build is hosted openly on GitHub. This means anyone can read our code, look at how we process data, point out mistakes, or suggest improvements. 
-				</p>
-				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					Because we are volunteer-run, we also rely on the community for more than just code. Some of our tools (such as our directories) depend on crowdsourced submissions from users who share local details about their neighborhoods. By building in the open, we can create resources that reflect real, lived conditions across the country.
-				</p>
+				<!-- SECTION 2: Data Sourcing & Processing Pipeline -->
+				<section class="border-t border-mapa-contour/40 pt-8">
+					<h2 class="text-2xl sm:text-3xl font-bold text-mapa-ink font-serif mb-4">
+						Data Sourcing & Technical Pipeline
+					</h2>
+					<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-6">
+						Our applications rely on publicly available government records, open cartographic contributions, and open-data standards. Here is how data is ingested, standardized, and presented across our ecosystem:
+					</p>
 
-				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					How we operate
-				</h2>
-				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					The project is still in its early stages. This site is a central index for our work. Some of the tools listed here are fully operational, others are still in active development, and some are just initial proposals. The applications themselves run on their own subdomains and repositories, keeping the codebase for each tool separate and maintainable.
-				</p>
+					<div class="space-y-6 font-sans">
+						<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/40">
+							<h3 class="font-serif text-xl font-bold text-mapa-green mb-2">
+								1. PSA Official Census Figures vs. Geometry-Computed Metrics
+							</h3>
+							<p class="text-sm text-mapa-ink/90 leading-relaxed mb-3">
+								Official population statistics, household counts, and administrative land area figures displayed in our tools originate directly from published reports by the <strong>Philippine Statistics Authority (PSA)</strong>, such as the 2020 Census of Population and Housing (CPH).
+							</p>
+							<p class="text-sm text-mapa-ink/90 leading-relaxed">
+								Where spatial measurements (such as polygon land surface area or bounding box dimensions) are generated directly by our mapping engine (e.g., via Turf.js or GDAL operations), they are explicitly calculated using World Geodetic System 1984 (WGS 84 / EPSG:4326) geodesic projections. We carefully distinguish between PSA official declared figures and geometry-computed spatial approximations to ensure statistical accuracy.
+							</p>
+						</div>
+
+						<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/40">
+							<h3 class="font-serif text-xl font-bold text-mapa-green mb-2">
+								2. PSGC-Keyed Data Joining
+							</h3>
+							<p class="text-sm text-mapa-ink/90 leading-relaxed">
+								To eliminate string-matching errors across datasets, all administrative boundaries and data tables in mapaPH are keyed using the <strong>Philippine Standard Geographic Code (PSGC)</strong> maintained by the PSA. Every region, province, city, municipality, and barangay is assigned a unique numeric key (e.g., 9-digit or 10-digit PSGC format). This guarantees that external tabular data (such as custom CSV files uploaded by users) can be joined cleanly to boundary vector files without manual text normalization.
+							</p>
+						</div>
+
+						<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/40">
+							<h3 class="font-serif text-xl font-bold text-mapa-green mb-2">
+								3. Electoral Data & Public Records Legal Basis
+							</h3>
+							<p class="text-sm text-mapa-ink/90 leading-relaxed mb-3">
+								Electoral records presented in visual tools like Lens are sourced from public election tallies published by the <strong>Commission on Elections (COMELEC)</strong>. 
+							</p>
+							<p class="text-sm text-mapa-ink/90 leading-relaxed">
+								All data collection activities comply strictly with the Philippine Freedom of Information (FOI) framework (Executive Order No. 2, s. 2016) and Republic Act No. 6713. No personal identifiable information (PII) is ever scraped or stored; all electoral datasets consist strictly of aggregated municipal and provincial vote totals.
+							</p>
+						</div>
+
+						<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/40">
+							<h3 class="font-serif text-xl font-bold text-mapa-green mb-2">
+								4. Municipal Financial Statements & LGU Assets
+							</h3>
+							<p class="text-sm text-mapa-ink/90 leading-relaxed">
+								Financial figures and local government unit (LGU) asset valuations are compiled from public Annual Audit Reports issued by the <strong>Commission on Audit (COA)</strong>. These metrics provide researchers and citizens with comparative visibility into local government revenue, liabilities, and public infrastructure expenditure.
+							</p>
+						</div>
+					</div>
+				</section>
+
+				<!-- SECTION 3: Open-Source Architecture & Principles -->
+				<section class="border-t border-mapa-contour/40 pt-8">
+					<h2 class="text-2xl sm:text-3xl font-bold text-mapa-ink font-serif mb-4">
+						Open-Source Philosophy & Transparency
+					</h2>
+					<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
+						Every line of code powering mapaPH applications, along with our boundary data compilation scripts, is released under the permissive <strong>MIT License</strong> on GitHub.
+					</p>
+					<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
+						By maintaining full repository transparency, developers can verify how coordinate transformations are performed, inspect raw dataset files, fork our applications, or integrate our standard GeoJSON exports into their own spatial projects.
+					</p>
+				</section>
+
+				<!-- SECTION 4: Independent Disclaimer -->
+				<section class="border-t border-mapa-contour/40 pt-8">
+					<h2 class="text-2xl sm:text-3xl font-bold text-mapa-ink font-serif mb-4">
+						Independent Non-Government Disclaimer
+					</h2>
+					<div class="p-6 rounded-lg bg-mapa-canvas-dark border-l-4 border-mapa-green font-sans text-sm text-mapa-ink/90 leading-relaxed italic">
+						<p class="mb-3 font-semibold not-italic text-mapa-green">
+							Official Notice of Independence:
+						</p>
+						<p>
+							mapaPH is an independent, community-driven open-source initiative created by civic tech enthusiasts. mapaPH is not affiliated with, officially endorsed by, sponsored by, or representative of the Philippine Government, the Philippine Statistics Authority (PSA), the Commission on Elections (COMELEC), the Commission on Audit (COA), or any national or local government unit.
+						</p>
+						<p class="mt-3">
+							All official government trademarks, agency logos, and institutional references remain the property of their respective legal owners. Official statistics should always be verified against official publications at <a href="https://psa.gov.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green hover:underline font-semibold">psa.gov.ph</a>.
+						</p>
+					</div>
+				</section>
 			</div>
 		</article>
 	</main>
 
 	<Footer />
 </BaseLayout>
+

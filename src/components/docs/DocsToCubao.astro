@@ -1,30 +1,141 @@
 ---
 /**
  * @file DocsToCubao.astro
- * @description Content component for the To-Cubao project status documentation page.
+ * @description Design specification and project status document for the To-Cubao transit routing application.
  */
 ---
 
 <span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-clay">
-	Documentation: To-Cubao
+	Documentation: Project Specification & Status
 </span>
-<h1 class="text-4xl font-extrabold text-mapa-ink/70 tracking-tight sm:text-5xl font-serif mt-2">
-	To-Cubao
+<h1 class="text-4xl font-extrabold text-mapa-ink tracking-tight sm:text-5xl font-serif mt-2">
+	To-Cubao: Transit Routing Specification
 </h1>
 
-<p class="mt-4 text-lg text-mapa-ink/60 italic leading-relaxed font-serif">
-	This tool is currently in development and not yet live.
+<p class="mt-4 text-lg text-mapa-ink/80 italic leading-relaxed font-serif">
+	A specialized commute routing and terminal locator application designed for Metro Manila's busiest transit interchange.
 </p>
 
-<div class="mt-10 border-t border-mapa-contour/60 pt-8">
-	<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4">Project status</h2>
-	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-		To-Cubao is a proposed routing utility aimed at mapping transit paths, terminal directions, and public utility routes to and from the Cubao area.
-	</p>
-	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-		Because this tool is currently in development, we have not published feature walkthroughs or usage instructions. We will compile and publish complete documentation here once the initial version is deployed.
-	</p>
-	<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-		You can follow our progress or contribute ideas on the <a href="https://github.com/Shiiroi/mapaph" target="_blank" rel="noopener noreferrer" class="text-mapa-green hover:underline">mapaPH GitHub Repository</a>.
-	</p>
+<div class="mt-10 border-t border-mapa-contour/60 pt-8 space-y-10 font-serif">
+	<!-- Status Badge & Repository Link -->
+	<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/80 font-sans">
+		<div>
+			<div class="flex items-center gap-2 mb-1">
+				<span class="w-2.5 h-2.5 rounded-full bg-mapa-clay animate-pulse"></span>
+				<span class="text-xs font-bold uppercase tracking-wider text-mapa-clay">Development Status: Phase 1 Specification</span>
+			</div>
+			<p class="text-xs text-mapa-ink/75">
+				Core route mapping algorithms and terminal database indexing in progress.
+			</p>
+		</div>
+		<a href="https://github.com/Shiiroi/mapaph" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-mapa-contour/40 hover:bg-mapa-contour/60 text-mapa-ink text-xs font-semibold rounded border border-mapa-contour transition-all">
+			Follow Progress on GitHub &rarr;
+		</a>
+	</div>
+
+	<!-- SECTION 1: The Cubao Commute Problem -->
+	<section>
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			The Commuting Challenge in Metro Manila
+		</h2>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
+			Cubao (located in Quezon City) is widely recognized as the single largest transit crossroad in Metro Manila. Everyday, hundreds of thousands of commuters converge on Cubao to transfer between major rapid rail lines (<strong>MRT-3 Line</strong> running along EDSA and <strong>LRT-2 Line</strong> running along Aurora Boulevard), inter-provincial bus terminals, UV Express shuttles, jeepney corridors, and city bus routes.
+		</p>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
+			However, public utility vehicle (PUV) terminals in Cubao are heavily fragmented across private transport hubs, Araneta City bus ports, EDSA service roads, and side streets. Navigating transfers—especially for first-time visitors, provincial travelers, or night commuters—often involves navigating confusing footbridges, unmapped jeepney terminal stops, and inconsistent fare structures.
+		</p>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed">
+			Commercial navigation platforms often struggle with Manila's informal transit network because traditional GTFS feeds rarely capture informal UV Express loading points, jeepney drop-off zones, or pedestrian elevated walkway links accurately.
+		</p>
+	</section>
+
+	<!-- SECTION 2: Project Vision & Solution Architecture -->
+	<section class="border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			Solution Architecture: How To-Cubao Solves Transit Navigation
+		</h2>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+			To-Cubao addresses transit navigation through a specialized spatial graph model tuned specifically for Metro Manila's transport ecosystem:
+		</p>
+
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
+			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<h3 class="font-serif font-bold text-lg text-mapa-green mb-2">1. 3D Terminal & Walkway Node Map</h3>
+				<p class="text-xs text-mapa-ink/80 leading-relaxed">
+					Models multi-level pedestrian paths, elevated footbridges (e.g., MRT-LRT transfer walkways), and street-level terminal portals in 3D canvas view to provide exact turn-by-turn walking guidance between train concourses and bus bays.
+				</p>
+			</div>
+
+			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<h3 class="font-serif font-bold text-lg text-mapa-green mb-2">2. Multi-Modal Route Graph</h3>
+				<p class="text-xs text-mapa-ink/80 leading-relaxed">
+					Combines rail schedules, city bus routes, jeepney service corridors, and UV Express routes into a unified transit network graph powered by Dijkstra / A* pathfinding.
+				</p>
+			</div>
+
+			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<h3 class="font-serif font-bold text-lg text-mapa-green mb-2">3. Provincial Bus Terminal Directory</h3>
+				<p class="text-xs text-mapa-ink/80 leading-relaxed">
+					Indexes over 20 provincial bus company terminals in Cubao (e.g., Victory Liner, Genesis, Five Star, Florida, Baliwag Transit), detailing destination routes, ticketing bay locations, and trip schedules.
+				</p>
+			</div>
+
+			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<h3 class="font-serif font-bold text-lg text-mapa-green mb-2">4. Crowdsourced Route Verification</h3>
+				<p class="text-xs text-mapa-ink/80 leading-relaxed">
+					Enables commuters to submit real-time updates regarding terminal relocations, temporary road re-routing, and fare updates via open GitHub YAML records.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- SECTION 3: Data Sources & GTFS Standards -->
+	<section class="border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			Data Sourcing & Transit Standards
+		</h2>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
+			The routing engine powering To-Cubao relies on open transit data standards and community mapping:
+		</p>
+
+		<ul class="font-sans text-sm text-mapa-ink/90 list-disc pl-5 space-y-2.5 leading-relaxed">
+			<li>
+				<strong>LTFRB Route Records:</strong> Public utility vehicle franchise route definitions published by the Land Transportation Franchising and Regulatory Board (LTFRB).
+			</li>
+			<li>
+				<strong>OpenStreetMap (OSM) Pedestrian Networks:</strong> Detailed sidewalk, crosswalk, and overpass geometries curated by OpenStreetMap Philippines mapper communities.
+			</li>
+			<li>
+				<strong>General Transit Feed Specification (GTFS):</strong> Standardized static schedule feeds for MRT-3, LRT-1, LRT-2, and PNR commuter rail lines.
+			</li>
+		</ul>
+	</section>
+
+	<!-- SECTION 4: Development Roadmap -->
+	<section class="border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			Development Roadmap
+		</h2>
+		<div class="space-y-4 font-sans text-sm text-mapa-ink/90">
+			<div class="flex items-start gap-3">
+				<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-mapa-green/20 text-mapa-green">Completed</span>
+				<div>
+					<strong>Phase 1: Spatial Node & Terminal Indexing</strong> — Cataloging Cubao provincial bus terminals, UV Express bays, and pedestrian overpass nodes.
+				</div>
+			</div>
+			<div class="flex items-start gap-3">
+				<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-mapa-clay/20 text-mapa-clay">In Progress</span>
+				<div>
+					<strong>Phase 2: Graph Routing Engine & Web App</strong> — Building the interactive route query engine and 3D terminal locator interface.
+				</div>
+			</div>
+			<div class="flex items-start gap-3">
+				<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-mapa-contour/40 text-mapa-ink/60">Upcoming</span>
+				<div>
+					<strong>Phase 3: Community Submissions & Expansion</strong> — Launching crowdsourced route update reporting and expanding to Metro Manila's other major transit hubs (Pasay/PITX, Monumento, Alabang).
+				</div>
+			</div>
+		</div>
+	</section>
 </div>
+
