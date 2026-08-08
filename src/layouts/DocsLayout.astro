@@ -11,7 +11,7 @@ import Footer from '../components/Footer.astro';
 interface Props {
 	title: string;
 	description: string;
-	activeSlug: 'index' | 'lens' | 'to-cubao' | 'psgc';
+	activeSlug: 'index' | 'lens' | 'to-cubao' | 'compaws' | 'psgc' | 'data-sources' | 'geojson-guide';
 	/**
 	 * Optional flag to add 'noindex, follow' robots directive.
 	 * Used for in-development pages that shouldn't be indexed yet.
@@ -23,19 +23,25 @@ const { title, description, activeSlug, noindex = false } = Astro.props;
 
 const tools = [
 	{ name: 'Lens',         slug: 'lens',         url: '/docs/lens',         active: true  },
-	{ name: 'To-Cubao',     slug: 'to-cubao',     url: '/docs/to-cubao',     active: true },
+	{ name: 'To-Cubao',     slug: 'to-cubao',     url: '/docs/to-cubao',     active: true  },
+	{ name: 'Compaws',      slug: 'compaws',      url: '/docs/compaws',      active: true  },
 ];
 
 const references = [
-	{ name: 'PSGC Guide',   slug: 'psgc',         url: '/docs/psgc'                        },
+	{ name: 'PSGC Guide',        slug: 'psgc',         url: '/docs/psgc'        },
+	{ name: 'Open Data Sources', slug: 'data-sources', url: '/docs/data-sources'},
+	{ name: 'GeoJSON Developer', slug: 'geojson-guide',url: '/docs/geojson-guide'},
 ];
 
 // Ordered page list for prev/next navigation
 const pages = [
-	{ slug: 'index',        name: 'Overview',      url: '/docs'              },
-	{ slug: 'lens',         name: 'Lens Guide',    url: '/docs/lens'         },
-	{ slug: 'to-cubao',     name: 'To-Cubao Status', url: '/docs/to-cubao'   },
-	{ slug: 'psgc',         name: 'PSGC Reference', url: '/docs/psgc'        },
+	{ slug: 'index',        name: 'Overview',            url: '/docs'              },
+	{ slug: 'lens',         name: 'Lens Guide',          url: '/docs/lens'         },
+	{ slug: 'to-cubao',     name: 'To-Cubao Status',     url: '/docs/to-cubao'     },
+	{ slug: 'compaws',      name: 'Compaws Directory',   url: '/docs/compaws'      },
+	{ slug: 'psgc',         name: 'PSGC Reference',      url: '/docs/psgc'        },
+	{ slug: 'data-sources', name: 'Open Data Sources',   url: '/docs/data-sources' },
+	{ slug: 'geojson-guide',name: 'GeoJSON Developer',   url: '/docs/geojson-guide'},
 ];
 const currentIndex = pages.findIndex(p => p.slug === activeSlug);
 const prevPage = currentIndex > 0 ? pages[currentIndex - 1] : null;

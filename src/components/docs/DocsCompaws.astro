@@ -1,0 +1,123 @@
+---
+/**
+ * @file DocsCompaws.astro
+ * @description User guide and spatial data specification for Compaws (pet-friendly establishment directory).
+ */
+---
+
+<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
+	Documentation: Compaws
+</span>
+<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl font-serif mt-2">
+	Compaws: Pet-Friendly Establishment Directory Specification
+</h1>
+
+<p class="mt-4 text-lg text-mapa-ink/80 italic leading-relaxed font-serif">
+	A crowdsourced, open-data directory mapping pet-welcoming establishments, public parks, and transit policies across Philippine urban centers.
+</p>
+
+<div class="mt-10 border-t border-mapa-contour/60 pt-8 space-y-10 font-serif">
+	<!-- Actions -->
+	<div class="flex flex-col sm:flex-row gap-4 font-sans">
+		<a href="https://compaws.mapaph.com" target="_blank" rel="noopener noreferrer" class="inline-block px-5 py-2.5 bg-mapa-green text-mapa-canvas font-sans text-center text-sm font-semibold rounded hover:brightness-110 active:brightness-95 transition-all duration-200">
+			Launch Compaws App &rarr;
+		</a>
+		<a href="https://github.com/Shiiroi/mapaph" target="_blank" rel="noopener noreferrer" class="inline-block px-5 py-2.5 border border-mapa-clay text-mapa-ink font-sans text-center text-sm font-semibold rounded hover:bg-mapa-contour/20 transition-all duration-200">
+			View Source Code on GitHub
+		</a>
+	</div>
+
+	<!-- SECTION 1: The Problem Compaws Solves -->
+	<section>
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			The Problem Compaws Solves
+		</h2>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
+			Finding reliable, up-to-date information regarding pet policies in Philippine public places is remarkably difficult for pet owners. Malls, cafes, parks, and public transportation operators across Metro Manila, Cebu, and Davao frequently enforce conflicting rules—some require pet strollers or diapers, others impose weight limits, and many restrict entry entirely without prior notice.
+		</p>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
+			Existing commercial directories often suffer from outdated listings, vague descriptions ("pet-friendly" with unstated carrier requirements), or ad-heavy interfaces that lack spatial mapping.
+		</p>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed">
+			<strong>Compaws</strong> bridges this gap by providing an open-source, community-verified map directory. Every listing provides structured metadata on indoor/outdoor access, carrier and diaper requirements, outdoor seating availability, and direct spatial coordinates mapped to OpenStreetMap geometries.
+		</p>
+	</section>
+
+	<!-- SECTION 2: Core Directory Features -->
+	<section class="border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			Core Directory Features & Location Categories
+		</h2>
+		
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
+			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<h3 class="font-serif font-bold text-lg text-mapa-green mb-2">1. Granular Pet Policy Tags</h3>
+				<p class="text-xs text-mapa-ink/80 leading-relaxed">
+					Listings are categorized with specific policy tags: <em>Indoor Allowed</em>, <em>Outdoor Seating Only</em>, <em>Stroller/Carrier Mandatory</em>, <em>Pet Diaper Required</em>, and <em>Leashed Parks</em>.
+				</p>
+			</div>
+
+			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<h3 class="font-serif font-bold text-lg text-mapa-green mb-2">2. Spatial Map Radius Queries</h3>
+				<p class="text-xs text-mapa-ink/80 leading-relaxed">
+					Locates nearby pet-welcoming establishments relative to user coordinates or PSGC municipal boundaries using lightweight spatial radius calculations.
+				</p>
+			</div>
+
+			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<h3 class="font-serif font-bold text-lg text-mapa-green mb-2">3. Transit & Park Policy Directories</h3>
+				<p class="text-xs text-mapa-ink/80 leading-relaxed">
+					Includes specific transit guidelines for Metro Manila rail systems (LRT-2 pet policy rules) and major public parks (BGC Greenway, Salcedo Park, Ayala Triangle).
+				</p>
+			</div>
+
+			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<h3 class="font-serif font-bold text-lg text-mapa-green mb-2">4. Git-Backed Submission Pipeline</h3>
+				<p class="text-xs text-mapa-ink/80 leading-relaxed">
+					Community members suggest new locations or report policy changes directly via GitHub YAML files, ensuring transparent data verification before deployment.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- SECTION 3: Community Submission Schema -->
+	<section class="border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			Open Data Schema for Establishment Submissions
+		</h2>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+			Compaws uses a standardized YAML structure for location data files. Here is how establishment entries are formatted:
+		</p>
+
+		<pre class="bg-mapa-canvas-dark border border-mapa-contour/80 rounded p-4 text-xs font-mono overflow-x-auto text-mapa-ink leading-relaxed">{`# Example: Compaws Location Schema Entry (YAML)
+id: "est-bgc-high-street"
+name: "Bonifacio High Street Park"
+category: "Park & Outdoor"
+psgc: "137607000" # Taguig City PSGC Code
+coordinates:
+  latitude: 14.5512
+  longitude: 121.0504
+address: "Bonifacio High Street, BGC, Taguig City, Metro Manila"
+policy:
+  indoorAllowed: false
+  outdoorAllowed: true
+  leashRequired: true
+  carrierRequired: false
+  diaperRequired: false
+  sizeLimit: "None"
+verifiedDate: "2026-07-20"`}</pre>
+	</section>
+
+	<!-- SECTION 4: Data Quality & Verification -->
+	<section class="border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			Data Verification & Community Guidelines
+		</h2>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
+			Because commercial establishment policies change over time, Compaws incorporates timestamped verification metadata. Every location listing displays a <code>Last Verified</code> date tag.
+		</p>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed">
+			Users can flag outdated entries or submit corrected policies via open pull requests on the mapaPH repository. All submitted coordinates are checked against OpenStreetMap bounding boxes before merging into the main web distribution.
+		</p>
+	</section>
+</div>

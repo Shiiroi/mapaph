@@ -1,7 +1,7 @@
 ---
 /**
  * @file about.astro
- * @description Detailed methodology, data sourcing standards, and open-source principles for mapaPH.
+ * @description Technical methodology, data sourcing standards, statutory legal frameworks, and open-source principles for mapaPH.
  */
 
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -10,8 +10,8 @@ import Footer from '../components/Footer.astro';
 ---
 
 <BaseLayout 
-	title="About & Methodology — mapaPH Geographic Tools" 
-	description="Learn how mapaPH processes Philippine Statistics Authority (PSA) census data, PSGC codes, COMELEC election tallies, and open spatial boundary data."
+	title="About & Technical Methodology — mapaPH Open Geographic Tools" 
+	description="Learn how mapaPH processes Philippine Statistics Authority (PSA) census data, PSGC codes, COMELEC election tallies under RA 8293, RA 10173, and Executive Order No. 2."
 >
 	<Navbar />
 
@@ -25,7 +25,7 @@ import Footer from '../components/Footer.astro';
 			</h1>
 			
 			<p class="mt-4 text-xl text-mapa-ink/80 italic leading-relaxed font-serif">
-				Building accessible, open-source geographic infrastructure and civic data tools for the Philippines.
+				Building accessible, open-source geographic infrastructure and civic data utilities for the Philippines.
 			</p>
 
 			<div class="mt-10 border-t border-mapa-contour/60 pt-8 space-y-10">
@@ -35,17 +35,17 @@ import Footer from '../components/Footer.astro';
 						Why mapaPH Exists
 					</h2>
 					<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
-						Finding clean, accessible geographic and civic data in the Philippines is often far more difficult than it should be. Valuable public datasets—such as population census figures, municipal financial audits, election statistics, and transit routes—are frequently trapped inside static PDF reports, spread across fragmented departmental portals, or distributed in proprietary shapefile formats that require specialized GIS software to inspect.
+						Finding clean, accessible geographic and civic data in the Philippines is often far more difficult than it should be. Valuable public datasets—such as population census figures, municipal financial audits, election statistics, and transit routes—are frequently trapped inside static PDF reports, spread across fragmented departmental portals, or distributed in proprietary shapefile formats that require specialized desktop GIS software to inspect.
 					</p>
 					<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
-						Furthermore, place names across Philippine public records suffer from severe orthographic inconsistency. A single municipality might be recorded as <em>"Sto. Tomas"</em> in one department's spreadsheet, <em>"Santo Tomas"</em> in a census publication, and <em>"St. Thomas"</em> in legacy cartographic files. Without standardized identifiers, joining socio-economic data with geographical maps causes significant friction for researchers, urban planners, journalists, and civic developers.
+						Furthermore, place names across Philippine public records suffer from severe orthographic inconsistency. A single municipality might be recorded as <em>"Sto. Tomas"</em> in one department's spreadsheet, <em>"Santo Tomas"</em> in a census publication, and <em>"St. Thomas"</em> in legacy cartographic files. Without standardized numeric identifiers, joining socio-economic data with geographical maps causes significant friction for researchers, urban planners, journalists, and civic developers.
 					</p>
 					<p class="font-sans text-base text-mapa-ink/90 leading-relaxed">
 						We founded <strong>mapaPH</strong> as an independent, open-source project to solve this problem. Instead of constructing a monolithic application, we develop lightweight, specialized web tools that make Philippine spatial data accessible, interactive, and programmatically queryable.
 					</p>
 				</section>
 
-				<!-- SECTION 2: Data Sourcing & Processing Pipeline -->
+				<!-- SECTION 2: Data Sourcing & Technical Pipeline -->
 				<section class="border-t border-mapa-contour/40 pt-8">
 					<h2 class="text-2xl sm:text-3xl font-bold text-mapa-ink font-serif mb-4">
 						Data Sourcing & Technical Pipeline
@@ -78,41 +78,69 @@ import Footer from '../components/Footer.astro';
 
 						<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/40">
 							<h3 class="font-serif text-xl font-bold text-mapa-green mb-2">
-								3. Electoral Data & Public Records Legal Basis
+								3. Electoral Data & Commission on Audit Metrics
 							</h3>
 							<p class="text-sm text-mapa-ink/90 leading-relaxed mb-3">
-								Electoral records presented in visual tools like Lens are sourced from public election tallies published by the <strong>Commission on Elections (COMELEC)</strong>. 
-							</p>
-							<p class="text-sm text-mapa-ink/90 leading-relaxed">
-								All data collection activities comply strictly with the Philippine Freedom of Information (FOI) framework (Executive Order No. 2, s. 2016) and Republic Act No. 6713. No personal identifiable information (PII) is ever scraped or stored; all electoral datasets consist strictly of aggregated municipal and provincial vote totals.
-							</p>
-						</div>
-
-						<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/40">
-							<h3 class="font-serif text-xl font-bold text-mapa-green mb-2">
-								4. Municipal Financial Statements & LGU Assets
-							</h3>
-							<p class="text-sm text-mapa-ink/90 leading-relaxed">
-								Financial figures and local government unit (LGU) asset valuations are compiled from public Annual Audit Reports issued by the <strong>Commission on Audit (COA)</strong>. These metrics provide researchers and citizens with comparative visibility into local government revenue, liabilities, and public infrastructure expenditure.
+								Electoral records presented in visual tools like Lens are sourced from public election tallies published by the <strong>Commission on Elections (COMELEC)</strong>. Municipal asset valuations and financial statements originate from public Annual Audit Reports issued by the <strong>Commission on Audit (COA)</strong>.
 							</p>
 						</div>
 					</div>
 				</section>
 
-				<!-- SECTION 3: Open-Source Architecture & Principles -->
+				<!-- SECTION 3: Statutory Legal Framework -->
+				<section class="border-t border-mapa-contour/40 pt-8">
+					<h2 class="text-2xl sm:text-3xl font-bold text-mapa-ink font-serif mb-4">
+						Philippine Statutory Legal Framework & Data Compliance
+					</h2>
+					<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-6">
+						All data collection, storage, and publishing activities across the mapaPH platform adhere strictly to Philippine statutory laws governing public domain materials, data privacy, and electronic transparency:
+					</p>
+
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
+						<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+							<h3 class="font-serif font-bold text-base text-mapa-green mb-1">RA 8293 Section 176 (Public Domain Status)</h3>
+							<p class="text-xs text-mapa-ink/80 leading-relaxed">
+								Under <strong>Republic Act No. 8293</strong> (Intellectual Property Code of the Philippines), Section 176 dictates that no copyright shall subsist in any work of the Government of the Philippines. Public statistics, official census records, and government cartographic boundary registries are public domain materials available for civic re-use.
+							</p>
+						</div>
+
+						<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+							<h3 class="font-serif font-bold text-base text-mapa-green mb-1">RA 10173 (Data Privacy Act Compliance)</h3>
+							<p class="text-xs text-mapa-ink/80 leading-relaxed">
+								Our platform complies fully with <strong>Republic Act No. 10173</strong> (Data Privacy Act of 2012). We do not collect, process, or store personally identifiable information (PII). All census and financial datasets handled consist exclusively of aggregated, anonymized public municipal metrics exempt under Section 4(e) for public statistical functions.
+							</p>
+						</div>
+
+						<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+							<h3 class="font-serif font-bold text-base text-mapa-green mb-1">Executive Order No. 2, s. 2016 (FOI)</h3>
+							<p class="text-xs text-mapa-ink/80 leading-relaxed">
+								Data collection operationalizes the constitutional right to public information reaffirmed by Executive Order No. 2 (s. 2016) regarding Freedom of Information (FOI), ensuring public access to municipal financial audits and election returns.
+							</p>
+						</div>
+
+						<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+							<h3 class="font-serif font-bold text-base text-mapa-green mb-1">RA 10175 (Cybercrime Prevention Security)</h3>
+							<p class="text-xs text-mapa-ink/80 leading-relaxed">
+								Web delivery infrastructure complies with <strong>Republic Act No. 10175</strong> security directives. mapaPH operates as a static, immutable web architecture hosted on secure global CDNs with zero client-side database tracking.
+							</p>
+						</div>
+					</div>
+				</section>
+
+				<!-- SECTION 4: Open-Source Philosophy & Principles -->
 				<section class="border-t border-mapa-contour/40 pt-8">
 					<h2 class="text-2xl sm:text-3xl font-bold text-mapa-ink font-serif mb-4">
 						Open-Source Philosophy & Transparency
 					</h2>
 					<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
-						Every line of code powering mapaPH applications, along with our boundary data compilation scripts, is released under the permissive <strong>MIT License</strong> on GitHub.
+						Every line of code powering mapaPH applications, along with our boundary compilation scripts, is released under the permissive <strong>MIT License</strong> on GitHub.
 					</p>
 					<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
 						By maintaining full repository transparency, developers can verify how coordinate transformations are performed, inspect raw dataset files, fork our applications, or integrate our standard GeoJSON exports into their own spatial projects.
 					</p>
 				</section>
 
-				<!-- SECTION 4: Independent Disclaimer -->
+				<!-- SECTION 5: Independent Disclaimer -->
 				<section class="border-t border-mapa-contour/40 pt-8">
 					<h2 class="text-2xl sm:text-3xl font-bold text-mapa-ink font-serif mb-4">
 						Independent Non-Government Disclaimer
@@ -135,4 +163,3 @@ import Footer from '../components/Footer.astro';
 
 	<Footer />
 </BaseLayout>
-

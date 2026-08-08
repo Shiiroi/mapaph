@@ -1,0 +1,123 @@
+---
+/**
+ * @file DocsDataSources.astro
+ * @description Detailed reference directory of all Philippine public datasets, government sources, and legal frameworks used in mapaPH.
+ */
+---
+
+<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
+	Reference Documentation
+</span>
+<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl font-serif mt-2">
+	Philippine Open Civic Data Sources Directory
+</h1>
+
+<p class="mt-4 text-lg text-mapa-ink/80 italic leading-relaxed font-serif">
+	A comprehensive citation index of official government datasets, cartographic sources, and legal data frameworks integrated across mapaPH utilities.
+</p>
+
+<div class="mt-10 border-t border-mapa-contour/60 pt-8 space-y-10 font-serif">
+	<!-- SECTION 1: Overview -->
+	<section>
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			Overview & Data Sourcing Standards
+		</h2>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
+			All spatial boundaries, demographic census numbers, electoral tallies, and financial metrics displayed across mapaPH applications originate exclusively from publicly accessible Philippine government publications, open cartographic contributions, and open-data standards.
+		</p>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed">
+			We maintain complete citation transparency to enable researchers, developers, and citizens to cross-reference our interactive visualizers against official source documents.
+		</p>
+	</section>
+
+	<!-- SECTION 2: Official Government Datasets Directory -->
+	<section class="border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-6">
+			Official Government Datasets & Agencies Index
+		</h2>
+
+		<div class="space-y-6 font-sans">
+			<!-- PSA Census -->
+			<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60">
+				<div class="flex items-center justify-between border-b border-mapa-contour/40 pb-3 mb-3">
+					<h3 class="font-serif text-xl font-bold text-mapa-green">1. Philippine Statistics Authority (PSA)</h3>
+					<span class="text-xs font-mono text-mapa-clay font-bold">psa.gov.ph</span>
+				</div>
+				<ul class="text-xs text-mapa-ink/90 space-y-2 leading-relaxed list-disc pl-5">
+					<li>
+						<strong>2020 Census of Population and Housing (CPH):</strong> Total municipal headcounts, household population distribution, age/gender breakdowns, and urban density figures.
+					</li>
+					<li>
+						<strong>Provincial Product Accounts (PPA):</strong> Gross Domestic Product (GDP) metrics per province compiled in constant 2018 prices.
+					</li>
+					<li>
+						<strong>Philippine Standard Geographic Code (PSGC):</strong> Official 9-digit and 10-digit numeric coding catalog for all regional, provincial, municipal, and barangay units.
+					</li>
+				</ul>
+			</div>
+
+			<!-- COMELEC Elections -->
+			<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60">
+				<div class="flex items-center justify-between border-b border-mapa-contour/40 pb-3 mb-3">
+					<h3 class="font-serif text-xl font-bold text-mapa-green">2. Commission on Elections (COMELEC)</h3>
+					<span class="text-xs font-mono text-mapa-clay font-bold">comelec.gov.ph</span>
+				</div>
+				<ul class="text-xs text-mapa-ink/90 space-y-2 leading-relaxed list-disc pl-5">
+					<li>
+						<strong>2022 Presidential & Vice-Presidential Election Tallies:</strong> Aggregated municipal and provincial voting totals, registered voter counts, and precinct turnout statistics.
+					</li>
+					<li>
+						<strong>Electoral District Registers:</strong> Congressional district boundaries and municipal legislative allocations.
+					</li>
+				</ul>
+			</div>
+
+			<!-- COA LGU Audits -->
+			<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60">
+				<div class="flex items-center justify-between border-b border-mapa-contour/40 pb-3 mb-3">
+					<h3 class="font-serif text-xl font-bold text-mapa-green">3. Commission on Audit (COA)</h3>
+					<span class="text-xs font-mono text-mapa-clay font-bold">coa.gov.ph</span>
+				</div>
+				<ul class="text-xs text-mapa-ink/90 space-y-2 leading-relaxed list-disc pl-5">
+					<li>
+						<strong>Annual Audit Reports (AAR) for Local Government Units:</strong> Annual financial statements detailing total assets, liabilities, government equity, local tax revenue, and Internal Revenue Allotment (IRA) / National Tax Allotment (NTA) shares.
+					</li>
+				</ul>
+			</div>
+
+			<!-- Cartography -->
+			<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60">
+				<div class="flex items-center justify-between border-b border-mapa-contour/40 pb-3 mb-3">
+					<h3 class="font-serif text-xl font-bold text-mapa-green">4. Cartographic & Spatial Geometry Sources</h3>
+					<span class="text-xs font-mono text-mapa-clay font-bold">OSM / GADM / NAMRIA</span>
+				</div>
+				<ul class="text-xs text-mapa-ink/90 space-y-2 leading-relaxed list-disc pl-5">
+					<li>
+						<strong>OpenStreetMap (OSM) Philippines Community:</strong> Crowd-curated administrative boundary polygons, coastline geometry, and road network features (ODbL License).
+					</li>
+					<li>
+						<strong>GADM (Database of Global Administrative Areas):</strong> Level 0 to Level 3 boundary shapefiles converted to EPSG:4326 WGS 84 spatial coordinates.
+					</li>
+				</ul>
+			</div>
+		</div>
+	</section>
+
+	<!-- SECTION 3: Legal Data Framework -->
+	<section class="border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			Statutory Legal Basis & Public Domain Compliance
+		</h2>
+		<div class="p-6 rounded border-l-4 border-mapa-green bg-mapa-canvas-dark font-sans text-xs text-mapa-ink/90 space-y-3">
+			<p>
+				<strong>Republic Act No. 8293 Section 176:</strong> Dictates that no copyright subsists in any work of the Government of the Philippines. Public statistics, census reports, and official cartographic boundaries are public domain materials.
+			</p>
+			<p>
+				<strong>Republic Act No. 10173 (Data Privacy Act of 2012):</strong> Section 4(e) exempts personal information processed for statistical and research purposes. mapaPH handles zero personally identifiable information (PII).
+			</p>
+			<p>
+				<strong>Executive Order No. 2, s. 2016 (Freedom of Information):</strong> Reaffirms public entitlement to government records, financial audits, and election returns.
+			</p>
+		</div>
+	</section>
+</div>
