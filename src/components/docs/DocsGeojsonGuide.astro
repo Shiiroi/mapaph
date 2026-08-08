@@ -1,0 +1,112 @@
+---
+/**
+ * @file DocsGeojsonGuide.astro
+ * @description Technical developer guide detailing Philippine spatial coordinate reference systems (CRS), GeoJSON specs, and Turf.js spatial join algorithms.
+ */
+---
+
+<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
+	Developer Reference Guide
+</span>
+<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl font-serif mt-2">
+	Philippine GIS & GeoJSON Integration Guide
+</h1>
+
+<p class="mt-4 text-lg text-mapa-ink/80 italic leading-relaxed font-serif">
+	A technical developer manual covering spatial coordinate projections, RFC 7946 GeoJSON schemas, TopoJSON simplification, and Turf.js spatial join algorithms for Philippine maps.
+</p>
+
+<div class="mt-10 border-t border-mapa-contour/60 pt-8 space-y-10 font-serif">
+	<!-- SECTION 1: Philippine Coordinate Systems -->
+	<section>
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			1. Philippine Coordinate Reference Systems (CRS)
+		</h2>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
+			Geographic coordinate data in the Philippines is historically published using two distinct reference frameworks:
+		</p>
+
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
+			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<h3 class="font-serif font-bold text-lg text-mapa-green mb-1">WGS 84 (EPSG:4326) — Web Standard</h3>
+				<p class="text-xs text-mapa-ink/80 leading-relaxed">
+					The global standard coordinate system used by web mapping libraries (Mapbox GL JS, Leaflet, Turf.js, OpenLayers). Coordinates are expressed in decimal degrees (e.g. Latitude: 14.5995° N, Longitude: 120.9842° E). <strong>All mapaPH GeoJSON assets use EPSG:4326.</strong>
+				</p>
+			</div>
+
+			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<h3 class="font-serif font-bold text-lg text-mapa-clay mb-1">PRS92 (EPSG:3121–3125) — Legacy Cadastral</h3>
+				<p class="text-xs text-mapa-ink/80 leading-relaxed">
+					Philippine Reference System 1992, used by NAMRIA and DENR for official land titling and cadastral surveys across 5 Transverse Mercator zones. Requires reprojection via GDAL or PROJ4 before rendering in modern web maps.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- SECTION 2: GeoJSON Feature Schema -->
+	<section class="border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			2. mapaPH RFC 7946 GeoJSON Feature Schema
+		</h2>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+			Boundary GeoJSON files exported from mapaPH tools comply strictly with the RFC 7946 specification. Every feature polygon includes standard metadata attributes:
+		</p>
+
+		<pre class="bg-mapa-canvas-dark border border-mapa-contour/80 rounded p-4 text-xs font-mono overflow-x-auto text-mapa-ink leading-relaxed">{`{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "045618000",
+      "properties": {
+        "psgc": "045618000",
+        "name": "Subic",
+        "level": "Municipality",
+        "province": "Zambales",
+        "region": "Central Luzon",
+        "regionCode": "03",
+        "population2020": 111912,
+        "landAreaSqKm": 287.16
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [ [120.231, 14.881], [120.245, 14.892], ... ]
+        ]
+      }
+    }
+  ]
+}`}</pre>
+	</section>
+
+	<!-- SECTION 3: Spatial Joining with Turf.js -->
+	<section class="border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			3. Performing Point-in-Polygon Queries via Turf.js
+		</h2>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+			To identify which Philippine municipality or barangay contains a given latitude/longitude coordinate pair, use Turf.js client-side point-in-polygon matching:
+		</p>
+
+		<pre class="bg-mapa-canvas-dark border border-mapa-contour/80 rounded p-4 text-xs font-mono overflow-x-auto text-mapa-ink leading-relaxed">{`import * as turf from '@turf/turf';
+
+// Define a user point (e.g., Luneta Park, Manila)
+const userPoint = turf.point([120.9794, 14.5831]);
+
+/**
+ * Finds the administrative municipality containing the point.
+ */
+function findContainingMunicipality(point, geojsonFeatures) {
+  for (const feature of geojsonFeatures) {
+    if (turf.booleanPointInPolygon(point, feature)) {
+      return {
+        name: feature.properties.name,
+        psgc: feature.properties.psgc,
+        province: feature.properties.province
+      };
+    }
+  }
+  return null;
+}`}</pre>
+	</section>
+</div>
