@@ -10,32 +10,32 @@ const faqs = [
 	{
 		question: "What is the purpose of mapaPH?",
 		answer:
-			"mapaPH serves as a central index and directory for open-source web applications built around maps of the Philippines. We focus on building simple, accessible tools for transit, directories, and geographic data visualizers to make spatial data more approachable for developers and the public.",
+			"mapaPH serves as an open-source hub and technical documentation index for web applications built around maps of the Philippines. Our primary mission is to liberate siloed Philippine spatial data—including census demographics from the PSA, municipal financial audits from COA, and transit networks—making them accessible via interactive, browser-native tools without requiring expensive GIS desktop software.",
 	},
 	{
 		question: "Can I use the data or code for my own projects?",
 		answer:
-			"Yes! All projects, source code repositories, and boundary data assets listed on mapaPH are open-source and licensed under the MIT license. You are free to inspect, fork, and build on top of our code for both personal and commercial use.",
+			"Yes! All source code repositories, dataset compilation scripts, and GeoJSON boundary files hosted across the mapaPH organization are open-source and licensed under the permissive MIT License. You are free to inspect, fork, modify, and integrate our spatial files into both non-commercial research projects and commercial software applications without royalty fees.",
 	},
 	{
-		question: "How does open-source contribution work?",
+		question: "How does open-source contribution work across the ecosystem?",
 		answer:
-			"All our applications are hosted publicly on GitHub. Anyone is welcome to contribute to the codebase by opening issues, suggesting features, or submitting Pull Requests. You can find active repository links under each tool card in our directory.",
+			"Every tool in the mapaPH suite is developed publicly on GitHub. Anyone can participate by opening issue tickets for bug reports, proposing new mapping tools, submitting pull requests for code enhancements, or helping curate crowdsourced dataset listings. You can find direct GitHub repository links under each application's documentation page.",
 	},
 	{
 		question: "How is crowdsourced data verified and managed?",
 		answer:
-			"For directory-based tools, listings are suggested by the community. We maintain transparency by managing these submissions via open public repository files (like JSON/YAML configurations), which are verified before being merged.",
+			"For directory-based utilities and transit route community submissions, data updates are submitted as pull requests against public JSON/YAML data files. Maintainers verify spatial coordinate sanity, check entries against official place registries (like the PSA PSGC catalog), and run automated validation tests before merging changes into production builds.",
 	},
 	{
-		question: "How does mapaPH collect and handle data?",
+		question: "How does mapaPH handle government data and legal compliance?",
 		answer:
-			"We prioritize lightweight, public data resources (such as census data, regional code indexes, and publicly mapped coordinates). We do not collect, scrape, or monetize private geographic user tracking data.",
+			"All government datasets displayed in our visualizers (such as census demographics, electoral results, and local government financial reports) are acquired from public official releases published by the PSA, COMELEC, and COA under the Philippine Freedom of Information (FOI) framework (Executive Order No. 2, s. 2016). We do not store or process personal identifiable information (PII).",
 	},
 	{
-		question: "How is user privacy and tracking handled?",
+		question: "How is user privacy and analytics tracking handled?",
 		answer:
-			"The main mapaPH hub website is fully static and does not use tracking cookies. While future ad integrations (like Google AdSense) may set cookies to serve ads, the core applications focus on minimizing telemetry and respecting user privacy.",
+			"The mapaPH hub website is built as a static site generated via Astro and does not use tracking cookies or intrusive third-party user fingerprinting scripts. While third-party advertising partners (like Google AdSense) may set standard advertising cookies to display relevant ads, our core open-source web applications prioritize zero telemetry and user privacy protection.",
 	},
 ];
 

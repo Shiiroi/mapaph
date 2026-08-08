@@ -2,15 +2,15 @@
   "Shiiroi/mapa": {
     "version": "v1.0.0",
     "date": "2026-07-18T12:00:00Z",
-    "title": "Lens Stable Release",
-    "description": "Released Lens v1.0.0. Added complete census demographics, local financial audit visualizations, election tallies, and high-fidelity GeoJSON exports matching PSA standards.",
+    "title": "Lens Production Milestone",
+    "description": "Deployed Lens v1.0.0 with full interactive choropleth rendering for all 17 Philippine administrative regions, 82 provinces, and 1,485 municipalities. Integrated 2020 PSA census demographics, COA annual municipal financial audits, 2022 presidential election tallies, and high-fidelity RFC 7946 GeoJSON vector downloads keyed by PSGC code.",
     "url": "https://github.com/Shiiroi/mapa/releases/latest"
   },
   "Shiiroi/mapaph": {
-    "version": "v0.0.1",
-    "date": "2026-07-15T12:00:00Z",
-    "title": "Hub Directory Launch",
-    "description": "Launched the central mapaPH directory hub, linking development documentation and legal policies for all open-source utilities.",
+    "version": "v0.1.0",
+    "date": "2026-08-08T12:00:00Z",
+    "title": "Hub Documentation & Reference Expansion",
+    "description": "Expanded the central mapaPH directory hub with a dedicated PSGC Developer & GIS Reference Guide, technical data sourcing specifications (PSA, COMELEC, COA), expanded tool user guides, and detailed transit routing specifications for the To-Cubao project.",
     "url": "https://github.com/Shiiroi/mapaph/releases/latest"
   }
 }
