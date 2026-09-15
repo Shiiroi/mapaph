@@ -1,0 +1,119 @@
+---
+/**
+ * @file PsgcSpotlight.astro
+ * @description Homepage spotlight widget highlighting the interactive PSGC Lookup tool and Lens database stats.
+ */
+
+import psgcData from '../data/psgc-directory.json';
+
+const popularLGUs = [
+	{ name: 'Quezon City', code: '137404000', type: 'HUC' },
+	{ name: 'City of Manila', code: '133900000', type: 'Capital' },
+	{ name: 'Cebu City', code: '072217000', type: 'HUC' },
+	{ name: 'Davao City', code: '112402000', type: 'HUC' },
+	{ name: 'Baguio City', code: '141102000', type: 'HUC' },
+	{ name: 'Adams', code: '0102801000', type: 'Mun' },
+];
+---
+
+<section class="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+	<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-10 shadow-xs relative overflow-hidden">
+		<!-- Subtle decorative topographic background lines -->
+		<div class="absolute inset-0 opacity-10 bg-[radial-gradient(#3d5a45_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none"></div>
+
+		<div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+			<!-- Left copy column -->
+			<div class="lg:col-span-7">
+				<div class="flex items-center gap-2 mb-2.5">
+					<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
+						Civic Geographic Intelligence
+					</span>
+					<span class="font-sans text-xs text-mapa-clay">
+						Updated 2024 PSA Standards
+					</span>
+				</div>
+				<h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-mapa-ink font-serif tracking-tight">
+					Explore Philippine Boundaries & PSGC Codes
+				</h2>
+				<p class="font-sans text-sm sm:text-base text-mapa-ink/80 mt-3 leading-relaxed max-w-xl">
+					Quickly decode official 9-digit and 10-digit codes for every region, province, city, and municipality in the country. Backed by official PSA census demographics and interactive choropleth boundary maps.
+				</p>
+
+				<!-- Quick Pill Suggestions -->
+				<div class="mt-6 flex flex-wrap items-center gap-2 font-sans text-xs">
+					<span class="text-mapa-ink/60 font-medium">Quick inspect:</span>
+					{popularLGUs.map((lgu) => (
+						<a
+							href={`/tools/psgc-lookup`}
+							class="px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/90 hover:border-mapa-green/60 hover:bg-mapa-green/10 transition-colors"
+						>
+							<span class="font-semibold">{lgu.name}</span>
+							<span class="font-mono text-mapa-clay ml-1 text-[11px]">{lgu.code}</span>
+						</a>
+					))}
+				</div>
+
+				<div class="mt-8 flex flex-wrap items-center gap-4 font-sans text-sm">
+					<a
+						href="/tools/psgc-lookup"
+						class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-mapa-green text-white font-medium hover:bg-mapa-green/90 transition-all shadow-sm"
+					>
+						<span>Open PSGC Lookup Tool</span>
+						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+						</svg>
+					</a>
+					<a
+						href="/tools/coordinates"
+						class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-mapa-canvas border border-mapa-contour text-mapa-ink font-medium hover:bg-mapa-contour/30 transition-all"
+					>
+						<span>Coordinate Converter (PRS92)</span>
+					</a>
+				</div>
+			</div>
+
+			<!-- Right stats cards column -->
+			<div class="lg:col-span-5 grid grid-cols-2 gap-3.5 font-sans">
+				<div class="p-4 bg-mapa-canvas rounded-xl border border-mapa-contour/80 text-center">
+					<span class="text-2xl sm:text-3xl font-serif font-extrabold text-mapa-green block">
+						{psgcData.counts.regions}
+					</span>
+					<span class="text-xs uppercase font-bold text-mapa-ink/70 tracking-wider mt-1 block">
+						Administrative Regions
+					</span>
+					<span class="text-[11px] text-mapa-clay block mt-0.5">including NCR & BARMM</span>
+				</div>
+
+				<div class="p-4 bg-mapa-canvas rounded-xl border border-mapa-contour/80 text-center">
+					<span class="text-2xl sm:text-3xl font-serif font-extrabold text-mapa-rust block">
+						{psgcData.counts.provinces}
+					</span>
+					<span class="text-xs uppercase font-bold text-mapa-ink/70 tracking-wider mt-1 block">
+						Provinces
+					</span>
+					<span class="text-[11px] text-mapa-clay block mt-0.5">official provincial LGUs</span>
+				</div>
+
+				<div class="p-4 bg-mapa-canvas rounded-xl border border-mapa-contour/80 text-center">
+					<span class="text-2xl sm:text-3xl font-serif font-extrabold text-mapa-navy block">
+						{psgcData.counts.cities}
+					</span>
+					<span class="text-xs uppercase font-bold text-mapa-ink/70 tracking-wider mt-1 block">
+						Chartered Cities
+					</span>
+					<span class="text-[11px] text-mapa-clay block mt-0.5">HUCs, ICCs, and CCs</span>
+				</div>
+
+				<div class="p-4 bg-mapa-canvas rounded-xl border border-mapa-contour/80 text-center">
+					<span class="text-2xl sm:text-3xl font-serif font-extrabold text-mapa-green block">
+						{psgcData.counts.municipalities}
+					</span>
+					<span class="text-xs uppercase font-bold text-mapa-ink/70 tracking-wider mt-1 block">
+						Municipalities
+					</span>
+					<span class="text-[11px] text-mapa-clay block mt-0.5">with 2024 census stats</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

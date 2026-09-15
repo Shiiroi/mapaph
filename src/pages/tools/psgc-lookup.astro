@@ -267,7 +267,7 @@ const directoryItems = [
 import geopandas as gpd
 
 # Load census demographic data with string-typed PSGC codes
-census_df = pd.read_csv("ph_census_2024.csv", dtype={"psgc": str})
+census_df = pd.read_csv("ph_census_2024.csv", dtype=&#123;"psgc": str&#125;)
 
 # Ensure uniform 10-digit zero-padding
 census_df["psgc"] = census_df["psgc"].str.zfill(10)
