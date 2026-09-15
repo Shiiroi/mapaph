@@ -11,7 +11,7 @@ import Footer from '../components/Footer.astro';
 interface Props {
 	title: string;
 	description: string;
-	activeSlug: 'index' | 'lens' | 'to-cubao' | 'compaws' | 'psgc' | 'data-sources' | 'geojson-guide';
+	activeSlug: 'index' | 'lens' | 'to-cubao' | 'compaws' | 'psgc' | 'data-sources' | 'geojson-guide' | 'gis-sources' | 'prs92-wgs84';
 	/**
 	 * Optional flag to add 'noindex, follow' robots directive.
 	 * Used for in-development pages that shouldn't be indexed yet.
@@ -28,7 +28,9 @@ const tools = [
 ];
 
 const references = [
-	{ name: 'PSGC Guide',        slug: 'psgc',         url: '/docs/psgc'        },
+	{ name: 'PSGC Reference',    slug: 'psgc',         url: '/docs/psgc'        },
+	{ name: 'Free GIS Sources',  slug: 'gis-sources',  url: '/docs/philippine-gis-sources' },
+	{ name: 'PRS92 vs WGS84',    slug: 'prs92-wgs84',  url: '/docs/prs92-wgs84-guide' },
 	{ name: 'Open Data Sources', slug: 'data-sources', url: '/docs/data-sources'},
 	{ name: 'GeoJSON Developer', slug: 'geojson-guide',url: '/docs/geojson-guide'},
 ];
@@ -40,6 +42,8 @@ const pages = [
 	{ slug: 'to-cubao',     name: 'To-Cubao Status',     url: '/docs/to-cubao'     },
 	{ slug: 'compaws',      name: 'Compaws Directory',   url: '/docs/compaws'      },
 	{ slug: 'psgc',         name: 'PSGC Reference',      url: '/docs/psgc'        },
+	{ slug: 'gis-sources',  name: 'Free GIS Sources',    url: '/docs/philippine-gis-sources' },
+	{ slug: 'prs92-wgs84',  name: 'PRS92 vs WGS84',      url: '/docs/prs92-wgs84-guide' },
 	{ slug: 'data-sources', name: 'Open Data Sources',   url: '/docs/data-sources' },
 	{ slug: 'geojson-guide',name: 'GeoJSON Developer',   url: '/docs/geojson-guide'},
 ];
@@ -131,6 +135,35 @@ const nextPage = currentIndex < pages.length - 1 ? pages[currentIndex + 1] : nul
 									</a>
 								);
 							})}
+						</nav>
+
+						<!-- SECTION: INTERACTIVE TOOLS -->
+						<p class="font-sans text-mapa-green" style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2rem; margin-bottom: 0.6rem;">
+							Interactive Tools
+						</p>
+						<nav style="display: flex; flex-direction: column;">
+							<a
+								href="/tools/psgc-lookup"
+								class="font-sans text-mapa-ink/60 hover:text-mapa-ink"
+								style="font-size: 0.875rem; padding: 0.375rem 0; display: flex; align-items: center; justify-content: space-between;"
+							>
+								<span style="display: flex; align-items: center; gap: 0.5rem;">
+									<span style="width: 6px; height: 6px; flex-shrink: 0;"></span>
+									PSGC Lookup
+								</span>
+								<span class="font-sans text-mapa-green" style="font-size: 9px; font-weight: 600;">Tool</span>
+							</a>
+							<a
+								href="/tools/coordinates"
+								class="font-sans text-mapa-ink/60 hover:text-mapa-ink"
+								style="font-size: 0.875rem; padding: 0.375rem 0; display: flex; align-items: center; justify-content: space-between;"
+							>
+								<span style="display: flex; align-items: center; gap: 0.5rem;">
+									<span style="width: 6px; height: 6px; flex-shrink: 0;"></span>
+									Coordinate Converter
+								</span>
+								<span class="font-sans text-mapa-green" style="font-size: 9px; font-weight: 600;">Tool</span>
+							</a>
 						</nav>
 
 					</div>

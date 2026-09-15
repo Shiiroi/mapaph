@@ -1,0 +1,190 @@
+---
+/**
+ * @file DocsGisSources.astro
+ * @description In-depth guide and directory of free, open-access Philippine GIS, Shapefile, and GeoJSON datasets.
+ */
+---
+
+<article class="prose prose-stone max-w-none font-serif text-mapa-ink">
+	<div class="border-b border-mapa-contour/50 pb-6 mb-8">
+		<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
+			Reference Guide
+		</span>
+		<h1 class="text-3xl sm:text-4xl font-extrabold text-mapa-green tracking-tight font-serif mt-2">
+			Free Philippine GIS & GeoJSON Data Directory
+		</h1>
+		<p class="font-sans text-sm sm:text-base text-mapa-ink/70 mt-2">
+			A comprehensive technical guide to finding, evaluating, and downloading free administrative boundaries, topographic layers, and demographic spatial data in the Philippines.
+		</p>
+	</div>
+
+	<!-- Section 1: Overview of Philippine Spatial Data Landscape -->
+	<section class="mb-10">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			1. The State of Open Spatial Data in the Philippines
+		</h2>
+		<p class="font-sans text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+			For data scientists, urban planners, cartographers, and journalists, acquiring accurate Philippine geographic boundaries has historically been an exercise in frustration. While executive mandates such as <strong>Executive Order No. 2, s. 2016 (Freedom of Information)</strong> and the <strong>Philippine Geomatics Act</strong> encourage open civic data, actual distribution remains fragmented across disconnected government portals, non-profit repositories, and academic archives.
+		</p>
+		<p class="font-sans text-sm sm:text-base text-mapa-ink/90 leading-relaxed">
+			This directory categorizes the most reliable open spatial data sources for the Philippines, assessing each for boundary precision, update cadence, coordinate projection, and licensing terms.
+		</p>
+	</section>
+
+	<!-- Section 2: Authoritative Government Sources -->
+	<section class="mb-10 border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			2. Official Government Repositories
+		</h2>
+
+		<div class="space-y-6 font-sans">
+			<!-- Source A: NAMRIA -->
+			<div class="p-6 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70">
+				<div class="flex items-center justify-between gap-2 mb-2">
+					<h3 class="font-serif text-xl font-bold text-mapa-green">
+						NAMRIA (National Mapping and Resource Information Authority)
+					</h3>
+					<span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-mapa-green/15 text-mapa-green">
+						Statutory Authority
+					</span>
+				</div>
+				<p class="text-xs text-mapa-clay mb-3">
+					Portal: <a href="https://geoportal.gov.ph" target="_blank" rel="noopener" class="underline hover:text-mapa-green">geoportal.gov.ph (Philippine Geoportal)</a>
+				</p>
+				<p class="text-sm text-mapa-ink/90 leading-relaxed mb-3">
+					NAMRIA is the central mapping agency of the Philippine government under the Department of Environment and Natural Resources (DENR). The Philippine Geoportal distributes base topographic maps, nautical charts, administrative boundary datasets, and satellite imagery layers.
+				</p>
+				<div class="text-xs text-mapa-ink/80 space-y-1 bg-mapa-canvas p-3 rounded-lg border border-mapa-contour/50">
+					<div><strong>Available Formats:</strong> WMS/WFS endpoints, Shapefiles (zipped), KML</div>
+					<div><strong>Coordinate System:</strong> PRS92 (PTM Zones I–V) and WGS84</div>
+					<div><strong>Caveats:</strong> Download links occasionally experience downtime; higher-resolution contour layers require formal FOI data requests.</div>
+				</div>
+			</div>
+
+			<!-- Source B: PSA -->
+			<div class="p-6 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70">
+				<div class="flex items-center justify-between gap-2 mb-2">
+					<h3 class="font-serif text-xl font-bold text-mapa-green">
+						Philippine Statistics Authority (PSA)
+					</h3>
+					<span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-mapa-rust/15 text-mapa-rust">
+						Census & PSGC
+					</span>
+				</div>
+				<p class="text-xs text-mapa-clay mb-3">
+					Portal: <a href="https://psa.gov.ph" target="_blank" rel="noopener" class="underline hover:text-mapa-green">psa.gov.ph</a> & <a href="https://openstat.psa.gov.ph" target="_blank" rel="noopener" class="underline hover:text-mapa-green">openstat.psa.gov.ph</a>
+				</p>
+				<p class="text-sm text-mapa-ink/90 leading-relaxed mb-3">
+					The PSA maintains the definitive masterlist of the Philippine Standard Geographic Code (PSGC). Through the OpenSTAT portal and census releases (POPCEN 2015, 2020, 2024), the PSA publishes official population counts, household demographics, and poverty incidence metrics that map directly to PSGC join keys.
+				</p>
+				<div class="text-xs text-mapa-ink/80 space-y-1 bg-mapa-canvas p-3 rounded-lg border border-mapa-contour/50">
+					<div><strong>Available Formats:</strong> Excel spreadsheets (.xlsx), CSV tables, PDF summaries</div>
+					<div><strong>Coordinate System:</strong> Non-spatial tabular data (joined via PSGC code)</div>
+					<div><strong>Best For:</strong> Sourcing official demographic, economic, and agricultural census baselines.</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Section 3: Open Community & Global GIS Archives -->
+	<section class="mb-10 border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			3. Community & Global Open-Data Archives
+		</h2>
+
+		<div class="space-y-6 font-sans">
+			<!-- Source C: OpenStreetMap Philippines -->
+			<div class="p-6 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70">
+				<div class="flex items-center justify-between gap-2 mb-2">
+					<h3 class="font-serif text-xl font-bold text-mapa-green">
+						OpenStreetMap Philippines & Geofabrik Extracts
+					</h3>
+					<span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-mapa-flag-blue/15 text-mapa-flag-blue">
+						ODbL License
+					</span>
+				</div>
+				<p class="text-xs text-mapa-clay mb-3">
+					Portal: <a href="https://download.geofabrik.de/asia/philippines.html" target="_blank" rel="noopener" class="underline hover:text-mapa-green">download.geofabrik.de/asia/philippines.html</a>
+				</p>
+				<p class="text-sm text-mapa-ink/90 leading-relaxed mb-3">
+					The local OpenStreetMap (OSM) community in the Philippines is among the most active mapping groups in Southeast Asia. Geofabrik provides daily updated spatial extracts of the entire Philippine road network, waterways, points of interest, building footprints, and transit infrastructure.
+				</p>
+				<div class="text-xs text-mapa-ink/80 space-y-1 bg-mapa-canvas p-3 rounded-lg border border-mapa-contour/50">
+					<div><strong>Available Formats:</strong> .osm.pbf, Shapefile archives (.shp.zip)</div>
+					<div><strong>Coordinate System:</strong> WGS84 (EPSG:4326)</div>
+					<div><strong>Best For:</strong> Routing algorithms, transit terminals, and infrastructure mapping.</div>
+				</div>
+			</div>
+
+			<!-- Source D: HDX (Humanitarian Data Exchange) -->
+			<div class="p-6 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70">
+				<div class="flex items-center justify-between gap-2 mb-2">
+					<h3 class="font-serif text-xl font-bold text-mapa-green">
+						Humanitarian Data Exchange (HDX / UN OCHA)
+					</h3>
+					<span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-mapa-clay/30 text-mapa-ink">
+						COD-AB Standard
+					</span>
+				</div>
+				<p class="text-xs text-mapa-clay mb-3">
+					Portal: <a href="https://data.humdata.org/dataset/cod-ab-phl" target="_blank" rel="noopener" class="underline hover:text-mapa-green">data.humdata.org (Philippines Common Operational Datasets)</a>
+				</p>
+				<p class="text-sm text-mapa-ink/90 leading-relaxed mb-3">
+					The United Nations Office for the Coordination of Humanitarian Affairs (UN OCHA) maintains the Common Operational Datasets for Administrative Boundaries (COD-AB) for disaster response. This repository contains clean, simplified administrative boundaries down to Barangay Level (Admin 4).
+				</p>
+				<div class="text-xs text-mapa-ink/80 space-y-1 bg-mapa-canvas p-3 rounded-lg border border-mapa-contour/50">
+					<div><strong>Available Formats:</strong> GeoJSON, ESRI Shapefile, GeoPackage, TopoJSON</div>
+					<div><strong>Coordinate System:</strong> WGS84 (EPSG:4326)</div>
+					<div><strong>Best For:</strong> Disaster risk modeling, relief distribution planning, and choropleth analysis.</div>
+				</div>
+			</div>
+
+			<!-- Source E: PhilGIS -->
+			<div class="p-6 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70">
+				<div class="flex items-center justify-between gap-2 mb-2">
+					<h3 class="font-serif text-xl font-bold text-mapa-green">
+						PhilGIS (Philippine GIS Data Clearinghouse)
+					</h3>
+					<span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-mapa-canvas border border-mapa-contour text-mapa-ink/70">
+						Community Archive
+					</span>
+				</div>
+				<p class="text-xs text-mapa-clay mb-3">
+					Portal: <a href="https://philgis.org" target="_blank" rel="noopener" class="underline hover:text-mapa-green">philgis.org</a>
+				</p>
+				<p class="text-sm text-mapa-ink/90 leading-relaxed mb-3">
+					A longstanding community portal offering free downloads of regional, provincial, and municipal boundaries, climate classification zones, protected areas, and watershed limits. While some files date back to earlier census rounds, they provide excellent baseline reference geometries.
+				</p>
+				<div class="text-xs text-mapa-ink/80 space-y-1 bg-mapa-canvas p-3 rounded-lg border border-mapa-contour/50">
+					<div><strong>Available Formats:</strong> ESRI Shapefiles (.zip)</div>
+					<div><strong>Coordinate System:</strong> Mixed (WGS84 and PRS92)</div>
+					<div><strong>Caveats:</strong> Verify attribute tables for recent LGU splits (e.g. Maguindanao del Norte/Sur).</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Section 4: Data Quality & Evaluation Checklist -->
+	<section class="mb-10 border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			4. Checklist: Evaluating Philippine GIS Files
+		</h2>
+		<p class="font-sans text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+			Before using any downloaded GIS boundary layer in production applications or academic publications, verify these four criteria:
+		</p>
+		<ol class="font-sans text-sm sm:text-base text-mapa-ink/90 list-decimal pl-5 space-y-3">
+			<li>
+				<strong>Boundary Dispute Handling:</strong> Many Philippine LGUs have unresolved territorial boundaries (e.g., Makati vs. Taguig over the Enlisted Men's Barrios / Fort Bonifacio; boundary disputes in Pasig/Cainta). Verify whether your dataset reflects the Supreme Court of the Philippines ruling (G.R. No. 235316).
+			</li>
+			<li>
+				<strong>Coastline Simplification & Island Completeness:</strong> Because the Philippines consists of over 7,641 islands, uncompressed high-resolution shapefiles can exceed 200MB. For web display, use Douglas-Peucker simplification (via Mapshaper or Turf.js) while ensuring tiny island barangays are not completely removed.
+			</li>
+			<li>
+				<strong>Coordinate System Consistency:</strong> Ensure all layers share the same Spatial Reference System. If overlaying GPS data, transform projected PRS92 layers into unprojected WGS84 decimal degrees (EPSG:4326).
+			</li>
+			<li>
+				<strong>Standardized PSGC Join Keys:</strong> Avoid joining census data on LGU names alone. Names have variant spellings (e.g., <em>"City of Isabela"</em> vs <em>"Isabela City"</em>). Always use 9-digit or 10-digit PSGC codes as join keys.
+			</li>
+		</ol>
+	</section>
+</article>
