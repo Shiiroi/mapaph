@@ -1,0 +1,532 @@
+---
+/**
+ * @file psgc-lookup.astro
+ * @description Interactive search and code decoder for the Philippine Standard Geographic Code (PSGC).
+ * Powered by pre-indexed Lens geographic metadata with comprehensive reference documentation.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import psgcData from '../../data/psgc-directory.json';
+
+// Prepare a compact client index
+const directoryItems = [
+	...psgcData.regions.map((r) => ({
+		p: r.psgc,
+		c9: r.code9,
+		n: r.name,
+		l: 'Region',
+		prov: '',
+		reg: r.name,
+		pop: r.pop,
+		a: r.area,
+		d: r.density,
+		u: r.lens_url,
+		cls: null,
+		pc: r.provinces_count,
+		cc: r.cities_count,
+		mc: r.muns_count
+	})),
+	...psgcData.provinces.map((p) => ({
+		p: p.psgc,
+		c9: p.code9,
+		n: p.name,
+		l: 'Province',
+		prov: p.name,
+		reg: p.region_name,
+		pop: p.pop,
+		a: p.area,
+		d: p.density,
+		u: p.lens_url,
+		cls: null,
+		cc: p.cities_count,
+		mc: p.muns_count
+	})),
+	...psgcData.municities.map((m) => ({
+		p: m.psgc,
+		c9: m.code9,
+		n: m.name,
+		l: m.level,
+		prov: m.province_name,
+		reg: m.region_name,
+		pop: m.pop,
+		a: m.area,
+		d: m.density,
+		u: m.lens_url,
+		cls: m.city_class
+	}))
+];
+---
+
+<BaseLayout
+	title="Philippine PSGC Lookup & 9-Digit Code Decoder — mapaPH Tools"
+	description="Search 1,744+ Philippine administrative divisions, decode official 9-digit & 10-digit PSGC codes, and inspect 2024 census population, density, and land area data."
+>
+	<script type="application/ld+json" slot="schema" is:inline>
+		{
+			"@context": "https://schema.org",
+			"@type": "WebApplication",
+			"name": "Philippine PSGC Lookup & Code Decoder",
+			"url": "https://mapaph.com/tools/psgc-lookup",
+			"applicationCategory": "Geographic Utility",
+			"operatingSystem": "All",
+			"description": "Interactive search and code decoder for official Philippine Standard Geographic Codes (PSGC), census figures, and administrative boundaries.",
+			"provider": {
+				"@type": "Organization",
+				"name": "mapaPH",
+				"url": "https://mapaph.com"
+			}
+		}
+	</script>
+
+	<Navbar />
+
+	<main class="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-mapa-ink">
+		<!-- Header -->
+		<div class="max-w-3xl mb-8">
+			<div class="flex items-center gap-2 mb-2">
+				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
+					Interactive Mini-Tool
+				</span>
+				<span class="font-sans text-xs text-mapa-clay">
+					Powered by Lens Database
+				</span>
+			</div>
+			<h1 class="text-3xl sm:text-4xl font-extrabold text-mapa-green font-serif tracking-tight">
+				Philippine PSGC Lookup & Code Decoder
+			</h1>
+			<p class="font-sans text-sm sm:text-base text-mapa-ink/80 mt-2 leading-relaxed">
+				Search over 1,740+ official Philippine administrative units (regions, provinces, cities, and municipalities). Inspect the official 9-digit and 10-digit PSGC hierarchy, census demographics, and explore boundary visualizations on Lens.
+			</p>
+		</div>
+
+		<!-- Interactive Tool Shell -->
+		<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 shadow-sm mb-16">
+			<!-- Search & Filter Controls -->
+			<div class="space-y-4 mb-6">
+				<div class="relative">
+					<label for="psgc-search-input" class="sr-only">Search by LGU name or PSGC code</label>
+					<input
+						type="search"
+						id="psgc-search-input"
+						placeholder="Search by name (e.g. Adams, Cebu City, Batanes) or code (e.g. 0102801000)..."
+						class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-4 py-3.5 pl-11 text-base text-mapa-ink placeholder-mapa-ink/40 focus:outline-none focus:ring-2 focus:ring-mapa-green/50 font-sans shadow-inner"
+					/>
+					<svg
+						class="absolute left-3.5 top-3.5 w-5 h-5 text-mapa-clay pointer-events-none"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke="currentColor"
+					>
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+					</svg>
+				</div>
+
+				<!-- Filter Pills -->
+				<div class="flex flex-wrap items-center gap-2 font-sans text-xs">
+					<span class="text-mapa-ink/60 font-medium mr-1">Filter level:</span>
+					<button type="button" data-filter="All" class="filter-pill px-3 py-1 rounded-full border border-mapa-green bg-mapa-green text-white font-medium transition-colors">
+						All ({directoryItems.length})
+					</button>
+					<button type="button" data-filter="Region" class="filter-pill px-3 py-1 rounded-full border border-mapa-contour bg-mapa-canvas text-mapa-ink/80 hover:bg-mapa-green/10 font-medium transition-colors">
+						Regions ({psgcData.counts.regions})
+					</button>
+					<button type="button" data-filter="Province" class="filter-pill px-3 py-1 rounded-full border border-mapa-contour bg-mapa-canvas text-mapa-ink/80 hover:bg-mapa-green/10 font-medium transition-colors">
+						Provinces ({psgcData.counts.provinces})
+					</button>
+					<button type="button" data-filter="City" class="filter-pill px-3 py-1 rounded-full border border-mapa-contour bg-mapa-canvas text-mapa-ink/80 hover:bg-mapa-green/10 font-medium transition-colors">
+						Cities ({psgcData.counts.cities})
+					</button>
+					<button type="button" data-filter="Municipality" class="filter-pill px-3 py-1 rounded-full border border-mapa-contour bg-mapa-canvas text-mapa-ink/80 hover:bg-mapa-green/10 font-medium transition-colors">
+						Municipalities ({psgcData.counts.municipalities})
+					</button>
+				</div>
+			</div>
+
+			<!-- Active Inspector Card (Highlighted Selection) -->
+			<div id="inspector-card" class="bg-mapa-canvas border border-mapa-contour/80 rounded-xl p-6 shadow-sm mb-6 transition-all duration-200">
+				<!-- Dynamically populated by client JS -->
+			</div>
+
+			<!-- Search Results Grid -->
+			<div>
+				<div class="flex items-center justify-between font-sans text-xs text-mapa-ink/60 mb-3">
+					<span id="results-count">Showing results</span>
+					<span>Click any row to decode & inspect</span>
+				</div>
+				<div id="results-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[440px] overflow-y-auto pr-1">
+					<!-- Dynamically rendered rows -->
+				</div>
+			</div>
+		</div>
+
+		<!-- Comprehensive Reference Guide (Authoritative Content) -->
+		<article class="max-w-4xl mx-auto prose prose-stone font-serif mt-12 border-t border-mapa-contour/60 pt-12">
+			<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
+				Technical Reference & User Manual
+			</span>
+			<h2 class="text-3xl font-bold text-mapa-green font-serif mt-2 mb-6">
+				Understanding the Philippine Standard Geographic Code (PSGC)
+			</h2>
+
+			<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-6">
+				The <strong>Philippine Standard Geographic Code (PSGC)</strong> is the systematic, authoritative classification scheme maintained by the <strong>Philippine Statistics Authority (PSA)</strong> to uniquely designate all administrative divisions across the country. Whether processing national census surveys, election tallies from COMELEC, municipal budget allocations from the Department of Budget and Management (DBM), or geospatial shapefiles from NAMRIA, the PSGC is the undisputed primary key linking civic data to geographic space.
+			</p>
+
+			<h3 class="text-2xl font-bold text-mapa-ink font-serif mt-10 mb-4">
+				1. Structure of the 9-Digit and 10-Digit PSGC Hierarchy
+			</h3>
+			<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
+				Traditionally, the PSGC utilized a <strong>9-digit numerical sequence</strong> organized in a nested administrative hierarchy. In recent years, the PSA transitioned to a <strong>10-digit code</strong> to accommodate future expansion and standardized sub-regional municipal clusters. Both systems break down into four distinct levels:
+			</p>
+
+			<!-- Breakdown Diagram Box -->
+			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-6 my-6 font-sans">
+				<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+					<div class="p-3 bg-mapa-canvas rounded-lg border border-mapa-contour/70">
+						<span class="text-xs uppercase font-bold text-mapa-green tracking-wider block">Digits 1–2</span>
+						<span class="text-lg font-mono font-bold text-mapa-ink block my-1">Region</span>
+						<span class="text-xs text-mapa-clay">e.g. 01 (Ilocos)</span>
+					</div>
+					<div class="p-3 bg-mapa-canvas rounded-lg border border-mapa-contour/70">
+						<span class="text-xs uppercase font-bold text-mapa-green tracking-wider block">Digits 3–5</span>
+						<span class="text-lg font-mono font-bold text-mapa-ink block my-1">Province</span>
+						<span class="text-xs text-mapa-clay">e.g. 028 (Ilocos Norte)</span>
+					</div>
+					<div class="p-3 bg-mapa-canvas rounded-lg border border-mapa-contour/70">
+						<span class="text-xs uppercase font-bold text-mapa-green tracking-wider block">Digits 6–7</span>
+						<span class="text-lg font-mono font-bold text-mapa-ink block my-1">City / Mun</span>
+						<span class="text-xs text-mapa-clay">e.g. 01 (Adams)</span>
+					</div>
+					<div class="p-3 bg-mapa-canvas rounded-lg border border-mapa-contour/70">
+						<span class="text-xs uppercase font-bold text-mapa-green tracking-wider block">Digits 8–10</span>
+						<span class="text-lg font-mono font-bold text-mapa-ink block my-1">Barangay</span>
+						<span class="text-xs text-mapa-clay">e.g. 000 (LGU Centroid)</span>
+					</div>
+				</div>
+			</div>
+
+			<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-6">
+				When analyzing data at the municipality or city level, the last three digits are always recorded as <code>000</code>. When joining down to the barangay level, these three digits range from <code>001</code> to <code>999</code>, referencing each individual neighborhood or rural village.
+			</p>
+
+			<h3 class="text-2xl font-bold text-mapa-ink font-serif mt-10 mb-4">
+				2. Philippine City Classifications Explained
+			</h3>
+			<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
+				In the Philippine Local Government Code of 1991 (Republic Act No. 7160), cities are categorized into three distinct legal classes based on their income thresholds and administrative autonomy:
+			</p>
+			<ul class="font-sans text-sm sm:text-base text-mapa-ink/90 list-disc pl-5 mb-6 space-y-2">
+				<li>
+					<strong>Highly Urbanized Cities (HUC):</strong> Cities with a minimum population of 200,000 inhabitants and an annual income of at least 50 million Philippine pesos (under 1991 benchmarks). HUCs are completely independent of any province; their residents vote only for city officials, and their land areas are excluded from provincial jurisdiction (e.g., Quezon City, Cebu City, Davao City).
+				</li>
+				<li>
+					<strong>Independent Component Cities (ICC):</strong> Component cities whose charters explicitly prohibit their voters from voting for provincial elective officials (e.g., Dagupan City, Ormoc City, Cotabato City). Like HUCs, they are administratively independent of provincial governors.
+				</li>
+				<li>
+					<strong>Component Cities (CC):</strong> Cities that do not meet the criteria for HUC or ICC status and remain under the administrative supervision of their respective provincial governments (e.g., City of Batac, Vigan City, Tagaytay City). Voters in component cities participate in provincial elections.
+				</li>
+			</ul>
+
+			<h3 class="text-2xl font-bold text-mapa-ink font-serif mt-10 mb-4">
+				3. Edge Cases: Metro Manila & BARMM
+			</h3>
+			<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
+				Geographic data analysts frequently encounter exceptions in Philippine administrative mapping:
+			</p>
+			<ul class="font-sans text-sm sm:text-base text-mapa-ink/90 list-disc pl-5 mb-6 space-y-2">
+				<li>
+					<strong>The National Capital Region (NCR):</strong> Metro Manila has no provincial governments. Instead, its 16 cities and 1 municipality (Pateros) are grouped into four non-statutory administrative districts: Capital District (Manila), Eastern Manila District, Northern Manila District (CAMANAVA), and Southern Manila District. In the PSGC hierarchy, digits 3–5 represent these administrative districts rather than traditional provinces.
+				</li>
+				<li>
+					<strong>Special Geographic Area (SGA) in BARMM:</strong> Following the 2019 plebiscite on the Bangsamoro Organic Law (RA 11054), 63 barangays across 6 municipalities in the province of Cotabato voted to join the Bangsamoro Autonomous Region in Muslim Mindanao (BARMM). In 2024, these barangays were formally organized into 8 new municipalities (Pahamuddin, Kadayangan, Nabalawag, Old Kaabakan, Kapalawan, Malidegao, Tugunan, and Ligawasan).
+				</li>
+			</ul>
+
+			<h3 class="text-2xl font-bold text-mapa-ink font-serif mt-10 mb-4">
+				4. GIS Joining Best Practices: Avoiding the Leading Zero Bug
+			</h3>
+			<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
+				The single most common bug when joining Philippine demographic spreadsheets to GeoJSON or Shapefile boundaries occurs when spreadsheet software (such as Microsoft Excel or Google Sheets) interprets the PSGC code as an integer rather than text:
+			</p>
+
+			<div class="bg-mapa-canvas-dark border border-mapa-rust/30 rounded-xl p-5 my-5 font-sans">
+				<span class="text-xs uppercase font-bold text-mapa-rust tracking-wider block mb-1">Common Pitfall</span>
+				<p class="text-xs sm:text-sm text-mapa-ink/90 leading-relaxed">
+					For regions in Northern Luzon (Region 01, Region 02, Region 03), codes start with a leading zero (e.g., <code>0102801000</code>). When opened in Excel without specifying text mode, Excel truncates the leading zero, producing <code>102801000</code> (9 digits instead of 10). Joining this truncated integer against standard GeoJSON boundaries results in 100% null matches.
+				</p>
+			</div>
+
+			<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
+				To maintain clean join integrity in Python (Pandas), always enforce string parsing on PSGC columns:
+			</p>
+
+			<div class="bg-mapa-navy text-mapa-canvas rounded-xl p-5 font-mono text-xs overflow-x-auto my-4 leading-relaxed">
+				<pre><code>import pandas as pd
+import geopandas as gpd
+
+# Load census demographic data with string-typed PSGC codes
+census_df = pd.read_csv("ph_census_2024.csv", dtype={"psgc": str})
+
+# Ensure uniform 10-digit zero-padding
+census_df["psgc"] = census_df["psgc"].str.zfill(10)
+
+# Load official GeoJSON boundary file
+boundaries = gpd.read_file("ph_municipalities.geojson")
+boundaries["psgc"] = boundaries["psgc"].astype(str).str.zfill(10)
+
+# Perform inner join on clean standardized keys
+merged_map = boundaries.merge(census_df, on="psgc", how="inner")</code></pre>
+			</div>
+
+			<h3 class="text-2xl font-bold text-mapa-ink font-serif mt-10 mb-4">
+				5. Frequently Asked Questions (FAQ)
+			</h3>
+			<div class="space-y-4 font-sans text-sm mb-12">
+				<div class="p-4 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60">
+					<h4 class="font-serif text-base font-bold text-mapa-green mb-1">
+						Where can I view the boundary polygons for these PSGC codes?
+					</h4>
+					<p class="text-mapa-ink/80 leading-relaxed">
+						You can click any entity in the lookup tool above and click "Explore on Lens Map →" to visualize its official choropleth boundaries, demographic comparisons, and GeoJSON polygon exports directly on <a href="https://lens.mapaph.com" class="text-mapa-green underline font-medium" target="_blank" rel="noopener">Lens</a>.
+					</p>
+				</div>
+				<div class="p-4 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60">
+					<h4 class="font-serif text-base font-bold text-mapa-green mb-1">
+						What is the difference between PSGC Code and Correspondence Code?
+					</h4>
+					<p class="text-mapa-ink/80 leading-relaxed">
+						The Correspondence Code is the historical 9-digit code system used prior to the 10-digit standardization. In the 9-digit format, digits were allocated as 2 for Region, 2 for Province, 2 for City/Municipality, and 3 for Barangay. The 10-digit PSGC adds an extra digit to the provincial position to allow finer geographic sub-classification.
+					</p>
+				</div>
+				<div class="p-4 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60">
+					<h4 class="font-serif text-base font-bold text-mapa-green mb-1">
+						How often is the PSGC updated?
+					</h4>
+					<p class="text-mapa-ink/80 leading-relaxed">
+						The PSA updates the PSGC quarterly to reflect official statutory changes enacted by the Philippine Congress or local plebiscites, such as the conversion of municipalities into chartered cities, creation of new barangays, or boundary rectifications.
+					</p>
+				</div>
+			</div>
+		</article>
+	</main>
+
+	<Footer />
+
+	<!-- Client-side Interactive Search & Decoder Engine -->
+	<script is:inline define:vars={{ items: directoryItems }}>
+		(function () {
+			let currentFilter = 'All';
+			let activeItem = items.find(i => i.n === 'Adams') || items[0];
+
+			const searchInput = document.getElementById('psgc-search-input');
+			const resultsContainer = document.getElementById('results-container');
+			const resultsCount = document.getElementById('results-count');
+			const inspectorCard = document.getElementById('inspector-card');
+			const filterPills = document.querySelectorAll('.filter-pill');
+
+			function formatNumber(num) {
+				if (num == null || isNaN(num)) return 'N/A';
+				return new Intl.NumberFormat('en-PH').format(num);
+			}
+
+			function renderInspector(item) {
+				if (!item) return;
+				activeItem = item;
+
+				const psgcStr = String(item.p).padStart(10, '0');
+				const regDigits = psgcStr.slice(0, 2);
+				const provDigits = psgcStr.slice(2, 5);
+				const munDigits = psgcStr.slice(5, 7);
+				const bgyDigits = psgcStr.slice(7, 10);
+
+				const levelBadgeColor = item.l === 'Region'
+					? 'bg-mapa-flag-blue/10 text-mapa-flag-blue border-mapa-flag-blue/30'
+					: item.l === 'Province'
+					? 'bg-mapa-rust/10 text-mapa-rust border-mapa-rust/30'
+					: item.l === 'City'
+					? 'bg-mapa-green/15 text-mapa-green border-mapa-green/30'
+					: 'bg-mapa-clay/20 text-mapa-ink border-mapa-clay/40';
+
+				inspectorCard.innerHTML = `
+					<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-mapa-contour/50 pb-5 mb-5">
+						<div>
+							<div class="flex items-center gap-2 mb-1">
+								<span class="font-sans text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${levelBadgeColor}">
+									${item.l}${item.cls ? ' (' + item.cls + ')' : ''}
+								</span>
+								${item.prov ? `<span class="font-sans text-xs text-mapa-clay">${item.prov}, ${item.reg}</span>` : `<span class="font-sans text-xs text-mapa-clay">${item.reg}</span>`}
+							</div>
+							<h3 class="font-serif text-2xl sm:text-3xl font-extrabold text-mapa-green tracking-tight">
+								${item.n}
+							</h3>
+						</div>
+						<div class="flex items-center gap-3">
+							<a
+								href="${item.u}"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-mapa-green text-white font-sans text-xs sm:text-sm font-medium hover:bg-mapa-green/90 transition-all shadow-sm"
+							>
+								<span>Explore on Lens Map</span>
+								<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+								</svg>
+							</a>
+						</div>
+					</div>
+
+					<!-- Visual 10-Digit Code Decoder Bar -->
+					<div class="mb-5">
+						<span class="font-sans text-xs font-semibold uppercase tracking-wider text-mapa-clay block mb-2">
+							PSGC Code Breakdown (10 Digits)
+						</span>
+						<div class="grid grid-cols-4 gap-2 font-mono text-center">
+							<div class="bg-mapa-canvas-dark border border-mapa-contour p-2.5 rounded-lg">
+								<span class="text-base sm:text-xl font-bold text-mapa-green block">${regDigits}</span>
+								<span class="text-[10px] sm:text-xs text-mapa-ink/70 uppercase block font-sans truncate">Region</span>
+							</div>
+							<div class="bg-mapa-canvas-dark border border-mapa-contour p-2.5 rounded-lg">
+								<span class="text-base sm:text-xl font-bold text-mapa-rust block">${provDigits}</span>
+								<span class="text-[10px] sm:text-xs text-mapa-ink/70 uppercase block font-sans truncate">Province</span>
+							</div>
+							<div class="bg-mapa-canvas-dark border border-mapa-contour p-2.5 rounded-lg">
+								<span class="text-base sm:text-xl font-bold text-mapa-ink block">${munDigits}</span>
+								<span class="text-[10px] sm:text-xs text-mapa-ink/70 uppercase block font-sans truncate">City/Mun</span>
+							</div>
+							<div class="bg-mapa-canvas-dark border border-mapa-contour p-2.5 rounded-lg">
+								<span class="text-base sm:text-xl font-bold text-mapa-clay block">${bgyDigits}</span>
+								<span class="text-[10px] sm:text-xs text-mapa-ink/70 uppercase block font-sans truncate">Barangay</span>
+							</div>
+						</div>
+					</div>
+
+					<!-- Data Metrics Grid -->
+					<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 font-sans">
+						<div class="p-3 bg-mapa-canvas-dark/60 rounded-lg border border-mapa-contour/40">
+							<span class="text-xs text-mapa-ink/60 block">2024 Population</span>
+							<span class="text-base sm:text-lg font-bold text-mapa-ink block mt-0.5">
+								${formatNumber(item.pop)}
+							</span>
+						</div>
+						<div class="p-3 bg-mapa-canvas-dark/60 rounded-lg border border-mapa-contour/40">
+							<span class="text-xs text-mapa-ink/60 block">Land Area</span>
+							<span class="text-base sm:text-lg font-bold text-mapa-ink block mt-0.5">
+								${item.a != null ? item.a.toLocaleString() + ' km²' : 'N/A'}
+							</span>
+						</div>
+						<div class="p-3 bg-mapa-canvas-dark/60 rounded-lg border border-mapa-contour/40">
+							<span class="text-xs text-mapa-ink/60 block">Population Density</span>
+							<span class="text-base sm:text-lg font-bold text-mapa-ink block mt-0.5">
+								${item.d != null ? item.d.toLocaleString() + ' /km²' : 'N/A'}
+							</span>
+						</div>
+						<div class="p-3 bg-mapa-canvas-dark/60 rounded-lg border border-mapa-contour/40">
+							<span class="text-xs text-mapa-ink/60 block">9-Digit Code</span>
+							<span class="text-base sm:text-lg font-mono font-bold text-mapa-ink block mt-0.5">
+								${item.c9 || psgcStr.slice(0, 9)}
+							</span>
+						</div>
+					</div>
+				`;
+			}
+
+			function renderResults() {
+				const query = searchInput.value.trim().toLowerCase();
+
+				let filtered = items;
+				if (currentFilter !== 'All') {
+					filtered = filtered.filter(i => i.l === currentFilter);
+				}
+
+				if (query) {
+					filtered = filtered.filter(i => {
+						const nameMatch = i.n.toLowerCase().includes(query);
+						const psgcMatch = String(i.p).includes(query);
+						const code9Match = i.c9 && String(i.c9).includes(query);
+						const provMatch = i.prov && i.prov.toLowerCase().includes(query);
+						const regMatch = i.reg && i.reg.toLowerCase().includes(query);
+						return nameMatch || psgcMatch || code9Match || provMatch || regMatch;
+					});
+				}
+
+				resultsCount.textContent = `Showing ${filtered.length > 30 ? 'first 30 of ' + filtered.length : filtered.length} administrative units`;
+
+				const displayItems = filtered.slice(0, 30);
+
+				if (displayItems.length === 0) {
+					resultsContainer.innerHTML = `
+						<div class="col-span-full py-8 text-center text-mapa-ink/60 font-sans text-sm">
+							No administrative divisions found matching "${query}". Try searching for another name or code.
+						</div>
+					`;
+					return;
+				}
+
+				resultsContainer.innerHTML = displayItems.map(item => {
+					const isSelected = activeItem && activeItem.p === item.p;
+					return `
+						<button
+							type="button"
+							data-psgc="${item.p}"
+							class="result-item text-left p-3.5 rounded-xl border transition-all duration-150 ${
+								isSelected
+									? 'bg-mapa-green/10 border-mapa-green shadow-xs'
+									: 'bg-mapa-canvas border-mapa-contour hover:border-mapa-green/50 hover:bg-mapa-canvas/80'
+							}"
+						>
+							<div class="flex items-center justify-between gap-2 mb-1">
+								<span class="font-serif font-bold text-sm text-mapa-ink truncate">
+									${item.n}
+								</span>
+								<span class="font-sans text-[10px] font-semibold px-2 py-0.5 rounded-md bg-mapa-canvas-dark border border-mapa-contour/50 text-mapa-ink/70 uppercase shrink-0">
+									${item.l}
+								</span>
+							</div>
+							<div class="flex items-center justify-between text-xs text-mapa-clay font-sans">
+								<span class="truncate max-w-[65%]">${item.prov || item.reg}</span>
+								<span class="font-mono font-medium text-mapa-ink/80">${item.p}</span>
+							</div>
+						</button>
+					`;
+				}).join('');
+
+				// Attach click listeners to result cards
+				document.querySelectorAll('.result-item').forEach(btn => {
+					btn.addEventListener('click', () => {
+						const psgc = btn.getAttribute('data-psgc');
+						const found = items.find(i => i.p === psgc);
+						if (found) {
+							renderInspector(found);
+							renderResults();
+						}
+					});
+				});
+			}
+
+			// Filter pill click handlers
+			filterPills.forEach(pill => {
+				pill.addEventListener('click', () => {
+					filterPills.forEach(p => {
+						p.classList.remove('bg-mapa-green', 'text-white', 'border-mapa-green');
+						p.classList.add('bg-mapa-canvas', 'text-mapa-ink/80', 'border-mapa-contour');
+					});
+					pill.classList.remove('bg-mapa-canvas', 'text-mapa-ink/80', 'border-mapa-contour');
+					pill.classList.add('bg-mapa-green', 'text-white', 'border-mapa-green');
+
+					currentFilter = pill.getAttribute('data-filter') || 'All';
+					renderResults();
+				});
+			});
+
+			searchInput.addEventListener('input', () => {
+				renderResults();
+			});
+
+			// Initial render
+			renderInspector(activeItem);
+			renderResults();
+		})();
+	</script>
+</BaseLayout>

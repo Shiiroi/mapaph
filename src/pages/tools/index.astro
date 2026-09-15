@@ -1,0 +1,185 @@
+---
+/**
+ * @file index.astro
+ * @description Central directory of mapaPH tools and mapping utilities.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<BaseLayout
+	title="Free Philippine Mapping Tools & Utilities — mapaPH"
+	description="Explore free open-source mapping utilities for the Philippines: PSGC Code Lookup, PRS92 coordinate converter, Lens civic visualizer, and transit tools."
+>
+	<Navbar />
+
+	<main class="max-w-7xl mx-auto px-6 lg:px-8 py-14 text-mapa-ink">
+		<!-- Header -->
+		<div class="max-w-3xl mb-12">
+			<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
+				Ecosystem Tools
+			</span>
+			<h1 class="text-4xl sm:text-5xl font-extrabold text-mapa-green font-serif tracking-tight mt-3">
+				Philippine Mapping Tools & Utilities
+			</h1>
+			<p class="font-sans text-base sm:text-lg text-mapa-ink/80 mt-3 leading-relaxed">
+				A curated suite of free, open-source web tools and GIS utilities built around maps and civic data of the Philippines.
+			</p>
+		</div>
+
+		<!-- Tools Grid -->
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-8 font-sans">
+			<!-- Tool 1: PSGC Lookup -->
+			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
+				<div>
+					<div class="flex items-center justify-between gap-2 mb-3">
+						<span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-mapa-green/15 text-mapa-green border border-mapa-green/30">
+							Active Tool
+						</span>
+						<span class="text-xs text-mapa-clay font-medium">
+							1,744+ Divisions Indexed
+						</span>
+					</div>
+					<h2 class="font-serif text-2xl font-bold text-mapa-ink group-hover:text-mapa-green transition-colors">
+						PSGC Lookup & Code Decoder
+					</h2>
+					<p class="text-sm text-mapa-ink/80 leading-relaxed mt-2.5">
+						Search through 18 regions, 84 provinces, and 1,642 cities and municipalities. Instantly decode the 9-digit and 10-digit PSGC hierarchy, inspect 2024 census figures, and jump straight to boundary maps.
+					</p>
+					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/70">
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">PSA 2024 Census</span>
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Zero-Latency Client Search</span>
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Hierarchy Decoder</span>
+					</div>
+				</div>
+				<div class="mt-6 pt-5 border-t border-mapa-contour/50">
+					<a
+						href="/tools/psgc-lookup"
+						class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green hover:underline"
+					>
+						<span>Open PSGC Lookup Tool</span>
+						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+						</svg>
+					</a>
+				</div>
+			</div>
+
+			<!-- Tool 2: Coordinates Converter -->
+			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
+				<div>
+					<div class="flex items-center justify-between gap-2 mb-3">
+						<span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-mapa-flag-blue/15 text-mapa-flag-blue border border-mapa-flag-blue/30">
+							Active Tool
+						</span>
+						<span class="text-xs text-mapa-clay font-medium">
+							Survey & GIS
+						</span>
+					</div>
+					<h2 class="font-serif text-2xl font-bold text-mapa-ink group-hover:text-mapa-green transition-colors">
+						Coordinate Converter: PRS92 ↔ WGS84
+					</h2>
+					<p class="text-sm text-mapa-ink/80 leading-relaxed mt-2.5">
+						Convert between GPS latitude and longitude (WGS84 decimal degrees) and projected Philippine coordinates (PRS92 / UTM Zone 51N). Includes datum shift guides and PTM zone reference tables.
+					</p>
+					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/70">
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">UTM Zone 51N</span>
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">PTM Zones I–V</span>
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Datum Shift Calculator</span>
+					</div>
+				</div>
+				<div class="mt-6 pt-5 border-t border-mapa-contour/50">
+					<a
+						href="/tools/coordinates"
+						class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green hover:underline"
+					>
+						<span>Open Coordinate Converter</span>
+						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+						</svg>
+					</a>
+				</div>
+			</div>
+
+			<!-- Tool 3: Lens Flagship -->
+			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
+				<div>
+					<div class="flex items-center justify-between gap-2 mb-3">
+						<span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-mapa-rust/15 text-mapa-rust border border-mapa-rust/30">
+							Web Application
+						</span>
+						<span class="text-xs text-mapa-clay font-medium">
+							Interactive Map
+						</span>
+					</div>
+					<h2 class="font-serif text-2xl font-bold text-mapa-ink group-hover:text-mapa-green transition-colors">
+						Lens
+					</h2>
+					<p class="text-sm text-mapa-ink/80 leading-relaxed mt-2.5">
+						Interactive visualizer and choropleth mapper that overlays Philippine census, economic, and election statistics onto region, province, and municipal boundaries with GeoJSON exports.
+					</p>
+					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/70">
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Choropleth Maps</span>
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Side-by-side Compare</span>
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">GeoJSON Downloads</span>
+					</div>
+				</div>
+				<div class="mt-6 pt-5 border-t border-mapa-contour/50">
+					<a
+						href="https://lens.mapaph.com"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green hover:underline"
+					>
+						<span>Launch Lens Application</span>
+						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+						</svg>
+					</a>
+				</div>
+			</div>
+
+			<!-- Tool 4: To-Cubao -->
+			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
+				<div>
+					<div class="flex items-center justify-between gap-2 mb-3">
+						<span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-mapa-flag-gold/20 text-mapa-ink border border-mapa-flag-gold/40">
+							Transit Routing
+						</span>
+						<span class="text-xs text-mapa-clay font-medium">
+							Metro Manila
+						</span>
+					</div>
+					<h2 class="font-serif text-2xl font-bold text-mapa-ink group-hover:text-mapa-green transition-colors">
+						To-Cubao
+					</h2>
+					<p class="text-sm text-mapa-ink/80 leading-relaxed mt-2.5">
+						A transit commute and route planning guide tailored for Metro Manila commuters, helping identify public utility vehicle paths, bus terminals, and commute options to and from Cubao.
+					</p>
+					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/70">
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Transit Terminals</span>
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">3D Spatial View</span>
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Commute Routes</span>
+					</div>
+				</div>
+				<div class="mt-6 pt-5 border-t border-mapa-contour/50">
+					<a
+						href="https://to-cubao.mapaph.com"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green hover:underline"
+					>
+						<span>Explore To-Cubao</span>
+						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+						</svg>
+					</a>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<Footer />
+</BaseLayout>

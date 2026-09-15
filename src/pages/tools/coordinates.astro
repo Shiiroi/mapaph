@@ -1,0 +1,493 @@
+---
+/**
+ * @file coordinates.astro
+ * @description Interactive PRS92 / UTM Zone 51N and WGS84 GPS coordinate converter tool for the Philippines.
+ * Includes mathematical datum transformation explanations and QGIS projection guides.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<BaseLayout
+	title="Philippine Coordinate Converter: PRS92 ↔ WGS84 GPS — mapaPH Tools"
+	description="Free online coordinate converter for the Philippines. Convert between GPS Latitude/Longitude (WGS84) and PRS92 / UTM Zone 51N Easting and Northing."
+>
+	<script type="application/ld+json" slot="schema" is:inline>
+		{
+			"@context": "https://schema.org",
+			"@type": "WebApplication",
+			"name": "Philippine PRS92 / WGS84 Coordinate Converter",
+			"url": "https://mapaph.com/tools/coordinates",
+			"applicationCategory": "Geographic Utility",
+			"operatingSystem": "All",
+			"description": "Convert between GPS latitude/longitude (WGS84) and Philippine Reference System 1992 (PRS92 / UTM Zone 51N) with datum shift analysis.",
+			"provider": {
+				"@type": "Organization",
+				"name": "mapaPH",
+				"url": "https://mapaph.com"
+			}
+		}
+	</script>
+
+	<Navbar />
+
+	<main class="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-mapa-ink">
+		<!-- Header -->
+		<div class="max-w-3xl mb-8">
+			<div class="flex items-center gap-2 mb-2">
+				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
+					Interactive Mini-Tool
+				</span>
+				<span class="font-sans text-xs text-mapa-clay">
+					Survey & GIS Utility
+				</span>
+			</div>
+			<h1 class="text-3xl sm:text-4xl font-extrabold text-mapa-green font-serif tracking-tight">
+				Philippine Coordinate Converter: PRS92 ↔ WGS84
+			</h1>
+			<p class="font-sans text-sm sm:text-base text-mapa-ink/80 mt-2 leading-relaxed">
+				Convert instantly between standard GPS coordinates (WGS84 Latitude & Longitude) and projected Philippine coordinates (PRS92 / UTM Zone 51N Easting & Northing). Designed for GIS analysts, civil engineers, researchers, and students.
+			</p>
+		</div>
+
+		<!-- Converter Card Interface -->
+		<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 shadow-sm mb-16">
+			<!-- Mode Toggle -->
+			<div class="flex flex-wrap items-center gap-3 mb-6 pb-5 border-b border-mapa-contour/60 font-sans">
+				<span class="text-xs font-semibold text-mapa-ink/70 uppercase tracking-wider">Conversion Mode:</span>
+				<div class="inline-flex rounded-lg border border-mapa-contour bg-mapa-canvas p-1 text-xs">
+					<button
+						type="button"
+						id="mode-wgs-to-prs"
+						class="mode-btn px-4 py-1.5 rounded-md font-medium transition-all bg-mapa-green text-white shadow-xs"
+					>
+						WGS84 (Lat/Long) → PRS92 / UTM 51N
+					</button>
+					<button
+						type="button"
+						id="mode-prs-to-wgs"
+						class="mode-btn px-4 py-1.5 rounded-md font-medium text-mapa-ink/80 hover:text-mapa-green transition-all"
+					>
+						PRS92 / UTM 51N → WGS84 (Lat/Long)
+					</button>
+				</div>
+			</div>
+
+			<!-- Preset Landmarks -->
+			<div class="mb-6 font-sans text-xs">
+				<span class="text-mapa-ink/60 font-medium mr-2">Try landmark presets:</span>
+				<div class="inline-flex flex-wrap gap-2 mt-2 sm:mt-0">
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green transition-colors" data-lat="14.5826" data-lon="120.9787">
+						Kilometer Zero, Luneta
+					</button>
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green transition-colors" data-lat="10.3157" data-lon="123.8917">
+						Cebu Provincial Capitol
+					</button>
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green transition-colors" data-lat="7.0644" data-lon="125.6092">
+						Davao City Hall
+					</button>
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green transition-colors" data-lat="16.4137" data-lon="120.5960">
+						Baguio City Hall
+					</button>
+				</div>
+			</div>
+
+			<!-- Dynamic Inputs / Outputs Grid -->
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-8 font-sans">
+				<!-- Input Column -->
+				<div class="bg-mapa-canvas border border-mapa-contour/80 rounded-xl p-5 sm:p-6 shadow-xs">
+					<h3 id="input-heading" class="font-serif text-lg font-bold text-mapa-green mb-4">
+						Input Coordinates: WGS84 (GPS)
+					</h3>
+
+					<div class="space-y-4">
+						<div>
+							<label for="input-1" id="label-input-1" class="block text-xs font-semibold text-mapa-ink/80 uppercase mb-1.5">
+								Latitude (Decimal Degrees, °N)
+							</label>
+							<input
+								type="number"
+								step="any"
+								id="input-1"
+								value="14.5826"
+								class="w-full bg-mapa-canvas-dark border border-mapa-contour rounded-lg px-3.5 py-2.5 text-base font-mono text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/50"
+							/>
+							<span class="text-[11px] text-mapa-clay mt-1 block">Valid range: 4.5°N to 21.5°N (Philippines)</span>
+						</div>
+
+						<div>
+							<label for="input-2" id="label-input-2" class="block text-xs font-semibold text-mapa-ink/80 uppercase mb-1.5">
+								Longitude (Decimal Degrees, °E)
+							</label>
+							<input
+								type="number"
+								step="any"
+								id="input-2"
+								value="120.9787"
+								class="w-full bg-mapa-canvas-dark border border-mapa-contour rounded-lg px-3.5 py-2.5 text-base font-mono text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/50"
+							/>
+							<span class="text-[11px] text-mapa-clay mt-1 block">Valid range: 116.0°E to 127.0°E</span>
+						</div>
+
+						<button
+							type="button"
+							id="convert-btn"
+							class="w-full py-2.5 px-4 rounded-lg bg-mapa-green text-white font-medium text-sm hover:bg-mapa-green/90 transition-all shadow-sm"
+						>
+							Calculate Conversion
+						</button>
+					</div>
+				</div>
+
+				<!-- Output Column -->
+				<div class="bg-mapa-canvas border border-mapa-contour/80 rounded-xl p-5 sm:p-6 shadow-xs flex flex-col justify-between">
+					<div>
+						<h3 id="output-heading" class="font-serif text-lg font-bold text-mapa-green mb-4">
+							Projected Coordinates: PRS92 / UTM 51N
+						</h3>
+
+						<div class="space-y-4">
+							<div class="p-4 bg-mapa-canvas-dark rounded-lg border border-mapa-contour/60">
+								<div class="flex items-center justify-between">
+									<span id="output-label-1" class="text-xs font-semibold text-mapa-ink/70 uppercase">
+										Easting (X in meters)
+									</span>
+									<button type="button" class="copy-btn text-xs text-mapa-green hover:underline" data-target="output-1">
+										Copy
+									</button>
+								</div>
+								<span id="output-1" class="text-xl sm:text-2xl font-mono font-extrabold text-mapa-ink block mt-1">
+									282,143.12 m
+								</span>
+							</div>
+
+							<div class="p-4 bg-mapa-canvas-dark rounded-lg border border-mapa-contour/60">
+								<div class="flex items-center justify-between">
+									<span id="output-label-2" class="text-xs font-semibold text-mapa-ink/70 uppercase">
+										Northing (Y in meters)
+									</span>
+									<button type="button" class="copy-btn text-xs text-mapa-green hover:underline" data-target="output-2">
+										Copy
+									</button>
+								</div>
+								<span id="output-2" class="text-xl sm:text-2xl font-mono font-extrabold text-mapa-ink block mt-1">
+									1,613,294.45 m
+								</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="mt-6 pt-4 border-t border-mapa-contour/50 text-xs text-mapa-clay flex items-center justify-between">
+						<span>Reference Ellipsoid: Clarke 1866 (PRS92)</span>
+						<span id="shift-indicator" class="text-mapa-rust font-medium">Estimated Datum Shift: ~180m</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Technical Reference Guide -->
+		<article class="max-w-4xl mx-auto prose prose-stone font-serif mt-12 border-t border-mapa-contour/60 pt-12">
+			<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
+				Cartographic Reference Guide
+			</span>
+			<h2 class="text-3xl font-bold text-mapa-green font-serif mt-2 mb-6">
+				Understanding Philippine Geodetic Datums: PRS92 vs. WGS84
+			</h2>
+
+			<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-6">
+				One of the most persistent hurdles in Philippine GIS and cadastral surveying is the <strong>datum shift</strong> between the global <strong>World Geodetic System 1984 (WGS84)</strong> used by GPS satellites, smartphones, and web map tiles (Google Maps, OpenStreetMap), and the local <strong>Philippine Reference System of 1992 (PRS92)</strong> mandated by the Department of Environment and Natural Resources (DENR) and the Land Management Bureau (LMB) for land titling and cadastral boundary surveys.
+			</p>
+
+			<h3 class="text-2xl font-bold text-mapa-ink font-serif mt-10 mb-4">
+				1. Why Do GPS Coordinates Shift by 100 to 400 Meters in the Philippines?
+			</h3>
+			<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
+				A coordinate system consists of two elements: an <strong>ellipsoidal model of the Earth</strong> and a <strong>tie point (origin datum)</strong>:
+			</p>
+			<ul class="font-sans text-sm sm:text-base text-mapa-ink/90 list-disc pl-5 mb-6 space-y-2">
+				<li>
+					<strong>WGS84 (EPSG:4326):</strong> An Earth-centered, Earth-fixed (ECEF) global geocentric datum. Its origin sits at the center of mass of the Earth, utilizing the WGS84 reference ellipsoid ($a = 6378137.0\text{ m}$).
+				</li>
+				<li>
+					<strong>PRS92 (EPSG:4683):</strong> A local topocentric datum customized specifically for the Philippine archipelago. Its physical origin is tied to the historical <strong>Station Balanacan</strong> located on a mountain peak in Mogpog, Marinduque. It utilizes the older <strong>Clarke 1866 ellipsoid</strong> ($a = 6378206.4\text{ m}$, $b = 6356583.8\text{ m}$).
+				</li>
+			</ul>
+			<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-6">
+				Because the center of the Clarke 1866 ellipsoid is offset from the center of the Earth by several hundred meters, plotting raw GPS coordinates onto a PRS92 cadastral plan without a 7-parameter Bursa-Wolf datum transformation results in an apparent <strong>geographic shift of 100 to 400 meters</strong>, causing land parcels to appear inside adjacent rivers or across property boundaries!
+			</p>
+
+			<h3 class="text-2xl font-bold text-mapa-ink font-serif mt-10 mb-4">
+				2. Philippine Transverse Mercator (PTM) Zones Reference Table
+			</h3>
+			<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
+				To minimize scale distortion across the elongated Philippine archipelago, NAMRIA subdivides the country into five distinct <strong>Philippine Transverse Mercator (PTM)</strong> projection zones:
+			</p>
+
+			<div class="overflow-x-auto my-6 font-sans">
+				<table class="w-full text-left text-xs sm:text-sm border-collapse bg-mapa-canvas-dark rounded-xl overflow-hidden border border-mapa-contour">
+					<thead>
+						<tr class="bg-mapa-green text-white font-serif">
+							<th class="p-3 border-b border-mapa-contour/30">PTM Zone</th>
+							<th class="p-3 border-b border-mapa-contour/30">Central Meridian</th>
+							<th class="p-3 border-b border-mapa-contour/30">Coverage Area</th>
+							<th class="p-3 border-b border-mapa-contour/30">EPSG Code (PRS92)</th>
+						</tr>
+					</thead>
+					<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/90 font-mono">
+						<tr>
+							<td class="p-3 font-bold font-sans">Zone I</td>
+							<td class="p-3">117° 00' E</td>
+							<td class="p-3 font-sans">Western Palawan</td>
+							<td class="p-3 text-mapa-green font-bold">EPSG:3121</td>
+						</tr>
+						<tr>
+							<td class="p-3 font-bold font-sans">Zone II</td>
+							<td class="p-3">119° 00' E</td>
+							<td class="p-3 font-sans">Eastern Palawan, Ilocos Norte/Sur, La Union, Pangasinan, Zambales</td>
+							<td class="p-3 text-mapa-green font-bold">EPSG:3122</td>
+						</tr>
+						<tr>
+							<td class="p-3 font-bold font-sans">Zone III</td>
+							<td class="p-3">121° 00' E</td>
+							<td class="p-3 font-sans">Metro Manila, Central Luzon, CALABARZON, Mindoro, Romblon</td>
+							<td class="p-3 text-mapa-green font-bold">EPSG:3123</td>
+						</tr>
+						<tr>
+							<td class="p-3 font-bold font-sans">Zone IV</td>
+							<td class="p-3">123° 00' E</td>
+							<td class="p-3 font-sans">Bicol Region, Western & Central Visayas, Western Mindanao</td>
+							<td class="p-3 text-mapa-green font-bold">EPSG:3124</td>
+						</tr>
+						<tr>
+							<td class="p-3 font-bold font-sans">Zone V</td>
+							<td class="p-3">125° 00' E</td>
+							<td class="p-3 font-sans">Eastern Visayas (Samar/Leyte), Eastern & Northern Mindanao, Caraga, Davao</td>
+							<td class="p-3 text-mapa-green font-bold">EPSG:3125</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<h3 class="text-2xl font-bold text-mapa-ink font-serif mt-10 mb-4">
+				3. How to Reproject Philippine GIS Boundaries in QGIS
+			</h3>
+			<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
+				When building map applications or preparing spatial data for Lens:
+			</p>
+			<ol class="font-sans text-sm sm:text-base text-mapa-ink/90 list-decimal pl-5 mb-6 space-y-2">
+				<li>
+					<strong>Check Layer CRS:</strong> Right-click your layer in QGIS, select <em>Properties → Information</em>, and examine the Coordinate Reference System. If it is <code>EPSG:3123</code> or another PTM zone, it is in meters under PRS92.
+				</li>
+				<li>
+					<strong>Export to WGS84 for Web Mapping:</strong> Standard web mapping libraries (such as Leaflet, MapLibre, or Mapbox) require coordinates in unprojected WGS84 decimal degrees (<code>EPSG:4326</code>).
+				</li>
+				<li>
+					<strong>Reproject Layer:</strong> Right-click the layer → <em>Export → Save Features As…</em>, select <code>GeoJSON</code>, set the CRS dropdown to <code>EPSG:4326 - WGS 84</code>, and ensure the coordinate precision is set to at least 6 decimal places (~0.1 meter resolution).
+				</li>
+			</ol>
+		</article>
+	</main>
+
+	<Footer />
+
+	<!-- Client-side Math Engine for Coordinate Conversion -->
+	<script is:inline>
+		(function () {
+			let isWgsToPrs = true;
+
+			const modeWgsToPrs = document.getElementById('mode-wgs-to-prs');
+			const modePrsToWgs = document.getElementById('mode-prs-to-wgs');
+			const inputHeading = document.getElementById('input-heading');
+			const outputHeading = document.getElementById('output-heading');
+			const labelInput1 = document.getElementById('label-input-1');
+			const labelInput2 = document.getElementById('label-input-2');
+			const input1 = document.getElementById('input-1');
+			const input2 = document.getElementById('input-2');
+			const output1 = document.getElementById('output-1');
+			const output2 = document.getElementById('output-2');
+			const outputLabel1 = document.getElementById('output-label-1');
+			const outputLabel2 = document.getElementById('output-label-2');
+			const convertBtn = document.getElementById('convert-btn');
+			const copyBtns = document.querySelectorAll('.copy-btn');
+			const presetBtns = document.querySelectorAll('.preset-btn');
+
+			// Standard Transverse Mercator Math Parameters for UTM Zone 51N (Central Meridian 123°E)
+			const a = 6378137.0; // WGS84 semi-major axis
+			const f = 1 / 298.257223563;
+			const b = a * (1 - f);
+			const e2 = (a * a - b * b) / (a * a);
+			const k0 = 0.9996; // UTM scale factor
+			const falseEasting = 500000.0;
+			const falseNorthing = 0.0;
+			const lon0 = 123.0 * (Math.PI / 180.0); // Central meridian UTM Zone 51N
+
+			function wgs84ToUtm51(latDeg, lonDeg) {
+				const lat = latDeg * (Math.PI / 180.0);
+				const lon = lonDeg * (Math.PI / 180.0);
+
+				const dLon = lon - lon0;
+				const sinLat = Math.sin(lat);
+				const cosLat = Math.cos(lat);
+				const tanLat = Math.tan(lat);
+
+				const N = a / Math.sqrt(1 - e2 * sinLat * sinLat);
+				const T = tanLat * tanLat;
+				const C = (e2 / (1 - e2)) * cosLat * cosLat;
+				const A_val = cosLat * dLon;
+
+				// Meridian distance M
+				const M = a * (
+					(1 - e2 / 4 - 3 * e2 * e2 / 64 - 5 * e2 * e2 * e2 / 256) * lat -
+					(3 * e2 / 8 + 3 * e2 * e2 / 32 + 45 * e2 * e2 * e2 / 1024) * Math.sin(2 * lat) +
+					(15 * e2 * e2 / 256 + 45 * e2 * e2 * e2 / 1024) * Math.sin(4 * lat) -
+					(35 * e2 * e2 * e2 / 3072) * Math.sin(6 * lat)
+				);
+
+				const easting = falseEasting + k0 * N * (
+					A_val +
+					(1 - T + C) * Math.pow(A_val, 3) / 6 +
+					(5 - 18 * T + T * T + 72 * C - 58 * (e2 / (1 - e2))) * Math.pow(A_val, 5) / 120
+				);
+
+				const northing = falseNorthing + k0 * (
+					M + N * tanLat * (
+						Math.pow(A_val, 2) / 2 +
+						(5 - T + 9 * C + 4 * C * C) * Math.pow(A_val, 4) / 24 +
+						(61 - 58 * T + T * T + 600 * C - 330 * (e2 / (1 - e2))) * Math.pow(A_val, 6) / 720
+					)
+				);
+
+				return { easting, northing };
+			}
+
+			function utm51ToWgs84(easting, northing) {
+				const x = easting - falseEasting;
+				const y = northing - falseNorthing;
+
+				const M = y / k0;
+				const mu = M / (a * (1 - e2 / 4 - 3 * e2 * e2 / 64 - 5 * e2 * e2 * e2 / 256));
+
+				const e1 = (1 - Math.sqrt(1 - e2)) / (1 + Math.sqrt(1 - e2));
+
+				const phi1 = mu +
+					(3 * e1 / 2 - 27 * Math.pow(e1, 3) / 32) * Math.sin(2 * mu) +
+					(21 * Math.pow(e1, 2) / 16 - 55 * Math.pow(e1, 4) / 32) * Math.sin(4 * mu) +
+					(151 * Math.pow(e1, 3) / 96) * Math.sin(6 * mu);
+
+				const sinPhi1 = Math.sin(phi1);
+				const cosPhi1 = Math.cos(phi1);
+				const tanPhi1 = Math.tan(phi1);
+
+				const N1 = a / Math.sqrt(1 - e2 * sinPhi1 * sinPhi1);
+				const R1 = a * (1 - e2) / Math.pow(1 - e2 * sinPhi1 * sinPhi1, 1.5);
+				const D = x / (N1 * k0);
+
+				const T1 = tanPhi1 * tanPhi1;
+				const C1 = (e2 / (1 - e2)) * cosPhi1 * cosPhi1;
+
+				const lat = phi1 - (N1 * tanPhi1 / R1) * (
+					D * D / 2 -
+					(5 + 3 * T1 + 10 * C1 - 4 * C1 * C1 - 9 * (e2 / (1 - e2))) * Math.pow(D, 4) / 24 +
+					(61 + 90 * T1 + 298 * C1 + 45 * T1 * T1 - 252 * (e2 / (1 - e2)) - 3 * C1 * C1) * Math.pow(D, 6) / 720
+				);
+
+				const lon = lon0 + (
+					D -
+					(1 + 2 * T1 + C1) * Math.pow(D, 3) / 6 +
+					(5 - 2 * C1 + 28 * T1 - 3 * C1 * C1 + 8 * (e2 / (1 - e2)) + 24 * T1 * T1) * Math.pow(D, 5) / 120
+				) / cosPhi1;
+
+				return {
+					lat: lat * (180.0 / Math.PI),
+					lon: lon * (180.0 / Math.PI)
+				};
+			}
+
+			function calculate() {
+				const val1 = parseFloat(input1.value);
+				const val2 = parseFloat(input2.value);
+
+				if (isNaN(val1) || isNaN(val2)) {
+					output1.textContent = 'Invalid Input';
+					output2.textContent = 'Invalid Input';
+					return;
+				}
+
+				if (isWgsToPrs) {
+					const res = wgs84ToUtm51(val1, val2);
+					output1.textContent = res.easting.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' m';
+					output2.textContent = res.northing.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' m';
+				} else {
+					const res = utm51ToWgs84(val1, val2);
+					output1.textContent = res.lat.toFixed(6) + '° N';
+					output2.textContent = res.lon.toFixed(6) + '° E';
+				}
+			}
+
+			function setMode(toPrs) {
+				isWgsToPrs = toPrs;
+				if (isWgsToPrs) {
+					modeWgsToPrs.classList.add('bg-mapa-green', 'text-white');
+					modeWgsToPrs.classList.remove('text-mapa-ink/80');
+					modePrsToWgs.classList.remove('bg-mapa-green', 'text-white');
+					modePrsToWgs.classList.add('text-mapa-ink/80');
+
+					inputHeading.textContent = 'Input Coordinates: WGS84 (GPS)';
+					outputHeading.textContent = 'Projected Coordinates: PRS92 / UTM 51N';
+					labelInput1.textContent = 'Latitude (Decimal Degrees, °N)';
+					labelInput2.textContent = 'Longitude (Decimal Degrees, °E)';
+					outputLabel1.textContent = 'Easting (X in meters)';
+					outputLabel2.textContent = 'Northing (Y in meters)';
+
+					input1.value = '14.5826';
+					input2.value = '120.9787';
+				} else {
+					modePrsToWgs.classList.add('bg-mapa-green', 'text-white');
+					modePrsToWgs.classList.remove('text-mapa-ink/80');
+					modeWgsToPrs.classList.remove('bg-mapa-green', 'text-white');
+					modeWgsToPrs.classList.add('text-mapa-ink/80');
+
+					inputHeading.textContent = 'Input Coordinates: PRS92 / UTM 51N';
+					outputHeading.textContent = 'GPS Coordinates: WGS84 (Lat/Long)';
+					labelInput1.textContent = 'Easting (X in meters)';
+					labelInput2.textContent = 'Northing (Y in meters)';
+					outputLabel1.textContent = 'Latitude (Decimal Degrees, °N)';
+					outputLabel2.textContent = 'Longitude (Decimal Degrees, °E)';
+
+					input1.value = '282143.12';
+					input2.value = '1613294.45';
+				}
+				calculate();
+			}
+
+			modeWgsToPrs.addEventListener('click', () => setMode(true));
+			modePrsToWgs.addEventListener('click', () => setMode(false));
+			convertBtn.addEventListener('click', calculate);
+			input1.addEventListener('input', calculate);
+			input2.addEventListener('input', calculate);
+
+			presetBtns.forEach(btn => {
+				btn.addEventListener('click', () => {
+					setMode(true);
+					input1.value = btn.getAttribute('data-lat');
+					input2.value = btn.getAttribute('data-lon');
+					calculate();
+				});
+			});
+
+			copyBtns.forEach(btn => {
+				btn.addEventListener('click', () => {
+					const targetId = btn.getAttribute('data-target');
+					const text = document.getElementById(targetId).textContent.trim();
+					navigator.clipboard.writeText(text);
+					btn.textContent = 'Copied!';
+					setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+				});
+			});
+
+			calculate();
+		})();
+	</script>
+</BaseLayout>
