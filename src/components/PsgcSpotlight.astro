@@ -1,7 +1,8 @@
 ---
 /**
  * @file PsgcSpotlight.astro
- * @description Homepage spotlight widget highlighting the interactive PSGC Lookup tool and Lens database stats.
+ * @description Executive geographic summary sheet highlighting Philippine administrative divisions,
+ * hierarchy specifications, sample PSGC codes, and a direct link to the tools directory.
  */
 
 import psgcData from '../data/psgc-directory.json';
@@ -21,27 +22,52 @@ const popularLGUs = [
 		<!-- Subtle decorative topographic background lines -->
 		<div class="absolute inset-0 opacity-10 bg-[radial-gradient(#3d5a45_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none"></div>
 
-		<div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-			<!-- Left copy column -->
+		<div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+			<!-- Left Column: Summary Sheet Details -->
 			<div class="lg:col-span-7">
-				<div class="flex items-center gap-2 mb-2.5">
-					<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
-						Civic Geographic Intelligence
+				<!-- Header badges -->
+				<div class="flex flex-wrap items-center gap-2 mb-3 font-sans">
+					<span class="text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-3 py-0.5 rounded-full">
+						Philippine Geographic Summary Sheet
 					</span>
-					<span class="font-sans text-xs text-mapa-clay">
-						Updated 2024 PSA Standards
+					<span class="text-xs text-mapa-clay">
+						Official 2024 PSA Baseline
 					</span>
 				</div>
+
+				<!-- Heading & Subhead -->
 				<h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-mapa-ink font-serif tracking-tight">
-					Explore Philippine Boundaries & PSGC Codes
+					Philippine Administrative Hierarchy at a Glance
 				</h2>
-				<p class="font-sans text-sm sm:text-base text-mapa-ink/80 mt-3 leading-relaxed max-w-xl">
-					Quickly decode official 9-digit and 10-digit codes for every region, province, city, and municipality in the country. Backed by official PSA census demographics and interactive choropleth boundary maps.
+				<p class="font-sans text-sm sm:text-base text-mapa-ink/80 mt-2.5 leading-relaxed max-w-xl">
+					A quick reference summary of the Philippine administrative structure—tracking statutory regions, 82 provinces, 149 chartered cities, and 1,493 municipalities encoded in the official PSGC database.
 				</p>
 
-				<!-- Quick Pill Suggestions -->
-				<div class="mt-6 flex flex-wrap items-center gap-2 font-sans text-xs">
-					<span class="text-mapa-ink/60 font-medium">Quick inspect:</span>
+				<!-- Hierarchy Flow Strip -->
+				<div class="mt-6 p-3.5 rounded-xl bg-mapa-canvas border border-mapa-contour/80 font-sans text-xs">
+					<div class="flex items-center justify-between text-mapa-ink/60 font-semibold uppercase tracking-wider text-[10px] mb-2 pb-1.5 border-b border-mapa-contour/40">
+						<span>Statutory Division Breakdown</span>
+						<span class="font-mono text-mapa-green lowercase">1,742 total divisions</span>
+					</div>
+					<div class="grid grid-cols-3 gap-2 text-center">
+						<div class="bg-mapa-canvas-dark p-2 rounded-lg border border-mapa-contour/40">
+							<span class="text-xs font-bold text-mapa-green block font-mono">18 Regions</span>
+							<span class="text-[10px] text-mapa-clay block mt-0.5">NCR, CAR, NIR, BARMM</span>
+						</div>
+						<div class="bg-mapa-canvas-dark p-2 rounded-lg border border-mapa-contour/40">
+							<span class="text-xs font-bold text-mapa-rust block font-mono">82 Provinces</span>
+							<span class="text-[10px] text-mapa-clay block mt-0.5">Strictly Statutory</span>
+						</div>
+						<div class="bg-mapa-canvas-dark p-2 rounded-lg border border-mapa-contour/40">
+							<span class="text-xs font-bold text-mapa-navy block font-mono">1,642 LGUs</span>
+							<span class="text-[10px] text-mapa-clay block mt-0.5">149 Cities + 1,493 Muns</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- Quick Inspect PSGC Codes -->
+				<div class="mt-5 flex flex-wrap items-center gap-2 font-sans text-xs">
+					<span class="text-mapa-ink/60 font-medium">Sample PSGC:</span>
 					{popularLGUs.map((lgu) => (
 						<a
 							href={`/tools/psgc-lookup`}
@@ -53,65 +79,87 @@ const popularLGUs = [
 					))}
 				</div>
 
-				<div class="mt-8 flex flex-wrap items-center gap-4 font-sans text-sm">
+				<!-- Action Controls: Scroll to tools or jump to directory -->
+				<div class="mt-7 flex flex-wrap items-center gap-4 font-sans text-sm">
 					<a
-						href="/tools/psgc-lookup"
-						class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-mapa-green text-white font-medium hover:bg-mapa-green/90 transition-all shadow-sm"
+						href="#tools"
+						class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-mapa-green text-white font-medium hover:bg-mapa-green/90 transition-all shadow-sm group"
 					>
-						<span>Open PSGC Lookup Tool</span>
-						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+						<span>Explore Built-in Tools & Utilities</span>
+						<svg class="w-4 h-4 group-hover:translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
 						</svg>
 					</a>
+
 					<a
-						href="/tools/coordinates"
-						class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-mapa-canvas border border-mapa-contour text-mapa-ink font-medium hover:bg-mapa-contour/30 transition-all"
+						href="/tools/psgc-lookup"
+						class="inline-flex items-center gap-1.5 text-xs font-semibold text-mapa-green hover:text-mapa-green/80 hover:underline transition-colors"
 					>
-						<span>Coordinate Converter (PRS92)</span>
+						<span>Open Full 1,742 PSGC Directory</span>
+						<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+						</svg>
 					</a>
 				</div>
 			</div>
 
-			<!-- Right stats cards column -->
-			<div class="lg:col-span-5 grid grid-cols-2 gap-3.5 font-sans">
-				<div class="p-4 bg-mapa-canvas rounded-xl border border-mapa-contour/80 text-center">
-					<span class="text-2xl sm:text-3xl font-serif font-extrabold text-mapa-green block">
-						{psgcData.counts.regions}
+			<!-- Right Column: Stats Sheet Cards -->
+			<div class="lg:col-span-5 bg-mapa-canvas p-5 sm:p-6 rounded-xl border border-mapa-contour/80 font-sans shadow-2xs">
+				<div class="flex items-center justify-between pb-3 mb-4 border-b border-mapa-contour/60">
+					<span class="text-[10px] font-bold uppercase tracking-widest text-mapa-clay font-mono">
+						Executive Census & Geo Totals
 					</span>
-					<span class="text-xs uppercase font-bold text-mapa-ink/70 tracking-wider mt-1 block">
-						Administrative Regions
+					<span class="text-[10px] text-mapa-green font-mono bg-mapa-green/10 px-2 py-0.5 rounded font-semibold">
+						Dec 2024
 					</span>
-					<span class="text-[11px] text-mapa-clay block mt-0.5">including NCR & BARMM</span>
 				</div>
 
-				<div class="p-4 bg-mapa-canvas rounded-xl border border-mapa-contour/80 text-center">
-					<span class="text-2xl sm:text-3xl font-serif font-extrabold text-mapa-rust block">
-						{psgcData.counts.provinces}
-					</span>
-					<span class="text-xs uppercase font-bold text-mapa-ink/70 tracking-wider mt-1 block">
-						Provinces
-					</span>
-					<span class="text-[11px] text-mapa-clay block mt-0.5">82 statutory provinces</span>
-				</div>
+				<div class="grid grid-cols-2 gap-3">
+					<div class="p-3.5 bg-mapa-canvas-dark rounded-lg border border-mapa-contour/60 text-center">
+						<span class="text-2xl sm:text-3xl font-serif font-extrabold text-mapa-green block">
+							{psgcData.counts.regions}
+						</span>
+						<span class="text-[11px] uppercase font-bold text-mapa-ink/75 tracking-wider mt-1 block">
+							Administrative Regions
+						</span>
+						<span class="text-[10px] text-mapa-clay block mt-0.5">including NCR & BARMM</span>
+					</div>
 
-				<div class="p-4 bg-mapa-canvas rounded-xl border border-mapa-contour/80 text-center">
-					<span class="text-2xl sm:text-3xl font-serif font-extrabold text-mapa-navy block">
-						{psgcData.counts.cities}
-					</span>
-					<span class="text-xs uppercase font-bold text-mapa-ink/70 tracking-wider mt-1 block">
-						Chartered Cities
-					</span>
-					<span class="text-[11px] text-mapa-clay block mt-0.5 font-medium">33 HUCs · 5 ICCs · 111 CCs</span>
-				</div>
+					<div class="p-3.5 bg-mapa-canvas-dark rounded-lg border border-mapa-contour/60 text-center">
+						<span class="text-2xl sm:text-3xl font-serif font-extrabold text-mapa-rust block">
+							{psgcData.counts.provinces}
+						</span>
+						<span class="text-[11px] uppercase font-bold text-mapa-ink/75 tracking-wider mt-1 block">
+							Provinces
+						</span>
+						<span class="text-[10px] text-mapa-clay block mt-0.5">Strictly 82 statutory</span>
+					</div>
 
-				<div class="p-4 bg-mapa-canvas rounded-xl border border-mapa-contour/80 text-center">
-					<span class="text-2xl sm:text-3xl font-serif font-extrabold text-mapa-green block">
-						{psgcData.counts.municipalities}
-					</span>
-					<span class="text-xs uppercase font-bold text-mapa-ink/70 tracking-wider mt-1 block">
-						Municipalities
-					</span>
-					<span class="text-[11px] text-mapa-clay block mt-0.5">with 2024 census stats</span>
+					<div class="p-3.5 bg-mapa-canvas-dark rounded-lg border border-mapa-contour/60 text-center">
+						<span class="text-2xl sm:text-3xl font-serif font-extrabold text-mapa-navy block">
+							{psgcData.counts.cities}
+						</span>
+						<span class="text-[11px] uppercase font-bold text-mapa-ink/75 tracking-wider mt-1 block">
+							Chartered Cities
+						</span>
+						<span class="text-[10px] text-mapa-clay block mt-0.5 font-medium">33 HUCs · 5 ICCs · 111 CCs</span>
+					</div>
+
+					<div class="p-3.5 bg-mapa-canvas-dark rounded-lg border border-mapa-contour/60 text-center">
+						<span class="text-2xl sm:text-3xl font-serif font-extrabold text-mapa-green block">
+							{psgcData.counts.municipalities.toLocaleString()}
+						</span>
+						<span class="text-[11px] uppercase font-bold text-mapa-ink/75 tracking-wider mt-1 block">
+							Municipalities
+						</span>
+						<span class="text-[10px] text-mapa-clay block mt-0.5">Across 42,000+ barangays</span>
+					</div>
+
+					<!-- Bottom Totals Strip -->
+					<div class="col-span-2 pt-2.5 mt-1 border-t border-mapa-contour/50 flex items-center justify-between text-[11px] font-mono text-mapa-ink/70">
+						<span>Total Divisions: <strong class="text-mapa-ink">{psgcData.counts.total_divisions.toLocaleString()}</strong></span>
+						<span>Total LGUs: <strong class="text-mapa-ink">{psgcData.counts.total_lgus.toLocaleString()}</strong></span>
+					</div>
 				</div>
 			</div>
 		</div>
