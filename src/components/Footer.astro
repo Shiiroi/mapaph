@@ -1,12 +1,9 @@
 ---
 /**
  * @file Footer.astro
- * @description Main footer layout categorizing external links, pages, and legal notes.
+ * @description Main footer layout categorizing tools, references, legal notes, and contact channels.
  */
 
-// Import package.json to read the project version at build time.
-// Why: Exposing the version number subtly to the public signals active maintenance to search engine crawlers 
-// and users (indicating the site is not abandoned). This is a safe engineering practice as the version is public on GitHub anyway.
 import pkg from "../../package.json";
 
 const currentYear = new Date().getFullYear();
@@ -14,9 +11,9 @@ const currentYear = new Date().getFullYear();
 
 <footer class="bg-mapa-green border-t border-mapa-clay/30 text-mapa-canvas">
 	<div class="max-w-7xl mx-auto px-6 lg:px-8 py-12 md:py-16">
-		<div class="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
-			<!-- Column 1: Branding (spans 2 columns on desktop for better readability of the tagline) -->
-			<div class="md:col-span-2 flex flex-col gap-3">
+		<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-10">
+			<!-- Column 1: Branding -->
+			<div class="flex flex-col gap-3">
 				<a
 					href="/"
 					class="font-serif font-bold text-xl tracking-tight text-mapa-canvas hover:text-mapa-clay transition-colors duration-200"
@@ -24,81 +21,102 @@ const currentYear = new Date().getFullYear();
 					mapaPH
 				</a>
 				<p
-					class="font-sans text-xs text-mapa-clay leading-relaxed max-w-sm font-medium"
+					class="font-sans text-xs text-mapa-clay leading-relaxed font-medium"
 				>
-					Open-source tools built around the Philippine map.
+					Open-source tools, geographic references, and civic datasets built around the Philippine map.
 				</p>
 				<p class="font-sans text-xs text-mapa-canvas/60 mt-1">
 					© {currentYear} mapaPH. <span class="text-mapa-canvas/45 select-none font-medium ml-1.5">v{pkg.version}</span>
 				</p>
 			</div>
 
-			<!-- Column 2: About -->
+			<!-- Column 2: Tools & Utilities -->
 			<div class="flex flex-col gap-3.5">
 				<h4
 					class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-clay"
 				>
-					About
+					Tools & Utilities
 				</h4>
-				<ul class="flex flex-col gap-2.5">
+				<ul class="flex flex-col gap-2.5 font-sans text-sm text-mapa-canvas/80">
 					<li>
-						<a
-							href="/about"
-							class="font-sans text-sm text-mapa-canvas/80 hover:text-mapa-clay transition-colors duration-200"
-						>
-							About
+						<a href="/tools/psgc-lookup" class="hover:text-mapa-clay transition-colors duration-200">
+							PSGC Lookup Tool
 						</a>
 					</li>
 					<li>
-						<a
-							href="/docs"
-							class="font-sans text-sm text-mapa-canvas/80 hover:text-mapa-clay transition-colors duration-200"
-						>
-							Documentation
+						<a href="/tools/coordinates" class="hover:text-mapa-clay transition-colors duration-200">
+							Coordinate Converter
 						</a>
 					</li>
 					<li>
-						<a
-							href="https://github.com/Shiiroi/mapaph"
-							target="_blank"
-							rel="noopener noreferrer"
-							class="font-sans text-sm text-mapa-canvas/80 hover:text-mapa-clay transition-colors duration-200"
-						>
-							GitHub
+						<a href="https://lens.mapaph.com" target="_blank" rel="noopener noreferrer" class="hover:text-mapa-clay transition-colors duration-200">
+							Lens Map Visualizer ↗
+						</a>
+					</li>
+					<li>
+						<a href="/tools" class="hover:text-mapa-clay transition-colors duration-200">
+							All Tools Directory
 						</a>
 					</li>
 				</ul>
 			</div>
 
-			<!-- Column 3: Legal & Contact -->
+			<!-- Column 3: Documentation & Guides -->
 			<div class="flex flex-col gap-3.5">
 				<h4
 					class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-clay"
 				>
-					Legal & Contact
+					Guides & Docs
 				</h4>
-				<ul class="flex flex-col gap-2.5">
+				<ul class="flex flex-col gap-2.5 font-sans text-sm text-mapa-canvas/80">
 					<li>
-						<a
-							href="/contact"
-							class="font-sans text-sm text-mapa-canvas/80 hover:text-mapa-clay transition-colors duration-200"
-						>
+						<a href="/docs/psgc" class="hover:text-mapa-clay transition-colors duration-200">
+							PSGC Reference Guide
+						</a>
+					</li>
+					<li>
+						<a href="/docs/philippine-gis-sources" class="hover:text-mapa-clay transition-colors duration-200">
+							Free GIS Data Sources
+						</a>
+					</li>
+					<li>
+						<a href="/docs/prs92-wgs84-guide" class="hover:text-mapa-clay transition-colors duration-200">
+							PRS92 vs. WGS84 Guide
+						</a>
+					</li>
+					<li>
+						<a href="/docs/geojson-guide" class="hover:text-mapa-clay transition-colors duration-200">
+							GeoJSON Developer Guide
+						</a>
+					</li>
+				</ul>
+			</div>
+
+			<!-- Column 4: Legal & Community -->
+			<div class="flex flex-col gap-3.5">
+				<h4
+					class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-clay"
+				>
+					About & Legal
+				</h4>
+				<ul class="flex flex-col gap-2.5 font-sans text-sm text-mapa-canvas/80">
+					<li>
+						<a href="/about" class="hover:text-mapa-clay transition-colors duration-200">
+							About mapaPH
+						</a>
+					</li>
+					<li>
+						<a href="/contact" class="hover:text-mapa-clay transition-colors duration-200">
 							Contact Us
 						</a>
 					</li>
 					<li>
-						<a
-							href="/privacy"
-							class="font-sans text-sm text-mapa-canvas/80 hover:text-mapa-clay transition-colors duration-200"
-						>
+						<a href="/privacy" class="hover:text-mapa-clay transition-colors duration-200">
 							Privacy Policy
 						</a>
 					</li>
 					<li>
-						<a
-							href="/terms"
-							class="font-sans text-sm text-mapa-canvas/80 hover:text-mapa-clay transition-colors duration-200"
-						>
+						<a href="/terms" class="hover:text-mapa-clay transition-colors duration-200">
 							Terms of Use
 						</a>
 					</li>

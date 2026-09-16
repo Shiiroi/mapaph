@@ -1,12 +1,13 @@
 ---
 /**
  * @file index.astro
- * @description Landing page for the mapaPH hub. Composes navbar, hero, about, tools directory, and footer.
+ * @description Landing page for the mapaPH hub. Composes navbar, hero, PSGC spotlight, about, tools directory, and footer.
  */
 
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Navbar from '../components/Navbar.astro';
 import HeroSection from '../components/HeroSection.astro';
+import PsgcSpotlight from '../components/PsgcSpotlight.astro';
 import About from '../components/About.astro';
 import ToolsSection from '../components/ToolsSection.astro';
 import LatestUpdates from "../components/LatestUpdates.astro";
@@ -15,8 +16,9 @@ import Footer from '../components/Footer.astro';
 ---
 
 <BaseLayout 
-	title="mapaPH — Open-source tools based on the Philippine map" 
-	description="mapaPH is an open-source directory of web tools built around maps of the Philippines, featuring transit routing, civic data visualization, and community directories."
+	title="mapaPH — Open-Source Tools Based on the Philippine Map" 
+	description="mapaPH is an open-source hub of civic mapping tools, official Philippine Standard Geographic Code (PSGC) lookups, coordinate converters, and geographic datasets for the Philippines."
+	keywords="Philippine map, Philippine geospatial tools, PSGC lookup, Philippine Standard Geographic Code, PRS92 converter, WGS84 GPS, Philippine GIS data, 82 provinces, 149 cities, Philippine boundaries GeoJSON, open source mapping Philippines"
 >
 	<script type="application/ld+json" slot="schema" is:inline>
 		{
@@ -40,9 +42,19 @@ import Footer from '../components/Footer.astro';
 					"position": 2,
 					"item": {
 						"@type": "WebApplication",
-						"name": "To-Cubao",
-						"url": "https://to-cubao.mapaph.com",
-						"description": "A commute and transit routing application tailored for Metro Manila commuters, helping plan optimal public utility vehicle paths and travel times to Cubao and surrounding hubs."
+						"name": "Philippine PSGC Lookup & Code Decoder",
+						"url": "https://mapaph.com/tools/psgc-lookup",
+						"description": "Interactive search and code decoder for official Philippine Standard Geographic Codes (PSGC), 2024 census demographics, and administrative boundaries."
+					}
+				},
+				{
+					"@type": "ListItem",
+					"position": 3,
+					"item": {
+						"@type": "WebApplication",
+						"name": "Philippine Coordinate Converter",
+						"url": "https://mapaph.com/tools/coordinates",
+						"description": "Bi-directional coordinate converter between GPS latitude/longitude (WGS84) and Philippine Reference System 1992 (PRS92 / UTM Zone 51N)."
 					}
 				}
 			]
@@ -52,6 +64,8 @@ import Footer from '../components/Footer.astro';
 	<Navbar />
 	
 	<HeroSection />
+
+	<PsgcSpotlight />
 
 	<About />
 

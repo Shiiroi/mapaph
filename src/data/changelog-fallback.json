@@ -7,10 +7,10 @@
     "url": "https://github.com/Shiiroi/mapa/releases/latest"
   },
   "Shiiroi/mapaph": {
-    "version": "v0.1.0",
-    "date": "2026-08-08T12:00:00Z",
-    "title": "Hub Documentation & Reference Expansion",
-    "description": "Expanded the central mapaPH directory hub with a dedicated PSGC Developer & GIS Reference Guide, technical data sourcing specifications (PSA, COMELEC, COA), expanded tool user guides, and detailed transit routing specifications for the To-Cubao project.",
+    "version": "v2.0.0",
+    "date": "2026-09-16T15:30:00Z",
+    "title": "Built-in Utilities, 82 Statutory Provinces, and SEO Architecture",
+    "description": "Launched mapaPH Hub v2.0 with dedicated built-in utilities: interactive 1,742 PSGC Lookup and 9-digit code decoder with 1-click copy chips, bidirectional PRS92 to WGS84 GPS coordinate converter, strict 82 statutory provinces validation, executive geographic summary sheet, and comprehensive XML sitemap indexing.",
     "url": "https://github.com/Shiiroi/mapaph/releases/latest"
   }
 }

@@ -1,0 +1,163 @@
+---
+/**
+ * @file DocsPrs92.astro
+ * @description Educational and technical reference guide on the Philippine Reference System 1992 (PRS92) vs. WGS84.
+ */
+---
+
+<article class="prose prose-stone max-w-none font-serif text-mapa-ink">
+	<div class="border-b border-mapa-contour/50 pb-6 mb-8">
+		<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
+			Technical Guide
+		</span>
+		<h1 class="text-3xl sm:text-4xl font-extrabold text-mapa-green tracking-tight font-serif mt-2">
+			PRS92 vs. WGS84: The Philippine Coordinate Datum Shift
+		</h1>
+		<p class="font-sans text-sm sm:text-base text-mapa-ink/70 mt-2">
+			Why raw GPS coordinates don't align with Philippine land titles, how the Clarke 1866 ellipsoid differs from WGS84, and how to convert layers in QGIS.
+		</p>
+	</div>
+
+	<!-- Section 1: Introduction to PRS92 -->
+	<section class="mb-10">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			1. What is PRS92?
+		</h2>
+		<p class="font-sans text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+			The <strong>Philippine Reference System of 1992 (PRS92)</strong> is the official geodetic reference system for all surveying and mapping activities in the Philippines. Promulgated under <strong>Executive Order No. 45 (s. 1993)</strong> and amended by <strong>Executive Order No. 280 (s. 2004)</strong>, PRS92 established a unified, high-accuracy GPS-derived geodetic network across the country to replace aging, disconnected pre-war triangulation nets.
+		</p>
+		<p class="font-sans text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+			Under Philippine law, all cadastral boundary surveys, natural resource inventories (DENR), public infrastructure rights-of-way (DPWH), and property title registrations (LRA) must be referenced to the PRS92 geodetic network.
+		</p>
+	</section>
+
+	<!-- Section 2: The Datum Shift Explained -->
+	<section class="mb-10 border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			2. The 100-to-400 Meter Datum Shift
+		</h2>
+		<p class="font-sans text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+			When engineers and GIS developers overlay modern GPS tracklogs (or mobile phone location pins) directly onto official Philippine cadastral maps without coordinate transformation, they discover an apparent displacement: features appear <strong>100 to 400 meters away from their true physical location</strong>.
+		</p>
+
+		<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-6 my-6 font-sans">
+			<h3 class="font-serif text-lg font-bold text-mapa-rust mb-2">
+				The Origin of the Shift: Geocentric vs. Topocentric Datums
+			</h3>
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm mt-3">
+				<div class="p-4 rounded-lg bg-mapa-canvas border border-mapa-contour/60">
+					<span class="font-bold text-mapa-green block mb-1">WGS84 (Global Standard)</span>
+					<p class="text-mapa-ink/80 leading-relaxed">
+						WGS84 is a <em>geocentric</em> system. Its origin is positioned at the Earth's center of mass (gravitational center). Designed by the US Department of Defense, it provides a best-fit global average for satellite navigation worldwide.
+					</p>
+				</div>
+				<div class="p-4 rounded-lg bg-mapa-canvas border border-mapa-contour/60">
+					<span class="font-bold text-mapa-rust block mb-1">PRS92 (Local Philippine Standard)</span>
+					<p class="text-mapa-ink/80 leading-relaxed">
+						PRS92 is a <em>topocentric</em> system. Its origin is physically anchored to <strong>Station Balanacan</strong> on Mt. Balanacan in Mogpog, Marinduque. It utilizes the historical <strong>Clarke 1866</strong> reference ellipsoid, which conforms closely to the geoid of the Philippine islands but is offset from the center of the Earth.
+					</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Section 3: Official Transformation Parameters -->
+	<section class="mb-10 border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			3. Official NAMRIA Bursa-Wolf 7-Parameter Transformation
+		</h2>
+		<p class="font-sans text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+			To mathematically convert coordinates between PRS92 and WGS84, NAMRIA established standard <strong>Bursa-Wolf 7-parameter transformation coefficients</strong>:
+		</p>
+
+		<div class="bg-mapa-navy text-mapa-canvas rounded-xl p-5 font-mono text-xs overflow-x-auto my-4 leading-relaxed">
+			<pre><code># NAMRIA Bursa-Wolf 7-Parameter Transformation (PRS92 to WGS84)
+dX (Translation X):  -127.62 meters
+dY (Translation Y):   -67.24 meters
+dZ (Translation Z):   -47.04 meters
+rX (Rotation X):      -3.0685 arcseconds
+rY (Rotation Y):      +4.9029 arcseconds
+rZ (Rotation Z):      +1.5781 arcseconds
+Scale Difference (ds): +1.06002 ppm</code></pre>
+		</div>
+
+		<p class="font-sans text-xs text-mapa-clay mt-2">
+			PROJ transformation pipeline string: <code>+proj=pipeline +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=cart +ellps=clrk66 +step +proj=helmert +x=-127.62 +y=-67.24 +z=-47.04 +rx=-3.0685 +ry=4.9029 +rz=1.5781 +s=1.06002 +convention=coordinate_frame +step +proj=cart +inv +ellps=WGS84 +step +proj=unitconvert +xy_in=rad +xy_out=deg</code>
+		</p>
+	</section>
+
+	<!-- Section 4: Philippine Transverse Mercator (PTM) Zones -->
+	<section class="mb-10 border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			4. Philippine Transverse Mercator (PTM) Zones I through V
+		</h2>
+		<p class="font-sans text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+			Because the Philippines spans over 1,800 kilometers north to south, projecting the whole country onto a single transverse cylinder causes severe scale distortion at the eastern and western peripheries. NAMRIA therefore defined <strong>five PTM zones</strong>, each with a central meridian 2 degrees apart, a scale factor of <code>0.99995</code> at the central meridian, and a false easting of <code>500,000 meters</code>:
+		</p>
+
+		<div class="space-y-3 font-sans text-xs sm:text-sm">
+			<div class="p-3.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+				<div>
+					<span class="font-bold text-mapa-ink">Zone I (EPSG:3121)</span>
+					<span class="text-mapa-clay ml-2">Central Meridian: 117° 00' E</span>
+				</div>
+				<span class="text-mapa-ink/70">Palawan (Western portion)</span>
+			</div>
+			<div class="p-3.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+				<div>
+					<span class="font-bold text-mapa-ink">Zone II (EPSG:3122)</span>
+					<span class="text-mapa-clay ml-2">Central Meridian: 119° 00' E</span>
+				</div>
+				<span class="text-mapa-ink/70">Ilocos Region, La Union, Pangasinan, Zambales, Eastern Palawan</span>
+			</div>
+			<div class="p-3.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+				<div>
+					<span class="font-bold text-mapa-ink">Zone III (EPSG:3123)</span>
+					<span class="text-mapa-clay ml-2">Central Meridian: 121° 00' E</span>
+				</div>
+				<span class="text-mapa-ink/70">Metro Manila (NCR), Central Luzon, CALABARZON, Mindoro, Romblon</span>
+			</div>
+			<div class="p-3.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+				<div>
+					<span class="font-bold text-mapa-ink">Zone IV (EPSG:3124)</span>
+					<span class="text-mapa-clay ml-2">Central Meridian: 123° 00' E</span>
+				</div>
+				<span class="text-mapa-ink/70">Bicol, Western & Central Visayas (Panay, Negros, Cebu, Bohol)</span>
+			</div>
+			<div class="p-3.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+				<div>
+					<span class="font-bold text-mapa-ink">Zone V (EPSG:3125)</span>
+					<span class="text-mapa-clay ml-2">Central Meridian: 125° 00' E</span>
+				</div>
+				<span class="text-mapa-ink/70">Eastern Visayas (Samar, Leyte), Mindanao (Northern, Davao, Caraga)</span>
+			</div>
+		</div>
+	</section>
+
+	<!-- Section 5: Reprojecting in QGIS -->
+	<section class="mb-10 border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			5. Step-by-Step: Reprojecting PRS92 to WGS84 in QGIS
+		</h2>
+		<p class="font-sans text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+			To use government cadastral Shapefiles inside web map libraries (Leaflet, MapLibre, OpenLayers):
+		</p>
+		<ol class="font-sans text-sm sm:text-base text-mapa-ink/90 list-decimal pl-5 space-y-2">
+			<li>
+				Open QGIS (version 3.20 or later, which contains the updated PROJ 8+ datum grid definitions).
+			</li>
+			<li>
+				Load your PRS92 Shapefile. Confirm the Project CRS displays <code>EPSG:3123</code> (or your appropriate PTM zone).
+			</li>
+			<li>
+				From the top menu, navigate to <strong>Processing → Toolbox → Vector General → Reproject Layer</strong>.
+			</li>
+			<li>
+				Set the <em>Target CRS</em> to <code>EPSG:4326 - WGS 84</code>.
+			</li>
+			<li>
+				Save the output as a <strong>GeoJSON</strong> or <strong>GeoPackage</strong> file. The coordinates will now be in decimal degrees compatible with Google Maps and Lens.
+			</li>
+		</ol>
+	</section>
+</article>

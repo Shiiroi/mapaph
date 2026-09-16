@@ -1,4 +1,31 @@
+# robots.txt for mapaPH (https://www.mapaph.com)
+# Open-source tools based on the Philippine map
+
 User-agent: *
 Allow: /
 
+# Google Search Engine Crawler
+User-agent: Googlebot
+Allow: /
+
+# Google AdSense Crawler (Required for timely site verification & contextual ad crawls)
+User-agent: Mediapartners-Google
+Allow: /
+
+# Google Ads Quality Evaluation
+User-agent: AdsBot-Google
+Allow: /
+
+User-agent: AdsBot-Google-Mobile
+Allow: /
+
+# Bing Search Engine Crawler
+User-agent: Bingbot
+Allow: /
+
+# Canonical Host
+Host: https://www.mapaph.com
+
+# XML Sitemaps
 Sitemap: https://www.mapaph.com/sitemap-index.xml
+Sitemap: https://www.mapaph.com/sitemap-0.xml

@@ -15,6 +15,8 @@ interface Props {
 	title: string;
 	/** The meta description summary for SEO search engine result snippets. */
 	description: string;
+	/** Optional comma-separated meta keywords for search engines. */
+	keywords?: string;
 	/** Optional URL path for the Open Graph sharing image snippet. Defaults to '/default-og.png'. */
 	ogImage?: string;
 	/** 
@@ -24,7 +26,17 @@ interface Props {
 	noindex?: boolean;
 }
 
-const { title, description, ogImage, noindex = false } = Astro.props;
+const DEFAULT_KEYWORDS =
+	'Philippine map, PSGC lookup, Philippine Standard Geographic Code, PRS92 to WGS84, Philippine GIS, Philippine provinces, Philippine cities, 82 provinces, 149 cities, Philippine boundaries, NAMRIA coordinates, UTM Zone 51N, Philippine census data, open source GIS Philippines, civic cartography';
+
+const {
+	title,
+	description,
+	keywords = DEFAULT_KEYWORDS,
+	ogImage,
+	noindex = false
+} = Astro.props;
+
 const cleanPathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 const canonicalURL = new URL(cleanPathname, Astro.site || Astro.url.origin);
 const resolvedOgImage = new URL(ogImage || '/default-og.png', Astro.site || Astro.url.origin).toString();
@@ -34,17 +46,21 @@ const resolvedOgImage = new URL(ogImage || '/default-og.png', Astro.site || Astr
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" type="image/svg+xml" href="/ph.svg" />
 		<meta name="generator" content={Astro.generator} />
 
-		{noindex && (
-			/* 
-				SEO Strategy: "noindex, follow" tells crawlers (like Googlebot) not to show 
-				this page in search results (preventing thin-content or placeholder penalties), 
-				but still allows them to crawl/follow links to preserve internal link equity (link juice).
-			*/
+		<!-- Performance: Resource Hints & Preconnect -->
+		<link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin />
+		<link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+		<link rel="preconnect" href="https://pub-f9d925e99cc844ad9fac924a16e8f3a3.r2.dev" crossorigin />
+		<link rel="dns-prefetch" href="https://pub-f9d925e99cc844ad9fac924a16e8f3a3.r2.dev" />
+
+		<!-- Robots Directives -->
+		{noindex ? (
 			<meta name="robots" content="noindex, follow" />
+		) : (
+			<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
 		)}
 
 		<!-- Google AdSense / Site Verification -->
@@ -54,10 +70,22 @@ const resolvedOgImage = new URL(ogImage || '/default-og.png', Astro.site || Astr
 		<title>{title}</title>
 		<meta name="title" content={title} />
 		<meta name="description" content={description} />
+		<meta name="keywords" content={keywords} />
+		<meta name="author" content="mapaPH" />
+		<meta name="theme-color" content="#1a4d2e" />
 		<link rel="canonical" href={canonicalURL} />
+
+		<!-- Geo / Civic Local SEO -->
+		<meta name="geo.region" content="PH" />
+		<meta name="geo.placename" content="Philippines" />
+		<meta name="geo.position" content="12.8797;121.7740" />
+		<meta name="ICBM" content="12.8797, 121.7740" />
 
 		<!-- Open Graph / Facebook -->
 		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="mapaPH" />
+		<meta property="og:locale" content="en_PH" />
+		<meta property="og:locale:alternate" content="en_US" />
 		<meta property="og:url" content={canonicalURL} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
@@ -69,6 +97,40 @@ const resolvedOgImage = new URL(ogImage || '/default-og.png', Astro.site || Astr
 		<meta property="twitter:title" content={title} />
 		<meta property="twitter:description" content={description} />
 		<meta property="twitter:image" content={resolvedOgImage} />
+
+		<!-- Global Schema.org JSON-LD (Organization & WebSite) -->
+		<script type="application/ld+json" is:inline>
+			{
+				"@context": "https://schema.org",
+				"@graph": [
+					{
+						"@type": "Organization",
+						"@id": "https://www.mapaph.com/#organization",
+						"name": "mapaPH",
+						"url": "https://www.mapaph.com",
+						"logo": "https://www.mapaph.com/ph.svg",
+						"sameAs": [
+							"https://lens.mapaph.com"
+						],
+						"description": "Independent civic initiative providing open-source geospatial tools, Philippine Standard Geographic Code (PSGC) lookups, and mapping data for the Philippines."
+					},
+					{
+						"@type": "WebSite",
+						"@id": "https://www.mapaph.com/#website",
+						"url": "https://www.mapaph.com",
+						"name": "mapaPH",
+						"publisher": {
+							"@id": "https://www.mapaph.com/#organization"
+						},
+						"potentialAction": {
+							"@type": "SearchAction",
+							"target": "https://www.mapaph.com/tools/psgc-lookup?q={search_term_string}",
+							"query-input": "required name=search_term_string"
+						}
+					}
+				]
+			}
+		</script>
 
 		<slot name="schema" />
 	</head>
