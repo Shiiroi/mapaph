@@ -43,30 +43,8 @@ const popularLGUs = [
 					A quick reference summary of the Philippine administrative structure—tracking statutory regions, 82 provinces, 149 chartered cities, and 1,493 municipalities encoded in the official PSGC database.
 				</p>
 
-				<!-- Hierarchy Flow Strip -->
-				<div class="mt-6 p-3.5 rounded-xl bg-mapa-canvas border border-mapa-contour/80 font-sans text-xs">
-					<div class="flex items-center justify-between text-mapa-ink/60 font-semibold uppercase tracking-wider text-[10px] mb-2 pb-1.5 border-b border-mapa-contour/40">
-						<span>Statutory Division Breakdown</span>
-						<span class="font-mono text-mapa-green lowercase">1,742 total divisions</span>
-					</div>
-					<div class="grid grid-cols-3 gap-2 text-center">
-						<div class="bg-mapa-canvas-dark p-2 rounded-lg border border-mapa-contour/40">
-							<span class="text-xs font-bold text-mapa-green block font-mono">18 Regions</span>
-							<span class="text-[10px] text-mapa-clay block mt-0.5">NCR, CAR, NIR, BARMM</span>
-						</div>
-						<div class="bg-mapa-canvas-dark p-2 rounded-lg border border-mapa-contour/40">
-							<span class="text-xs font-bold text-mapa-rust block font-mono">82 Provinces</span>
-							<span class="text-[10px] text-mapa-clay block mt-0.5">Strictly Statutory</span>
-						</div>
-						<div class="bg-mapa-canvas-dark p-2 rounded-lg border border-mapa-contour/40">
-							<span class="text-xs font-bold text-mapa-navy block font-mono">1,642 LGUs</span>
-							<span class="text-[10px] text-mapa-clay block mt-0.5">149 Cities + 1,493 Muns</span>
-						</div>
-					</div>
-				</div>
-
 				<!-- Quick Inspect PSGC Codes -->
-				<div class="mt-5 flex flex-wrap items-center gap-2 font-sans text-xs">
+				<div class="mt-6 flex flex-wrap items-center gap-2 font-sans text-xs">
 					<span class="text-mapa-ink/60 font-medium">Sample PSGC:</span>
 					{popularLGUs.map((lgu) => (
 						<a
