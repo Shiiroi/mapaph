@@ -61,14 +61,14 @@ import Footer from '../../components/Footer.astro';
 					<button
 						type="button"
 						id="mode-wgs-to-prs"
-						class="mode-btn px-4 py-1.5 rounded-md font-medium transition-all bg-mapa-green text-white shadow-xs"
+						class="mode-btn px-4 py-1.5 rounded-md font-medium transition-all bg-mapa-green text-white shadow-xs hover:bg-mapa-green/90 hover:text-white"
 					>
 						WGS84 (Lat/Long) → PRS92 / UTM 51N
 					</button>
 					<button
 						type="button"
 						id="mode-prs-to-wgs"
-						class="mode-btn px-4 py-1.5 rounded-md font-medium text-mapa-ink/80 hover:text-mapa-green transition-all"
+						class="mode-btn px-4 py-1.5 rounded-md font-medium text-mapa-ink/80 hover:text-mapa-green hover:bg-mapa-contour/30 transition-all"
 					>
 						PRS92 / UTM 51N → WGS84 (Lat/Long)
 					</button>
@@ -426,13 +426,17 @@ import Footer from '../../components/Footer.astro';
 				}
 			}
 
+			const ACTIVE_MODE_CLASSES = ['bg-mapa-green', 'text-white', 'shadow-xs', 'hover:bg-mapa-green/90', 'hover:text-white'];
+			const INACTIVE_MODE_CLASSES = ['text-mapa-ink/80', 'hover:text-mapa-green', 'hover:bg-mapa-contour/30'];
+
 			function setMode(toPrs) {
 				isWgsToPrs = toPrs;
 				if (isWgsToPrs) {
-					modeWgsToPrs.classList.add('bg-mapa-green', 'text-white');
-					modeWgsToPrs.classList.remove('text-mapa-ink/80');
-					modePrsToWgs.classList.remove('bg-mapa-green', 'text-white');
-					modePrsToWgs.classList.add('text-mapa-ink/80');
+					modeWgsToPrs.classList.remove(...INACTIVE_MODE_CLASSES);
+					modeWgsToPrs.classList.add(...ACTIVE_MODE_CLASSES);
+
+					modePrsToWgs.classList.remove(...ACTIVE_MODE_CLASSES);
+					modePrsToWgs.classList.add(...INACTIVE_MODE_CLASSES);
 
 					inputHeading.textContent = 'Input Coordinates: WGS84 (GPS)';
 					outputHeading.textContent = 'Projected Coordinates: PRS92 / UTM 51N';
@@ -444,10 +448,11 @@ import Footer from '../../components/Footer.astro';
 					input1.value = '14.5826';
 					input2.value = '120.9787';
 				} else {
-					modePrsToWgs.classList.add('bg-mapa-green', 'text-white');
-					modePrsToWgs.classList.remove('text-mapa-ink/80');
-					modeWgsToPrs.classList.remove('bg-mapa-green', 'text-white');
-					modeWgsToPrs.classList.add('text-mapa-ink/80');
+					modePrsToWgs.classList.remove(...INACTIVE_MODE_CLASSES);
+					modePrsToWgs.classList.add(...ACTIVE_MODE_CLASSES);
+
+					modeWgsToPrs.classList.remove(...ACTIVE_MODE_CLASSES);
+					modeWgsToPrs.classList.add(...INACTIVE_MODE_CLASSES);
 
 					inputHeading.textContent = 'Input Coordinates: PRS92 / UTM 51N';
 					outputHeading.textContent = 'GPS Coordinates: WGS84 (Lat/Long)';
