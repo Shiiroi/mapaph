@@ -91,21 +91,21 @@
 			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
 				<h3 class="font-serif font-bold text-lg text-mapa-green">1. Region (Rehiyon)</h3>
 				<p class="text-xs text-mapa-ink/80 mt-2 leading-relaxed">
-					Administrative groupings of provinces established for regional planning (e.g., Region III, Region IV-A). The Philippines contains 17 regions, including autonomous regions like BARMM.
+					Administrative groupings of provinces established for regional planning (e.g., Region III, CALABARZON). The Philippines contains 18 regions, including NCR, CAR, the newly established Negros Island Region (NIR), and BARMM.
 				</p>
 			</div>
 
 			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
 				<h3 class="font-serif font-bold text-lg text-mapa-green">2. Province (Probinsya)</h3>
 				<p class="text-xs text-mapa-ink/80 mt-2 leading-relaxed">
-					Primary political corporate bodies consisting of component cities and municipalities. Governed by elected Provincial Governors and Sangguniang Panlalawigan boards.
+					There are strictly <strong>82 statutory provinces</strong> across the Philippines. (Metro Manila and the Special Geographic Area in BARMM are regional and special administrative units, not statutory provinces). In Philippine statutory law and PSA standards, provinces are <em>never numbered</em>—they are classified strictly by name, region, and unique PSGC codes.
 				</p>
 			</div>
 
 			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
 				<h3 class="font-serif font-bold text-lg text-mapa-green">3. Cities & Municipalities</h3>
 				<p class="text-xs text-mapa-ink/80 mt-2 leading-relaxed">
-					Local Government Units (LGUs) containing clusters of barangays. Cities are categorized into <em>Highly Urbanized Cities (HUCs)</em>, <em>Independent Component Cities (ICCs)</em>, and <em>Component Cities</em>.
+					The country comprises <strong>149 chartered cities</strong> and <strong>1,493 municipalities</strong> (1,642 total LGUs). Cities are strictly categorized into <strong>33 Highly Urbanized Cities (HUCs)</strong>, <strong>5 Independent Component Cities (ICCs)</strong>, and <strong>111 Component Cities (CCs)</strong>.
 				</p>
 			</div>
 
@@ -129,13 +129,13 @@
 
 		<ul class="font-sans text-sm text-mapa-ink/90 list-disc pl-5 space-y-3 leading-relaxed">
 			<li>
-				<strong>National Capital Region (NCR / Metro Manila):</strong> NCR does not contain any provinces. Instead, its 16 cities and 1 municipality are organized into 4 Non-Government Administrative Districts (e.g., Manila, Eastern District, Northern District, Southern District).
+				<strong>Strictly 82 Provinces (The "+2" Pseudo-Province Exception):</strong> Some GIS shapefiles incorrectly designate 84 "provinces" by clustering Metro Manila (NCR, PSGC <code>1300000000</code>) and the Special Geographic Area (SGA in BARMM, PSGC <code>1909900000</code>) at the provincial tier. Neither is a statutory province: NCR is a metropolitan region with 16 cities and 1 municipality, and SGA is a cluster of 8 newly constituted BARMM municipalities.
 			</li>
 			<li>
-				<strong>Highly Urbanized Cities (HUCs):</strong> Cities like Cebu City, Davao City, and Quezon City are legally and financially independent of their geographical provinces. In PSGC, they are assigned dedicated 4-digit province-level prefix blocks.
+				<strong>The 5 Independent Component Cities (ICCs):</strong> Unlike component cities, ICC charters forbid voters from participating in provincial elections. The 5 ICCs of the Philippines are: <em>Dagupan City</em>, <em>City of Santiago</em>, <em>Naga City</em>, <em>Ormoc City</em>, and <em>Cotabato City</em>.
 			</li>
 			<li>
-				<strong>BARMM Special Geographic Area (SGA):</strong> 63 barangays in North Cotabato voted to join BARMM in 2019. In 2024, these barangays were formally organized into 8 new municipalities (Pawa, Kadayangan, Nabalawag, etc.), updating their PSGC codes.
+				<strong>The 33 Highly Urbanized Cities (HUCs):</strong> 16 cities within Metro Manila plus 17 provincial metropolitan hubs (e.g., Cebu City, Davao City, Baguio City, Cagayan de Oro City, Iloilo City) are entirely autonomous from any provincial jurisdiction.
 			</li>
 			<li>
 				<strong>Disputed Boundaries:</strong> Areas under territorial jurisdiction disputes (such as certain border barangays between Taguig and Makati) require careful spatial verification when matching historical census logs with current administrative geometry.

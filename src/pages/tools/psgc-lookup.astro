@@ -61,7 +61,7 @@ const directoryItems = [
 
 <BaseLayout
 	title="Philippine PSGC Lookup & 9-Digit Code Decoder — mapaPH Tools"
-	description="Search 1,744+ Philippine administrative divisions, decode official 9-digit & 10-digit PSGC codes, and inspect 2024 census population, density, and land area data."
+	description="Search 1,742 Philippine administrative divisions (18 regions, 82 statutory provinces, 149 cities, 1,493 municipalities), decode official 9-digit & 10-digit PSGC codes, and inspect 2024 census data."
 >
 	<script type="application/ld+json" slot="schema" is:inline>
 		{
@@ -97,7 +97,7 @@ const directoryItems = [
 				Philippine PSGC Lookup & Code Decoder
 			</h1>
 			<p class="font-sans text-sm sm:text-base text-mapa-ink/80 mt-2 leading-relaxed">
-				Search over 1,740+ official Philippine administrative units (regions, provinces, cities, and municipalities). Inspect the official 9-digit and 10-digit PSGC hierarchy, census demographics, and explore boundary visualizations on Lens.
+				Search all 1,742 official Philippine administrative units (18 regions, strictly 82 statutory provinces, and 1,642 cities & municipalities). Inspect official 9-digit and 10-digit PSGC codes, census demographics, and explore boundary visualizations on Lens.
 			</p>
 		</div>
 
@@ -124,23 +124,39 @@ const directoryItems = [
 				</div>
 
 				<!-- Filter Pills -->
-				<div class="flex flex-wrap items-center gap-2 font-sans text-xs">
-					<span class="text-mapa-ink/60 font-medium mr-1">Filter level:</span>
-					<button type="button" data-filter="All" class="filter-pill px-3 py-1 rounded-full border border-mapa-green bg-mapa-green text-white font-medium transition-colors">
-						All ({directoryItems.length})
-					</button>
-					<button type="button" data-filter="Region" class="filter-pill px-3 py-1 rounded-full border border-mapa-contour bg-mapa-canvas text-mapa-ink/80 hover:bg-mapa-green/10 font-medium transition-colors">
-						Regions ({psgcData.counts.regions})
-					</button>
-					<button type="button" data-filter="Province" class="filter-pill px-3 py-1 rounded-full border border-mapa-contour bg-mapa-canvas text-mapa-ink/80 hover:bg-mapa-green/10 font-medium transition-colors">
-						Provinces ({psgcData.counts.provinces})
-					</button>
-					<button type="button" data-filter="City" class="filter-pill px-3 py-1 rounded-full border border-mapa-contour bg-mapa-canvas text-mapa-ink/80 hover:bg-mapa-green/10 font-medium transition-colors">
-						Cities ({psgcData.counts.cities})
-					</button>
-					<button type="button" data-filter="Municipality" class="filter-pill px-3 py-1 rounded-full border border-mapa-contour bg-mapa-canvas text-mapa-ink/80 hover:bg-mapa-green/10 font-medium transition-colors">
-						Municipalities ({psgcData.counts.municipalities})
-					</button>
+				<div class="space-y-2.5 font-sans text-xs">
+					<div class="flex flex-wrap items-center gap-2">
+						<span class="text-mapa-ink/60 font-medium mr-1">Filter level:</span>
+						<button type="button" data-filter="All" class="filter-pill px-3 py-1 rounded-full border border-mapa-green bg-mapa-green text-white font-medium transition-colors">
+							All ({directoryItems.length})
+						</button>
+						<button type="button" data-filter="Region" class="filter-pill px-3 py-1 rounded-full border border-mapa-contour bg-mapa-canvas text-mapa-ink/80 hover:bg-mapa-green/10 font-medium transition-colors">
+							Regions ({psgcData.counts.regions})
+						</button>
+						<button type="button" data-filter="Province" class="filter-pill px-3 py-1 rounded-full border border-mapa-contour bg-mapa-canvas text-mapa-ink/80 hover:bg-mapa-green/10 font-medium transition-colors">
+							Provinces ({psgcData.counts.provinces})
+						</button>
+						<button type="button" data-filter="City" class="filter-pill px-3 py-1 rounded-full border border-mapa-contour bg-mapa-canvas text-mapa-ink/80 hover:bg-mapa-green/10 font-medium transition-colors">
+							Cities ({psgcData.counts.cities})
+						</button>
+						<button type="button" data-filter="Municipality" class="filter-pill px-3 py-1 rounded-full border border-mapa-contour bg-mapa-canvas text-mapa-ink/80 hover:bg-mapa-green/10 font-medium transition-colors">
+							Municipalities ({psgcData.counts.municipalities})
+						</button>
+					</div>
+
+					<!-- City Classification Sub-Filters -->
+					<div class="flex flex-wrap items-center gap-1.5 pt-0.5 border-t border-mapa-contour/40">
+						<span class="text-mapa-clay text-[11px] font-medium mr-1">City Classes (149 Total):</span>
+						<button type="button" data-filter="HUC" class="filter-pill px-2.5 py-0.5 rounded-md border border-mapa-contour bg-mapa-canvas text-mapa-ink/80 hover:border-mapa-green/50 text-[11px] font-medium transition-colors">
+							Highly Urbanized ({psgcData.counts.huc})
+						</button>
+						<button type="button" data-filter="ICC" class="filter-pill px-2.5 py-0.5 rounded-md border border-mapa-contour bg-mapa-canvas text-mapa-ink/80 hover:border-mapa-green/50 text-[11px] font-medium transition-colors">
+							Independent Component ({psgcData.counts.icc})
+						</button>
+						<button type="button" data-filter="CC" class="filter-pill px-2.5 py-0.5 rounded-md border border-mapa-contour bg-mapa-canvas text-mapa-ink/80 hover:border-mapa-green/50 text-[11px] font-medium transition-colors">
+							Component Cities ({psgcData.counts.cc})
+						</button>
+					</div>
 				</div>
 			</div>
 
@@ -212,37 +228,57 @@ const directoryItems = [
 			</p>
 
 			<h3 class="text-2xl font-bold text-mapa-ink font-serif mt-10 mb-4">
-				2. Philippine City Classifications Explained
+				2. The 149 Cities of the Philippines: HUC, ICC, and CC Breakdown
 			</h3>
 			<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
-				In the Philippine Local Government Code of 1991 (Republic Act No. 7160), cities are categorized into three distinct legal classes based on their income thresholds and administrative autonomy:
+				Under Republic Act No. 7160 (The Local Government Code of 1991), there are exactly <strong>149 chartered cities</strong> across the country, structured into three distinct legal classifications:
 			</p>
-			<ul class="font-sans text-sm sm:text-base text-mapa-ink/90 list-disc pl-5 mb-6 space-y-2">
+			<ul class="font-sans text-sm sm:text-base text-mapa-ink/90 list-disc pl-5 mb-6 space-y-3">
 				<li>
-					<strong>Highly Urbanized Cities (HUC):</strong> Cities with a minimum population of 200,000 inhabitants and an annual income of at least 50 million Philippine pesos (under 1991 benchmarks). HUCs are completely independent of any province; their residents vote only for city officials, and their land areas are excluded from provincial jurisdiction (e.g., Quezon City, Cebu City, Davao City).
+					<strong>33 Highly Urbanized Cities (HUC):</strong> Cities with a minimum population of 200,000 inhabitants and an annual income of at least ₱50 million (1991 benchmark). HUCs are completely independent of any province; their registered voters do not vote for provincial officials, and their land areas are excluded from provincial jurisdiction. This includes <strong>16 cities in the National Capital Region</strong> (such as Manila, Quezon City, Taguig, Makati, Pasig, Caloocan) and <strong>17 provincial metropolitan hubs</strong> (such as Cebu City, Davao City, Baguio City, Cagayan de Oro City, Iloilo City, Bacolod, General Santos, and Zamboanga City).
 				</li>
 				<li>
-					<strong>Independent Component Cities (ICC):</strong> Component cities whose charters explicitly prohibit their voters from voting for provincial elective officials (e.g., Dagupan City, Ormoc City, Cotabato City). Like HUCs, they are administratively independent of provincial governors.
+					<strong>5 Independent Component Cities (ICC):</strong> Component cities whose legal charters explicitly prohibit their voters from voting for provincial elective officials. Like HUCs, they operate completely independently from provincial governors and provincial boards. There are strictly <strong>5 ICCs in the Philippines</strong>:
+					<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 my-2 font-mono text-xs">
+						<div class="p-2 bg-mapa-canvas-dark rounded border border-mapa-contour/60">
+							<strong class="text-mapa-green">Dagupan City</strong> (Pangasinan / Region I)
+						</div>
+						<div class="p-2 bg-mapa-canvas-dark rounded border border-mapa-contour/60">
+							<strong class="text-mapa-green">City of Santiago</strong> (Isabela / Region II)
+						</div>
+						<div class="p-2 bg-mapa-canvas-dark rounded border border-mapa-contour/60">
+							<strong class="text-mapa-green">Naga City</strong> (Camarines Sur / Region V)
+						</div>
+						<div class="p-2 bg-mapa-canvas-dark rounded border border-mapa-contour/60">
+							<strong class="text-mapa-green">Ormoc City</strong> (Leyte / Region VIII)
+						</div>
+						<div class="p-2 bg-mapa-canvas-dark rounded border border-mapa-contour/60 sm:col-span-2">
+							<strong class="text-mapa-green">Cotabato City</strong> (BARMM)
+						</div>
+					</div>
 				</li>
 				<li>
-					<strong>Component Cities (CC):</strong> Cities that do not meet the criteria for HUC or ICC status and remain under the administrative supervision of their respective provincial governments (e.g., City of Batac, Vigan City, Tagaytay City). Voters in component cities participate in provincial elections.
+					<strong>111 Component Cities (CC):</strong> Cities that remain under the general administrative supervision of their respective provincial governments (e.g., Laoag City, City of Batac, Tagaytay City, City of San Fernando, Vigan City). Voters in component cities participate fully in provincial elections.
 				</li>
 			</ul>
 
 			<h3 class="text-2xl font-bold text-mapa-ink font-serif mt-10 mb-4">
-				3. Edge Cases: Metro Manila & BARMM
+				3. Strictly 82 Statutory Provinces (No Province Numbering)
 			</h3>
 			<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
-				Geographic data analysts frequently encounter exceptions in Philippine administrative mapping:
+				A common pitfall in Philippine cartographic engineering is quoting "84 provinces". In Philippine statutory law and PSA official standards, there are strictly <strong>82 provinces</strong>. The additional two entries found in uncurated GIS datasets are administrative clusters, not statutory provinces:
 			</p>
 			<ul class="font-sans text-sm sm:text-base text-mapa-ink/90 list-disc pl-5 mb-6 space-y-2">
 				<li>
-					<strong>The National Capital Region (NCR):</strong> Metro Manila has no provincial governments. Instead, its 16 cities and 1 municipality (Pateros) are grouped into four non-statutory administrative districts: Capital District (Manila), Eastern Manila District, Northern Manila District (CAMANAVA), and Southern Manila District. In the PSGC hierarchy, digits 3–5 represent these administrative districts rather than traditional provinces.
+					<strong>Metro Manila (National Capital Region - PSGC 1300000000):</strong> NCR is an administrative region comprising 16 cities and 1 municipality. It has no provincial governor, provincial board, or provincial capital. In spatial datasets, it is partitioned into 4 administrative districts, not provinces.
 				</li>
 				<li>
-					<strong>Special Geographic Area (SGA) in BARMM:</strong> Following the 2019 plebiscite on the Bangsamoro Organic Law (RA 11054), 63 barangays across 6 municipalities in the province of Cotabato voted to join the Bangsamoro Autonomous Region in Muslim Mindanao (BARMM). In 2024, these barangays were formally organized into 8 new municipalities (Pahamuddin, Kadayangan, Nabalawag, Old Kaabakan, Kapalawan, Malidegao, Tugunan, and Ligawasan).
+					<strong>Special Geographic Area in BARMM (SGA - PSGC 1909900000):</strong> A non-provincial cluster of 63 barangays in North Cotabato that voted to join BARMM in 2019. In 2024, these barangays were formally constituted into 8 new statutory municipalities.
 				</li>
 			</ul>
+			<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
+				<strong>No Province Numbering:</strong> In official Philippine nomenclature, provinces are <em>never numbered</em>. There is no official statutory concept of "Province #1" or "Province #82." Instead, provinces are identified strictly by their geographic name, administrative region, and unique 9-digit / 10-digit PSGC codes.
+			</p>
 
 			<h3 class="text-2xl font-bold text-mapa-ink font-serif mt-10 mb-4">
 				4. GIS Joining Best Practices: Avoiding the Leading Zero Bug
@@ -346,17 +382,51 @@ merged_map = boundaries.merge(census_df, on="psgc", how="inner")</code></pre>
 					: item.l === 'Province'
 					? 'bg-mapa-rust/10 text-mapa-rust border-mapa-rust/30'
 					: item.l === 'City'
-					? 'bg-mapa-green/15 text-mapa-green border-mapa-green/30'
+					? (item.cls === 'HUC' ? 'bg-mapa-green/20 text-mapa-green border-mapa-green/40' : item.cls === 'ICC' ? 'bg-amber-500/15 text-amber-800 border-amber-500/30' : 'bg-mapa-green/10 text-mapa-green border-mapa-green/30')
 					: 'bg-mapa-clay/20 text-mapa-ink border-mapa-clay/40';
+
+				let levelTitle = item.l;
+				let subtitle = item.prov ? `${item.prov}, ${item.reg}` : `${item.reg}`;
+
+				if (item.l === 'City') {
+					if (item.cls === 'HUC') {
+						levelTitle = 'Highly Urbanized City (HUC)';
+						subtitle = `Autonomous Chartered City • ${item.reg}`;
+					} else if (item.cls === 'ICC') {
+						levelTitle = 'Independent Component City (ICC)';
+						subtitle = `Chartered Independent City • ${item.prov ? item.prov + ', ' : ''}${item.reg}`;
+					} else {
+						levelTitle = 'Component City (CC)';
+						subtitle = `Component City under Province of ${item.prov} • ${item.reg}`;
+					}
+				} else if (item.l === 'Province') {
+					levelTitle = 'Statutory Province';
+					subtitle = `${item.reg} • PSGC Code: ${psgcStr}`;
+				} else if (item.l === 'Region') {
+					levelTitle = 'Administrative Region';
+					subtitle = `Official Administrative Region of the Philippines`;
+				}
+
+				const fourthMetricLabel = item.l === 'Province'
+					? 'Component LGUs'
+					: item.l === 'Region'
+					? 'Subdivisions'
+					: '9-Digit Code';
+
+				const fourthMetricVal = item.l === 'Province'
+					? `${(item.cc || 0)} Cities, ${(item.mc || 0)} Muns`
+					: item.l === 'Region'
+					? `${(item.pc || 0)} Provs, ${(item.cc || 0) + (item.mc || 0)} LGUs`
+					: (item.c9 || psgcStr.slice(0, 9));
 
 				inspectorCard.innerHTML = `
 					<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-mapa-contour/50 pb-5 mb-5">
 						<div>
 							<div class="flex items-center gap-2 mb-1">
 								<span class="font-sans text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${levelBadgeColor}">
-									${item.l}${item.cls ? ' (' + item.cls + ')' : ''}
+									${levelTitle}
 								</span>
-								${item.prov ? `<span class="font-sans text-xs text-mapa-clay">${item.prov}, ${item.reg}</span>` : `<span class="font-sans text-xs text-mapa-clay">${item.reg}</span>`}
+								<span class="font-sans text-xs text-mapa-clay">${subtitle}</span>
 							</div>
 							<h3 class="font-serif text-2xl sm:text-3xl font-extrabold text-mapa-green tracking-tight">
 								${item.n}
@@ -423,9 +493,9 @@ merged_map = boundaries.merge(census_df, on="psgc", how="inner")</code></pre>
 							</span>
 						</div>
 						<div class="p-3 bg-mapa-canvas-dark/60 rounded-lg border border-mapa-contour/40">
-							<span class="text-xs text-mapa-ink/60 block">9-Digit Code</span>
-							<span class="text-base sm:text-lg font-mono font-bold text-mapa-ink block mt-0.5">
-								${item.c9 || psgcStr.slice(0, 9)}
+							<span class="text-xs text-mapa-ink/60 block">${fourthMetricLabel}</span>
+							<span class="text-base sm:text-lg font-mono font-bold text-mapa-ink block mt-0.5 truncate">
+								${fourthMetricVal}
 							</span>
 						</div>
 					</div>
@@ -437,7 +507,11 @@ merged_map = boundaries.merge(census_df, on="psgc", how="inner")</code></pre>
 
 				let filtered = items;
 				if (currentFilter !== 'All') {
-					filtered = filtered.filter(i => i.l === currentFilter);
+					if (currentFilter === 'HUC' || currentFilter === 'ICC' || currentFilter === 'CC') {
+						filtered = filtered.filter(i => i.l === 'City' && i.cls === currentFilter);
+					} else {
+						filtered = filtered.filter(i => i.l === currentFilter);
+					}
 				}
 
 				if (query) {
@@ -447,7 +521,8 @@ merged_map = boundaries.merge(census_df, on="psgc", how="inner")</code></pre>
 						const code9Match = i.c9 && String(i.c9).includes(query);
 						const provMatch = i.prov && i.prov.toLowerCase().includes(query);
 						const regMatch = i.reg && i.reg.toLowerCase().includes(query);
-						return nameMatch || psgcMatch || code9Match || provMatch || regMatch;
+						const classMatch = i.cls && i.cls.toLowerCase().includes(query);
+						return nameMatch || psgcMatch || code9Match || provMatch || regMatch || classMatch;
 					});
 				}
 
@@ -458,7 +533,7 @@ merged_map = boundaries.merge(census_df, on="psgc", how="inner")</code></pre>
 				if (displayItems.length === 0) {
 					resultsContainer.innerHTML = `
 						<div class="col-span-full py-8 text-center text-mapa-ink/60 font-sans text-sm">
-							No administrative divisions found matching "${query}". Try searching for another name or code.
+							No administrative divisions found matching "${query}". Try searching for another name, code, or city classification.
 						</div>
 					`;
 					return;
@@ -466,6 +541,16 @@ merged_map = boundaries.merge(census_df, on="psgc", how="inner")</code></pre>
 
 				resultsContainer.innerHTML = displayItems.map(item => {
 					const isSelected = activeItem && activeItem.p === item.p;
+					const badgeText = item.l === 'City'
+						? (item.cls === 'HUC' ? 'HUC' : item.cls === 'ICC' ? 'ICC' : 'City (CC)')
+						: item.l;
+
+					const subText = item.l === 'City' && item.cls === 'HUC'
+						? `${item.reg} • HUC`
+						: item.l === 'City' && item.cls === 'ICC'
+						? `${item.prov || item.reg} • ICC`
+						: (item.prov || item.reg);
+
 					return `
 						<button
 							type="button"
@@ -481,11 +566,11 @@ merged_map = boundaries.merge(census_df, on="psgc", how="inner")</code></pre>
 									${item.n}
 								</span>
 								<span class="font-sans text-[10px] font-semibold px-2 py-0.5 rounded-md bg-mapa-canvas-dark border border-mapa-contour/50 text-mapa-ink/70 uppercase shrink-0">
-									${item.l}
+									${badgeText}
 								</span>
 							</div>
 							<div class="flex items-center justify-between text-xs text-mapa-clay font-sans">
-								<span class="truncate max-w-[65%]">${item.prov || item.reg}</span>
+								<span class="truncate max-w-[65%]">${subText}</span>
 								<span class="font-mono font-medium text-mapa-ink/80">${item.p}</span>
 							</div>
 						</button>
@@ -510,9 +595,9 @@ merged_map = boundaries.merge(census_df, on="psgc", how="inner")</code></pre>
 				pill.addEventListener('click', () => {
 					filterPills.forEach(p => {
 						p.classList.remove('bg-mapa-green', 'text-white', 'border-mapa-green');
-						p.classList.add('bg-mapa-canvas', 'text-mapa-ink/80', 'border-mapa-contour');
+						p.classList.add('text-mapa-ink/80', 'border-mapa-contour');
 					});
-					pill.classList.remove('bg-mapa-canvas', 'text-mapa-ink/80', 'border-mapa-contour');
+					pill.classList.remove('text-mapa-ink/80', 'border-mapa-contour');
 					pill.classList.add('bg-mapa-green', 'text-white', 'border-mapa-green');
 
 					currentFilter = pill.getAttribute('data-filter') || 'All';
