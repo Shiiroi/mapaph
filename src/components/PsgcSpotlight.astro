@@ -1,20 +1,10 @@
 ---
 /**
  * @file PsgcSpotlight.astro
- * @description Executive geographic summary sheet highlighting Philippine administrative divisions,
- * hierarchy specifications, sample PSGC codes, and a direct link to the tools directory.
+ * @description Clean summary guide highlighting the Philippine administrative hierarchy.
  */
 
 import psgcData from '../data/psgc-directory.json';
-
-const popularLGUs = [
-	{ name: 'Quezon City', code: '137404000', type: 'HUC' },
-	{ name: 'City of Manila', code: '133900000', type: 'Capital' },
-	{ name: 'Cebu City', code: '072217000', type: 'HUC' },
-	{ name: 'Davao City', code: '112402000', type: 'HUC' },
-	{ name: 'Baguio City', code: '141102000', type: 'HUC' },
-	{ name: 'Adams', code: '0102801000', type: 'Mun' },
-];
 ---
 
 <section class="max-w-7xl mx-auto px-6 lg:px-8 py-12">
@@ -23,15 +13,11 @@ const popularLGUs = [
 		<div class="absolute inset-0 opacity-10 bg-[radial-gradient(#3d5a45_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none"></div>
 
 		<div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-			<!-- Left Column: Summary Sheet Details -->
+			<!-- Left Column: Hierarchy Guide -->
 			<div class="lg:col-span-7">
-				<!-- Header badges -->
-				<div class="flex flex-wrap items-center gap-2 mb-3 font-sans">
+				<div class="mb-3 font-sans">
 					<span class="text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-3 py-0.5 rounded-full">
-						Philippine Geographic Summary Sheet
-					</span>
-					<span class="text-xs text-mapa-clay">
-						Official 2024 PSA Baseline
+						Geographic Hierarchy
 					</span>
 				</div>
 
@@ -43,52 +29,21 @@ const popularLGUs = [
 					A quick reference summary of the Philippine administrative structure—tracking statutory regions, 82 provinces, 149 chartered cities, and 1,493 municipalities encoded in the official PSGC database.
 				</p>
 
-				<!-- Quick Inspect PSGC Codes -->
-				<div class="mt-6 flex flex-wrap items-center gap-2 font-sans text-xs">
-					<span class="text-mapa-ink/60 font-medium">Sample PSGC:</span>
-					{popularLGUs.map((lgu) => (
-						<a
-							href={`/tools/psgc-lookup`}
-							class="px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/90 hover:border-mapa-green/60 hover:bg-mapa-green/10 transition-colors"
-						>
-							<span class="font-semibold">{lgu.name}</span>
-							<span class="font-mono text-mapa-clay ml-1 text-[11px]">{lgu.code}</span>
-						</a>
-					))}
-				</div>
-
-				<!-- Action Controls: Scroll to tools or jump to directory -->
-				<div class="mt-7 flex flex-wrap items-center gap-4 font-sans text-sm">
-					<a
-						href="#tools"
-						class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-mapa-green text-white font-medium hover:bg-mapa-green/90 transition-all shadow-sm group"
-					>
-						<span>Explore Built-in Tools & Utilities</span>
-						<svg class="w-4 h-4 group-hover:translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-						</svg>
-					</a>
-
-					<a
-						href="/tools/psgc-lookup"
-						class="inline-flex items-center gap-1.5 text-xs font-semibold text-mapa-green hover:text-mapa-green/80 hover:underline transition-colors"
-					>
-						<span>Open Full 1,742 PSGC Directory</span>
-						<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-						</svg>
+				<!-- Subtle bottom tools navigation -->
+				<div class="mt-8 pt-6 border-t border-mapa-contour/50 font-sans text-xs sm:text-sm text-mapa-ink/70">
+					<span>Looking for interactive lookups or converters? </span>
+					<a href="#tools" class="font-semibold text-mapa-green hover:underline inline-flex items-center gap-1 ml-1">
+						<span>Explore all tools & utilities</span>
+						<span>↓</span>
 					</a>
 				</div>
 			</div>
 
-			<!-- Right Column: Stats Sheet Cards -->
+			<!-- Right Column: Summary Card -->
 			<div class="lg:col-span-5 bg-mapa-canvas p-5 sm:p-6 rounded-xl border border-mapa-contour/80 font-sans shadow-2xs">
-				<div class="flex items-center justify-between pb-3 mb-4 border-b border-mapa-contour/60">
-					<span class="text-[10px] font-bold uppercase tracking-widest text-mapa-clay font-mono">
-						Executive Census & Geo Totals
-					</span>
-					<span class="text-[10px] text-mapa-green font-mono bg-mapa-green/10 px-2 py-0.5 rounded font-semibold">
-						Dec 2024
+				<div class="pb-3 mb-4 border-b border-mapa-contour/60">
+					<span class="text-xs font-bold uppercase tracking-wider text-mapa-ink/80 font-sans">
+						Summary
 					</span>
 				</div>
 
@@ -110,7 +65,6 @@ const popularLGUs = [
 						<span class="text-[11px] uppercase font-bold text-mapa-ink/75 tracking-wider mt-1 block">
 							Provinces
 						</span>
-						<span class="text-[10px] text-mapa-clay block mt-0.5">excluding SGA & Metro Manila</span>
 					</div>
 
 					<div class="p-3.5 bg-mapa-canvas-dark rounded-lg border border-mapa-contour/60 text-center">
