@@ -12,6 +12,8 @@ interface Props {
 	title: string;
 	description: string;
 	activeSlug: 'index' | 'lens' | 'psgc' | 'data-sources' | 'geojson-guide' | 'gis-sources' | 'prs92-wgs84';
+	/** Optional SEO keywords */
+	keywords?: string;
 	/**
 	 * Optional flag to add 'noindex, follow' robots directive.
 	 * Used for in-development pages that shouldn't be indexed yet.
@@ -19,7 +21,7 @@ interface Props {
 	noindex?: boolean;
 }
 
-const { title, description, activeSlug, noindex = false } = Astro.props;
+const { title, description, activeSlug, keywords, noindex = false } = Astro.props;
 
 const tools = [
 	{ name: 'Lens',         slug: 'lens',         url: '/docs/lens',         active: true  },
@@ -43,12 +45,13 @@ const pages = [
 	{ slug: 'data-sources', name: 'Open Data Sources',   url: '/docs/data-sources' },
 	{ slug: 'geojson-guide',name: 'GeoJSON Developer',   url: '/docs/geojson-guide'},
 ];
+
 const currentIndex = pages.findIndex(p => p.slug === activeSlug);
 const prevPage = currentIndex > 0 ? pages[currentIndex - 1] : null;
 const nextPage = currentIndex < pages.length - 1 ? pages[currentIndex + 1] : null;
 ---
 
-<BaseLayout title={title} description={description} noindex={noindex}>
+<BaseLayout title={title} description={description} keywords={keywords} noindex={noindex}>
 	<Navbar />
 
 	<!-- Outer wrapper: border under navbar -->
