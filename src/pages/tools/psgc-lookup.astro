@@ -8,6 +8,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
+import PsgcSpotlight from '../../components/PsgcSpotlight.astro';
 import psgcData from '../../data/psgc-directory.json';
 
 // Prepare a compact client index
@@ -101,6 +102,9 @@ const directoryItems = [
 				Search all 1,742 official Philippine administrative units (18 regions, strictly 82 statutory provinces, and 1,642 cities & municipalities). Inspect official 9-digit and 10-digit PSGC codes, census demographics, and explore boundary visualizations on Lens.
 			</p>
 		</div>
+
+		<!-- Administrative Hierarchy Summary Widget -->
+		<PsgcSpotlight />
 
 		<!-- Interactive Tool Shell -->
 		<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 shadow-sm mb-16">
