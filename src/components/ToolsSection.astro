@@ -13,7 +13,6 @@ const tools = [
 		status: "Active",
 		category: "Data & Choropleth",
 		url: "https://lens.mapaph.com",
-		github: "https://github.com/Shiiroi/mapaph",
 		description: "Interactive choropleth map and GeoJSON download tool for Philippine administrative boundaries (regions, provinces, cities, municipalities, and barangays). Overlays census, economic, and election statistics with side-by-side comparisons.",
 		image: lensImg,
 		badge: "Choropleth Mapper"
@@ -23,7 +22,6 @@ const tools = [
 		status: "Active",
 		category: "Geographic Utility",
 		url: "/tools/psgc-lookup",
-		github: "https://github.com/Shiiroi/mapaph",
 		description: "Instant client-side search across 1,744+ Philippine regions, provinces, cities, and municipalities. Inspect 9-digit and 10-digit PSGC code breakdowns, 2024 census population counts, and land area density figures.",
 		image: null,
 		badge: "1,744+ Divisions"
@@ -33,7 +31,6 @@ const tools = [
 		status: "Active",
 		category: "Survey & GIS",
 		url: "/tools/coordinates",
-		github: "https://github.com/Shiiroi/mapaph",
 		description: "Bi-directional coordinate converter between GPS latitude/longitude (WGS84 decimal degrees) and official Philippine Reference System 1992 (PRS92 / UTM Zone 51N). Explains datum shifts and PTM Zones I through V.",
 		image: null,
 		badge: "Surveying Utility"
@@ -125,17 +122,6 @@ const tools = [
 								<span>Open Tool</span>
 								<span>→</span>
 							</span>
-							<a
-								href={tool.github}
-								target="_blank"
-								rel="noopener noreferrer"
-								class="relative z-20 text-mapa-ink/40 hover:text-mapa-ink active:scale-95 transform transition-all duration-200"
-								aria-label={`${tool.name} on GitHub`}
-							>
-								<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-									<path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-								</svg>
-							</a>
 						</div>
 					</div>
 				</div>
