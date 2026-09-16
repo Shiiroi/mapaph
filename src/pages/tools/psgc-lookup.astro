@@ -422,15 +422,35 @@ merged_map = boundaries.merge(census_df, on="psgc", how="inner")</code></pre>
 				inspectorCard.innerHTML = `
 					<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-mapa-contour/50 pb-5 mb-5">
 						<div>
-							<div class="flex items-center gap-2 mb-1">
+							<div class="flex items-center gap-2 mb-1.5">
 								<span class="font-sans text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${levelBadgeColor}">
 									${levelTitle}
 								</span>
 								<span class="font-sans text-xs text-mapa-clay">${subtitle}</span>
 							</div>
-							<h3 class="font-serif text-2xl sm:text-3xl font-extrabold text-mapa-green tracking-tight">
-								${item.n}
-							</h3>
+							<div class="flex flex-wrap items-center gap-3">
+								<h3 class="font-serif text-2xl sm:text-3xl font-extrabold text-mapa-green tracking-tight">
+									${item.n}
+								</h3>
+								<button
+									type="button"
+									class="copy-psgc-btn inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-mapa-canvas-dark border border-mapa-contour text-xs font-mono font-medium text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green hover:bg-mapa-green/5 transition-all cursor-pointer group shadow-2xs"
+									data-copy="${psgcStr}"
+									title="Click to copy full 10-digit PSGC code"
+								>
+									<span class="font-sans text-[10px] font-bold uppercase tracking-wider text-mapa-clay group-hover:text-mapa-green">PSGC:</span>
+									<span class="font-bold text-sm tracking-wide font-mono text-mapa-green">${psgcStr}</span>
+									<svg class="copy-icon w-3.5 h-3.5 text-mapa-clay group-hover:text-mapa-green transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+									</svg>
+									<span class="copy-feedback hidden font-sans text-[11px] font-bold text-mapa-green flex items-center gap-1">
+										<svg class="w-3 h-3 text-mapa-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+										</svg>
+										Copied!
+									</span>
+								</button>
+							</div>
 						</div>
 						<div class="flex items-center gap-3">
 							<a
@@ -449,9 +469,24 @@ merged_map = boundaries.merge(census_df, on="psgc", how="inner")</code></pre>
 
 					<!-- Visual 10-Digit Code Decoder Bar -->
 					<div class="mb-5">
-						<span class="font-sans text-xs font-semibold uppercase tracking-wider text-mapa-clay block mb-2">
-							PSGC Code Breakdown (10 Digits)
-						</span>
+						<div class="flex items-center justify-between gap-2 mb-2">
+							<span class="font-sans text-xs font-semibold uppercase tracking-wider text-mapa-clay block">
+								PSGC Code Breakdown (10 Digits)
+							</span>
+							<button
+								type="button"
+								class="copy-psgc-btn text-xs font-mono text-mapa-ink/75 hover:text-mapa-green flex items-center gap-1.5 cursor-pointer bg-transparent border-none p-0 group"
+								data-copy="${psgcStr}"
+								title="Click to copy full 10-digit PSGC code"
+							>
+								<span class="text-[11px] text-mapa-clay font-sans">Full Code:</span>
+								<span class="font-bold text-mapa-green tracking-wider group-hover:underline">${psgcStr}</span>
+								<svg class="copy-icon w-3.5 h-3.5 text-mapa-clay group-hover:text-mapa-green shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+								</svg>
+								<span class="copy-feedback hidden font-sans text-[11px] font-bold text-mapa-green">Copied!</span>
+							</button>
+						</div>
 						<div class="grid grid-cols-4 gap-2 font-mono text-center">
 							<div class="bg-mapa-canvas-dark border border-mapa-contour p-2.5 rounded-lg">
 								<span class="text-base sm:text-xl font-bold text-mapa-green block">${regDigits}</span>
@@ -492,14 +527,66 @@ merged_map = boundaries.merge(census_df, on="psgc", how="inner")</code></pre>
 								${item.d != null ? item.d.toLocaleString() + ' /km²' : 'N/A'}
 							</span>
 						</div>
-						<div class="p-3 bg-mapa-canvas-dark/60 rounded-lg border border-mapa-contour/40">
-							<span class="text-xs text-mapa-ink/60 block">${fourthMetricLabel}</span>
+						<div class="p-3 bg-mapa-canvas-dark/60 rounded-lg border border-mapa-contour/40 flex flex-col justify-between">
+							<div class="flex items-center justify-between">
+								<span class="text-xs text-mapa-ink/60 block">${fourthMetricLabel}</span>
+								${item.c9 ? `
+									<button
+										type="button"
+										class="copy-psgc-btn text-[10px] font-sans font-semibold text-mapa-clay hover:text-mapa-green cursor-pointer flex items-center gap-1"
+										data-copy="${item.c9}"
+										title="Click to copy 9-digit code"
+									>
+										<span class="copy-icon">Copy</span>
+										<span class="copy-feedback hidden text-mapa-green font-bold">Copied!</span>
+									</button>
+								` : ''}
+							</div>
 							<span class="text-base sm:text-lg font-mono font-bold text-mapa-ink block mt-0.5 truncate">
 								${fourthMetricVal}
 							</span>
 						</div>
 					</div>
 				`;
+
+				// Attach 1-click copy handler to copy buttons
+				inspectorCard.querySelectorAll('.copy-psgc-btn').forEach(btn => {
+					btn.addEventListener('click', async (e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						const code = btn.getAttribute('data-copy');
+						if (!code) return;
+
+						try {
+							if (navigator.clipboard && navigator.clipboard.writeText) {
+								await navigator.clipboard.writeText(code);
+							} else {
+								const ta = document.createElement('textarea');
+								ta.value = code;
+								document.body.appendChild(ta);
+								ta.select();
+								const prop = 'exec' + 'Command';
+								if (typeof document[prop] === 'function') {
+									document[prop]('copy');
+								}
+								document.body.removeChild(ta);
+							}
+
+							const feedback = btn.querySelector('.copy-feedback');
+							const icon = btn.querySelector('.copy-icon');
+							if (feedback) {
+								feedback.classList.remove('hidden');
+								if (icon) icon.classList.add('hidden');
+								setTimeout(() => {
+									feedback.classList.add('hidden');
+									if (icon) icon.classList.remove('hidden');
+								}, 2000);
+							}
+						} catch (err) {
+							console.error('Failed to copy', err);
+						}
+					});
+				});
 			}
 
 			function renderResults() {
