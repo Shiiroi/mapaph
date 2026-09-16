@@ -10,7 +10,7 @@
     "version": "v0.1.0",
     "date": "2026-08-08T12:00:00Z",
     "title": "Hub Documentation & Reference Expansion",
-    "description": "Expanded the central mapaPH directory hub with a dedicated PSGC Developer & GIS Reference Guide, technical data sourcing specifications (PSA, COMELEC, COA), expanded tool user guides, and detailed transit routing specifications for the To-Cubao project.",
+    "description": "Expanded the central mapaPH directory hub with a dedicated PSGC Developer & GIS Reference Guide, technical data sourcing specifications (PSA, COMELEC, COA), coordinate transformation guides, and interactive mapping utilities.",
     "url": "https://github.com/Shiiroi/mapaph/releases/latest"
   }
 }
