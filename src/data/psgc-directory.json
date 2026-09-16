@@ -1,5 +1,11 @@
 {
-  "generatedAt": "2026-09-16T06:18:42.518Z",
+  "meta": {
+    "generatedAt": "2026-09-16T07:02:29.808Z",
+    "source": "cdn",
+    "etag": "2c98e7250468a334921dfe27727489ad",
+    "lastModified": "Mon, 14 Sep 2026 12:18:27 GMT",
+    "cdnUrl": "https://pub-f9d925e99cc844ad9fac924a16e8f3a3.r2.dev"
+  },
   "counts": {
     "regions": 18,
     "provinces": 82,

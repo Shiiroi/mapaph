@@ -13,6 +13,7 @@
     "check": "astro check",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
+    "data:sync": "node scripts/sync-psgc.mjs",
     "data:lens": "node scripts/extract-lens-data.mjs"
   },
   "dependencies": {
