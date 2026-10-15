@@ -17,7 +17,7 @@ import Footer from '../components/Footer.astro';
 <BaseLayout 
 	title="mapaPH — Open-Source Tools Based on the Philippine Map" 
 	description="mapaPH is an open-source hub of civic mapping tools, official Philippine Standard Geographic Code (PSGC) lookups, coordinate converters, and geographic datasets for the Philippines."
-	keywords="Philippine map, Philippine geospatial tools, PSGC lookup, Philippine Standard Geographic Code, Philippine zip codes, postal code Philippines, Philippine distance calculator, Manila to Cebu distance, Manila to Davao flight time, nautical miles Philippines, Batangas Calapan ferry, Philippine bus fare calculator, jeepney fare calculator, LTFRB fare matrix, MRT 3 fare calculator, LRT 1 fare table, Metro Manila rail map, beep card fare, Philippine walkability map, 15 minute city Philippines, PRS92 converter, WGS84 GPS, Philippine GIS data, 82 provinces, 149 cities, Philippine boundaries GeoJSON, open source mapping Philippines"
+	keywords="Philippine map, Philippine geospatial tools, PSGC lookup, Philippine Standard Geographic Code, Philippine zip codes, postal code Philippines, Philippine toll calculator, NLEX toll fee, SLEX toll rates, Skyway toll fee, TPLEX toll, SCTEX rates, CALAX toll, CCLEX, Autosweep RFID, Easytrip RFID, Philippine distance calculator, Manila to Cebu distance, Manila to Davao flight time, nautical miles Philippines, Batangas Calapan ferry, Philippine bus fare calculator, jeepney fare calculator, LTFRB fare matrix, MRT 3 fare calculator, LRT 1 fare table, Metro Manila rail map, beep card fare, Philippine walkability map, 15 minute city Philippines, PRS92 converter, WGS84 GPS, Philippine GIS data, 82 provinces, 149 cities, Philippine boundaries GeoJSON, open source mapping Philippines"
 >
 	<script type="application/ld+json" slot="schema" is:inline>
 		{
@@ -104,6 +104,16 @@ import Footer from '../components/Footer.astro';
 						"name": "Philippine Inter-Island Distance & Route Calculator",
 						"url": "https://mapaph.com/tools/distance",
 						"description": "Great-circle geodesic distance, nautical sea miles, commercial flight times, and RoRo ferry transit durations across the 7,641 Philippine islands."
+					}
+				},
+				{
+					"@type": "ListItem",
+					"position": 9,
+					"item": {
+						"@type": "WebApplication",
+						"name": "Philippine Expressway Toll Calculator & Schematic Map",
+						"url": "https://mapaph.com/tools/toll-calculator",
+						"description": "Official Toll Regulatory Board (TRB) toll fee calculator for NLEX, SLEX, Skyway, SCTEX, TPLEX, CALAX, and CCLEX with schematic route strips and RFID guides."
 					}
 				}
 			]
