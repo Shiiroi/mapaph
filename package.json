@@ -17,7 +17,7 @@
     "data:lens": "node scripts/extract-lens-data.mjs"
   },
   "dependencies": {
-    "@astrojs/sitemap": "^3.7.3",
+    "@astrojs/sitemap": "^3.7.4",
     "@tailwindcss/vite": "^4.3.3",
     "@vercel/analytics": "^2.0.1",
     "astro": "^7.1.1",
