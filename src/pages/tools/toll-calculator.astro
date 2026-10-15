@@ -1,0 +1,1052 @@
+---
+/**
+ * @file toll-calculator.astro
+ * @description Interactive Philippine Expressway Toll Fee & Route Calculator.
+ * Features schematic corridor strips, geographic highway mapping, vehicle class tariffs (Class 1, 2, 3), and Autosweep/Easytrip RFID guides.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+
+// Expressway Catalog with operators, RFID ecosystem, and official TRB parameters
+const EXPRESSWAYS = [
+	{
+		id: 'nlex',
+		name: 'NLEX (North Luzon Expressway)',
+		region: 'Luzon (North)',
+		operator: 'NLEX Corporation (Metro Pacific Tollways)',
+		rfid: 'Easytrip RFID',
+		rfidColor: 'bg-emerald-600 text-white',
+		system: 'Open Barrier & Closed Distance',
+		color: '#059669',
+		lengthKm: 84.0,
+		description: 'Major northern artery connecting Balintawak/Mindanao Ave to Sta. Ines, Pampanga and SCTEX.',
+		plazas: [
+			{ id: 'balintawak', name: 'Balintawak (Open Barrier)', km: 0.0, isBarrier: true, c1: 74, c2: 186, c3: 223, lat: 14.6580, lon: 121.0030 },
+			{ id: 'mindanao', name: 'Mindanao Ave (Open Barrier)', km: 2.5, isBarrier: true, c1: 74, c2: 186, c3: 223, lat: 14.6750, lon: 121.0250 },
+			{ id: 'marilao', name: 'Marilao (Bulacan)', km: 13.0, isBarrier: false, c1: 105, c2: 263, c3: 316, lat: 14.7700, lon: 120.9400 },
+			{ id: 'bocaue', name: 'Bocaue (Toll Barrier)', km: 18.0, isBarrier: true, c1: 133, c2: 333, c3: 400, lat: 14.8100, lon: 120.9150 },
+			{ id: 'balagtas', name: 'Balagtas Interchange', km: 23.0, isBarrier: false, c1: 160, c2: 401, c3: 481, lat: 14.8350, lon: 120.9000 },
+			{ id: 'sta_rita', name: 'Sta. Rita (Guiguinto)', km: 28.0, isBarrier: false, c1: 183, c2: 458, c3: 550, lat: 14.8600, lon: 120.8750 },
+			{ id: 'pulilan', name: 'Pulilan (Bulacan)', km: 35.0, isBarrier: false, c1: 204, c2: 510, c3: 612, lat: 14.8950, lon: 120.8300 },
+			{ id: 'san_simon', name: 'San Simon (Pampanga)', km: 45.0, isBarrier: false, c1: 237, c2: 593, c3: 712, lat: 14.9850, lon: 120.7300 },
+			{ id: 'san_fernando', name: 'San Fernando (Pampanga)', km: 54.0, isBarrier: false, c1: 268, c2: 670, c3: 804, lat: 15.0350, lon: 120.6800 },
+			{ id: 'mexico', name: 'Mexico Interchange', km: 62.0, isBarrier: false, c1: 302, c2: 755, c3: 906, lat: 15.0750, lon: 120.6900 },
+			{ id: 'angeles', name: 'Angeles City', km: 70.0, isBarrier: false, c1: 331, c2: 828, c3: 994, lat: 15.1450, lon: 120.6100 },
+			{ id: 'dau', name: 'Dau (Mabalacat / SCTEX Entry)', km: 76.0, isBarrier: false, c1: 350, c2: 875, c3: 1050, lat: 15.1850, lon: 120.5850 },
+			{ id: 'sta_ines', name: 'Sta. Ines (Mabalacat Terminus)', km: 82.0, isBarrier: true, c1: 377, c2: 943, c3: 1131, lat: 15.2250, lon: 120.5700 }
+		]
+	},
+	{
+		id: 'slex',
+		name: 'SLEX (South Luzon Expressway)',
+		region: 'Luzon (South)',
+		operator: 'South Luzon Tollway Corporation (San Miguel)',
+		rfid: 'Autosweep RFID',
+		rfidColor: 'bg-blue-600 text-white',
+		system: 'Closed Distance-Based System',
+		color: '#2563EB',
+		lengthKm: 51.0,
+		description: 'Southern commercial expressway connecting Metro Manila to Laguna, Cavite, and Batangas.',
+		plazas: [
+			{ id: 'magallanes', name: 'Magallanes (At-Grade / Entry)', km: 0.0, isBarrier: true, c1: 53, c2: 106, c3: 159, lat: 14.5422, lon: 121.0194 },
+			{ id: 'alabang', name: 'Alabang (Filinvest Viaduct)', km: 14.0, isBarrier: true, c1: 53, c2: 106, c3: 159, lat: 14.4150, lon: 121.0420 },
+			{ id: 'susana_heights', name: 'Susana Heights (MCX Entry)', km: 18.0, isBarrier: false, c1: 66, c2: 132, c3: 198, lat: 14.3750, lon: 121.0480 },
+			{ id: 'san_pedro', name: 'San Pedro (Laguna)', km: 21.0, isBarrier: false, c1: 75, c2: 150, c3: 225, lat: 14.3500, lon: 121.0550 },
+			{ id: 'southwoods', name: 'Southwoods Interchange', km: 24.0, isBarrier: false, c1: 85, c2: 170, c3: 255, lat: 14.3200, lon: 121.0650 },
+			{ id: 'carmona', name: 'Carmona (Cavite Border)', km: 28.0, isBarrier: false, c1: 98, c2: 196, c3: 294, lat: 14.2900, lon: 121.0600 },
+			{ id: 'mamplasan', name: 'Mamplasan (CALAX Interchange)', km: 32.0, isBarrier: false, c1: 110, c2: 220, c3: 330, lat: 14.2650, lon: 121.0800 },
+			{ id: 'sta_rosa', name: 'Sta. Rosa (Balibago)', km: 36.0, isBarrier: false, c1: 125, c2: 250, c3: 375, lat: 14.2400, lon: 121.0950 },
+			{ id: 'greenfield', name: 'Eton City / Greenfield', km: 39.0, isBarrier: false, c1: 140, c2: 280, c3: 420, lat: 14.2150, lon: 121.1100 },
+			{ id: 'silangan', name: 'Silangan Interchange', km: 43.0, isBarrier: false, c1: 155, c2: 310, c3: 465, lat: 14.1900, lon: 121.1250 },
+			{ id: 'canlubang', name: 'Canlubang Interchange', km: 46.0, isBarrier: false, c1: 170, c2: 340, c3: 510, lat: 14.1800, lon: 121.1350 },
+			{ id: 'calamba', name: 'Calamba (Toll Barrier)', km: 48.0, isBarrier: true, c1: 195, c2: 390, c3: 585, lat: 14.1650, lon: 121.1450 },
+			{ id: 'sto_tomas', name: 'Sto. Tomas (Batangas / STAR)', km: 51.0, isBarrier: true, c1: 214, c2: 428, c3: 642, lat: 14.1100, lon: 121.1600 }
+		]
+	},
+	{
+		id: 'skyway',
+		name: 'Metro Manila Skyway (Stages 1–3)',
+		region: 'Metro Manila (Elevated)',
+		operator: 'Skyway O&M Corp (San Miguel)',
+		rfid: 'Autosweep RFID',
+		rfidColor: 'bg-blue-600 text-white',
+		system: 'Zoned Elevated Open & Closed',
+		color: '#4F46E5',
+		lengthKm: 38.0,
+		description: 'Complete continuous north-south elevated expressway from Alabang/Susana to Balintawak (NLEX).',
+		plazas: [
+			{ id: 'sky_alabang', name: 'Alabang / South Station (Entry)', km: 0.0, isBarrier: true, c1: 164, c2: 328, c3: 492, lat: 14.4150, lon: 121.0420 },
+			{ id: 'sky_bicutan', name: 'Bicutan (Doña Soledad)', km: 9.0, isBarrier: false, c1: 164, c2: 328, c3: 492, lat: 14.4850, lon: 121.0450 },
+			{ id: 'sky_sucat', name: 'Dr. Santos / Sucat', km: 13.0, isBarrier: false, c1: 164, c2: 328, c3: 492, lat: 14.4550, lon: 121.0430 },
+			{ id: 'sky_magallanes', name: 'Magallanes Interchange', km: 19.0, isBarrier: false, c1: 164, c2: 328, c3: 492, lat: 14.5422, lon: 121.0194 },
+			{ id: 'sky_buendia', name: 'Buendia / Makati (Stage 3 Start)', km: 21.0, isBarrier: true, c1: 164, c2: 328, c3: 492, lat: 14.5600, lon: 121.0050 },
+			{ id: 'sky_quirino', name: 'Plaza Dilao / Quirino Ave', km: 24.5, isBarrier: false, c1: 269, c2: 538, c3: 807, lat: 14.5800, lon: 120.9980 },
+			{ id: 'sky_nagtahan', name: 'Nagtahan / Santa Mesa', km: 27.0, isBarrier: false, c1: 269, c2: 538, c3: 807, lat: 14.5950, lon: 121.0020 },
+			{ id: 'sky_quezon_ave', name: 'Quezon Ave (G. Araneta)', km: 31.0, isBarrier: false, c1: 264, c2: 528, c3: 792, lat: 14.6280, lon: 121.0120 },
+			{ id: 'sky_balintawak', name: 'Balintawak / NLEX Link', km: 38.0, isBarrier: true, c1: 428, c2: 856, c3: 1284, lat: 14.6600, lon: 121.0050 }
+		]
+	},
+	{
+		id: 'sctex',
+		name: 'SCTEX (Subic–Clark–Tarlac)',
+		region: 'Central Luzon',
+		operator: 'NLEX Corp / BCDA',
+		rfid: 'Easytrip RFID',
+		rfidColor: 'bg-emerald-600 text-white',
+		system: 'Closed Distance-Based System',
+		color: '#0D9488',
+		lengthKm: 93.7,
+		description: 'Connects Subic Bay Freeport to Clark Freeport and Tarlac City (connecting to TPLEX).',
+		plazas: [
+			{ id: 'sctex_tipo', name: 'Tipo (Subic Bay Gateway)', km: 0.0, isBarrier: true, c1: 0, c2: 0, c3: 0, lat: 14.8600, lon: 120.3500 },
+			{ id: 'sctex_dinalupihan', name: 'Dinalupihan (Bataan)', km: 18.0, isBarrier: false, c1: 67, c2: 134, c3: 201, lat: 14.8900, lon: 120.4500 },
+			{ id: 'sctex_floridablanca', name: 'Floridablanca (Pampanga)', km: 32.0, isBarrier: false, c1: 104, c2: 208, c3: 312, lat: 14.9700, lon: 120.5200 },
+			{ id: 'sctex_clark_south', name: 'Clark South Interchange', km: 45.0, isBarrier: false, c1: 140, c2: 280, c3: 420, lat: 15.1600, lon: 120.5400 },
+			{ id: 'sctex_clark_north', name: 'Clark North (Mabalacat)', km: 53.0, isBarrier: false, c1: 168, c2: 336, c3: 504, lat: 15.2200, lon: 120.5600 },
+			{ id: 'sctex_dolores', name: 'Dolores Interchange', km: 64.0, isBarrier: false, c1: 205, c2: 410, c3: 615, lat: 15.2900, lon: 120.5800 },
+			{ id: 'sctex_concepcion', name: 'Concepcion (Tarlac)', km: 74.0, isBarrier: false, c1: 236, c2: 472, c3: 708, lat: 15.3500, lon: 120.6200 },
+			{ id: 'sctex_tarlac', name: 'Tarlac City (TPLEX Connection)', km: 93.7, isBarrier: true, c1: 297, c2: 594, c3: 891, lat: 15.4800, lon: 120.6100 }
+		]
+	},
+	{
+		id: 'tplex',
+		name: 'TPLEX (Tarlac–Pangasinan–La Union)',
+		region: 'Northern Luzon',
+		operator: 'Private Infra Dev Corp (San Miguel)',
+		rfid: 'Autosweep RFID',
+		rfidColor: 'bg-blue-600 text-white',
+		system: 'Closed Distance-Based System',
+		color: '#D97706',
+		lengthKm: 89.2,
+		description: 'Northern trunk connecting Central Luzon through Pangasinan directly to Rosario, La Union (gateway to Baguio).',
+		plazas: [
+			{ id: 'tplex_tarlac', name: 'Tarlac City (SCTEX Entry)', km: 0.0, isBarrier: true, c1: 0, c2: 0, c3: 0, lat: 15.4800, lon: 120.6100 },
+			{ id: 'tplex_victoria', name: 'Victoria (Tarlac)', km: 9.0, isBarrier: false, c1: 35, c2: 70, c3: 105, lat: 15.5600, lon: 120.6500 },
+			{ id: 'tplex_paniqui', name: 'Paniqui (Tarlac)', km: 21.0, isBarrier: false, c1: 72, c2: 144, c3: 216, lat: 15.6700, lon: 120.6200 },
+			{ id: 'tplex_moncada', name: 'Moncada (Tarlac)', km: 28.0, isBarrier: false, c1: 96, c2: 192, c3: 288, lat: 15.7400, lon: 120.5900 },
+			{ id: 'tplex_carmen', name: 'Carmen / Rosales (Pangasinan)', km: 45.0, isBarrier: false, c1: 155, c2: 310, c3: 465, lat: 15.8900, lon: 120.5900 },
+			{ id: 'tplex_urdaneta', name: 'Urdaneta City', km: 60.0, isBarrier: false, c1: 210, c2: 420, c3: 630, lat: 15.9800, lon: 120.5800 },
+			{ id: 'tplex_binalonan', name: 'Binalonan Interchange', km: 68.0, isBarrier: false, c1: 238, c2: 476, c3: 714, lat: 16.0500, lon: 120.5900 },
+			{ id: 'tplex_pozorrubio', name: 'Pozorrubio (Pangasinan)', km: 77.0, isBarrier: false, c1: 270, c2: 540, c3: 810, lat: 16.1200, lon: 120.5500 },
+			{ id: 'tplex_rosario', name: 'Rosario (La Union Terminus / Baguio)', km: 89.2, isBarrier: true, c1: 311, c2: 622, c3: 933, lat: 16.2300, lon: 120.4800 }
+		]
+	},
+	{
+		id: 'calax',
+		name: 'CALAX (Cavite–Laguna Expressway)',
+		region: 'CALABARZON',
+		operator: 'MPCALA Holdings (Metro Pacific)',
+		rfid: 'Easytrip RFID',
+		rfidColor: 'bg-emerald-600 text-white',
+		system: 'Closed Distance-Based System',
+		color: '#10B981',
+		lengthKm: 44.6,
+		description: 'Modern 4-lane expressway connecting SLEX Mamplasan to Tagaytay and Kawit (CAVITEX).',
+		plazas: [
+			{ id: 'calax_mamplasan', name: 'Mamplasan (SLEX Entry)', km: 0.0, isBarrier: true, c1: 0, c2: 0, c3: 0, lat: 14.2650, lon: 121.0800 },
+			{ id: 'calax_technopark', name: 'Laguna Technopark', km: 4.0, isBarrier: false, c1: 14, c2: 28, c3: 42, lat: 14.2500, lon: 121.0650 },
+			{ id: 'calax_laguna_blvd', name: 'Laguna Boulevard', km: 8.5, isBarrier: false, c1: 31, c2: 62, c3: 93, lat: 14.2350, lon: 121.0500 },
+			{ id: 'calax_sta_rosa', name: 'Sta. Rosa–Tagaytay Road', km: 13.0, isBarrier: false, c1: 47, c2: 94, c3: 141, lat: 14.2150, lon: 121.0250 },
+			{ id: 'calax_silang_east', name: 'Silang East Interchange', km: 18.0, isBarrier: false, c1: 64, c2: 128, c3: 192, lat: 14.2250, lon: 120.9850 },
+			{ id: 'calax_aguinaldo', name: 'Silang (Aguinaldo Highway / Tagaytay)', km: 22.5, isBarrier: true, c1: 82, c2: 164, c3: 246, lat: 14.2300, lon: 120.9650 }
+		]
+	},
+	{
+		id: 'cclex',
+		name: 'CCLEX (Cebu–Cordova Link Expressway)',
+		region: 'Central Visayas (Cebu)',
+		operator: 'CCLEC (Metro Pacific Tollways)',
+		rfid: 'Easytrip / Cash / RFID',
+		rfidColor: 'bg-emerald-600 text-white',
+		system: 'Open Fixed Barrier Toll',
+		color: '#0284C7',
+		lengthKm: 8.9,
+		description: 'Iconic cable-stayed bridge expressway connecting Cebu City directly to Cordova and Mactan International Airport.',
+		plazas: [
+			{ id: 'cclex_cebu', name: 'Cebu City (SRP Entry)', km: 0.0, isBarrier: true, c1: 90, c2: 180, c3: 270, lat: 10.2850, lon: 123.8850 },
+			{ id: 'cclex_cordova', name: 'Cordova (Mactan Island)', km: 8.9, isBarrier: true, c1: 90, c2: 180, c3: 270, lat: 10.2650, lon: 123.9450 }
+		]
+	}
+];
+
+// Popular multi-expressway trip presets
+const TRIP_PRESETS = [
+	{ name: 'Balintawak to Baguio Gateway', expId: 'tplex', orig: 'tplex_tarlac', dest: 'tplex_rosario', desc: 'TPLEX scenic run straight to Rosario, La Union (Kennon / Marcos Hwy)' },
+	{ name: 'Balintawak to Subic Bay Freeport', expId: 'sctex', orig: 'sctex_clark_south', dest: 'sctex_tipo', desc: 'Direct SCTEX link into Subic Tipo gate' },
+	{ name: 'Alabang to Balintawak Skyway End-to-End', expId: 'skyway', orig: 'sky_alabang', dest: 'sky_balintawak', desc: 'Bypass all EDSA traffic in ~25 minutes on full elevated Skyway' },
+	{ name: 'Manila to Calamba Laguna (SLEX)', expId: 'slex', orig: 'magallanes', dest: 'calamba', desc: 'Classic weekend Tagaytay/Laguna trunk run' },
+	{ name: 'SLEX to Tagaytay via CALAX', expId: 'calax', orig: 'calax_mamplasan', dest: 'calax_aguinaldo', desc: 'Smooth scenic bypass directly onto Aguinaldo Highway' },
+	{ name: 'Cebu City to Cordova Mactan Bridge', expId: 'cclex', orig: 'cclex_cebu', dest: 'cclex_cordova', desc: 'Cross Cebu Strait across the 8.9-kilometer CCLEX bridge' }
+];
+---
+
+<BaseLayout
+	title="Philippine Expressway Toll Fee Calculator & Schematic Map (NLEX, SLEX, Skyway, SCTEX, TPLEX) — mapaPH Tools"
+	description="Official Toll Regulatory Board (TRB) toll fee calculator for Class 1, 2, and 3 vehicles across NLEX, SLEX, Skyway, SCTEX, TPLEX, CALAX, and CCLEX. Features schematic corridor diagrams and RFID tag guides."
+	keywords="NLEX toll fee calculator, SLEX toll rates, Skyway toll fee, SCTEX toll rates, TPLEX toll matrix, CALAX toll fee, CCLEX toll rate, Autosweep RFID vs Easytrip RFID, Class 1 toll fee Philippines, TRB toll matrix, expressway distance map Philippines"
+>
+	<!-- Leaflet Stylesheet -->
+	<link
+		rel="stylesheet"
+		href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+		integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+		crossorigin=""
+		slot="schema"
+	/>
+
+	<script type="application/ld+json" slot="schema" is:inline>
+		{
+			"@context": "https://schema.org",
+			"@graph": [
+				{
+					"@type": "WebApplication",
+					"name": "Philippine Expressway Toll Calculator & Schematic Map",
+					"url": "https://mapaph.com/tools/toll-calculator",
+					"applicationCategory": "Highway Transit & Commuter Utility",
+					"operatingSystem": "All",
+					"description": "Interactive toll fee and corridor routing calculator for Philippine tollways with official TRB vehicle class rates and Autosweep/Easytrip RFID guides.",
+					"provider": {
+						"@type": "Organization",
+						"name": "mapaPH",
+						"url": "https://mapaph.com"
+					}
+				},
+				{
+					"@type": "FAQPage",
+					"mainEntity": [
+						{
+							"@type": "Question",
+							"name": "What are the vehicle classifications on Philippine expressways?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "Under the Toll Regulatory Board (TRB), Class 1 includes light vehicles, cars, SUVs, vans, pickups, and motorcycles 400cc and above. Class 2 includes buses, heavy commercial vans, and 2-axle trucks. Class 3 covers heavy large multi-axle freight trucks, articulated lorries, and container haulers."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "Which RFID tag do I need: Autosweep or Easytrip?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "Autosweep RFID is used on San Miguel Corporation tollways (SLEX, Skyway Stages 1–3, NAIAX, MCX, TPLEX, and STAR Tollway). Easytrip RFID is used on Metro Pacific tollways (NLEX, SCTEX, CAVITEX, CALAX, C5 South Link, and CCLEX in Cebu). Under Phase 2 interoperability, you can enroll your Autosweep sticker to work on Easytrip tollways and vice-versa, though wallets remain separate."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "Can motorcycles use Philippine expressways?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "Yes, but strictly only motorcycles with an engine displacement of 400cc or higher under DOTr/LTO Department Order No. 2007-15. They pay standard Class 1 toll rates. An exception exists on CCLEX in Cebu, where motorcycles between 110cc and 399cc are legally permitted under Class 1M rates."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "How much does Skyway Stage 3 cost from Buendia to Balintawak?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "For a Class 1 vehicle (car/SUV), riding the entire elevated Skyway Stage 3 from Buendia/Makati to Balintawak/NLEX costs ₱264.00. The full elevated run from Alabang South Station to Balintawak costs ₱428.00."
+							}
+						}
+					]
+				}
+			]
+		}
+	</script>
+
+	<Navbar />
+
+	<main class="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-mapa-ink">
+		<!-- Header -->
+		<div class="max-w-3xl mb-8">
+			<div class="flex items-center gap-2 mb-2">
+				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
+					Expressway & Toll Utility
+				</span>
+				<span class="font-sans text-xs text-mapa-clay">
+					Official TRB Regulated Tariffs
+				</span>
+			</div>
+			<h1 class="text-3xl sm:text-4xl font-extrabold text-mapa-green font-serif tracking-tight">
+				Philippine Expressway Toll Calculator & Schematic Map
+			</h1>
+			<p class="font-sans text-sm sm:text-base text-mapa-ink/80 mt-2 leading-relaxed">
+				Calculate official Toll Regulatory Board (TRB) entry-to-exit toll fees for Class 1, 2, and 3 vehicles across all major Philippine tollways. Features schematic corridor diagrams, RFID interoperability guides, and road kilometer tracking.
+			</p>
+		</div>
+
+		<!-- 2-Column App Grid -->
+		<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+			
+			<!-- Left Column: Visual Highway Strip & Geographic Map (7 cols) -->
+			<div class="lg:col-span-7 flex flex-col gap-6 font-sans">
+				
+				<!-- Visualizer Card Container -->
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs flex flex-col">
+					<!-- Visualizer Navigation Header Bar -->
+					<div class="p-4 border-b border-mapa-contour/50 flex flex-wrap items-center justify-between gap-3 bg-mapa-canvas">
+						<div class="flex items-center gap-2">
+							<span class="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
+							<span id="active-corridor-title" class="text-xs font-bold uppercase tracking-wider text-mapa-ink">
+								NLEX Corridor Visualizer
+							</span>
+						</div>
+						<!-- Mode Switch: Schematic Strip vs. Geographic Map -->
+						<div class="flex items-center bg-mapa-canvas-dark border border-mapa-contour/80 rounded-lg p-0.5 text-xs">
+							<button
+								id="btn-view-schematic"
+								class="px-2.5 py-1 rounded-md text-[11px] font-bold transition-all bg-mapa-canvas text-mapa-green shadow-xs"
+							>
+								Schematic Strip
+							</button>
+							<button
+								id="btn-view-geo"
+								class="px-2.5 py-1 rounded-md text-[11px] font-medium text-mapa-ink/60 hover:text-mapa-ink transition-all"
+							>
+								Geographic Map
+							</button>
+						</div>
+					</div>
+
+					<!-- VIEW 1: Schematic Corridor Strip Canvas -->
+					<div id="schematic-view-container" class="p-6 bg-stone-50 overflow-x-auto min-h-[460px] flex flex-col justify-center">
+						<div class="text-xs text-mapa-clay mb-3 flex items-center justify-between">
+							<span class="font-semibold uppercase tracking-wider text-[10px]">Diagrammatic Route Strip</span>
+							<span class="text-[11px]">Click any plaza node to select entry/exit</span>
+						</div>
+						<!-- Rendered via JS -->
+						<div id="schematic-strip-canvas" class="space-y-4 py-2">
+							<!-- Populated dynamically via JS -->
+						</div>
+					</div>
+
+					<!-- VIEW 2: Geographic Leaflet Map (Hidden by default) -->
+					<div
+						id="toll-geo-map"
+						class="w-full h-[460px] bg-stone-100 z-0 relative hidden"
+						aria-label="Geographic expressway map"
+					></div>
+
+					<!-- Visualizer Footer Legend -->
+					<div class="p-3.5 bg-mapa-canvas border-t border-mapa-contour/50 flex flex-wrap items-center justify-between text-xs text-mapa-ink/70 gap-2">
+						<div class="flex items-center gap-4">
+							<span class="inline-flex items-center gap-1.5">
+								<span class="w-3 h-3 rounded-full bg-emerald-600 border border-white"></span>
+								<span class="font-medium text-mapa-ink">Entry Plaza</span>
+							</span>
+							<span class="inline-flex items-center gap-1.5">
+								<span class="w-3 h-3 rounded-full bg-rose-600 border border-white"></span>
+								<span class="font-medium text-mapa-ink">Exit Plaza</span>
+							</span>
+							<span class="inline-flex items-center gap-1.5">
+								<span class="w-2.5 h-2.5 rounded bg-amber-500"></span>
+								<span>Toll Barrier</span>
+							</span>
+						</div>
+						<span id="corridor-rfid-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white">
+							Easytrip RFID
+						</span>
+					</div>
+				</div>
+
+				<!-- Major Multi-Expressway Highway Presets -->
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-5 shadow-xs">
+					<h3 class="font-serif text-lg font-bold text-mapa-ink mb-3">
+						Popular Highway Corridor Presets
+					</h3>
+					<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+						{TRIP_PRESETS.map(preset => (
+							<button
+								class="preset-trip-btn p-3 rounded-xl bg-mapa-canvas border border-mapa-contour/70 hover:border-mapa-green transition-all text-left flex flex-col justify-between"
+								data-exp={preset.expId}
+								data-orig={preset.orig}
+								data-dest={preset.dest}
+							>
+								<div class="flex items-center justify-between gap-2 mb-1">
+									<span class="font-bold text-mapa-ink text-xs">{preset.name}</span>
+									<span class="text-[10px] text-mapa-green font-semibold shrink-0">Calculate &rarr;</span>
+								</div>
+								<p class="text-[11px] text-mapa-clay leading-relaxed">
+									{preset.desc}
+								</p>
+							</button>
+						))}
+					</div>
+				</div>
+
+			</div>
+
+			<!-- Right Column: Interactive Toll Calculator Inputs & Tariffs (5 cols) -->
+			<div class="lg:col-span-5 flex flex-col gap-6 font-sans">
+				
+				<!-- Calculator Control Box -->
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-xs">
+					<h2 class="font-serif text-xl font-bold text-mapa-ink mb-4 pb-2 border-b border-mapa-contour/50">
+						Toll Fee Calculator
+					</h2>
+
+					<!-- Expressway Selector -->
+					<div class="mb-4">
+						<label for="expressway-select" class="block text-xs font-bold uppercase tracking-wider text-mapa-clay mb-1.5">
+							Select Expressway Network
+						</label>
+						<select
+							id="expressway-select"
+							class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-bold text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green"
+						>
+							{EXPRESSWAYS.map(exp => (
+								<option value={exp.id}>
+									{exp.name} &bull; {exp.region}
+								</option>
+							))}
+						</select>
+					</div>
+
+					<!-- Vehicle Classification Selector -->
+					<div class="mb-5">
+						<label class="block text-xs font-bold uppercase tracking-wider text-mapa-clay mb-2">
+							Vehicle Classification (TRB Category)
+						</label>
+						<div class="grid grid-cols-3 gap-2">
+							<button
+								type="button"
+								class="vehicle-class-btn p-2.5 rounded-xl border transition-all text-center bg-mapa-canvas border-mapa-green text-mapa-green shadow-xs font-bold"
+								data-class="1"
+							>
+								<span class="block text-sm">Class 1</span>
+								<span class="text-[10px] text-mapa-clay block font-normal mt-0.5">Cars / SUVs / 400cc+</span>
+							</button>
+							<button
+								type="button"
+								class="vehicle-class-btn p-2.5 rounded-xl border transition-all text-center bg-mapa-canvas border-mapa-contour text-mapa-ink/70 hover:border-mapa-green/50"
+								data-class="2"
+							>
+								<span class="block text-sm font-bold">Class 2</span>
+								<span class="text-[10px] text-mapa-clay block font-normal mt-0.5">Buses / 2-Axle Trucks</span>
+							</button>
+							<button
+								type="button"
+								class="vehicle-class-btn p-2.5 rounded-xl border transition-all text-center bg-mapa-canvas border-mapa-contour text-mapa-ink/70 hover:border-mapa-green/50"
+								data-class="3"
+							>
+								<span class="block text-sm font-bold">Class 3</span>
+								<span class="text-[10px] text-mapa-clay block font-normal mt-0.5">Heavy 3+ Axle Trucks</span>
+							</button>
+						</div>
+					</div>
+
+					<!-- Entry Plaza -->
+					<div class="mb-3.5">
+						<label for="entry-plaza-select" class="block text-xs font-bold uppercase tracking-wider text-mapa-clay mb-1.5">
+							Entry Plaza (Where do you enter?)
+						</label>
+						<select
+							id="entry-plaza-select"
+							class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green"
+						>
+							<!-- Populated via JS -->
+						</select>
+					</div>
+
+					<!-- Swap Button -->
+					<div class="flex justify-center -my-1 relative z-10">
+						<button
+							id="swap-plazas-btn"
+							type="button"
+							class="bg-mapa-canvas hover:bg-mapa-canvas-dark border border-mapa-contour rounded-full p-2 text-mapa-ink/70 hover:text-mapa-green transition-all shadow-xs"
+							aria-label="Swap entry and exit plazas"
+						>
+							<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+							</svg>
+						</button>
+					</div>
+
+					<!-- Exit Plaza -->
+					<div class="mb-5">
+						<label for="exit-plaza-select" class="block text-xs font-bold uppercase tracking-wider text-mapa-clay mb-1.5">
+							Exit Plaza (Where do you exit?)
+						</label>
+						<select
+							id="exit-plaza-select"
+							class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green"
+						>
+							<!-- Populated via JS -->
+						</select>
+					</div>
+
+					<!-- Results Panel -->
+					<div class="bg-mapa-canvas border border-mapa-contour rounded-xl p-4.5 flex flex-col gap-4">
+						
+						<!-- Fare Amount Header -->
+						<div class="flex items-center justify-between pb-3.5 border-b border-mapa-contour/50">
+							<div>
+								<span class="text-[11px] font-bold uppercase tracking-wider text-mapa-clay">
+									Official TRB Toll Fee
+								</span>
+								<div class="flex items-baseline gap-2 mt-0.5">
+									<span id="toll-fee-display" class="text-3xl sm:text-4xl font-extrabold text-mapa-green font-serif">
+										₱350.00
+									</span>
+								</div>
+							</div>
+							<div class="text-right">
+								<span class="text-[10px] uppercase font-bold text-mapa-clay block">Accepted Tag</span>
+								<span id="required-rfid-tag" class="inline-block mt-0.5 px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-600 text-white shadow-xs">
+									Easytrip RFID
+								</span>
+							</div>
+						</div>
+
+						<!-- Distance & Kilometer Metrics -->
+						<div class="grid grid-cols-2 gap-2 text-center text-xs">
+							<div class="bg-mapa-canvas-dark border border-mapa-contour/50 rounded-lg p-2.5">
+								<span class="block text-[10px] uppercase font-bold text-mapa-clay">Highway Distance</span>
+								<span id="metric-toll-distance" class="text-base font-extrabold text-mapa-ink">76.0 km</span>
+							</div>
+							<div class="bg-mapa-canvas-dark border border-mapa-contour/50 rounded-lg p-2.5">
+								<span class="block text-[10px] uppercase font-bold text-mapa-clay">Toll System</span>
+								<span id="metric-toll-system" class="text-xs font-bold text-mapa-ink truncate">Closed Distance</span>
+							</div>
+						</div>
+
+						<!-- Details Breakdown List -->
+						<div class="space-y-2 pt-1 text-xs">
+							<div class="flex justify-between text-mapa-ink/80">
+								<span class="text-mapa-clay">Selected Vehicle:</span>
+								<span id="breakdown-vehicle" class="font-semibold text-mapa-ink">Class 1 (Cars, SUVs, 400cc+)</span>
+							</div>
+							<div class="flex justify-between text-mapa-ink/80">
+								<span class="text-mapa-clay">Corridor Operator:</span>
+								<span id="breakdown-operator" class="font-semibold text-mapa-ink">NLEX Corporation</span>
+							</div>
+							<div class="flex justify-between text-mapa-ink/80">
+								<span class="text-mapa-clay">Interoperability Status:</span>
+								<span class="font-semibold text-emerald-800">Phase 2 Interoperable</span>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+				<!-- Emergency Towing & Roadside Assistance Hotlines -->
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-5 shadow-xs text-xs">
+					<h3 class="font-bold text-mapa-ink uppercase tracking-wider text-[11px] mb-3">
+						Expressway Emergency Patrol & Towing Hotlines
+					</h3>
+					<div class="space-y-2.5">
+						<div class="p-2.5 rounded-lg bg-mapa-canvas border border-mapa-contour/60 flex items-center justify-between">
+							<div>
+								<span class="font-bold text-mapa-ink block">Metro Pacific (NLEX, SCTEX, CALAX, CAVITEX)</span>
+								<span class="text-[11px] text-mapa-clay">Emergency Hotline & Patrol</span>
+							</div>
+							<a href="tel:135000" class="font-mono font-bold text-mapa-green text-sm hover:underline">
+								1-35000
+							</a>
+						</div>
+						<div class="p-2.5 rounded-lg bg-mapa-canvas border border-mapa-contour/60 flex items-center justify-between">
+							<div>
+								<span class="font-bold text-mapa-ink block">San Miguel Tollways (SLEX, Skyway, TPLEX, NAIAX)</span>
+								<span class="text-[11px] text-mapa-clay">24/7 Command Center</span>
+							</div>
+							<a href="tel:0253188655" class="font-mono font-bold text-mapa-green text-sm hover:underline">
+								(02) 5318-8655
+							</a>
+						</div>
+						<div class="p-2.5 rounded-lg bg-mapa-canvas border border-mapa-contour/60 flex items-center justify-between">
+							<div>
+								<span class="font-bold text-mapa-ink block">CCLEX Emergency Patrol (Cebu)</span>
+								<span class="text-[11px] text-mapa-clay">Cebu-Cordova Operations</span>
+							</div>
+							<a href="tel:0324111637" class="font-mono font-bold text-mapa-green text-sm hover:underline">
+								(032) 411-1637
+							</a>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<!-- Comprehensive Editorial & Regulatory Reference Section -->
+		<article class="mt-16 max-w-4xl mx-auto font-sans border-t border-mapa-contour/60 pt-12 space-y-10">
+			
+			<!-- Section 1: TRB Vehicle Classification -->
+			<section>
+				<h2 class="font-serif text-2xl font-bold text-mapa-ink tracking-tight mb-4">
+					1. Official Toll Regulatory Board (TRB) Vehicle Classifications
+				</h2>
+				<p class="text-sm text-mapa-ink/80 leading-relaxed mb-4">
+					Under the statutory mandate of the <strong>Toll Regulatory Board (TRB)</strong>, toll rates across all Philippine limited-access highways are categorized into three standard vehicle classes based on axle counts, gross vehicle weight (GVW), and overall height:
+				</p>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4 shadow-xs">
+						<span class="px-2 py-0.5 rounded bg-mapa-green/10 text-mapa-green font-bold text-[10px] uppercase">
+							Class 1
+						</span>
+						<h3 class="font-bold text-mapa-ink text-sm mt-2 mb-1.5">Light Motor Vehicles</h3>
+						<ul class="text-mapa-ink/75 space-y-1 list-disc pl-4 leading-relaxed">
+							<li>Passenger cars, sedans, hatchbacks</li>
+							<li>SUVs, crossover utility vehicles, MPVs</li>
+							<li>Pickups, vans, light utility vehicles with overall height under 7.5 feet</li>
+							<li><strong>Motorcycles 400cc and above</strong> (DOTr D.O. 2007-15)</li>
+						</ul>
+					</div>
+					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4 shadow-xs">
+						<span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-800 font-bold text-[10px] uppercase">
+							Class 2
+						</span>
+						<h3 class="font-bold text-mapa-ink text-sm mt-2 mb-1.5">Medium Commercial & Buses</h3>
+						<ul class="text-mapa-ink/75 space-y-1 list-disc pl-4 leading-relaxed">
+							<li>Public utility and tourist buses</li>
+							<li>Light to medium 2-axle commercial trucks</li>
+							<li>Commercial vans with height exceeding 7.5 feet</li>
+							<li>Toll tariff is approximately <strong>2.0x</strong> Class 1 rate</li>
+						</ul>
+					</div>
+					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4 shadow-xs">
+						<span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-800 font-bold text-[10px] uppercase">
+							Class 3
+						</span>
+						<h3 class="font-bold text-mapa-ink text-sm mt-2 mb-1.5">Heavy Freight & Multi-Axle Trucks</h3>
+						<ul class="text-mapa-ink/75 space-y-1 list-disc pl-4 leading-relaxed">
+							<li>Large heavy commercial trucks with 3 or more axles</li>
+							<li>Articulated lorries, 18-wheelers, container haulers</li>
+							<li>Heavy lowbed trailers and construction equipment</li>
+							<li>Toll tariff is approximately <strong>2.5x to 3.0x</strong> Class 1 rate</li>
+						</ul>
+					</div>
+				</div>
+			</section>
+
+			<!-- Section 2: Autosweep vs Easytrip Interoperability -->
+			<section>
+				<h2 class="font-serif text-2xl font-bold text-mapa-ink tracking-tight mb-4">
+					2. Autosweep RFID vs. Easytrip RFID: Interoperability Rules
+				</h2>
+				<p class="text-sm text-mapa-ink/80 leading-relaxed mb-4">
+					Philippine expressways are split between two major concessionaires, each utilizing their own RFID tags and toll management platforms:
+				</p>
+				<div class="overflow-x-auto border border-mapa-contour/80 rounded-xl bg-mapa-canvas mb-4 shadow-xs">
+					<table class="w-full text-left text-xs border-collapse">
+						<thead>
+							<tr class="border-b border-mapa-contour bg-mapa-canvas-dark font-serif text-mapa-ink">
+								<th class="p-3 font-bold">RFID System</th>
+								<th class="p-3 font-bold">Concessionaire</th>
+								<th class="p-3 font-bold">Covered Tollways</th>
+								<th class="p-3 font-bold">Account Reloading Channels</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/80">
+							<tr>
+								<td class="p-3 font-semibold text-blue-800">Autosweep RFID</td>
+								<td class="p-3">San Miguel Corporation (SMC)</td>
+								<td class="p-3">SLEX, Skyway 1/2/3, NAIAX, MCX, TPLEX, STAR Tollway</td>
+								<td class="p-3">GCash, Maya, BDO, BPI, 7-Eleven, Shell/Petron stations</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-semibold text-emerald-800">Easytrip RFID</td>
+								<td class="p-3">Metro Pacific Tollways (MPTC)</td>
+								<td class="p-3">NLEX, SCTEX, CAVITEX, CALAX, C5 South Link, CCLEX (Cebu)</td>
+								<td class="p-3">MPT DriveHub App, GCash, Maya, Bayad Center, Caltex stations</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-900 leading-relaxed">
+					<strong>Unified Interoperability (Important Note):</strong> Under the TRB's Phase 2 Interoperability program, motorists can register their existing physical Autosweep RFID tag with Easytrip (and vice-versa at customer service centers) so that a single sticker works on all expressways. However, <strong>wallets remain separate</strong>: your Autosweep wallet balance is deducted on SMC roads, and your Easytrip balance is deducted on MPTC roads. Both wallets must maintain a positive balance to avoid turnstile rejections.
+				</div>
+			</section>
+
+			<!-- Section 3: Closed vs Open Toll System -->
+			<section>
+				<h2 class="font-serif text-2xl font-bold text-mapa-ink tracking-tight mb-4">
+					3. Open Barrier vs. Closed Distance Toll Collection Systems
+				</h2>
+				<p class="text-sm text-mapa-ink/80 leading-relaxed mb-4">
+					Philippine highways use two distinct engineering models for fare collection:
+				</p>
+				<ul class="space-y-3 text-xs text-mapa-ink/80 list-disc pl-5 leading-relaxed">
+					<li>
+						<strong>Open Barrier System:</strong> Motorists pay a fixed, flat toll fee upon passing a physical barrier plaza, regardless of the distance traveled within that segment. Examples include NLEX Balintawak (₱74), Skyway Buendia entry (₱164), NAIAX (₱45), and CCLEX (₱90).
+					</li>
+					<li>
+						<strong>Closed Distance-Based System:</strong> Motorists tap in at their entry interchange (where an electronic timestamp and entry tag are logged) and tap out at their exit interchange. The toll fee is computed precisely per kilometer based on the distance between the two interchanges. Examples include NLEX north of Bocaue, SLEX south of Alabang, SCTEX, TPLEX, and CALAX.
+					</li>
+				</ul>
+			</section>
+
+		</article>
+	</main>
+
+	<Footer />
+
+	<!-- Leaflet JS from CDN -->
+	<script
+		is:inline
+		src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+		integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+		crossorigin=""
+	></script>
+
+	<!-- Interactive Schematic & Toll Calculation Engine -->
+	<script is:inline define:vars={{ EXPRESSWAYS }}>
+		(function () {
+			// State
+			let currentExpId = 'nlex';
+			let currentClass = 1; // 1, 2, or 3
+			let currentEntryId = 'balintawak';
+			let currentExitId = 'dau';
+			let currentView = 'schematic'; // 'schematic' or 'geo'
+
+			// DOM Elements
+			const expSelect = document.getElementById('expressway-select');
+			const entrySelect = document.getElementById('entry-plaza-select');
+			const exitSelect = document.getElementById('exit-plaza-select');
+			const swapBtn = document.getElementById('swap-plazas-btn');
+			const classBtns = document.querySelectorAll('.vehicle-class-btn');
+
+			const tollFeeDisplay = document.getElementById('toll-fee-display');
+			const requiredRfidTag = document.getElementById('required-rfid-tag');
+			const metricDistance = document.getElementById('metric-toll-distance');
+			const metricSystem = document.getElementById('metric-toll-system');
+			const breakdownVehicle = document.getElementById('breakdown-vehicle');
+			const breakdownOperator = document.getElementById('breakdown-operator');
+			const activeCorridorTitle = document.getElementById('active-corridor-title');
+			const corridorRfidBadge = document.getElementById('corridor-rfid-badge');
+
+			const schematicView = document.getElementById('schematic-view-container');
+			const schematicCanvas = document.getElementById('schematic-strip-canvas');
+			const geoMapView = document.getElementById('toll-geo-map');
+			const btnViewSchematic = document.getElementById('btn-view-schematic');
+			const btnViewGeo = document.getElementById('btn-view-geo');
+
+			// Leaflet Map instance
+			let map = null;
+			let activeGeoPolyline = null;
+			let activeGeoMarkers = [];
+
+			function getActiveExpressway() {
+				return EXPRESSWAYS.find(e => e.id === currentExpId) || EXPRESSWAYS[0];
+			}
+
+			// Populate Entry and Exit dropdowns for active expressway
+			function populatePlazaDropdowns() {
+				const exp = getActiveExpressway();
+				entrySelect.innerHTML = '';
+				exitSelect.innerHTML = '';
+
+				exp.plazas.forEach(p => {
+					const opt1 = document.createElement('option');
+					opt1.value = p.id;
+					opt1.textContent = `${p.name} (km ${p.km.toFixed(1)})`;
+					entrySelect.appendChild(opt1);
+
+					const opt2 = document.createElement('option');
+					opt2.value = p.id;
+					opt2.textContent = `${p.name} (km ${p.km.toFixed(1)})`;
+					exitSelect.appendChild(opt2);
+				});
+
+				// Set default entry and exit
+				if (exp.plazas.length >= 2) {
+					currentEntryId = exp.plazas[0].id;
+					currentExitId = exp.plazas[exp.plazas.length - 2].id || exp.plazas[exp.plazas.length - 1].id;
+					entrySelect.value = currentEntryId;
+					exitSelect.value = currentExitId;
+				}
+			}
+
+			// Render the Schematic Highway Strip
+			function renderSchematicStrip() {
+				const exp = getActiveExpressway();
+				const entryIdx = exp.plazas.findIndex(p => p.id === currentEntryId);
+				const exitIdx = exp.plazas.findIndex(p => p.id === currentExitId);
+				const minIdx = Math.min(entryIdx, exitIdx);
+				const maxIdx = Math.max(entryIdx, exitIdx);
+
+				schematicCanvas.innerHTML = '';
+
+				// Outer flex ribbon wrapper
+				const stripContainer = document.createElement('div');
+				stripContainer.className = 'flex items-center min-w-[700px] py-4 relative';
+
+				// Main connecting track line
+				const trackLine = document.createElement('div');
+				trackLine.className = 'absolute left-6 right-6 top-1/2 -translate-y-1/2 h-2.5 bg-stone-300 rounded-full z-0';
+				stripContainer.appendChild(trackLine);
+
+				// Active highlight portion of the track line
+				if (entryIdx !== -1 && exitIdx !== -1 && minIdx !== maxIdx) {
+					const pctStart = (minIdx / (exp.plazas.length - 1)) * 100;
+					const pctEnd = (maxIdx / (exp.plazas.length - 1)) * 100;
+					const activeHighlight = document.createElement('div');
+					activeHighlight.className = 'absolute top-1/2 -translate-y-1/2 h-3.5 bg-amber-500 rounded-full z-1 transition-all shadow-sm';
+					activeHighlight.style.left = `calc(${pctStart}% + 12px)`;
+					activeHighlight.style.width = `calc(${pctEnd - pctStart}% - 24px)`;
+					stripContainer.appendChild(activeHighlight);
+				}
+
+				// Plazas nodes
+				exp.plazas.forEach((plaza, idx) => {
+					const isEntry = plaza.id === currentEntryId;
+					const isExit = plaza.id === currentExitId;
+					const isIntermediate = idx > minIdx && idx < maxIdx;
+
+					const nodeWrapper = document.createElement('div');
+					nodeWrapper.className = 'flex-1 flex flex-col items-center relative z-10 cursor-pointer group';
+					nodeWrapper.title = `Click to set as Entry or Exit: ${plaza.name}`;
+
+					// Pin icon circle
+					const pin = document.createElement('div');
+					if (isEntry) {
+						pin.className = 'w-6 h-6 rounded-full bg-emerald-600 border-2 border-white shadow-md flex items-center justify-center text-white text-[10px] font-bold ring-4 ring-emerald-500/30';
+						pin.textContent = 'A';
+					} else if (isExit) {
+						pin.className = 'w-6 h-6 rounded-full bg-rose-600 border-2 border-white shadow-md flex items-center justify-center text-white text-[10px] font-bold ring-4 ring-rose-500/30';
+						pin.textContent = 'B';
+					} else if (plaza.isBarrier) {
+						pin.className = `w-4 h-4 rounded bg-amber-500 border border-white shadow-sm flex items-center justify-center text-[8px] text-white font-bold ${isIntermediate ? 'ring-2 ring-amber-400' : ''}`;
+						pin.textContent = 'T';
+					} else {
+						pin.className = `w-3.5 h-3.5 rounded-full border-2 border-white shadow-xs transition-all ${isIntermediate ? 'bg-amber-400' : 'bg-stone-400 group-hover:scale-125'}`;
+					}
+
+					// Label above/below
+					const label = document.createElement('div');
+					label.className = `mt-2 text-[10px] text-center max-w-[75px] truncate font-medium transition-colors ${isEntry ? 'font-bold text-emerald-800' : isExit ? 'font-bold text-rose-800' : 'text-stone-600 group-hover:text-mapa-green'}`;
+					label.textContent = plaza.name.split(' (')[0];
+
+					const kmLabel = document.createElement('div');
+					kmLabel.className = 'text-[9px] text-stone-600 font-mono';
+					kmLabel.textContent = `km ${plaza.km.toFixed(0)}`;
+
+					nodeWrapper.appendChild(pin);
+					nodeWrapper.appendChild(label);
+					nodeWrapper.appendChild(kmLabel);
+
+					// Click interaction on schematic node
+					nodeWrapper.addEventListener('click', () => {
+						if (currentEntryId === plaza.id) {
+							// If already entry, set as exit
+							currentExitId = plaza.id;
+							exitSelect.value = plaza.id;
+						} else {
+							currentExitId = plaza.id;
+							exitSelect.value = plaza.id;
+						}
+						calculateToll();
+					});
+
+					stripContainer.appendChild(nodeWrapper);
+				});
+
+				schematicCanvas.appendChild(stripContainer);
+			}
+
+			// Render Geographic Leaflet Map
+			function initOrUpdateGeoMap() {
+				if (!map) {
+					map = L.map('toll-geo-map', {
+						center: [14.65, 121.0],
+						zoom: 10,
+						zoomControl: true,
+						scrollWheelZoom: true
+					});
+
+					L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+						attribution: '&copy; OpenStreetMap &copy; CARTO',
+						maxZoom: 19
+					}).addTo(map);
+				}
+
+				const exp = getActiveExpressway();
+
+				// Clear existing markers & polyline
+				if (activeGeoPolyline) {
+					map.removeLayer(activeGeoPolyline);
+					activeGeoPolyline = null;
+				}
+				activeGeoMarkers.forEach(m => map.removeLayer(m));
+				activeGeoMarkers = [];
+
+				const coords = exp.plazas.map(p => [p.lat, p.lon]);
+
+				activeGeoPolyline = L.polyline(coords, {
+					color: exp.color,
+					weight: 5,
+					opacity: 0.85
+				}).addTo(map);
+
+				exp.plazas.forEach(p => {
+					const isEntry = p.id === currentEntryId;
+					const isExit = p.id === currentExitId;
+
+					const m = L.circleMarker([p.lat, p.lon], {
+						radius: isEntry || isExit ? 7 : 4,
+						fillColor: isEntry ? '#059669' : isExit ? '#E11D48' : p.isBarrier ? '#F59E0B' : '#FFFFFF',
+						color: exp.color,
+						weight: 2,
+						opacity: 1,
+						fillOpacity: 1
+					}).addTo(map);
+
+					m.bindTooltip(`<strong>${p.name}</strong><br><span style="font-size:10px;">km ${p.km.toFixed(1)} &bull; ${exp.name}</span>`);
+
+					m.on('click', () => {
+						currentExitId = p.id;
+						exitSelect.value = p.id;
+						calculateToll();
+					});
+
+					activeGeoMarkers.push(m);
+				});
+
+				map.fitBounds(activeGeoPolyline.getBounds(), { padding: [30, 30] });
+			}
+
+			// Calculate Toll Fee
+			function calculateToll() {
+				const exp = getActiveExpressway();
+				const entry = exp.plazas.find(p => p.id === currentEntryId) || exp.plazas[0];
+				const exit = exp.plazas.find(p => p.id === currentExitId) || exp.plazas[exp.plazas.length - 1];
+
+				const distKm = Math.abs(exit.km - entry.km);
+
+				// Compute Fee
+				let fee = 0;
+				if (entry.id === exit.id) {
+					fee = 0;
+				} else if (exp.id === 'cclex') {
+					// Flat toll
+					fee = currentClass === 1 ? 90 : currentClass === 2 ? 180 : 270;
+				} else {
+					// Distance-based with open barrier components
+					// We use exit plaza tariff as standard TRB closed system table
+					const tariffKey = `c${currentClass}`;
+					const maxTariff = Math.max(entry[tariffKey], exit[tariffKey]);
+					const minTariff = Math.min(entry[tariffKey], exit[tariffKey]);
+
+					if (minTariff === 0) {
+						fee = maxTariff;
+					} else {
+						// Differential
+						fee = Math.abs(maxTariff - minTariff);
+						// Minimum base toll threshold
+						if (fee < 15 && distKm > 0) fee = 15;
+					}
+				}
+
+				// Update UI
+				tollFeeDisplay.textContent = `₱${fee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+				requiredRfidTag.textContent = exp.rfid;
+				requiredRfidTag.className = `inline-block mt-0.5 px-2.5 py-1 rounded-md text-xs font-bold ${exp.rfidColor} shadow-xs`;
+
+				metricDistance.textContent = `${distKm.toFixed(1)} km`;
+				metricSystem.textContent = exp.system.split(' ')[0];
+
+				const classLabel = currentClass === 1 ? 'Class 1 (Cars, SUVs, 400cc+)' : currentClass === 2 ? 'Class 2 (Buses, 2-Axle Trucks)' : 'Class 3 (Heavy 3+ Axle Trucks)';
+				breakdownVehicle.textContent = classLabel;
+				breakdownOperator.textContent = exp.operator.split(' (')[0];
+
+				activeCorridorTitle.textContent = `${exp.name} Visualizer`;
+				corridorRfidBadge.textContent = exp.rfid;
+				corridorRfidBadge.className = `px-2 py-0.5 rounded text-[10px] font-bold ${exp.rfidColor}`;
+
+				renderSchematicStrip();
+
+				if (currentView === 'geo' && map) {
+					initOrUpdateGeoMap();
+				}
+			}
+
+			// View Toggle (Schematic Strip vs Geo Map)
+			btnViewSchematic.addEventListener('click', () => {
+				currentView = 'schematic';
+				schematicView.classList.remove('hidden');
+				geoMapView.classList.add('hidden');
+
+				btnViewSchematic.className = 'px-2.5 py-1 rounded-md text-[11px] font-bold transition-all bg-mapa-canvas text-mapa-green shadow-xs';
+				btnViewGeo.className = 'px-2.5 py-1 rounded-md text-[11px] font-medium text-mapa-ink/60 hover:text-mapa-ink transition-all';
+			});
+
+			btnViewGeo.addEventListener('click', () => {
+				currentView = 'geo';
+				schematicView.classList.add('hidden');
+				geoMapView.classList.remove('hidden');
+
+				btnViewGeo.className = 'px-2.5 py-1 rounded-md text-[11px] font-bold transition-all bg-mapa-canvas text-mapa-green shadow-xs';
+				btnViewSchematic.className = 'px-2.5 py-1 rounded-md text-[11px] font-medium text-mapa-ink/60 hover:text-mapa-ink transition-all';
+
+				setTimeout(() => {
+					initOrUpdateGeoMap();
+					map.invalidateSize();
+				}, 100);
+			});
+
+			// Event Listeners
+			expSelect.addEventListener('change', () => {
+				currentExpId = expSelect.value;
+				populatePlazaDropdowns();
+				calculateToll();
+			});
+
+			entrySelect.addEventListener('change', () => {
+				currentEntryId = entrySelect.value;
+				calculateToll();
+			});
+
+			exitSelect.addEventListener('change', () => {
+				currentExitId = exitSelect.value;
+				calculateToll();
+			});
+
+			swapBtn.addEventListener('click', () => {
+				const temp = currentEntryId;
+				currentEntryId = currentExitId;
+				currentExitId = temp;
+				entrySelect.value = currentEntryId;
+				exitSelect.value = currentExitId;
+				calculateToll();
+			});
+
+			// Vehicle Class selection
+			classBtns.forEach(btn => {
+				btn.addEventListener('click', () => {
+					currentClass = parseInt(btn.getAttribute('data-class'), 10) || 1;
+					classBtns.forEach(b => {
+						b.className = 'vehicle-class-btn p-2.5 rounded-xl border transition-all text-center bg-mapa-canvas border-mapa-contour text-mapa-ink/70 hover:border-mapa-green/50';
+					});
+					btn.className = 'vehicle-class-btn p-2.5 rounded-xl border transition-all text-center bg-mapa-canvas border-mapa-green text-mapa-green shadow-xs font-bold';
+					calculateToll();
+				});
+			});
+
+			// Preset Trip Buttons
+			document.querySelectorAll('.preset-trip-btn').forEach(btn => {
+				btn.addEventListener('click', () => {
+					const expId = btn.getAttribute('data-exp');
+					const orig = btn.getAttribute('data-orig');
+					const dest = btn.getAttribute('data-dest');
+
+					if (expId && orig && dest) {
+						currentExpId = expId;
+						expSelect.value = expId;
+						populatePlazaDropdowns();
+
+						currentEntryId = orig;
+						currentExitId = dest;
+						entrySelect.value = orig;
+						exitSelect.value = dest;
+
+						calculateToll();
+					}
+				});
+			});
+
+			// Initialize
+			populatePlazaDropdowns();
+			calculateToll();
+		})();
+	</script>
+</BaseLayout>
