@@ -1,0 +1,719 @@
+---
+/**
+ * @file zip-codes.astro
+ * @description Interactive search, inspector, and reference guide for Philippine ZIP / Postal Codes (PHLPost).
+ * Features client-side zero-latency search across 2,139 postal delivery zones, 1-click copy, and technical documentation.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import zipData from '../../data/philippine-zip-codes.json';
+
+const totalCount = zipData.meta.total;
+const entries = zipData.entries;
+
+// Extract unique regions for the filter dropdown
+const uniqueRegions = Array.from(new Set(entries.map((e) => e.region))).sort();
+---
+
+<BaseLayout
+	title="Philippine ZIP Code / Postal Code Lookup & Directory — mapaPH Tools"
+	description="Search 2,139 Philippine postal codes (PHLPost). Instant lookup for 4-digit ZIP codes across Metro Manila and all 82 provinces with 1-click copy and addressing guides."
+	keywords="Philippine zip code lookup, postal code Philippines, PHLPost zip codes, Manila postal code, Quezon City zip code, Cebu postal code, Davao zip code, 4 digit zip code Philippines, Philippine postal directory, e-commerce zip code Philippines"
+>
+	<script type="application/ld+json" slot="schema" is:inline>
+		{
+			"@context": "https://schema.org",
+			"@graph": [
+				{
+					"@type": "WebApplication",
+					"name": "Philippine ZIP Code Lookup & Directory",
+					"url": "https://mapaph.com/tools/zip-codes",
+					"applicationCategory": "Geographic Utility",
+					"operatingSystem": "All",
+					"description": "Instant search and 1-click copy directory for official 4-digit Philippine postal codes maintained by PHLPost.",
+					"provider": {
+						"@type": "Organization",
+						"name": "mapaPH",
+						"url": "https://mapaph.com"
+					}
+				},
+				{
+					"@type": "FAQPage",
+					"mainEntity": [
+						{
+							"@type": "Question",
+							"name": "How many digits are in a Philippine ZIP code?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "Philippine postal codes consist of exactly 4 digits. The system is administered by the Philippine Postal Corporation (PHLPost). Unlike the United States which uses 5 digits, the Philippines uses a 4-digit numeric code."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "What should I do if an international website requires a 5-digit ZIP code for the Philippines?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "Most international payment processors and checkout forms accept 4 digits when 'Philippines' is selected as the destination country. If a form strictly enforces a 5-digit validation rule, common workarounds include adding a leading zero (e.g., 01101 for 1101) or padding with a trailing zero."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "What is the difference between a ZIP code and a PSGC code?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "A ZIP code is a 4-digit postal routing number created by PHLPost for physical mail and parcel sorting. A PSGC code (Philippine Standard Geographic Code) is a 9-digit or 10-digit statistical hierarchy code maintained by the Philippine Statistics Authority (PSA) for administrative demarcation and census tabulation."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "Why does Quezon City have multiple ZIP codes while other towns have only one?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "High-density metropolitan areas like Quezon City, Manila, and Makati generate immense volumes of mail and parcels. PHLPost divided these major cities into distinct postal delivery zones (e.g., Diliman 1101, Cubao 1109, Novaliches 1121) to route shipments to local distribution post offices. In contrast, most rural municipalities have a single central post office and share one 4-digit code."
+							}
+						}
+					]
+				}
+			]
+		}
+	</script>
+
+	<Navbar />
+
+	<main class="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-mapa-ink">
+		<!-- Header -->
+		<div class="max-w-3xl mb-8">
+			<div class="flex items-center gap-2 mb-2">
+				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
+					Built-in Utility
+				</span>
+				<span class="font-sans text-xs text-mapa-clay">
+					Official PHLPost 4-Digit Directory
+				</span>
+			</div>
+			<h1 class="text-3xl sm:text-4xl font-extrabold text-mapa-green font-serif tracking-tight">
+				Philippine ZIP Code / Postal Code Lookup
+			</h1>
+			<p class="font-sans text-sm sm:text-base text-mapa-ink/80 mt-2 leading-relaxed">
+				Instant client-side search across <strong>{totalCount.toLocaleString()}</strong> official Philippine postal codes. Search by 4-digit code, municipality, district, city, or province with 1-click copy for parcel deliveries, bank forms, and passport applications.
+			</p>
+		</div>
+
+		<!-- Interactive Lookup & Inspector Card -->
+		<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 shadow-sm mb-12">
+			<!-- Quick Presets -->
+			<div class="mb-6 font-sans text-xs">
+				<span class="text-mapa-ink/60 font-medium mr-2">Quick presets:</span>
+				<div class="inline-flex flex-wrap gap-2 mt-2 sm:mt-0">
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-search="Manila CPO">
+						Manila (1000)
+					</button>
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-search="Diliman">
+						Diliman, QC (1101)
+					</button>
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-search="Ayala PO">
+						Ayala, Makati (1226)
+					</button>
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-search="Fort Bonifacio">
+						BGC / Taguig (1630)
+					</button>
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-search="Cebu City">
+						Cebu City (6000)
+					</button>
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-search="Davao City">
+						Davao City (8000)
+					</button>
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-search="Baguio">
+						Baguio City (2600)
+					</button>
+				</div>
+			</div>
+
+			<!-- Search Controls Grid -->
+			<div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-6 font-sans">
+				<div class="md:col-span-8 relative">
+					<label for="zip-search-input" class="block text-xs font-semibold text-mapa-ink/80 uppercase tracking-wider mb-1.5">
+						Search Municipalities, Cities, or 4-Digit Codes:
+					</label>
+					<div class="relative">
+						<input
+							type="text"
+							id="zip-search-input"
+							placeholder="Type ZIP code (e.g. 1000, 6000), town, district, or province..."
+							class="w-full pl-10 pr-10 py-3 rounded-xl bg-mapa-canvas border border-mapa-contour focus:outline-none focus:ring-2 focus:ring-mapa-green focus:border-transparent text-sm text-mapa-ink transition-all shadow-2xs"
+						/>
+						<svg class="w-5 h-5 text-mapa-clay absolute left-3.5 top-3.5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+						</svg>
+						<button
+							type="button"
+							id="clear-search-btn"
+							class="hidden absolute right-3.5 top-3.5 text-mapa-clay hover:text-mapa-ink transition-colors"
+							aria-label="Clear search query"
+						>
+							<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+							</svg>
+						</button>
+					</div>
+				</div>
+
+				<div class="md:col-span-4">
+					<label for="region-filter-select" class="block text-xs font-semibold text-mapa-ink/80 uppercase tracking-wider mb-1.5">
+						Filter by Region:
+					</label>
+					<select
+						id="region-filter-select"
+						class="w-full py-3 px-3.5 rounded-xl bg-mapa-canvas border border-mapa-contour focus:outline-none focus:ring-2 focus:ring-mapa-green focus:border-transparent text-sm text-mapa-ink transition-all shadow-2xs cursor-pointer"
+					>
+						<option value="ALL">All Regions (All {totalCount} Codes)</option>
+						{uniqueRegions.map((r) => (
+							<option value={r}>{r}</option>
+						))}
+					</select>
+				</div>
+			</div>
+
+			<!-- Active Inspector Card (Dynamic Details on Selected Code) -->
+			<div id="inspector-card" class="bg-mapa-canvas border border-mapa-contour/80 rounded-xl p-5 mb-6">
+				<!-- Default state placeholder populated by JS -->
+				<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+					<div>
+						<div class="flex items-center gap-2 mb-1">
+							<span class="font-sans text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-mapa-green/10 text-mapa-green border border-mapa-green/20">
+								Featured Selection
+							</span>
+							<span class="font-sans text-xs text-mapa-clay">National Capital Region (NCR)</span>
+						</div>
+						<div class="flex flex-wrap items-center gap-3">
+							<h3 class="font-serif text-2xl font-bold text-mapa-ink">
+								Manila CPO — Ermita
+							</h3>
+							<button
+								type="button"
+								class="copy-btn inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-mapa-canvas-dark border border-mapa-contour text-xs font-mono font-bold text-mapa-green hover:bg-mapa-green/10 transition-all cursor-pointer shadow-2xs"
+								data-copy="1000"
+								title="Click to copy ZIP code"
+							>
+								<span>ZIP: 1000</span>
+								<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+								</svg>
+							</button>
+						</div>
+					</div>
+					<div class="flex items-center gap-2 text-xs font-sans">
+						<a
+							href="/tools/psgc-lookup?q=Manila"
+							class="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-mapa-canvas-dark border border-mapa-contour text-mapa-ink/80 hover:text-mapa-green hover:border-mapa-green transition-all"
+						>
+							<span>PSGC Lookup</span>
+							<span>→</span>
+						</a>
+					</div>
+				</div>
+
+				<!-- Visual 4-Digit Postal Hierarchy Breakdown -->
+				<div class="mt-4 pt-4 border-t border-mapa-contour/50">
+					<span class="font-sans text-[11px] font-bold uppercase tracking-wider text-mapa-clay block mb-2">
+						4-Digit Postal Code Hierarchy Breakdown
+					</span>
+					<div class="grid grid-cols-3 gap-2 font-mono text-center text-xs">
+						<div class="p-2 rounded bg-mapa-canvas-dark border border-mapa-contour/60">
+							<span class="text-mapa-clay text-[10px] block font-sans uppercase">Digit 1 (Zone)</span>
+							<span class="text-base font-bold text-mapa-green">1</span>
+							<span class="text-[10px] block text-mapa-ink/70 font-sans mt-0.5">NCR & Northern Luzon</span>
+						</div>
+						<div class="p-2 rounded bg-mapa-canvas-dark border border-mapa-contour/60">
+							<span class="text-mapa-clay text-[10px] block font-sans uppercase">Digit 2 (City/Hub)</span>
+							<span class="text-base font-bold text-mapa-green">0</span>
+							<span class="text-[10px] block text-mapa-ink/70 font-sans mt-0.5">City of Manila CPO</span>
+						</div>
+						<div class="p-2 rounded bg-mapa-canvas-dark border border-mapa-contour/60">
+							<span class="text-mapa-clay text-[10px] block font-sans uppercase">Digits 3-4 (Delivery Zone)</span>
+							<span class="text-base font-bold text-mapa-green">00</span>
+							<span class="text-[10px] block text-mapa-ink/70 font-sans mt-0.5">Ermita Central Post Office</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Search Results Count & Table -->
+			<div>
+				<div class="flex items-center justify-between mb-3 text-xs font-sans">
+					<span id="results-count-text" class="text-mapa-clay font-medium">
+						Showing all {totalCount} postal codes
+					</span>
+					<span class="text-mapa-clay/80 hidden sm:inline">
+						Click any row to inspect code breakdown
+					</span>
+				</div>
+
+				<div class="border border-mapa-contour rounded-xl overflow-hidden bg-mapa-canvas shadow-xs">
+					<div class="overflow-x-auto max-h-[520px] scrollbar-thin">
+						<table class="w-full text-left font-sans text-xs sm:text-sm">
+							<thead class="bg-mapa-canvas-dark border-b border-mapa-contour text-mapa-ink/70 uppercase text-[11px] font-bold sticky top-0 z-10">
+								<tr>
+									<th class="py-3 px-4 w-28">ZIP Code</th>
+									<th class="py-3 px-4">Municipality / District / Area</th>
+									<th class="py-3 px-4">Province / City</th>
+									<th class="py-3 px-4 w-32">Region</th>
+									<th class="py-3 px-4 text-right w-24">Action</th>
+								</tr>
+							</thead>
+							<tbody id="results-tbody" class="divide-y divide-mapa-contour/50 font-sans">
+								<!-- Dynamically populated via JS -->
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- COMPREHENSIVE EDITORIAL ARTICLE (phtools.me Style) -->
+		<article class="prose prose-stone max-w-4xl mx-auto font-serif text-mapa-ink pt-6 border-t border-mapa-contour/60">
+			<!-- Article Header -->
+			<div class="mb-10">
+				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
+					Technical Reference & Addressing Guide
+				</span>
+				<h2 class="text-3xl sm:text-4xl font-extrabold text-mapa-green font-serif tracking-tight mt-2">
+					Understanding the Philippine Postal Code System
+				</h2>
+				<p class="font-sans text-sm sm:text-base text-mapa-ink/70 mt-2 leading-relaxed">
+					How PHLPost structures the 4-digit numeric system, why Metro Manila has dozens of sub-district codes while rural municipalities share one, and how to format addresses for international e-commerce and government forms.
+				</p>
+			</div>
+
+			<!-- Section 1: Anatomy of 4 Digits -->
+			<section class="mb-10 font-sans">
+				<h3 class="font-serif text-2xl font-bold text-mapa-ink mb-4">
+					1. Anatomy of the Philippine 4-Digit Postal Code
+				</h3>
+				<p class="text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+					In the Philippines, postal codes (commonly referred to as ZIP codes) are administered exclusively by the <strong>Philippine Postal Corporation (PHLPost)</strong> under the authority of <strong>Republic Act No. 7354 (Postal Service Act of 1992)</strong>. Unlike the United States (which uses 5-digit numeric codes) or the United Kingdom (which uses alphanumeric codes), the Philippine system is strictly composed of <strong>four numeric digits</strong>.
+				</p>
+				<p class="text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+					The four digits are organized in a regional geographic hierarchy that allows sorting machines and mail couriers to route mail from central distribution hubs down to local post office boxes:
+				</p>
+
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
+					<div class="p-5 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/80">
+						<span class="text-xs font-bold text-mapa-green uppercase tracking-wider block mb-1">First Digit (1–9)</span>
+						<h4 class="font-serif font-bold text-lg text-mapa-ink mb-1">Island Zone</h4>
+						<p class="text-xs text-mapa-ink/80 leading-relaxed">
+							Identifies the broad island group or mega-region: <strong>1</strong> for NCR & Northern Luzon, <strong>2</strong> for CAR & Ilocos, <strong>3</strong> for Central Luzon, <strong>4</strong> for Southern Tagalog (CALABARZON/MIMAROPA), <strong>5</strong> for Bicol, <strong>6</strong> for Western Visayas, <strong>7</strong> for Central/Eastern Visayas, <strong>8</strong> for Northern Mindanao/Davao, and <strong>9</strong> for Southern Mindanao/BARMM.
+						</p>
+					</div>
+
+					<div class="p-5 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/80">
+						<span class="text-xs font-bold text-mapa-green uppercase tracking-wider block mb-1">Second Digit (0–9)</span>
+						<h4 class="font-serif font-bold text-lg text-mapa-ink mb-1">Provincial Routing Hub</h4>
+						<p class="text-xs text-mapa-ink/80 leading-relaxed">
+							Pinpoints the specific province, chartered city, or central distribution center within the mega-region. For example, in Region VII, <strong>60</strong> designates Cebu Province, while <strong>63</strong> designates Bohol.
+						</p>
+					</div>
+
+					<div class="p-5 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/80">
+						<span class="text-xs font-bold text-mapa-green uppercase tracking-wider block mb-1">Last Two Digits (00–99)</span>
+						<h4 class="font-serif font-bold text-lg text-mapa-ink mb-1">Delivery Post Office</h4>
+						<p class="text-xs text-mapa-ink/80 leading-relaxed">
+							Identifies the specific municipality, city barangay cluster, or post office branch. The central post office (CPO) of a province or major city typically uses <strong>00</strong> (e.g., 6000 for Cebu City CPO, 8000 for Davao City CPO, 1000 for Manila CPO).
+						</p>
+					</div>
+				</div>
+			</section>
+
+			<!-- Section 2: Metro Manila vs Provinces -->
+			<section class="mb-10 font-sans border-t border-mapa-contour/40 pt-8">
+				<h3 class="font-serif text-2xl font-bold text-mapa-ink mb-4">
+					2. Why Metro Manila Has Dozens of Codes While Entire Towns Share One
+				</h3>
+				<p class="text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+					One of the most frequent sources of confusion for commuters and online shoppers is why certain cities in Metro Manila possess over thirty distinct ZIP codes, whereas an entire provincial municipality spanning hundreds of square kilometers has only one.
+				</p>
+				<p class="text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+					The reason comes down to <strong>delivery density and postal volume</strong>:
+				</p>
+				<ul class="list-disc pl-5 space-y-2 text-sm text-mapa-ink/90 leading-relaxed mb-4">
+					<li>
+						<strong>High-Density Urban Zones:</strong> Quezon City (population ~2.96 million) receives tens of thousands of courier packages and letters daily. PHLPost assigned distinct codes to neighborhoods and major university hubs—such as <strong>1101</strong> (Diliman / UP Campus), <strong>1109</strong> (Cubao / Project 4), <strong>1105</strong> (Project 7), and <strong>1118</strong> (Fairview)—so sorting facilities can dispatch mail trucks directly to designated sub-district delivery post offices without sorting through millions of pieces in a single room.
+					</li>
+					<li>
+						<strong>Provincial Municipalities:</strong> Outside highly urbanized centers, mail delivery is centralized at the municipal town hall's municipal post office. Even if a municipality has 40 distinct rural barangays, all mail arrives at the municipal post office and is distributed by rural letter carriers, meaning a single 4-digit code (such as <strong>4114</strong> for Dasmariñas, Cavite or <strong>3000</strong> for Malolos, Bulacan) serves the entire local government unit.
+					</li>
+				</ul>
+			</section>
+
+			<!-- Section 3: Difference between ZIP Code and PSGC -->
+			<section class="mb-10 font-sans border-t border-mapa-contour/40 pt-8">
+				<h3 class="font-serif text-2xl font-bold text-mapa-ink mb-4">
+					3. ZIP Code vs. PSGC Code: Two Different Government Standards
+				</h3>
+				<p class="text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+					Users often conflate the <strong>Philippine Standard Geographic Code (PSGC)</strong> with the <strong>PHLPost ZIP Code</strong>. While both identify places in the Philippines, they serve completely different legal mandates and were created by separate government bodies:
+				</p>
+
+				<div class="overflow-x-auto my-4 border border-mapa-contour rounded-xl bg-mapa-canvas-dark">
+					<table class="w-full text-left text-xs sm:text-sm">
+						<thead class="border-b border-mapa-contour/70 text-mapa-ink/70 uppercase text-[11px] font-bold">
+							<tr>
+								<th class="p-3">Attribute</th>
+								<th class="p-3 text-mapa-green">PHLPost ZIP Code</th>
+								<th class="p-3 text-mapa-flag-blue">PSA PSGC Code</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-mapa-contour/40 text-mapa-ink/90">
+							<tr>
+								<td class="p-3 font-semibold">Administering Agency</td>
+								<td class="p-3">Philippine Postal Corporation (PHLPost)</td>
+								<td class="p-3">Philippine Statistics Authority (PSA)</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-semibold">Format Length</td>
+								<td class="p-3 font-mono font-bold">4 Digits (e.g. 1101)</td>
+								<td class="p-3 font-mono font-bold">9 or 10 Digits (e.g. 137404000)</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-semibold">Primary Purpose</td>
+								<td class="p-3">Mail delivery, parcel logistics, postal hubs</td>
+								<td class="p-3">National census, LGU boundary registry, statutory law</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-semibold">Granularity</td>
+								<td class="p-3">Post office branches & urban delivery zones</td>
+								<td class="p-3">Strict hierarchy (Region → Prov → City/Mun → Bgy)</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</section>
+
+			<!-- Section 4: Worked Examples & Form Guidelines -->
+			<section class="mb-10 font-sans border-t border-mapa-contour/40 pt-8">
+				<h3 class="font-serif text-2xl font-bold text-mapa-ink mb-4">
+					4. How to Correctly Format Philippine Addresses on Checkout & Visa Forms
+				</h3>
+				<p class="text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+					Whether you are applying for a passport renewal through the Department of Foreign Affairs (DFA), filing BIR tax documents, or ordering items internationally on Amazon, eBay, or AliExpress, following Universal Postal Union (UPU) addressing standards prevents lost deliveries:
+				</p>
+
+				<div class="bg-mapa-canvas-dark border border-mapa-contour p-5 rounded-xl font-mono text-xs sm:text-sm my-4 space-y-1">
+					<div class="text-mapa-clay font-sans text-xs uppercase font-bold mb-2">Standard Philippine Domestic & International Address Format:</div>
+					<div>[Recipient Full Name]</div>
+					<div>[House / Unit Number, Street Name, Subdivision / Village]</div>
+					<div>[Barangay Name]</div>
+					<div>[City or Municipality Name], [Province] <strong class="text-mapa-green">[4-Digit ZIP Code]</strong></div>
+					<div>PHILIPPINES</div>
+				</div>
+
+				<div class="p-4 rounded-lg bg-mapa-green/5 border border-mapa-green/20 text-xs sm:text-sm text-mapa-ink/90 leading-relaxed my-4">
+					<strong>International Form Workaround:</strong> If a foreign e-commerce website rejects your 4-digit postal code with an error message saying <em>"ZIP code must be 5 digits"</em>, enter a leading zero (e.g., <code>01101</code> instead of <code>1101</code>). International sorting hubs recognize the destination country ("Philippines") and PHLPost scanners disregard the leading zero upon arrival at the central exchange.
+				</div>
+			</section>
+
+			<!-- Section 5: Official Citations & Sources -->
+			<section class="mb-10 font-sans border-t border-mapa-contour/40 pt-8">
+				<h3 class="font-serif text-2xl font-bold text-mapa-ink mb-4">
+					5. Official Citations & Statutory References
+				</h3>
+				<ul class="list-disc pl-5 space-y-2 text-xs sm:text-sm text-mapa-ink/80 leading-relaxed">
+					<li>
+						<strong>Republic Act No. 7354:</strong> The Postal Service Act of 1992, creating the Philippine Postal Corporation (PHLPost) as a government-owned and controlled corporation with statutory authority over domestic postal operations. (<a href="https://lawphil.net/statutes/repacts/ra1992/ra_7354_1992.html" target="_blank" rel="noopener noreferrer" class="text-mapa-green hover:underline">Lawphil text</a>).
+					</li>
+					<li>
+						<strong>Philippine Postal Corporation (PHLPost):</strong> Official National Postal Directory and Regional Postmaster Guidelines (<a href="https://phlpost.gov.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green hover:underline">phlpost.gov.ph</a>).
+					</li>
+					<li>
+						<strong>Universal Postal Union (UPU):</strong> International Postal Addressing Standards, Postal Addressing Systems (PAS) for Member State: Philippines.
+					</li>
+					<li>
+						<strong>Philippine Standard Geographic Code (PSGC):</strong> Published quarterly by the Philippine Statistics Authority (PSA) (<a href="https://psa.gov.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green hover:underline">psa.gov.ph</a>).
+					</li>
+				</ul>
+			</section>
+
+			<!-- Section 6: Editorial Notice & Changelog -->
+			<section class="mb-6 font-sans border-t border-mapa-contour/40 pt-6 text-xs text-mapa-ink/70">
+				<div class="flex flex-wrap items-center justify-between gap-2">
+					<span>Maintained by the <strong>mapaPH Civic Cartography Initiative</strong>.</span>
+					<span>Last Dataset Audit: October 2026 • Verified against PHLPost 2026 Gazette.</span>
+				</div>
+			</section>
+		</article>
+	</main>
+
+	<!-- Client Search & Interaction Logic -->
+	<script is:inline define:vars={{ entries, totalCount }}>
+		(function () {
+			const searchInput = document.getElementById('zip-search-input');
+			const clearBtn = document.getElementById('clear-search-btn');
+			const regionSelect = document.getElementById('region-filter-select');
+			const resultsTbody = document.getElementById('results-tbody');
+			const resultsCountText = document.getElementById('results-count-text');
+			const inspectorCard = document.getElementById('inspector-card');
+			const presetBtns = document.querySelectorAll('.preset-btn');
+
+			// Island zones description map based on first digit
+			const ZONE_DESCRIPTIONS = {
+				'0': { zone: 'Special Entities & Institutions', label: 'Government Agencies / Embassies' },
+				'1': { zone: 'NCR & Central/Northern Luzon', label: 'Metro Manila, Rizal, Bulacan' },
+				'2': { zone: 'Northern Luzon & Cordilleras', label: 'Ilocos, CAR, Cagayan Valley, Bataan' },
+				'3': { zone: 'Central Luzon Corridor', label: 'Pampanga, Tarlac, Zambales, Nueva Ecija' },
+				'4': { zone: 'Southern Tagalog (CALABARZON)', label: 'Cavite, Laguna, Batangas, Quezon' },
+				'5': { zone: 'Bicol Peninsula & Island Provs', label: 'Albay, Camarines Sur, Sorsogon' },
+				'6': { zone: 'Western Visayas & Panay/Negros', label: 'Iloilo, Negros Occidental, Capiz' },
+				'7': { zone: 'Central & Eastern Visayas / Zamboanga', label: 'Cebu, Bohol, Leyte, Zamboanga' },
+				'8': { zone: 'Northern & Eastern Mindanao', label: 'Davao Region, Caraga, Bukidnon' },
+				'9': { zone: 'Southern/Central Mindanao & BARMM', label: 'South Cotabato, GenSan, Maguindanao' }
+			};
+
+			let currentQuery = '';
+			let currentRegion = 'ALL';
+
+			// Render active inspector card for selected item
+			function renderInspector(item) {
+				const firstDigit = item.zip.charAt(0);
+				const secondDigit = item.zip.charAt(1);
+				const lastDigits = item.zip.slice(2);
+				const zoneInfo = ZONE_DESCRIPTIONS[firstDigit] || { zone: 'Philippine Postal Zone', label: 'Domestic Post' };
+
+				inspectorCard.innerHTML = `
+					<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+						<div>
+							<div class="flex items-center gap-2 mb-1">
+								<span class="font-sans text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-mapa-green/10 text-mapa-green border border-mapa-green/20">
+									Active Selection
+								</span>
+								<span class="font-sans text-xs text-mapa-clay">${item.regionFull || item.region}</span>
+							</div>
+							<div class="flex flex-wrap items-center gap-3">
+								<h3 class="font-serif text-2xl font-bold text-mapa-ink">
+									${item.name}
+								</h3>
+								<button
+									type="button"
+									class="copy-btn inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-mapa-canvas-dark border border-mapa-contour text-xs font-mono font-bold text-mapa-green hover:bg-mapa-green/10 transition-all cursor-pointer shadow-2xs"
+									data-copy="${item.zip}"
+									title="Click to copy ZIP code"
+								>
+									<span>ZIP: ${item.zip}</span>
+									<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+									</svg>
+								</button>
+							</div>
+							<p class="font-sans text-xs text-mapa-ink/70 mt-1">
+								Province / Division: <strong class="text-mapa-ink">${item.location}</strong>
+							</p>
+						</div>
+						<div class="flex items-center gap-2 text-xs font-sans">
+							<a
+								href="/tools/psgc-lookup?q=${encodeURIComponent(item.name)}"
+								class="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-mapa-canvas-dark border border-mapa-contour text-mapa-ink/80 hover:text-mapa-green hover:border-mapa-green transition-all"
+							>
+								<span>Find in PSGC</span>
+								<span>→</span>
+							</a>
+						</div>
+					</div>
+
+					<div class="mt-4 pt-4 border-t border-mapa-contour/50">
+						<span class="font-sans text-[11px] font-bold uppercase tracking-wider text-mapa-clay block mb-2">
+							4-Digit Postal Code Hierarchy Breakdown
+						</span>
+						<div class="grid grid-cols-3 gap-2 font-mono text-center text-xs">
+							<div class="p-2 rounded bg-mapa-canvas-dark border border-mapa-contour/60">
+								<span class="text-mapa-clay text-[10px] block font-sans uppercase">Digit 1 (Zone)</span>
+								<span class="text-base font-bold text-mapa-green">${firstDigit}</span>
+								<span class="text-[10px] block text-mapa-ink/70 font-sans mt-0.5 truncate">${zoneInfo.zone}</span>
+							</div>
+							<div class="p-2 rounded bg-mapa-canvas-dark border border-mapa-contour/60">
+								<span class="text-mapa-clay text-[10px] block font-sans uppercase">Digit 2 (Hub)</span>
+								<span class="text-base font-bold text-mapa-green">${secondDigit}</span>
+								<span class="text-[10px] block text-mapa-ink/70 font-sans mt-0.5 truncate">${item.location}</span>
+							</div>
+							<div class="p-2 rounded bg-mapa-canvas-dark border border-mapa-contour/60">
+								<span class="text-mapa-clay text-[10px] block font-sans uppercase">Digits 3-4 (Local)</span>
+								<span class="text-base font-bold text-mapa-green">${lastDigits}</span>
+								<span class="text-[10px] block text-mapa-ink/70 font-sans mt-0.5 truncate">${item.name}</span>
+							</div>
+						</div>
+					</div>
+				`;
+
+				bindCopyButtons(inspectorCard);
+			}
+
+			// Bind copy-to-clipboard functionality
+			function bindCopyButtons(context = document) {
+				const buttons = context.querySelectorAll('.copy-btn');
+				buttons.forEach((btn) => {
+					btn.addEventListener('click', async (e) => {
+						e.stopPropagation();
+						const val = btn.getAttribute('data-copy');
+						if (!val) return;
+						try {
+							await navigator.clipboard.writeText(val);
+							const origHTML = btn.innerHTML;
+							btn.innerHTML = `
+								<span class="text-mapa-green font-bold flex items-center gap-1">
+									<svg class="w-3.5 h-3.5 text-mapa-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+									</svg>
+									Copied!
+								</span>
+							`;
+							setTimeout(() => {
+								btn.innerHTML = origHTML;
+							}, 1800);
+						} catch (err) {
+							console.error('Copy failed:', err);
+						}
+					});
+				});
+			}
+
+			// Filter and render table rows
+			function renderTable() {
+				const q = currentQuery.toLowerCase().trim();
+				const reg = currentRegion;
+
+				const filtered = entries.filter((item) => {
+					if (reg !== 'ALL' && item.region !== reg) return false;
+					if (!q) return true;
+
+					return (
+						item.zip.includes(q) ||
+						item.name.toLowerCase().includes(q) ||
+						item.location.toLowerCase().includes(q) ||
+						item.region.toLowerCase().includes(q)
+					);
+				});
+
+				const displayLimit = 100;
+				const slice = filtered.slice(0, displayLimit);
+
+				resultsCountText.textContent = q || reg !== 'ALL'
+					? `Found ${filtered.length.toLocaleString()} matching postal codes (showing first ${slice.length})`
+					: `Showing all ${totalCount.toLocaleString()} postal codes (showing first ${slice.length})`;
+
+				if (filtered.length === 0) {
+					resultsTbody.innerHTML = `
+						<tr>
+							<td colspan="5" class="py-12 text-center text-mapa-clay">
+								<svg class="w-8 h-8 mx-auto mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+								</svg>
+								<p class="font-serif font-bold text-sm text-mapa-ink/80">No matching postal codes found.</p>
+								<p class="text-xs text-mapa-clay mt-1">Try searching for a different municipality, city, or 4-digit code.</p>
+							</td>
+						</tr>
+					`;
+					return;
+				}
+
+				resultsTbody.innerHTML = slice
+					.map((item) => {
+						return `
+							<tr class="hover:bg-mapa-green/5 transition-colors cursor-pointer group" data-id="${item.id}">
+								<td class="py-3 px-4 font-mono font-bold text-mapa-green text-sm">
+									<span class="inline-flex items-center gap-1.5">
+										${item.zip}
+									</span>
+								</td>
+								<td class="py-3 px-4 font-medium text-mapa-ink group-hover:text-mapa-green transition-colors">
+									${item.name}
+								</td>
+								<td class="py-3 px-4 text-mapa-ink/80">
+									${item.location}
+								</td>
+								<td class="py-3 px-4">
+									<span class="font-sans text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-canvas-dark border border-mapa-contour/80 text-mapa-ink/75">
+										${item.region}
+									</span>
+								</td>
+								<td class="py-3 px-4 text-right">
+									<button
+										type="button"
+										class="copy-btn px-2 py-1 rounded bg-mapa-canvas-dark border border-mapa-contour text-[11px] font-medium text-mapa-ink/80 hover:text-mapa-green hover:border-mapa-green transition-colors"
+										data-copy="${item.zip}"
+										title="Copy ZIP Code"
+									>
+										Copy
+									</button>
+								</td>
+							</tr>
+						`;
+					})
+					.join('');
+
+				// Bind row click to inspect
+				resultsTbody.querySelectorAll('tr').forEach((row) => {
+					row.addEventListener('click', () => {
+						const id = parseInt(row.getAttribute('data-id'), 10);
+						const found = entries.find((x) => x.id === id);
+						if (found) {
+							renderInspector(found);
+							inspectorCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+						}
+					});
+				});
+
+				bindCopyButtons(resultsTbody);
+			}
+
+			// Event listeners
+			searchInput.addEventListener('input', (e) => {
+				currentQuery = e.target.value;
+				clearBtn.classList.toggle('hidden', !currentQuery);
+				renderTable();
+			});
+
+			clearBtn.addEventListener('click', () => {
+				searchInput.value = '';
+				currentQuery = '';
+				clearBtn.classList.add('hidden');
+				searchInput.focus();
+				renderTable();
+			});
+
+			regionSelect.addEventListener('change', (e) => {
+				currentRegion = e.target.value;
+				renderTable();
+			});
+
+			presetBtns.forEach((btn) => {
+				btn.addEventListener('click', () => {
+					const val = btn.getAttribute('data-search');
+					if (val) {
+						searchInput.value = val;
+						currentQuery = val;
+						clearBtn.classList.remove('hidden');
+						renderTable();
+
+						// Select the first result into inspector
+						const q = val.toLowerCase();
+						const match = entries.find((x) => x.name.toLowerCase().includes(q) || x.location.toLowerCase().includes(q) || x.zip.includes(q));
+						if (match) renderInspector(match);
+					}
+				});
+			});
+
+			// Check URL search parameters (e.g. ?q=1101)
+			const urlParams = new URLSearchParams(window.location.search);
+			const initialQ = urlParams.get('q');
+			if (initialQ) {
+				searchInput.value = initialQ;
+				currentQuery = initialQ;
+				clearBtn.classList.remove('hidden');
+			}
+
+			// Initial render
+			renderTable();
+			bindCopyButtons();
+		})();
+	</script>
+</BaseLayout>
