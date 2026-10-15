@@ -17,7 +17,7 @@ import Footer from '../components/Footer.astro';
 <BaseLayout 
 	title="mapaPH — Open-Source Tools Based on the Philippine Map" 
 	description="mapaPH is an open-source hub of civic mapping tools, official Philippine Standard Geographic Code (PSGC) lookups, coordinate converters, and geographic datasets for the Philippines."
-	keywords="Philippine map, Philippine geospatial tools, PSGC lookup, Philippine Standard Geographic Code, Philippine zip codes, postal code Philippines, Philippine bus fare calculator, jeepney fare calculator, LTFRB fare matrix, MRT 3 fare calculator, LRT 1 fare table, Metro Manila rail map, beep card fare, Philippine walkability map, 15 minute city Philippines, PRS92 converter, WGS84 GPS, Philippine GIS data, 82 provinces, 149 cities, Philippine boundaries GeoJSON, open source mapping Philippines"
+	keywords="Philippine map, Philippine geospatial tools, PSGC lookup, Philippine Standard Geographic Code, Philippine zip codes, postal code Philippines, Philippine distance calculator, Manila to Cebu distance, Manila to Davao flight time, nautical miles Philippines, Batangas Calapan ferry, Philippine bus fare calculator, jeepney fare calculator, LTFRB fare matrix, MRT 3 fare calculator, LRT 1 fare table, Metro Manila rail map, beep card fare, Philippine walkability map, 15 minute city Philippines, PRS92 converter, WGS84 GPS, Philippine GIS data, 82 provinces, 149 cities, Philippine boundaries GeoJSON, open source mapping Philippines"
 >
 	<script type="application/ld+json" slot="schema" is:inline>
 		{
@@ -94,6 +94,16 @@ import Footer from '../components/Footer.astro';
 						"name": "Metro Manila Rail Transit Map & Fare Guide",
 						"url": "https://mapaph.com/tools/rail-transit",
 						"description": "Interactive station-to-station fare calculator, travel times, and transfer guide for LRT-1, LRT-2, and MRT-3 lines in Metro Manila."
+					}
+				},
+				{
+					"@type": "ListItem",
+					"position": 8,
+					"item": {
+						"@type": "WebApplication",
+						"name": "Philippine Inter-Island Distance & Route Calculator",
+						"url": "https://mapaph.com/tools/distance",
+						"description": "Great-circle geodesic distance, nautical sea miles, commercial flight times, and RoRo ferry transit durations across the 7,641 Philippine islands."
 					}
 				}
 			]
