@@ -1,0 +1,934 @@
+---
+/**
+ * @file kilometer-posts.astro
+ * @description Interactive Philippine Highway Kilometer Post & KM 0 Marker Locator.
+ * Features DPWH milestone post visualizations, highway corridor milestone search, KM 0 regional origins (Luneta, Marawi, Cebu, Iloilo, Bataan), and dual schematic & geographic maps.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+
+// Regional KM 0 Origin Benchmarks
+const KM_ZERO_ORIGINS = [
+	{
+		id: 'luzon',
+		name: 'Luzon Kilometer Zero (Luneta Park)',
+		location: 'Rizal Monument, Rizal Park (Luneta), Ermita, City of Manila',
+		benchmark: 'National Milestone Zero for all Luzon Highways',
+		elevation: '3 meters ASL',
+		lat: 14.5826,
+		lon: 120.9787,
+		corridors: ['MacArthur Highway (N2/N1)', 'Maharlika Highway (AH26/N1)', 'Manila South Road', 'Aguinaldo Highway (N419)', 'Kennon Road (N208)'],
+		history: 'Established in 1913 during the American Commonwealth under the Bureau of Public Works (now DPWH). Positioned directly across the José Rizal Monument as the singular geodetic reference point for all road distances across Luzon.'
+	},
+	{
+		id: 'mindanao',
+		name: 'Mindanao Kilometer Zero (Marawi City)',
+		location: 'Banggolo Bridge / Lake Lanao Shore, Marawi City, Lanao del Sur',
+		benchmark: 'Historical Kilometer Zero for Mainland Mindanao',
+		elevation: '700 meters ASL',
+		lat: 8.0019,
+		lon: 124.2858,
+		corridors: ['Marawi–Iligan Road', 'Sayre Highway (N10)', 'Davao–Cotabato Road', 'Surigao–Davao Coastal'],
+		history: 'Designated by early public works engineers as the primary surveying benchmark for the trans-Mindanao road network originating along the northern shore of Lake Lanao.'
+	},
+	{
+		id: 'cebu',
+		name: 'Cebu Island Kilometer Zero (Cebu City)',
+		location: 'Cebu Provincial Capitol / Freedom Park, Cebu City, Cebu',
+		benchmark: 'Island Milestone Origin for Metro Cebu and Provincial Corridors',
+		elevation: '12 meters ASL',
+		lat: 10.3167,
+		lon: 123.8907,
+		corridors: ['Cebu North Coastal Road (N8)', 'Cebu South Road (N8)', 'Trans-Central Highway (N815)'],
+		history: 'Erected in front of the neoclassical Cebu Provincial Capitol building, serving as the benchmark for radial distances spanning from Daanbantayan in the north to Santander in the south.'
+	},
+	{
+		id: 'panay',
+		name: 'Panay Island Kilometer Zero (Iloilo City)',
+		location: 'Iloilo Provincial Capitol Ground, Iloilo City, Iloilo',
+		benchmark: 'Regional Milestone Origin for Panay Island (Iloilo, Capiz, Aklan, Antique)',
+		elevation: '5 meters ASL',
+		lat: 10.6969,
+		lon: 122.5644,
+		corridors: ['Iloilo–Capiz Road (N5)', 'Iloilo–Antique Road (N501)', 'Panay East Coast Highway'],
+		history: 'Positioned at the Casa Real de Iloilo (Old Provincial Capitol) as the surveying reference point for all national secondary and primary arterial routes across the four provinces of Panay.'
+	},
+	{
+		id: 'bataan',
+		name: 'Bataan Death March Memorial KM 0 (Mariveles & Bagac)',
+		location: 'KM 00 Mariveles & KM 00 Bagac, Bataan Province',
+		benchmark: 'Historic 1942 WWII Memorial Markers to Capas, Tarlac',
+		elevation: '15 meters ASL',
+		lat: 14.4333,
+		lon: 120.4833,
+		corridors: ['Roman Superhighway (N301)', 'Governor J.J. Linao Road', 'Old Bataan National Road'],
+		history: '138 white obelisk concrete markers erected by the Battling Bastards of Bataan and Filipino-American Memorial Foundation marking each kilometer marched by ~75,000 POWs from Mariveles/Bagac to San Fernando and Camp O’Donnell.'
+	}
+];
+
+// Major Philippine Highway Corridors with Concrete Milestone Data
+const HIGHWAY_CORRIDORS = [
+	{
+		id: 'macarthur',
+		name: 'MacArthur Highway (Manila North Road / N2 & N1)',
+		region: 'Luzon (North Artery)',
+		originKm: 'KM 0 (Luneta, Manila)',
+		termini: 'Manila ↔ Laoag City (Ilocos Norte)',
+		totalKm: 488.0,
+		description: 'The historic northern trunk road traversing Metro Manila, Bulacan, Pampanga, Tarlac, Pangasinan, La Union, Ilocos Sur, and Ilocos Norte.',
+		color: '#059669',
+		markers: [
+			{ km: 0, town: 'Luneta, City of Manila', prov: 'NCR', landmark: 'José Rizal Monument, Kilometer Zero Obelisk', destTop: 'MONUMENTO 9', lat: 14.5826, lon: 120.9787 },
+			{ km: 9, town: 'Monumento, Caloocan', prov: 'NCR', landmark: 'Bonifacio Monument Circle, LRT-1 North Terminus', destTop: 'MALOLOS 33', lat: 14.6575, lon: 120.9836 },
+			{ km: 14, town: 'Malanday, Valenzuela City', prov: 'NCR', landmark: 'Valenzuela City Hall, People’s Park', destTop: 'MALOLOS 28', lat: 14.7000, lon: 120.9650 },
+			{ km: 19, town: 'Meycauayan', prov: 'Bulacan', landmark: 'Meycauayan River Bridge, St. Francis of Assisi Parish', destTop: 'MALOLOS 23', lat: 14.7350, lon: 120.9600 },
+			{ km: 27, town: 'Marilao', prov: 'Bulacan', landmark: 'SM City Marilao, Prenza Junction', destTop: 'MALOLOS 15', lat: 14.7650, lon: 120.9500 },
+			{ km: 34, town: 'Bocaue / Guiguinto', prov: 'Bulacan', landmark: 'Bocaue River Bridge, Philippine Arena Overpass link', destTop: 'MALOLOS 8', lat: 14.8100, lon: 120.9200 },
+			{ km: 42, town: 'Malolos City', prov: 'Bulacan', landmark: 'Barasoain Church, Bulacan Provincial Capitol Grounds', destTop: 'SAN FDO 24', lat: 14.8550, lon: 120.8150 },
+			{ km: 52, town: 'Calumpit', prov: 'Bulacan', landmark: 'Calumpit River Historic Bridge, Pampanga Provincial Border', destTop: 'SAN FDO 14', lat: 14.9150, lon: 120.7650 },
+			{ km: 66, town: 'San Fernando City', prov: 'Pampanga', landmark: 'Pampanga Provincial Capitol, San Fernando Train Station', destTop: 'ANGELES 17', lat: 15.0300, lon: 120.6900 },
+			{ km: 83, town: 'Angeles City', prov: 'Pampanga', landmark: 'Holy Rosary Parish Church, Heritage District', destTop: 'TARLAC 42', lat: 15.1450, lon: 120.5900 },
+			{ km: 95, town: 'Mabalacat City', prov: 'Pampanga', landmark: 'Clark Freeport Main Gate, MacArthur–Dau Junction', destTop: 'TARLAC 30', lat: 15.2200, lon: 120.5750 },
+			{ km: 125, town: 'Tarlac City', prov: 'Tarlac', landmark: 'Plaza Urquico, Tarlac Provincial Capitol', destTop: 'URDANETA 57', lat: 15.4850, lon: 120.5950 },
+			{ km: 152, town: 'Gerona / Paniqui', prov: 'Tarlac', landmark: 'Gerona Municipal Hall, Paniqui Sugar Estates', destTop: 'URDANETA 30', lat: 15.6100, lon: 120.5980 },
+			{ km: 182, town: 'Carmen, Rosales', prov: 'Pangasinan', landmark: 'Historic Carmen Bridge over Agno River, SM City Rosales', destTop: 'URDANETA 4', lat: 15.8850, lon: 120.5950 },
+			{ km: 186, town: 'Urdaneta City', prov: 'Pangasinan', landmark: 'Urdaneta City Rotonda, Magic Mall Junction', destTop: 'LA UNION 83', lat: 15.9750, lon: 120.5700 },
+			{ km: 212, town: 'Binalonan / Pozorrubio', prov: 'Pangasinan', landmark: 'Binalonan Airfield, Northern foothills transition', destTop: 'LA UNION 57', lat: 16.0500, lon: 120.5900 },
+			{ km: 230, town: 'Rosario', prov: 'La Union', landmark: 'Rosario Junction (Kennon Road & Marcos Highway Gateway to Baguio)', destTop: 'SAN FDO 39', lat: 16.2300, lon: 120.4850 },
+			{ km: 269, town: 'San Fernando City', prov: 'La Union', landmark: 'La Union Provincial Capitol, Poro Point Freeport', destTop: 'VIGAN 136', lat: 16.6150, lon: 120.3180 },
+			{ km: 405, town: 'Vigan City', prov: 'Ilocos Sur', landmark: 'Calle Crisologo, Plaza Salcedo, Ilocos Sur Provincial Capitol', destTop: 'LAOAG 83', lat: 17.5750, lon: 120.3880 },
+			{ km: 488, town: 'Laoag City', prov: 'Ilocos Norte', landmark: 'Sinking Bell Tower, Ilocos Norte Provincial Capitol Plaza', destTop: 'PAGUDPUD 72', lat: 18.1980, lon: 120.5950 }
+		]
+	},
+	{
+		id: 'maharlika_south',
+		name: 'Manila South Road & Maharlika Highway (AH26 / N1)',
+		region: 'Luzon (South & Bicol Artery)',
+		originKm: 'KM 0 (Luneta, Manila)',
+		termini: 'Manila ↔ Matnog (Sorsogon Ferry Terminal)',
+		totalKm: 645.0,
+		description: 'The southern trunk of the Pan-Philippine Highway connecting Laguna, Batangas, Quezon, and the entire Bicol Peninsula to the Visayas RoRo ferry.',
+		color: '#2563EB',
+		markers: [
+			{ km: 0, town: 'Luneta, City of Manila', prov: 'NCR', landmark: 'José Rizal Monument, Kilometer Zero Obelisk', destTop: 'ALABANG 22', lat: 14.5826, lon: 120.9787 },
+			{ km: 14, town: 'Parañaque / Sucat', prov: 'NCR', landmark: 'Ninoy Aquino Ave Junction, Dr. A. Santos Ave', destTop: 'ALABANG 8', lat: 14.4850, lon: 121.0450 },
+			{ km: 22, town: 'Alabang, Muntinlupa City', prov: 'NCR', landmark: 'Alabang Rotonda, Filinvest Corporate City', destTop: 'CALAMBA 32', lat: 14.4150, lon: 121.0420 },
+			{ km: 31, town: 'San Pedro City', prov: 'Laguna', landmark: 'Laguna Provincial Welcome Boundary Arch', destTop: 'CALAMBA 23', lat: 14.3600, lon: 121.0500 },
+			{ km: 35, town: 'Biñan City', prov: 'Laguna', landmark: 'Biñan Historic Town Plaza, Plaza Rizal', destTop: 'CALAMBA 19', lat: 14.3350, lon: 121.0850 },
+			{ km: 40, town: 'Santa Rosa City', prov: 'Laguna', landmark: 'Balibago Commercial Complex, Enchanted Kingdom Gateway', destTop: 'CALAMBA 14', lat: 14.2950, lon: 121.1100 },
+			{ km: 54, town: 'Calamba City', prov: 'Laguna', landmark: 'Calamba Crossing, José Rizal Ancestral Shrine', destTop: 'LUCENA 79', lat: 14.2100, lon: 121.1650 },
+			{ km: 63, town: 'Los Baños', prov: 'Laguna', landmark: 'UPLB College Junction, Mount Makiling foothill', destTop: 'SAN PABLO 23', lat: 14.1750, lon: 121.2400 },
+			{ km: 86, town: 'San Pablo City', prov: 'Laguna', landmark: 'City of Seven Lakes, Cathedral of Saint Paul the First Hermit', destTop: 'LUCENA 47', lat: 14.0700, lon: 121.3250 },
+			{ km: 96, town: 'Tiaong', prov: 'Quezon', landmark: 'Quezon Provincial Welcome Arch, Villa Escudero link', destTop: 'LUCENA 37', lat: 13.9600, lon: 121.3700 },
+			{ km: 107, town: 'Candelaria', prov: 'Quezon', landmark: 'San Pedro Bautista Parish Church, Maharlika Bypass', destTop: 'LUCENA 26', lat: 13.9300, lon: 121.4250 },
+			{ km: 118, town: 'Sariaya', prov: 'Quezon', landmark: 'Historic Art Deco Town Hall, Mount Banahaw foothills', destTop: 'LUCENA 15', lat: 13.9650, lon: 121.5250 },
+			{ km: 133, town: 'Lucena City', prov: 'Quezon', landmark: 'Quezon Provincial Capitol, Perez Park', destTop: 'NAGA 312', lat: 13.9350, lon: 121.6150 },
+			{ km: 190, town: 'Atimonan', prov: 'Quezon', landmark: 'Atimonan Zigzag Park (Bitukang Manok), Lamon Bay Coastline', destTop: 'NAGA 255', lat: 14.0000, lon: 121.9200 },
+			{ km: 280, town: 'Gumaca / Lopez', prov: 'Quezon', landmark: 'Lopez Municipal Hall, Alabat Island Ferry Link', destTop: 'DAET 70', lat: 13.8800, lon: 122.2600 },
+			{ km: 350, town: 'Daet', prov: 'Camarines Norte', landmark: 'First Rizal Monument in the World, Provincial Capitol', destTop: 'NAGA 95', lat: 14.1150, lon: 122.9550 },
+			{ km: 445, town: 'Naga City', prov: 'Camarines Sur', landmark: 'Our Lady of Peñafrancia Shrine, Bicol Central Station', destTop: 'LEGAZPI 90', lat: 13.6200, lon: 123.1900 },
+			{ km: 535, town: 'Legazpi City', prov: 'Albay', landmark: 'Mayon Volcano Vista, Cagsawa Ruins, Albay Capitol', destTop: 'MATNOG 110', lat: 13.1400, lon: 123.7450 },
+			{ km: 645, town: 'Matnog Port', prov: 'Sorsogon', landmark: 'Matnog RoRo Ferry Terminal (Gateway to Samar / Leyte)', destTop: 'SAMAR RORO', lat: 12.5850, lon: 124.0850 }
+		]
+	},
+	{
+		id: 'aguinaldo',
+		name: 'Aguinaldo Highway (Route N419 & N62)',
+		region: 'Luzon (Cavite Corridor)',
+		originKm: 'KM 0 (Luneta, Manila)',
+		termini: 'Manila ↔ Tagaytay City Ridge',
+		totalKm: 55.0,
+		description: 'The primary arterial route connecting southern Metro Manila to historical Cavite towns and the Tagaytay Taal Volcano scenic ridge.',
+		color: '#D97706',
+		markers: [
+			{ km: 0, town: 'Luneta, City of Manila', prov: 'NCR', landmark: 'José Rizal Monument, Kilometer Zero Obelisk', destTop: 'BACOOR 15', lat: 14.5826, lon: 120.9787 },
+			{ km: 15, town: 'Zapote, Bacoor City', prov: 'Cavite', landmark: 'Historic Zapote Bridge, Bacoor Welcome Landmark', destTop: 'IMUS 5', lat: 14.4650, lon: 120.9700 },
+			{ km: 20, town: 'Imus City', prov: 'Cavite', landmark: 'Imus City Cathedral, Battle of Alapan Flag Heritage', destTop: 'DASMARIÑAS 10', lat: 14.4300, lon: 120.9400 },
+			{ km: 30, town: 'Dasmariñas City', prov: 'Cavite', landmark: 'Dasmariñas City Hall, NCST Complex, Governor’s Drive', destTop: 'SILANG 14', lat: 14.3250, lon: 120.9350 },
+			{ km: 44, town: 'Silang', prov: 'Cavite', landmark: 'Silang Town Plaza, Nuestra Señora de Candelaria Church', destTop: 'TAGAYTAY 11', lat: 14.2300, lon: 120.9750 },
+			{ km: 55, town: 'Tagaytay City', prov: 'Cavite', landmark: 'Tagaytay Rotonda, Taal Lake & Volcano Overlook Ridge', destTop: 'BATANGAS 35', lat: 14.1150, lon: 120.9600 }
+		]
+	},
+	{
+		id: 'kennon',
+		name: 'Kennon Road & Baguio Scenic Route (Route N208)',
+		region: 'Luzon (Cordillera Highland)',
+		originKm: 'KM 0 (Luneta, Manila)',
+		termini: 'Rosario (La Union) ↔ Baguio City Session Road',
+		totalKm: 246.0,
+		description: 'The iconic 33.7-kilometer mountain zig-zag pass climbing through the Bued River gorge to the Summer Capital of the Philippines.',
+		color: '#4F46E5',
+		markers: [
+			{ km: 0, town: 'Luneta, City of Manila', prov: 'NCR', landmark: 'José Rizal Monument, Kilometer Zero Obelisk', destTop: 'BAGUIO 246', lat: 14.5826, lon: 120.9787 },
+			{ km: 215, town: 'Rosario Junction', prov: 'La Union', landmark: 'Kennon Road Tollgate Arch, Bued River Bridge Entry', destTop: 'BAGUIO 31', lat: 16.2300, lon: 120.4850 },
+			{ km: 225, town: 'Camp 1 / Pugo Border', prov: 'La Union / Benguet', landmark: 'First Mountain Sentry Gate, Bued Hydroelectric Flume', destTop: 'BAGUIO 21', lat: 16.2800, lon: 120.5300 },
+			{ km: 235, town: 'Camp 4 (Lion’s Head)', prov: 'Benguet', landmark: 'Iconic 40-foot Concrete Lion’s Head Monument', destTop: 'BAGUIO 11', lat: 16.3400, lon: 120.5850 },
+			{ km: 246, town: 'Baguio City Center', prov: 'Benguet', landmark: 'Session Road, Burnham Park, Baguio City Hall Grounds', destTop: 'HALSEMA 0', lat: 16.4120, lon: 120.5950 }
+		]
+	},
+	{
+		id: 'bataan_march',
+		name: 'Bataan Death March Memorial Trail (WWII Mileposts)',
+		region: 'Central Luzon (Historic Trail)',
+		originKm: 'KM 00 Mariveles & KM 00 Bagac',
+		termini: 'Mariveles / Bagac ↔ San Fernando (KM 102) & Capas, Tarlac',
+		totalKm: 102.0,
+		description: '138 preserved white obelisk milestone monuments tracing the fateful April 1942 trek of 75,000 Filipino and American defenders.',
+		color: '#DC2626',
+		markers: [
+			{ km: 0, town: 'Mariveles KM 00', prov: 'Bataan', landmark: 'Death March Kilometer Zero Memorial Park, Mariveles Bay', destTop: 'LIMAY 20', lat: 14.4333, lon: 120.4833 },
+			{ km: 20, town: 'Limay', prov: 'Bataan', landmark: 'Limay Catholic Church, Coastal Bataan Highway Marker', destTop: 'BALANGA 28', lat: 14.5600, lon: 120.5950 },
+			{ km: 48, town: 'Balanga City', prov: 'Bataan', landmark: 'Balanga City World War II Museum, St. Joseph Cathedral', destTop: 'HERMOSA 24', lat: 14.6800, lon: 120.5400 },
+			{ km: 72, town: 'Hermosa', prov: 'Bataan', landmark: 'Hermosa Town Plaza, Roosevelt Protected Landscape gate', destTop: 'LUBAO 16', lat: 14.8300, lon: 120.5050 },
+			{ km: 88, town: 'Lubao', prov: 'Pampanga', landmark: 'Historic San Agustin Parish Church (Oldest in Pampanga)', destTop: 'SAN FDO 14', lat: 14.9400, lon: 120.6000 },
+			{ km: 102, town: 'San Fernando Station', prov: 'Pampanga', landmark: 'Historic San Fernando Railway Station (Transfer to Boxcars)', destTop: 'CAPAS DEATH', lat: 15.0300, lon: 120.6900 }
+		]
+	}
+];
+---
+
+<BaseLayout
+	title="Philippine Highway Kilometer Post & KM 0 Marker Locator — mapaPH Tools"
+	description="Interactive locator and visualizer for Philippine Department of Public Works and Highways (DPWH) concrete kilometer posts and official Kilometer Zero monuments. Search milestone markers along MacArthur Highway, Maharlika Highway, Aguinaldo Highway, Kennon Road, and the Bataan Death March."
+	keywords="Philippine kilometer post finder, KM 0 Manila Luneta, Philippine highway markers, DPWH kilometer posts, MacArthur Highway km posts, Maharlika Highway km markers, Bataan Death March km markers, distance from Luneta KM 0, how to read Philippine KM posts"
+>
+	<!-- Leaflet Stylesheet -->
+	<link
+		rel="stylesheet"
+		href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+		integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+		crossorigin=""
+		slot="schema"
+	/>
+
+	<script type="application/ld+json" slot="schema" is:inline>
+		{
+			"@context": "https://schema.org",
+			"@graph": [
+				{
+					"@type": "WebApplication",
+					"name": "Philippine Highway Kilometer Post & KM 0 Marker Locator",
+					"url": "https://mapaph.com/tools/kilometer-posts",
+					"applicationCategory": "Geographic Reference & Highway Utility",
+					"operatingSystem": "All",
+					"description": "Interactive search and visualization utility for DPWH highway milestone posts and regional Kilometer Zero geodetic benchmarks across the Philippines.",
+					"provider": {
+						"@type": "Organization",
+						"name": "mapaPH",
+						"url": "https://mapaph.com"
+					}
+				},
+				{
+					"@type": "BreadcrumbList",
+					"itemListElement": [
+						{
+							"@type": "ListItem",
+							"position": 1,
+							"name": "Home",
+							"item": "https://mapaph.com"
+						},
+						{
+							"@type": "ListItem",
+							"position": 2,
+							"name": "Tools",
+							"item": "https://mapaph.com/tools"
+						},
+						{
+							"@type": "ListItem",
+							"position": 3,
+							"name": "Kilometer Post Locator",
+							"item": "https://mapaph.com/tools/kilometer-posts"
+						}
+					]
+				}
+			]
+		}
+	</script>
+
+	<Navbar />
+
+	<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 text-mapa-ink">
+		<!-- Header Breadcrumb & Tag -->
+		<div class="mb-8">
+			<nav class="flex items-center gap-2 text-xs font-sans text-mapa-clay mb-3">
+				<a href="/" class="hover:text-mapa-green transition-colors">Home</a>
+				<span>/</span>
+				<a href="/tools" class="hover:text-mapa-green transition-colors">Tools</a>
+				<span>/</span>
+				<span class="text-mapa-ink font-semibold">Kilometer Posts</span>
+			</nav>
+
+			<div class="flex flex-wrap items-center gap-2.5">
+				<span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-mapa-green/15 text-mapa-green border border-mapa-green/30">
+					DPWH National Road Milestones
+				</span>
+				<span class="text-xs font-medium px-2.5 py-1 rounded-full bg-mapa-canvas-dark border border-mapa-contour text-mapa-ink/75">
+					Kilometer Zero Geodetic Benchmarks
+				</span>
+				<span class="text-xs font-medium px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-800 border border-amber-500/20">
+					Civilian & Survey Reference
+				</span>
+			</div>
+
+			<h1 class="text-3xl sm:text-5xl font-extrabold text-mapa-green font-serif tracking-tight mt-3">
+				Philippine Kilometer Post & KM 0 Locator
+			</h1>
+			<p class="font-sans text-base sm:text-lg text-mapa-ink/80 mt-2.5 max-w-3xl leading-relaxed">
+				Search, calculate, and inspect concrete DPWH highway milestone posts across the Philippines. Locate physical distance markers from Luzon's Kilometer Zero in Luneta, Marawi's Mindanao KM 0, provincial origins, and historic WWII memorial trail markers.
+			</p>
+		</div>
+
+		<!-- Regional KM 0 Origin Benchmark Switcher Cards -->
+		<section class="mb-10 font-sans">
+			<div class="flex items-center justify-between pb-2 mb-4 border-b border-mapa-contour/50">
+				<div>
+					<h2 class="text-lg font-serif font-bold text-mapa-ink">
+						Philippine Kilometer Zero (KM 0) Benchmarks
+					</h2>
+					<p class="text-xs text-mapa-clay">
+						Select a regional origin point to inspect its history and surveying coordinates.
+					</p>
+				</div>
+				<span class="text-xs text-mapa-clay hidden sm:block">Geodetic Origins</span>
+			</div>
+
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+				{KM_ZERO_ORIGINS.map((origin, index) => (
+					<button
+						type="button"
+						id={`btn-origin-${origin.id}`}
+						data-origin-id={origin.id}
+						class={`origin-select-card text-left p-4 rounded-xl border transition-all cursor-pointer ${
+							index === 0
+								? 'bg-mapa-canvas-dark border-mapa-green shadow-2xs ring-1 ring-mapa-green/30'
+								: 'bg-mapa-canvas-dark border-mapa-contour hover:border-mapa-green/40'
+						}`}
+					>
+						<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-green">
+							KM 0 Benchmark
+						</span>
+						<h3 class="font-serif text-sm font-bold text-mapa-ink mt-1">
+							{origin.name.split('(')[0].trim()}
+						</h3>
+						<span class="text-[11px] text-mapa-clay block mt-0.5 truncate">
+							{origin.location.split(',')[0]}
+						</span>
+					</button>
+				))}
+			</div>
+
+			<!-- Active Origin Detail Banner -->
+			<div id="origin-detail-banner" class="mt-4 p-5 rounded-2xl bg-mapa-canvas-dark border border-mapa-contour/80 shadow-xs">
+				<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-mapa-contour/50 pb-4 mb-3">
+					<div>
+						<div class="flex items-center gap-2">
+							<span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-green/15 text-mapa-green">
+								Active Origin
+							</span>
+							<h3 id="origin-banner-title" class="text-xl font-serif font-bold text-mapa-ink">
+								{KM_ZERO_ORIGINS[0].name}
+							</h3>
+						</div>
+						<p id="origin-banner-location" class="text-xs text-mapa-clay mt-1">
+							{KM_ZERO_ORIGINS[0].location}
+						</p>
+					</div>
+
+					<div class="flex items-center gap-3 text-xs">
+						<div class="px-3 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour">
+							<span class="text-[10px] text-mapa-clay uppercase font-bold block">Coordinates</span>
+							<span id="origin-banner-coords" class="font-mono font-bold text-mapa-ink">14.5826° N, 120.9787° E</span>
+						</div>
+						<div class="px-3 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour">
+							<span class="text-[10px] text-mapa-clay uppercase font-bold block">Elevation</span>
+							<span id="origin-banner-elevation" class="font-mono font-bold text-mapa-ink">3 m ASL</span>
+						</div>
+					</div>
+				</div>
+
+				<p id="origin-banner-history" class="text-xs text-mapa-ink/80 leading-relaxed">
+					{KM_ZERO_ORIGINS[0].history}
+				</p>
+			</div>
+		</section>
+
+		<!-- Main Interactive Tool Section: 2 Columns (Controls + Concrete Post 3D/SVG Visualizer & Dual Visualizer) -->
+		<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-12 font-sans">
+			
+			<!-- Left Column: Highway Corridor Selector, KM Post Slider, and Concrete Milestone Visualizer (5 cols) -->
+			<div class="lg:col-span-5 flex flex-col gap-6">
+				<!-- Control Panel Card -->
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-xs">
+					<h2 class="text-lg font-serif font-bold text-mapa-ink border-b border-mapa-contour/50 pb-3 mb-5">
+						Milestone Post Inspector
+					</h2>
+
+					<!-- Select Highway Corridor -->
+					<div class="space-y-4">
+						<div>
+							<label for="corridor-select" class="block text-xs font-bold uppercase tracking-wider text-mapa-clay mb-1.5">
+								Select Highway Trunk / Memorial Corridor
+							</label>
+							<select
+								id="corridor-select"
+								class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/40 cursor-pointer"
+							>
+								{HIGHWAY_CORRIDORS.map((corridor, idx) => (
+									<option value={corridor.id} selected={idx === 0}>
+										{corridor.name} ({corridor.region})
+									</option>
+								))}
+							</select>
+						</div>
+
+						<!-- Milestone Slider & Direct KM Input -->
+						<div>
+							<div class="flex items-center justify-between mb-1.5">
+								<label for="km-slider" class="text-xs font-bold uppercase tracking-wider text-mapa-clay">
+									Milestone Marker Post
+								</label>
+								<div class="flex items-center gap-1.5">
+									<span class="text-xs font-bold text-mapa-green">KM</span>
+									<input
+										type="number"
+										id="km-number-input"
+										min="0"
+										max="488"
+										value="66"
+										class="w-16 px-2 py-1 text-center font-mono font-bold text-sm bg-mapa-canvas border border-mapa-contour rounded-lg text-mapa-ink focus:outline-none focus:ring-1 focus:ring-mapa-green"
+									/>
+								</div>
+							</div>
+
+							<input
+								type="range"
+								id="km-slider"
+								min="0"
+								max="488"
+								value="66"
+								step="1"
+								class="w-full h-2 bg-mapa-contour rounded-lg appearance-none cursor-pointer accent-mapa-green"
+							/>
+
+							<div class="flex justify-between text-[11px] text-mapa-clay mt-1">
+								<span id="slider-min-label">KM 0 (Luneta)</span>
+								<span id="slider-max-label">KM 488 (Laoag)</span>
+							</div>
+						</div>
+					</div>
+
+					<!-- Visual Concrete Milestone Post (Graphic Representation) -->
+					<div class="mt-6 p-6 rounded-2xl bg-gradient-to-b from-mapa-canvas to-mapa-canvas-dark border border-mapa-contour flex flex-col items-center justify-center">
+						<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay mb-3">
+							DPWH Standard Concrete Marker
+						</span>
+
+						<!-- Concrete Post Graphic Container -->
+						<div class="relative w-44 bg-slate-100 rounded-t-3xl border-4 border-slate-300 shadow-md flex flex-col items-center overflow-hidden">
+							<!-- Rounded Top Arch Cap -->
+							<div class="w-full bg-slate-200/80 py-2 border-b-2 border-slate-300 text-center">
+								<div id="post-dest-name" class="font-sans font-extrabold text-slate-800 text-xs tracking-wider">
+									ANGELES 17
+								</div>
+							</div>
+
+							<!-- Center Post Body with Kilometer Text -->
+							<div class="py-6 px-4 text-center">
+								<div class="text-[11px] font-extrabold tracking-widest text-slate-500">KM</div>
+								<div id="post-km-number" class="text-4xl font-extrabold text-slate-900 font-mono tracking-tight">
+									66
+								</div>
+							</div>
+
+							<!-- Red DPWH Concrete Base Band -->
+							<div class="w-full bg-rose-700 text-white text-center py-1.5 font-mono text-[10px] font-bold border-t-2 border-rose-900">
+								<span id="post-road-code">N2 &bull; DPWH REGION III</span>
+							</div>
+						</div>
+
+						<p class="text-[11px] text-mapa-clay mt-3 text-center">
+							Physical monument located along highway right-of-way
+						</p>
+					</div>
+
+					<!-- Computed Marker Location Details -->
+					<div id="active-marker-card" class="mt-5 p-4 rounded-xl bg-mapa-canvas border border-mapa-contour text-xs space-y-2">
+						<div class="flex items-center justify-between border-b border-mapa-contour/50 pb-2">
+							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay">Location Status</span>
+							<span id="marker-town-badge" class="font-bold text-mapa-green">San Fernando City, Pampanga</span>
+						</div>
+						<div>
+							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay block">Prominent Landmark</span>
+							<p id="marker-landmark" class="text-mapa-ink/85 mt-0.5">Pampanga Provincial Capitol, San Fernando Train Station</p>
+						</div>
+						<div class="flex justify-between items-center pt-1 text-[11px] text-mapa-clay">
+							<span>Highway Code: <strong id="marker-route-code" class="text-mapa-ink">N2 / MacArthur Hwy</strong></span>
+							<span>Approx. Coords: <strong id="marker-coords" class="font-mono text-mapa-ink">15.0300° N, 120.6900° E</strong></span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Right Column: Dual Visualizer (Schematic Milestone Chain vs Geographic Map) (7 cols) -->
+			<div class="lg:col-span-7 flex flex-col gap-4">
+				<!-- Visualizer Controls: View Mode Switcher -->
+				<div class="flex items-center justify-between bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-3.5 shadow-2xs">
+					<div class="flex items-center gap-2">
+						<span class="text-xs font-bold uppercase tracking-wider text-mapa-clay pl-2">Display View:</span>
+						<div class="inline-flex rounded-xl bg-mapa-canvas p-1 border border-mapa-contour">
+							<button
+								id="btn-view-schematic"
+								type="button"
+								class="px-3 py-1.5 text-xs font-bold rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer"
+							>
+								Milestone Chain
+							</button>
+							<button
+								id="btn-view-geo"
+								type="button"
+								class="px-3 py-1.5 text-xs font-medium rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
+							>
+								Geographic Map
+							</button>
+						</div>
+					</div>
+
+					<div class="text-xs text-mapa-clay hidden sm:block">
+						<span class="inline-block w-2.5 h-2.5 rounded-full bg-rose-600 mr-1 align-middle"></span>
+						Physical Kilometer Posts
+					</div>
+				</div>
+
+				<!-- VIEW 1: Schematic Milestone Chain Container -->
+				<div id="schematic-view-container" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-xs overflow-hidden">
+					<div class="flex items-center justify-between pb-3 mb-4 border-b border-mapa-contour/50">
+						<div>
+							<h3 id="schematic-corridor-title" class="font-serif text-lg font-bold text-mapa-ink">
+								MacArthur Highway Milestone Chain
+							</h3>
+							<p class="text-xs text-mapa-clay">
+								Click any concrete milestone along the corridor ribbon to inspect its town and landmarks.
+							</p>
+						</div>
+						<span id="schematic-total-km" class="text-[11px] font-mono px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour text-mapa-green">
+							488.0 Total KM
+						</span>
+					</div>
+
+					<!-- Milestone Chain Nodes -->
+					<div id="milestone-chain-list" class="space-y-3 max-h-[620px] overflow-y-auto pr-2 custom-scrollbar">
+						<!-- Injected via JavaScript based on selected Highway -->
+					</div>
+				</div>
+
+				<!-- VIEW 2: Geographic Leaflet Map Container -->
+				<div id="geo-view-container" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 shadow-xs hidden">
+					<div class="flex items-center justify-between pb-3 mb-2 border-b border-mapa-contour/50">
+						<div>
+							<h3 class="font-serif text-lg font-bold text-mapa-ink">Geographic Highway Marker Map</h3>
+							<p class="text-xs text-mapa-clay">CartoDB Voyager map showing exact milestone coordinates</p>
+						</div>
+						<div class="text-xs text-mapa-clay flex items-center gap-2">
+							<span class="inline-block w-2.5 h-2.5 rounded-full bg-rose-600"></span>
+							<span>Milestone Posts</span>
+						</div>
+					</div>
+
+					<!-- Map Div -->
+					<div id="km-map" class="w-full h-[580px] rounded-xl overflow-hidden border border-mapa-contour/60"></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Educational Guide: How to Read a Philippine Kilometer Post -->
+		<section class="mb-14 font-sans">
+			<div class="border-b border-mapa-contour/50 pb-3 mb-6">
+				<h2 class="text-2xl font-serif font-bold text-mapa-ink">
+					How to Read a Philippine Highway Kilometer Post
+				</h2>
+				<p class="text-sm text-mapa-clay mt-1">
+					Standard anatomy and official DPWH Highway Design Guidelines (Design Guidelines, Criteria and Standards - DGCS).
+				</p>
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-2xs">
+					<div class="w-8 h-8 rounded-lg bg-emerald-600/15 text-emerald-800 flex items-center justify-center font-bold text-sm mb-3">
+						1
+					</div>
+					<h3 class="font-serif font-bold text-base text-mapa-ink mb-1.5">
+						The Top Cap (Destination & Target Distance)
+					</h3>
+					<p class="text-xs text-mapa-ink/80 leading-relaxed">
+						The upper semicircular or trapezoidal section indicates the <strong>name of the next major city or town</strong> followed by the distance in kilometers to its municipal hall or provincial plaza (e.g. <code>ANGELES 17</code> means Angeles City center is 17 km ahead).
+					</p>
+				</div>
+
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-2xs">
+					<div class="w-8 h-8 rounded-lg bg-blue-600/15 text-blue-800 flex items-center justify-center font-bold text-sm mb-3">
+						2
+					</div>
+					<h3 class="font-serif font-bold text-base text-mapa-ink mb-1.5">
+						The Center Body (Distance from KM 0)
+					</h3>
+					<p class="text-xs text-mapa-ink/80 leading-relaxed">
+						The large, prominent numeral preceded by <code>KM</code> displays your <strong>exact physical distance from Kilometer Zero</strong> (e.g. <code>KM 66</code> indicates you are precisely 66.0 kilometers away from the Rizal Monument at Luneta Park in Manila).
+					</p>
+				</div>
+
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-2xs">
+					<div class="w-8 h-8 rounded-lg bg-rose-600/15 text-rose-800 flex items-center justify-center font-bold text-sm mb-3">
+						3
+					</div>
+					<h3 class="font-serif font-bold text-base text-mapa-ink mb-1.5">
+						The Base Band (DPWH District & Route)
+					</h3>
+					<p class="text-xs text-mapa-ink/80 leading-relaxed">
+						The red painted base (or yellow for provincial roads) often bears embossed lettering denoting the <strong>DPWH Engineering District Office</strong> and national highway classification code (e.g. <code>N2</code> for primary roads or <code>DEO-PAMPANGA</code>).
+					</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- Frequently Asked Questions (FAQ) Section -->
+		<section class="border-t border-mapa-contour/50 pt-10 font-sans">
+			<h2 class="text-2xl font-serif font-bold text-mapa-ink mb-6">
+				Frequently Asked Questions About Philippine Kilometer Markers
+			</h2>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5">
+					<h3 class="font-bold text-mapa-ink mb-2">Where is the primary Kilometer Zero (KM 0) in the Philippines?</h3>
+					<p class="text-mapa-ink/80 leading-relaxed text-xs">
+						The primary and official geodetic Kilometer Zero for the entire island of Luzon is located across from the <strong>José Rizal Monument in Luneta Park (Rizal Park), City of Manila</strong>. Distance measurements for all major highways—including MacArthur Highway, Maharlika Highway, Manila South Road, and Aguinaldo Highway—originate from this spot.
+					</p>
+				</div>
+
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5">
+					<h3 class="font-bold text-mapa-ink mb-2">Does Mindanao have its own Kilometer Zero?</h3>
+					<p class="text-mapa-ink/80 leading-relaxed text-xs">
+						Yes. Mindanao’s historical Kilometer Zero is located in <strong>Marawi City, Lanao del Sur</strong>, along the shoreline of Lake Lanao near Banggolo Bridge. It served as the original survey baseline when the trans-Mindanao highway network was surveyed and constructed.
+					</p>
+				</div>
+
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5">
+					<h3 class="font-bold text-mapa-ink mb-2">Why are kilometer markers important for cyclists and emergency responders?</h3>
+					<p class="text-mapa-ink/80 leading-relaxed text-xs">
+						In rural stretches where cellular GPS data may experience dead zones, physical kilometer posts provide an unambiguous, universally recognized location stamp. Philippine National Police (PNP), DPWH, and ambulance dispatchers (911) frequently use KM posts to pinpoint road accident locations.
+					</p>
+				</div>
+
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5">
+					<h3 class="font-bold text-mapa-ink mb-2">What are the Bataan Death March Kilometer Markers?</h3>
+					<p class="text-mapa-ink/80 leading-relaxed text-xs">
+						These are 138 specially designed white obelisk memorial markers erected to honor Filipino and American soldiers forced into the 1942 Bataan Death March during World War II. They start at KM 00 in Mariveles and KM 00 in Bagac, continuing through Pampanga up to San Fernando (KM 102) and Capas, Tarlac.
+					</p>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<Footer />
+
+	<!-- Leaflet Bundle Script -->
+	<script
+		src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+		integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+		crossorigin=""
+		is:inline
+	></script>
+
+	<!-- Interactive Client Logic -->
+	<script is:inline define:vars={{ KM_ZERO_ORIGINS, HIGHWAY_CORRIDORS }}>
+		document.addEventListener('DOMContentLoaded', () => {
+			const corridorSelect = document.getElementById('corridor-select');
+			const kmSlider = document.getElementById('km-slider');
+			const kmNumberInput = document.getElementById('km-number-input');
+			const sliderMinLabel = document.getElementById('slider-min-label');
+			const sliderMaxLabel = document.getElementById('slider-max-label');
+
+			const postDestName = document.getElementById('post-dest-name');
+			const postKmNumber = document.getElementById('post-km-number');
+			const postRoadCode = document.getElementById('post-road-code');
+
+			const markerTownBadge = document.getElementById('marker-town-badge');
+			const markerLandmark = document.getElementById('marker-landmark');
+			const markerRouteCode = document.getElementById('marker-route-code');
+			const markerCoords = document.getElementById('marker-coords');
+
+			const schematicCorridorTitle = document.getElementById('schematic-corridor-title');
+			const schematicTotalKm = document.getElementById('schematic-total-km');
+			const milestoneChainList = document.getElementById('milestone-chain-list');
+
+			const btnViewSchematic = document.getElementById('btn-view-schematic');
+			const btnViewGeo = document.getElementById('btn-view-geo');
+			const schematicContainer = document.getElementById('schematic-view-container');
+			const geoContainer = document.getElementById('geo-view-container');
+
+			// Origin card elements
+			const originCards = document.querySelectorAll('.origin-select-card');
+			const originBannerTitle = document.getElementById('origin-banner-title');
+			const originBannerLocation = document.getElementById('origin-banner-location');
+			const originBannerCoords = document.getElementById('origin-banner-coords');
+			const originBannerElevation = document.getElementById('origin-banner-elevation');
+			const originBannerHistory = document.getElementById('origin-banner-history');
+
+			let leafletMap = null;
+			let mapMarkers = [];
+			let corridorPolyline = null;
+
+			// Corridor Lookup Map
+			const corridorsMap = new Map();
+			HIGHWAY_CORRIDORS.forEach(c => corridorsMap.set(c.id, c));
+
+			const originsMap = new Map();
+			KM_ZERO_ORIGINS.forEach(o => originsMap.set(o.id, o));
+
+			function getCurrentCorridor() {
+				return corridorsMap.get(corridorSelect.value) || HIGHWAY_CORRIDORS[0];
+			}
+
+			function findNearestMarker(corridor, targetKm) {
+				if (!corridor.markers || corridor.markers.length === 0) return null;
+				let closest = corridor.markers[0];
+				let minDiff = Math.abs(closest.km - targetKm);
+
+				for (let i = 1; i < corridor.markers.length; i++) {
+					const diff = Math.abs(corridor.markers[i].km - targetKm);
+					if (diff < minDiff) {
+						minDiff = diff;
+						closest = corridor.markers[i];
+					}
+				}
+				return closest;
+			}
+
+			function updateCorridorUI() {
+				const corridor = getCurrentCorridor();
+				const maxKm = Math.round(corridor.totalKm);
+
+				kmSlider.max = maxKm;
+				kmNumberInput.max = maxKm;
+
+				sliderMinLabel.textContent = `KM 0 (${corridor.originKm.split('(')[1]?.replace(')', '') || 'Origin'})`;
+				sliderMaxLabel.textContent = `KM ${maxKm} (${corridor.termini.split('↔')[1]?.trim() || 'Terminus'})`;
+
+				schematicCorridorTitle.textContent = `${corridor.name} Milestone Chain`;
+				schematicTotalKm.textContent = `${corridor.totalKm.toFixed(1)} Total KM`;
+
+				renderMilestoneChain(corridor);
+				updateMarkerUI();
+				if (leafletMap) {
+					renderMapCorridor(corridor);
+				}
+			}
+
+			function updateMarkerUI() {
+				const corridor = getCurrentCorridor();
+				const targetKm = parseInt(kmSlider.value, 10) || 0;
+				const marker = findNearestMarker(corridor, targetKm);
+
+				if (!marker) return;
+
+				// Update 3D concrete milestone post representation
+				postKmNumber.textContent = marker.km.toString();
+				postDestName.textContent = marker.destTop || `${marker.town.toUpperCase()}`;
+				postRoadCode.textContent = `${corridor.name.split('(')[0].trim().toUpperCase()} • DPWH MILESTONE`;
+
+				// Update card details
+				markerTownBadge.textContent = `${marker.town}, ${marker.prov}`;
+				markerLandmark.textContent = marker.landmark;
+				markerRouteCode.textContent = corridor.name.split('(')[0].trim();
+				markerCoords.textContent = `${marker.lat.toFixed(4)}° N, ${marker.lon.toFixed(4)}° E`;
+
+				// Highlight active schematic node
+				document.querySelectorAll('.chain-node').forEach(node => {
+					const nodeKm = parseInt(node.getAttribute('data-km'), 10);
+					if (nodeKm === marker.km) {
+						node.className = 'chain-node p-3 rounded-xl border border-rose-600 bg-rose-500/15 flex items-center justify-between cursor-pointer transition-all';
+					} else {
+						node.className = 'chain-node p-3 rounded-xl border border-mapa-contour/60 hover:border-mapa-green/40 hover:bg-mapa-canvas flex items-center justify-between cursor-pointer transition-all';
+					}
+				});
+
+				// Highlight map marker
+				if (leafletMap) {
+					mapMarkers.forEach(({ km, markerObj }) => {
+						if (km === marker.km) {
+							markerObj.setStyle({ fillColor: '#E11D48', radius: 10, weight: 3 });
+							markerObj.openPopup();
+						} else {
+							markerObj.setStyle({ fillColor: '#059669', radius: 6, weight: 2 });
+						}
+					});
+				}
+			}
+
+			function renderMilestoneChain(corridor) {
+				milestoneChainList.innerHTML = '';
+
+				corridor.markers.forEach((marker) => {
+					const item = document.createElement('div');
+					item.className = 'chain-node p-3 rounded-xl border border-mapa-contour/60 hover:border-mapa-green/40 hover:bg-mapa-canvas flex items-center justify-between cursor-pointer transition-all';
+					item.setAttribute('data-km', marker.km.toString());
+
+					item.innerHTML = `
+						<div class="flex items-center gap-3">
+							<div class="w-11 h-11 rounded-lg bg-slate-100 border-2 border-slate-300 flex flex-col items-center justify-center font-mono flex-shrink-0">
+								<span class="text-[8px] font-bold text-slate-500">KM</span>
+								<span class="text-xs font-extrabold text-slate-800 leading-none">${marker.km}</span>
+							</div>
+							<div>
+								<div class="font-serif font-bold text-sm text-mapa-ink">${marker.town}</div>
+								<div class="text-[11px] text-mapa-clay">${marker.prov} &bull; ${marker.landmark}</div>
+							</div>
+						</div>
+						<div class="text-right">
+							<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour text-mapa-clay">
+								${marker.destTop}
+							</span>
+						</div>
+					`;
+
+					item.addEventListener('click', () => {
+						kmSlider.value = marker.km;
+						kmNumberInput.value = marker.km;
+						updateMarkerUI();
+					});
+
+					milestoneChainList.appendChild(item);
+				});
+			}
+
+			function renderMapCorridor(corridor) {
+				if (!leafletMap) return;
+
+				// Clear existing markers
+				mapMarkers.forEach(m => leafletMap.removeLayer(m.markerObj));
+				mapMarkers = [];
+				if (corridorPolyline) leafletMap.removeLayer(corridorPolyline);
+
+				const latLngs = corridor.markers.map(m => [m.lat, m.lon]);
+
+				corridorPolyline = L.polyline(latLngs, {
+					color: corridor.color || '#059669',
+					weight: 4,
+					opacity: 0.85,
+					lineJoin: 'round'
+				}).addTo(leafletMap);
+
+				corridor.markers.forEach((marker) => {
+					const markerObj = L.circleMarker([marker.lat, marker.lon], {
+						radius: 6,
+						fillColor: '#059669',
+						color: '#ffffff',
+						weight: 2,
+						opacity: 1,
+						fillOpacity: 0.95
+					}).addTo(leafletMap);
+
+					markerObj.bindPopup(`
+						<div class="font-sans text-xs">
+							<strong class="font-serif text-sm">KM ${marker.km} — ${marker.town}</strong><br/>
+							<span class="text-gray-600">${marker.prov}</span><br/>
+							<span class="text-rose-700 font-semibold">${marker.landmark}</span><br/>
+							<span class="text-[10px] text-gray-500 mt-1 block">Sign: ${marker.destTop}</span>
+						</div>
+					`);
+
+					markerObj.on('click', () => {
+						kmSlider.value = marker.km;
+						kmNumberInput.value = marker.km;
+						updateMarkerUI();
+					});
+
+					mapMarkers.push({ km: marker.km, markerObj });
+				});
+
+				leafletMap.fitBounds(corridorPolyline.getBounds(), { padding: [40, 40] });
+			}
+
+			function initLeafletMap() {
+				if (leafletMap || typeof L === 'undefined') return;
+
+				leafletMap = L.map('km-map', {
+					center: [15.2, 120.7],
+					zoom: 8,
+					scrollWheelZoom: true
+				});
+
+				L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+					attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+					maxZoom: 19
+				}).addTo(leafletMap);
+
+				renderMapCorridor(getCurrentCorridor());
+			}
+
+			// Origin card switcher
+			originCards.forEach(card => {
+				card.addEventListener('click', () => {
+					const originId = card.getAttribute('data-origin-id');
+					const origin = originsMap.get(originId);
+					if (!origin) return;
+
+					originCards.forEach(c => {
+						c.className = 'origin-select-card text-left p-4 rounded-xl border transition-all cursor-pointer bg-mapa-canvas-dark border-mapa-contour hover:border-mapa-green/40';
+					});
+					card.className = 'origin-select-card text-left p-4 rounded-xl border transition-all cursor-pointer bg-mapa-canvas-dark border-mapa-green shadow-2xs ring-1 ring-mapa-green/30';
+
+					originBannerTitle.textContent = origin.name;
+					originBannerLocation.textContent = origin.location;
+					originBannerCoords.textContent = `${origin.lat.toFixed(4)}° N, ${origin.lon.toFixed(4)}° E`;
+					originBannerElevation.textContent = origin.elevation;
+					originBannerHistory.textContent = origin.history;
+				});
+			});
+
+			// Controls listeners
+			corridorSelect.addEventListener('change', () => {
+				kmSlider.value = 0;
+				kmNumberInput.value = 0;
+				updateCorridorUI();
+			});
+
+			kmSlider.addEventListener('input', () => {
+				kmNumberInput.value = kmSlider.value;
+				updateMarkerUI();
+			});
+
+			kmNumberInput.addEventListener('input', () => {
+				kmSlider.value = kmNumberInput.value;
+				updateMarkerUI();
+			});
+
+			// View switchers
+			btnViewSchematic.addEventListener('click', () => {
+				btnViewSchematic.className = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer';
+				btnViewGeo.className = 'px-3 py-1.5 text-xs font-medium rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
+				schematicContainer.classList.remove('hidden');
+				geoContainer.classList.add('hidden');
+			});
+
+			btnViewGeo.addEventListener('click', () => {
+				btnViewGeo.className = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer';
+				btnViewSchematic.className = 'px-3 py-1.5 text-xs font-medium rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
+				geoContainer.classList.remove('hidden');
+				schematicContainer.classList.add('hidden');
+
+				initLeafletMap();
+				setTimeout(() => {
+					if (leafletMap) {
+						leafletMap.invalidateSize();
+						if (corridorPolyline) leafletMap.fitBounds(corridorPolyline.getBounds(), { padding: [40, 40] });
+					}
+				}, 100);
+			});
+
+			// Initial setup
+			updateCorridorUI();
+		});
+	</script>
+</BaseLayout>
