@@ -34,6 +34,15 @@ const tools = [
 		description: "Bi-directional coordinate converter between GPS latitude/longitude (WGS84 decimal degrees) and official Philippine Reference System 1992 (PRS92 / UTM Zone 51N). Explains datum shifts and PTM Zones I through V.",
 		image: null,
 		badge: "Surveying Utility"
+	},
+	{
+		name: "Philippine ZIP Code Directory",
+		status: "Active",
+		category: "Built-in Utility",
+		url: "/tools/zip-codes",
+		description: "Instant lookup across 2,139 Philippine postal codes (PHLPost) covering Metro Manila and all 82 provinces. 1-click copy with postal addressing rules.",
+		image: null,
+		badge: "2,139 Codes"
 	}
 ];
 ---
@@ -55,7 +64,7 @@ const tools = [
 	</div>
 
 	<!-- Card Grid -->
-	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-sans">
+	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 font-sans">
 		{tools.map((tool) => {
 			const isExternal = tool.url.startsWith("http");
 			return (

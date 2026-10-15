@@ -31,7 +31,7 @@ import Footer from '../../components/Footer.astro';
 		</div>
 
 		<!-- Tools Grid -->
-		<div class="grid grid-cols-1 md:grid-cols-3 gap-6 font-sans">
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
 			<!-- Tool 1: PSGC Lookup -->
 			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
 				<div>
@@ -104,7 +104,43 @@ import Footer from '../../components/Footer.astro';
 				</div>
 			</div>
 
-			<!-- Tool 3: Lens Flagship -->
+			<!-- Tool 3: ZIP Code Lookup -->
+			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
+				<div>
+					<div class="flex items-center justify-between gap-2 mb-3">
+						<span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-mapa-green/15 text-mapa-green border border-mapa-green/30">
+							Built-in Utility
+						</span>
+						<span class="text-xs text-mapa-clay font-medium">
+							2,139 Codes Indexed
+						</span>
+					</div>
+					<h2 class="font-serif text-2xl font-bold text-mapa-ink group-hover:text-mapa-green transition-colors">
+						Philippine ZIP Code Directory
+					</h2>
+					<p class="text-sm text-mapa-ink/80 leading-relaxed mt-2.5">
+						Instant search for all 4-digit PHLPost postal codes across Metro Manila and all 82 provinces. 1-click copy for couriers, DFA passport forms, bank verifications, and e-commerce checkouts.
+					</p>
+					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/70">
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">PHLPost 2026</span>
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">1-Click Copy</span>
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Addressing Guide</span>
+					</div>
+				</div>
+				<div class="mt-6 pt-5 border-t border-mapa-contour/50">
+					<a
+						href="/tools/zip-codes"
+						class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green hover:underline"
+					>
+						<span>Open ZIP Code Lookup</span>
+						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+						</svg>
+					</a>
+				</div>
+			</div>
+
+			<!-- Tool 4: Lens Flagship -->
 			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
 				<div>
 					<div class="flex items-center justify-between gap-2 mb-3">
