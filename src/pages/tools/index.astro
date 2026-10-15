@@ -176,7 +176,43 @@ import Footer from '../../components/Footer.astro';
 				</div>
 			</div>
 
-			<!-- Tool 5: Lens Flagship -->
+			<!-- Tool 5: Walkability & 15-Minute City Map -->
+			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
+				<div>
+					<div class="flex items-center justify-between gap-2 mb-3">
+						<span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-mapa-green/15 text-mapa-green border border-mapa-green/30">
+							Map Utility
+						</span>
+						<span class="text-xs text-mapa-clay font-medium">
+							Interactive Radius
+						</span>
+					</div>
+					<h2 class="font-serif text-2xl font-bold text-mapa-ink group-hover:text-mapa-green transition-colors">
+						Philippine Walkability & 15-Minute Radius Map
+					</h2>
+					<p class="text-sm text-mapa-ink/80 leading-relaxed mt-2.5">
+						Interactive pedestrian catchment calculator. Visualize 5-min (400m), 10-min (800m), and 15-min (1.2km) walking rings across Philippine neighborhoods with step counts and sidewalk regulations.
+					</p>
+					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/70">
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Live Leaflet Map</span>
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">15-Minute City</span>
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">PD 1096 Sidewalks</span>
+					</div>
+				</div>
+				<div class="mt-6 pt-5 border-t border-mapa-contour/50">
+					<a
+						href="/tools/walkability"
+						class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green hover:underline"
+					>
+						<span>Open Walkability Map</span>
+						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+						</svg>
+					</a>
+				</div>
+			</div>
+
+			<!-- Tool 6: Lens Flagship -->
 			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
 				<div>
 					<div class="flex items-center justify-between gap-2 mb-3">

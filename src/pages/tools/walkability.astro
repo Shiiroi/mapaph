@@ -1,0 +1,611 @@
+---
+/**
+ * @file walkability.astro
+ * @description Interactive Philippine Walkability & 15-Minute Pedestrian Catchment Radius Tool.
+ * Features Leaflet interactive mapping, dynamic isochrone buffers, commuter step estimators, and urban planning guides.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+
+// Landmark presets with coordinates across key Philippine urban hubs
+const PRESETS = [
+	{ name: 'BGC High Street (Taguig)', lat: 14.5507, lon: 121.0509, desc: 'Master-planned pedestrian commercial spine' },
+	{ name: 'Ayala Triangle (Makati CBD)', lat: 14.5577, lon: 121.0244, desc: 'Central financial district with covered walkways' },
+	{ name: 'UP Diliman Oval (Quezon City)', lat: 14.6549, lon: 121.0645, desc: 'Shaded academic core with mature acacia canopy' },
+	{ name: 'UST / Sampaloc (Manila)', lat: 14.6091, lon: 120.9898, desc: 'High-density student university belt' },
+	{ name: 'Ortigas Center (Pasig)', lat: 14.5866, lon: 121.0617, desc: 'Mixed-use commercial and residential district' },
+	{ name: 'Cebu IT Park (Lahug, Cebu)', lat: 10.3298, lon: 123.9059, desc: 'Visayas regional BPO & dining tech center' },
+	{ name: 'Baguio Session Road (Benguet)', lat: 16.4124, lon: 120.5977, desc: 'Highland pedestrian corridor and commercial strip' },
+	{ name: 'Davao San Pedro St (Davao City)', lat: 7.0654, lon: 125.6090, desc: 'Historic civic district around City Hall' },
+	{ name: 'Iloilo Calle Real (Iloilo City)', lat: 10.6946, lon: 122.5694, desc: 'Heritage district celebrated for walkability' }
+];
+---
+
+<BaseLayout
+	title="Philippine Walkability & 15-Minute City Map Tool — mapaPH Tools"
+	description="Interactive walkability and pedestrian radius calculator for the Philippines. Calculate 5-minute, 10-minute, and 15-minute walking catchment zones, step counts, and urban accessibility on a live map."
+	keywords="Philippine walkability map, 15 minute city Philippines, pedestrian radius calculator, Metro Manila walkability, walking catchment area, BGC walkability, Makati pedestrian walkways, National Building Code sidewalk width, BP 344 accessibility"
+>
+	<!-- Leaflet Stylesheet -->
+	<link
+		rel="stylesheet"
+		href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+		integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+		crossorigin=""
+		slot="schema"
+	/>
+
+	<script type="application/ld+json" slot="schema" is:inline>
+		{
+			"@context": "https://schema.org",
+			"@graph": [
+				{
+					"@type": "WebApplication",
+					"name": "Philippine Walkability & 15-Minute Pedestrian Radius Map",
+					"url": "https://mapaph.com/tools/walkability",
+					"applicationCategory": "Urban Planning & Mobility Utility",
+					"operatingSystem": "All",
+					"description": "Interactive pedestrian catchment calculator drawing 5, 10, and 15-minute walking buffers across Philippine urban centers.",
+					"provider": {
+						"@type": "Organization",
+						"name": "mapaPH",
+						"url": "https://mapaph.com"
+					}
+				},
+				{
+					"@type": "FAQPage",
+					"mainEntity": [
+						{
+							"@type": "Question",
+							"name": "What is the 15-Minute City concept and how does it apply to the Philippines?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "The 15-minute city is an urban planning principle where residents can reach daily necessities (groceries, healthcare, transit stops, schools, and parks) within a 15-minute walk or bike ride from their homes. In the Philippines, this distance equals roughly 1.2 kilometers under tropical conditions, often augmented by tricycles and jeepneys as crucial first-mile feeders."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "What is the legal minimum sidewalk width in the Philippines?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "Under Presidential Decree No. 1096 (National Building Code of the Philippines) and DPWH Department Order No. 56 (s. 2012), sidewalks along national roads must have a minimum unobstructed width of 1.20 meters, expanding up to 3.00 meters in high-density commercial districts. Additionally, Batas Pambansa Blg. 344 requires accessible curb ramps for persons with disabilities."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "How far does an average person walk in 15 minutes?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "At a standard walking pace of 4.8 km/h (1.33 m/s), an individual covers approximately 400 meters in 5 minutes (~550 steps), 800 meters in 10 minutes (~1,100 steps), and 1,200 meters (1.2 km) in 15 minutes (~1,700 steps). In the Philippine climate, heat index and rain cover can reduce this pace to 3.6 km/h."
+							}
+						}
+					]
+				}
+			]
+		}
+	</script>
+
+	<Navbar />
+
+	<main class="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-mapa-ink">
+		<!-- Header -->
+		<div class="max-w-3xl mb-8">
+			<div class="flex items-center gap-2 mb-2">
+				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
+					Map & Mobility Utility
+				</span>
+				<span class="font-sans text-xs text-mapa-clay">
+					Pedestrian Catchment Calculator
+				</span>
+			</div>
+			<h1 class="text-3xl sm:text-4xl font-extrabold text-mapa-green font-serif tracking-tight">
+				Philippine Walkability & 15-Minute Radius Tool
+			</h1>
+			<p class="font-sans text-sm sm:text-base text-mapa-ink/80 mt-2 leading-relaxed">
+				Explore pedestrian catchment rings on an interactive map. Pinpoint any location in the Philippines to visualize what lies within a <strong>5-minute (400m)</strong>, <strong>10-minute (800m)</strong>, and <strong>15-minute (1.2km)</strong> walking commute with steps and calorie estimates.
+			</p>
+		</div>
+
+		<!-- Interactive Map Card -->
+		<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 shadow-sm mb-12">
+			<!-- Presets Toolbar -->
+			<div class="mb-5 font-sans text-xs">
+				<span class="text-mapa-ink/60 font-medium mr-2">Explore Philippine Urban Centers:</span>
+				<div class="inline-flex flex-wrap gap-2 mt-2 sm:mt-0">
+					{PRESETS.map((p) => (
+						<button
+							type="button"
+							class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors"
+							data-lat={p.lat}
+							data-lon={p.lon}
+							data-name={p.name}
+						>
+							{p.name.split(' (')[0]}
+						</button>
+					))}
+				</div>
+			</div>
+
+			<!-- Speed & Mode Controls -->
+			<div class="flex flex-wrap items-center justify-between gap-4 mb-4 pb-4 border-b border-mapa-contour/60 font-sans text-xs">
+				<div class="flex items-center gap-2">
+					<span class="font-semibold text-mapa-ink/70 uppercase tracking-wider">Walking Pace:</span>
+					<div class="inline-flex rounded-lg border border-mapa-contour bg-mapa-canvas p-1">
+						<button
+							type="button"
+							id="pace-tropical"
+							class="pace-btn px-3 py-1 rounded-md text-mapa-ink/80 hover:text-mapa-green transition-all"
+							data-speed="3.6"
+						>
+							Tropical / Shade (3.6 km/h)
+						</button>
+						<button
+							type="button"
+							id="pace-standard"
+							class="pace-btn active px-3 py-1 rounded-md font-semibold bg-mapa-green text-white shadow-2xs transition-all"
+							data-speed="4.8"
+						>
+							Standard (4.8 km/h)
+						</button>
+						<button
+							type="button"
+							id="pace-brisk"
+							class="pace-btn px-3 py-1 rounded-md text-mapa-ink/80 hover:text-mapa-green transition-all"
+							data-speed="6.0"
+						>
+							Brisk Commuter (6.0 km/h)
+						</button>
+					</div>
+				</div>
+
+				<div class="text-mapa-clay text-[11px] flex items-center gap-1.5">
+					<span class="inline-block w-2.5 h-2.5 rounded-full bg-mapa-green animate-pulse"></span>
+					<span>Click or drag marker on map to reposition center</span>
+				</div>
+			</div>
+
+			<!-- Live Leaflet Map Container -->
+			<div class="relative w-full rounded-xl overflow-hidden border border-mapa-contour shadow-inner">
+				<div id="walk-map" class="w-full h-[460px] bg-mapa-canvas z-0"></div>
+
+				<!-- Floating Coordinates Overlay -->
+				<div class="absolute bottom-3 left-3 z-10 bg-mapa-canvas/90 backdrop-blur-md border border-mapa-contour/80 rounded-lg px-3 py-1.5 font-mono text-[11px] text-mapa-ink shadow-xs flex items-center gap-2">
+					<span class="text-mapa-green font-bold">Center:</span>
+					<span id="coords-display">14.5507° N, 121.0509° E</span>
+					<button
+						type="button"
+						id="copy-coords-btn"
+						class="text-[10px] uppercase font-bold text-mapa-green hover:underline ml-1"
+						title="Copy GPS coordinates"
+					>
+						Copy
+					</button>
+				</div>
+			</div>
+
+			<!-- Catchment Metrics Grid (5, 10, 15 Minutes) -->
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 font-sans">
+				<!-- 5 Min Ring -->
+				<div class="p-5 rounded-xl bg-mapa-canvas border border-mapa-green/40 flex flex-col justify-between shadow-2xs">
+					<div>
+						<div class="flex items-center justify-between gap-2 mb-1.5">
+							<span class="text-xs font-bold uppercase tracking-wider text-mapa-green">
+								5-Minute Ring
+							</span>
+							<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-green/10 text-mapa-green">
+								Immediate Vicinity
+							</span>
+						</div>
+						<div class="text-2xl font-bold font-mono text-mapa-ink" id="dist-5min">
+							400 meters
+						</div>
+						<p class="text-xs text-mapa-clay mt-1">
+							Sari-sari store, tricycle terminal, nearest convenience store, pedestrian corner.
+						</p>
+					</div>
+					<div class="mt-4 pt-3 border-t border-mapa-contour/40 grid grid-cols-2 gap-2 text-xs font-mono">
+						<div>
+							<span class="text-[10px] text-mapa-clay block font-sans">Steps</span>
+							<span id="steps-5min" class="font-bold text-mapa-green">~530 steps</span>
+						</div>
+						<div>
+							<span class="text-[10px] text-mapa-clay block font-sans">Calories</span>
+							<span id="cal-5min" class="font-bold text-mapa-ink/80">~22 kcal</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- 10 Min Ring -->
+				<div class="p-5 rounded-xl bg-mapa-canvas border border-mapa-flag-blue/40 flex flex-col justify-between shadow-2xs">
+					<div>
+						<div class="flex items-center justify-between gap-2 mb-1.5">
+							<span class="text-xs font-bold uppercase tracking-wider text-mapa-flag-blue">
+								10-Minute Ring
+							</span>
+							<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-flag-blue/10 text-mapa-flag-blue">
+								Neighborhood Hub
+							</span>
+						</div>
+						<div class="text-2xl font-bold font-mono text-mapa-ink" id="dist-10min">
+							800 meters
+						</div>
+						<p class="text-xs text-mapa-clay mt-1">
+							Supermarket, primary health center, bank branch, jeepney/bus primary corridor.
+						</p>
+					</div>
+					<div class="mt-4 pt-3 border-t border-mapa-contour/40 grid grid-cols-2 gap-2 text-xs font-mono">
+						<div>
+							<span class="text-[10px] text-mapa-clay block font-sans">Steps</span>
+							<span id="steps-10min" class="font-bold text-mapa-flag-blue">~1,060 steps</span>
+						</div>
+						<div>
+							<span class="text-[10px] text-mapa-clay block font-sans">Calories</span>
+							<span id="cal-10min" class="font-bold text-mapa-ink/80">~44 kcal</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- 15 Min Ring -->
+				<div class="p-5 rounded-xl bg-mapa-canvas border border-mapa-rust/40 flex flex-col justify-between shadow-2xs">
+					<div>
+						<div class="flex items-center justify-between gap-2 mb-1.5">
+							<span class="text-xs font-bold uppercase tracking-wider text-mapa-rust">
+								15-Minute Ring
+							</span>
+							<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-rust/10 text-mapa-rust">
+								Complete City Radius
+							</span>
+						</div>
+						<div class="text-2xl font-bold font-mono text-mapa-ink" id="dist-15min">
+							1.20 kilometers
+						</div>
+						<p class="text-xs text-mapa-clay mt-1">
+							LRT/MRT rail station, district hospital, public wet market, secondary school, town hall.
+						</p>
+					</div>
+					<div class="mt-4 pt-3 border-t border-mapa-contour/40 grid grid-cols-2 gap-2 text-xs font-mono">
+						<div>
+							<span class="text-[10px] text-mapa-clay block font-sans">Steps</span>
+							<span id="steps-15min" class="font-bold text-mapa-rust">~1,600 steps</span>
+						</div>
+						<div>
+							<span class="text-[10px] text-mapa-clay block font-sans">Calories</span>
+							<span id="cal-15min" class="font-bold text-mapa-ink/80">~66 kcal</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- COMPREHENSIVE EDITORIAL ARTICLE (phtools.me Style) -->
+		<article class="prose prose-stone max-w-4xl mx-auto font-serif text-mapa-ink pt-6 border-t border-mapa-contour/60">
+			<!-- Article Header -->
+			<div class="mb-10">
+				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
+					Urban Mobility & Pedestrian Rights
+				</span>
+				<h2 class="text-3xl sm:text-4xl font-extrabold text-mapa-green font-serif tracking-tight mt-2">
+					Walkability in the Philippines: The 15-Minute City vs. Tropical Reality
+				</h2>
+				<p class="font-sans text-sm sm:text-base text-mapa-ink/70 mt-2 leading-relaxed">
+					Why European 15-minute city models struggle in Metro Manila, what the National Building Code mandates for sidewalk widths, PWD accessibility under BP 344, and surviving tropical heat.
+				</p>
+			</div>
+
+			<!-- Section 1: The 15-Minute City in PH -->
+			<section class="mb-10 font-sans">
+				<h3 class="font-serif text-2xl font-bold text-mapa-ink mb-4">
+					1. What is the 15-Minute City Concept in the Philippine Setting?
+				</h3>
+				<p class="text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+					Popularized by urban scholar Carlos Moreno, the <strong>"15-Minute City"</strong> (*la ville du quart d'heure*) proposes that urban residents should be able to satisfy the six essential urban functions—living, working, supplying, caring, learning, and enjoying—within a 15-minute walk or bicycle trip from their doorstep.
+				</p>
+				<p class="text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+					In standard temperate planning literature, 15 minutes of walking equates to approximately <strong>1,200 meters (1.2 km)</strong> at a moderate 4.8 km/h cadence. In Philippine urban planning, however, several unique structural realities alter this equation:
+				</p>
+				<ul class="list-disc pl-5 space-y-2 text-sm text-mapa-ink/90 leading-relaxed mb-4">
+					<li>
+						<strong>The First-Mile Feeder Ecosystem:</strong> Because many Philippine residential subdivisions and informal settlements lack direct trunkline bus access, <em>tricycles</em> and <em>multicabs</em> effectively serve as motorized extensions of the walking buffer, bridging the gap between interior barangays and main commercial avenues.
+					</li>
+					<li>
+						<strong>Vertical Obstacles (Footbridges):</strong> In cities like Quezon City, Makati, and Mandaluyong, crossing wide arterial roads (such as EDSA, Commonwealth, or C-5) requires scaling massive steel pedestrian footbridges—often dubbed <em>"stairways to heaven"</em>—adding several minutes of vertical exertion not captured by flat-surface distance tools.
+					</li>
+				</ul>
+			</section>
+
+			<!-- Section 2: Statutory Sidewalk Standards -->
+			<section class="mb-10 font-sans border-t border-mapa-contour/40 pt-8">
+				<h3 class="font-serif text-2xl font-bold text-mapa-ink mb-4">
+					2. Statutory Sidewalk Widths: What Philippine Law Requires
+				</h3>
+				<p class="text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+					Contrary to the common belief that sidewalks are an optional luxury provided at the whim of local mayors, Philippine law explicitly mandates minimum unobstructed pedestrian widths:
+				</p>
+
+				<div class="overflow-x-auto my-4 border border-mapa-contour rounded-xl bg-mapa-canvas-dark">
+					<table class="w-full text-left text-xs sm:text-sm">
+						<thead class="border-b border-mapa-contour/70 text-mapa-ink/70 uppercase text-[11px] font-bold">
+							<tr>
+								<th class="p-3">Statutory Basis</th>
+								<th class="p-3 text-mapa-green">Mandated Sidewalk Width</th>
+								<th class="p-3 text-mapa-clay">Legal Requirement</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-mapa-contour/40 text-mapa-ink/90">
+							<tr>
+								<td class="p-3 font-semibold">PD 1096 (National Building Code)</td>
+								<td class="p-3 font-mono font-bold">1.20 meters (minimum)</td>
+								<td class="p-3">Unobstructed walkway exclusive of utility poles, streetlights, and planting strips.</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-semibold">DPWH D.O. No. 56 (s. 2012)</td>
+								<td class="p-3 font-mono font-bold">1.50m – 3.00m</td>
+								<td class="p-3">Prescribed standard for primary national roads and commercial corridors.</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-semibold">Batas Pambansa Blg. 344 (Accessibility)</td>
+								<td class="p-3 font-mono font-bold">1:12 Ramp Slope</td>
+								<td class="p-3">Mandates dropped curbs and tactile walking surfaces for PWDs and wheelchair users.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<p class="text-xs text-mapa-ink/75 italic mt-2">
+					Note: Under the Civil Code of the Philippines and Commonwealth Act No. 146, public roads and their designated pedestrian sidewalks are properties of public dominion outside the commerce of man; illegal commercial stalls and unauthorized parked vehicles violate public easement rights.
+				</p>
+			</section>
+
+			<!-- Section 3: The Heat Index Factor -->
+			<section class="mb-10 font-sans border-t border-mapa-contour/40 pt-8">
+				<h3 class="font-serif text-2xl font-bold text-mapa-ink mb-4">
+					3. The Heat Index Factor: Why Temperature Dictates Walkability
+				</h3>
+				<p class="text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+					In tropical climates like the Philippines, walkability cannot be assessed by distance alone. According to <strong>PAGASA (Philippine Atmospheric, Geophysical and Astronomical Services Administration)</strong>, daytime heat index values frequently reach the <strong>"Danger" level (42°C to 51°C)</strong> during the dry warm season (March–May).
+				</p>
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+					<div class="p-5 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/80">
+						<h4 class="font-serif font-bold text-base text-mapa-green mb-1">Tree Canopy & Shading</h4>
+						<p class="text-xs text-mapa-ink/80 leading-relaxed">
+							Walking under a continuous tree canopy (such as the UP Diliman Academic Oval or Baguio's Session Road) reduces radiant surface temperature by up to <strong>8°C to 12°C</strong> compared to exposed asphalt, allowing commuters to maintain a healthy 4.8 km/h cadence comfortably.
+						</p>
+					</div>
+
+					<div class="p-5 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/80">
+						<h4 class="font-serif font-bold text-base text-mapa-rust mb-1">Elevated Covered Walkways</h4>
+						<p class="text-xs text-mapa-ink/80 leading-relaxed">
+							Master-planned private business districts—such as the <strong>Makati CBD Dela Rosa Elevated Walkway</strong> (spanning over 1.1 km)—demonstrate that continuous covered pedestrian networks encourage thousands of office workers to walk rather than hail short-distance vehicles.
+						</p>
+					</div>
+				</div>
+			</section>
+
+			<!-- Section 4: Health Benefits & Commuter Calories -->
+			<section class="mb-10 font-sans border-t border-mapa-contour/40 pt-8">
+				<h3 class="font-serif text-2xl font-bold text-mapa-ink mb-4">
+					4. Health Impact: Steps & Calorie Burn in Daily Commuting
+				</h3>
+				<p class="text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+					Integrating a 15-minute walk into your daily transit routine (e.g. walking to the MRT station rather than taking a tricycle) yields substantial public health benefits recognized by the <strong>Department of Health (DOH)</strong>:
+				</p>
+				<ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm text-mapa-ink/85 leading-relaxed">
+					<li><strong>5 Minutes (~400m):</strong> ~530 steps • Burns ~22 kcal. Wakes up cardiovascular circulation.</li>
+					<li><strong>10 Minutes (~800m):</strong> ~1,060 steps • Burns ~44 kcal. Reaches ~10% of the recommended 10,000 daily steps.</li>
+					<li><strong>15 Minutes (~1.2 km):</strong> ~1,600 steps • Burns ~66 kcal. Two 15-minute walks per day meet the World Health Organization (WHO) target of 150 minutes of moderate physical activity weekly.</li>
+				</ul>
+			</section>
+
+			<!-- Section 5: Official Citations -->
+			<section class="mb-10 font-sans border-t border-mapa-contour/40 pt-8">
+				<h3 class="font-serif text-2xl font-bold text-mapa-ink mb-4">
+					5. Official Statutory Citations
+				</h3>
+				<ul class="list-disc pl-5 space-y-2 text-xs sm:text-sm text-mapa-ink/80 leading-relaxed">
+					<li>
+						<strong>Presidential Decree No. 1096:</strong> The National Building Code of the Philippines, establishing road easements, pedestrian arcades, and sidewalk requirements.
+					</li>
+					<li>
+						<strong>Batas Pambansa Blg. 344:</strong> An Act to Enhance the Mobility of Disabled Persons by Requiring Certain Buildings, Institutions, Establishments and Public Utilities to install Facilities and Other Devices.
+					</li>
+					<li>
+						<strong>DPWH Department Order No. 56, Series of 2012:</strong> Revised Guidelines on the Installation of Road Safety Devices and Sidewalk Provisions Along National Roads.
+					</li>
+				</ul>
+			</section>
+		</article>
+	</main>
+
+	<Footer />
+
+	<!-- Leaflet JS from CDN -->
+	<script
+		is:inline
+		src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+		integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+		crossorigin=""
+	></script>
+
+	<!-- Interactive Map Client Logic -->
+	<script is:inline>
+		(function () {
+			let currentLat = 14.5507;
+			let currentLon = 121.0509;
+			let currentSpeed = 4.8; // km/h
+
+			const coordsDisplay = document.getElementById('coords-display');
+			const copyCoordsBtn = document.getElementById('copy-coords-btn');
+			const dist5El = document.getElementById('dist-5min');
+			const dist10El = document.getElementById('dist-10min');
+			const dist15El = document.getElementById('dist-15min');
+			const steps5El = document.getElementById('steps-5min');
+			const steps10El = document.getElementById('steps-10min');
+			const steps15El = document.getElementById('steps-15min');
+			const cal5El = document.getElementById('cal-5min');
+			const cal10El = document.getElementById('cal-10min');
+			const cal15El = document.getElementById('cal-15min');
+
+			const paceBtns = document.querySelectorAll('.pace-btn');
+			const presetBtns = document.querySelectorAll('.preset-btn');
+
+			// Initialize Leaflet Map
+			const map = L.map('walk-map', {
+				center: [currentLat, currentLon],
+				zoom: 15,
+				zoomControl: true
+			});
+
+			// Add CartoDB Positron / Voyager clean tiles
+			L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+				maxZoom: 19,
+				subdomains: 'abcd'
+			}).addTo(map);
+
+			// Custom Leaflet Green Pin Marker
+			const customIcon = L.divIcon({
+				className: 'custom-walk-pin',
+				html: `
+					<div style="background-color: #1a4d2e; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.35);"></div>
+				`,
+				iconSize: [18, 18],
+				iconAnchor: [9, 9]
+			});
+
+			const marker = L.marker([currentLat, currentLon], {
+				draggable: true,
+				icon: customIcon
+			}).addTo(map);
+
+			// Concentric Circles
+			let circle5, circle10, circle15;
+
+			function drawCircles() {
+				// Distance in meters: (speed in km/h * 1000 / 60) * minutes
+				const mPerMin = (currentSpeed * 1000) / 60;
+				const r5 = Math.round(mPerMin * 5);
+				const r10 = Math.round(mPerMin * 10);
+				const r15 = Math.round(mPerMin * 15);
+
+				// Remove old circles if they exist
+				if (circle5) map.removeLayer(circle5);
+				if (circle10) map.removeLayer(circle10);
+				if (circle15) map.removeLayer(circle15);
+
+				// Draw 15 min outer ring (rust/orange tint)
+				circle15 = L.circle([currentLat, currentLon], {
+					radius: r15,
+					color: '#c05621',
+					weight: 1.5,
+					dashArray: '4, 4',
+					fillColor: '#c05621',
+					fillOpacity: 0.08
+				}).addTo(map);
+
+				// Draw 10 min middle ring (blue tint)
+				circle10 = L.circle([currentLat, currentLon], {
+					radius: r10,
+					color: '#2b6cb0',
+					weight: 1.5,
+					dashArray: '3, 3',
+					fillColor: '#2b6cb0',
+					fillOpacity: 0.12
+				}).addTo(map);
+
+				// Draw 5 min inner ring (green tint)
+				circle5 = L.circle([currentLat, currentLon], {
+					radius: r5,
+					color: '#1a4d2e',
+					weight: 2,
+					fillColor: '#1a4d2e',
+					fillOpacity: 0.18
+				}).addTo(map);
+
+				// Update metrics display
+				dist5El.textContent = `${r5} meters`;
+				dist10El.textContent = `${r10} meters`;
+				dist15El.textContent = r15 >= 1000 ? `${(r15 / 1000).toFixed(2)} kilometers` : `${r15} meters`;
+
+				// Steps calculation: ~0.75m average stride length
+				const steps5 = Math.round(r5 / 0.75);
+				const steps10 = Math.round(r10 / 0.75);
+				const steps15 = Math.round(r15 / 0.75);
+
+				steps5El.textContent = `~${steps5.toLocaleString()} steps`;
+				steps10El.textContent = `~${steps10.toLocaleString()} steps`;
+				steps15El.textContent = `~${steps15.toLocaleString()} steps`;
+
+				// Calories calculation: ~0.04 kcal per step
+				cal5El.textContent = `~${Math.round(steps5 * 0.04)} kcal`;
+				cal10El.textContent = `~${Math.round(steps10 * 0.04)} kcal`;
+				cal15El.textContent = `~${Math.round(steps15 * 0.04)} kcal`;
+
+				coordsDisplay.textContent = `${currentLat.toFixed(4)}° N, ${currentLon.toFixed(4)}° E`;
+			}
+
+			// Map click listener
+			map.on('click', (e) => {
+				currentLat = e.latlng.lat;
+				currentLon = e.latlng.lng;
+				marker.setLatLng([currentLat, currentLon]);
+				drawCircles();
+			});
+
+			// Marker drag listener
+			marker.on('dragend', (e) => {
+				const pos = e.target.getLatLng();
+				currentLat = pos.lat;
+				currentLon = pos.lon || pos.lng;
+				drawCircles();
+			});
+
+			// Pace buttons
+			paceBtns.forEach((btn) => {
+				btn.addEventListener('click', () => {
+					paceBtns.forEach((b) => {
+						b.classList.remove('active', 'bg-mapa-green', 'text-white', 'font-semibold', 'shadow-2xs');
+						b.classList.add('text-mapa-ink/80');
+					});
+					btn.classList.add('active', 'bg-mapa-green', 'text-white', 'font-semibold', 'shadow-2xs');
+					btn.classList.remove('text-mapa-ink/80');
+					currentSpeed = parseFloat(btn.getAttribute('data-speed'));
+					drawCircles();
+				});
+			});
+
+			// Preset buttons
+			presetBtns.forEach((btn) => {
+				btn.addEventListener('click', () => {
+					const lat = parseFloat(btn.getAttribute('data-lat'));
+					const lon = parseFloat(btn.getAttribute('data-lon'));
+					if (!isNaN(lat) && !isNaN(lon)) {
+						currentLat = lat;
+						currentLon = lon;
+						marker.setLatLng([currentLat, currentLon]);
+						map.setView([currentLat, currentLon], 15, { animate: true });
+						drawCircles();
+					}
+				});
+			});
+
+			// Copy coordinates button
+			copyCoordsBtn.addEventListener('click', async () => {
+				const text = `${currentLat.toFixed(6)}, ${currentLon.toFixed(6)}`;
+				try {
+					await navigator.clipboard.writeText(text);
+					copyCoordsBtn.textContent = 'Copied!';
+					setTimeout(() => {
+						copyCoordsBtn.textContent = 'Copy';
+					}, 2000);
+				} catch (err) {
+					console.error('Copy failed:', err);
+				}
+			});
+
+			// Initial render
+			drawCircles();
+		})();
+	</script>
+</BaseLayout>

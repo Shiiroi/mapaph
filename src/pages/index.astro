@@ -17,7 +17,7 @@ import Footer from '../components/Footer.astro';
 <BaseLayout 
 	title="mapaPH — Open-Source Tools Based on the Philippine Map" 
 	description="mapaPH is an open-source hub of civic mapping tools, official Philippine Standard Geographic Code (PSGC) lookups, coordinate converters, and geographic datasets for the Philippines."
-	keywords="Philippine map, Philippine geospatial tools, PSGC lookup, Philippine Standard Geographic Code, Philippine zip codes, postal code Philippines, Philippine bus fare calculator, jeepney fare calculator, LTFRB fare matrix, PRS92 converter, WGS84 GPS, Philippine GIS data, 82 provinces, 149 cities, Philippine boundaries GeoJSON, open source mapping Philippines"
+	keywords="Philippine map, Philippine geospatial tools, PSGC lookup, Philippine Standard Geographic Code, Philippine zip codes, postal code Philippines, Philippine bus fare calculator, jeepney fare calculator, LTFRB fare matrix, Philippine walkability map, 15 minute city Philippines, PRS92 converter, WGS84 GPS, Philippine GIS data, 82 provinces, 149 cities, Philippine boundaries GeoJSON, open source mapping Philippines"
 >
 	<script type="application/ld+json" slot="schema" is:inline>
 		{
@@ -74,6 +74,16 @@ import Footer from '../components/Footer.astro';
 						"name": "Philippine Commute Fare Estimator",
 						"url": "https://mapaph.com/tools/fare-calculator",
 						"description": "Official LTFRB distance-based public transit fare calculator for Aircon Buses, Ordinary Buses, Modern Jeepneys, Traditional Jeepneys, and MRT/LRT."
+					}
+				},
+				{
+					"@type": "ListItem",
+					"position": 6,
+					"item": {
+						"@type": "WebApplication",
+						"name": "Philippine Walkability & 15-Minute Pedestrian Radius Map",
+						"url": "https://mapaph.com/tools/walkability",
+						"description": "Interactive pedestrian catchment calculator for 5, 10, and 15-minute walking radii across Philippine cities with step metrics and sidewalk standards."
 					}
 				}
 			]
