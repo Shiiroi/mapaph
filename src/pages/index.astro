@@ -17,7 +17,7 @@ import Footer from '../components/Footer.astro';
 <BaseLayout 
 	title="mapaPH — Open-Source Tools Based on the Philippine Map" 
 	description="mapaPH is an open-source hub of civic mapping tools, official Philippine Standard Geographic Code (PSGC) lookups, coordinate converters, and geographic datasets for the Philippines."
-	keywords="Philippine map, Philippine geospatial tools, PSGC lookup, Philippine Standard Geographic Code, Philippine zip codes, postal code Philippines, Philippine toll calculator, NLEX toll fee, SLEX toll rates, Skyway toll fee, TPLEX toll, SCTEX rates, CALAX toll, CCLEX, Autosweep RFID, Easytrip RFID, Philippine distance calculator, Manila to Cebu distance, Manila to Davao flight time, nautical miles Philippines, Batangas Calapan ferry, Philippine bus fare calculator, jeepney fare calculator, LTFRB fare matrix, MRT 3 fare calculator, LRT 1 fare table, Metro Manila rail map, beep card fare, Philippine walkability map, 15 minute city Philippines, PRS92 converter, WGS84 GPS, Philippine GIS data, 82 provinces, 149 cities, Philippine boundaries GeoJSON, open source mapping Philippines"
+	keywords="Philippine map, Philippine geospatial tools, PSGC lookup, Philippine Standard Geographic Code, Philippine zip codes, postal code Philippines, Philippine toll calculator, NLEX toll fee, SLEX toll rates, Skyway toll fee, TPLEX toll, SCTEX rates, CALAX toll, CCLEX, Autosweep RFID, Easytrip RFID, EDSA Carousel fare calculator, EDSA busway stops, Monumento to PITX bus, Philippine kilometer post, KM 0 Luneta Manila, DPWH kilometer post finder, Bataan Death March km markers, Philippine distance calculator, Manila to Cebu distance, Manila to Davao flight time, nautical miles Philippines, Batangas Calapan ferry, Philippine bus fare calculator, jeepney fare calculator, LTFRB fare matrix, MRT 3 fare calculator, LRT 1 fare table, Metro Manila rail map, beep card fare, Philippine walkability map, 15 minute city Philippines, PRS92 converter, WGS84 GPS, Philippine GIS data, 82 provinces, 149 cities, Philippine boundaries GeoJSON, open source mapping Philippines"
 >
 	<script type="application/ld+json" slot="schema" is:inline>
 		{
@@ -114,6 +114,26 @@ import Footer from '../components/Footer.astro';
 						"name": "Philippine Expressway Toll Calculator & Schematic Map",
 						"url": "https://mapaph.com/tools/toll-calculator",
 						"description": "Official Toll Regulatory Board (TRB) toll fee calculator for NLEX, SLEX, Skyway, SCTEX, TPLEX, CALAX, and CCLEX with schematic route strips and RFID guides."
+					}
+				},
+				{
+					"@type": "ListItem",
+					"position": 10,
+					"item": {
+						"@type": "WebApplication",
+						"name": "EDSA Carousel Busway Stop-by-Stop Fare & Route Map",
+						"url": "https://mapaph.com/tools/edsa-carousel",
+						"description": "Official LTFRB fare calculator, schematic transit strip, and geographic route map for the 24/7 EDSA Carousel busway connecting Monumento to PITX."
+					}
+				},
+				{
+					"@type": "ListItem",
+					"position": 11,
+					"item": {
+						"@type": "WebApplication",
+						"name": "Philippine Highway Kilometer Post & KM 0 Marker Locator",
+						"url": "https://mapaph.com/tools/kilometer-posts",
+						"description": "Search and inspect DPWH concrete milestone markers across MacArthur, Maharlika, Aguinaldo, Kennon highways, and the Bataan Death March."
 					}
 				}
 			]
