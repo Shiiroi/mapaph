@@ -457,11 +457,10 @@ const PRESETS = [
 				zoomControl: true
 			});
 
-			// Add CartoDB Positron / Voyager clean tiles
-			L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-				maxZoom: 19,
-				subdomains: 'abcd'
+			// 100% Free OpenStreetMap clean raster tiles (Zero API key required)
+			L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+				maxZoom: 19
 			}).addTo(map);
 
 			// Custom Leaflet Green Pin Marker
