@@ -19,7 +19,7 @@ const KM_ZERO_ORIGINS = [
 		elevation: '3 meters ASL',
 		lat: 14.5826,
 		lon: 120.9787,
-		corridors: ['MacArthur Highway (N2/N1)', 'Maharlika Highway (AH26/N1)', 'Manila South Road', 'Aguinaldo Highway (N419)', 'Kennon Road (N208)'],
+		corridors: ['MacArthur Highway (N2/N1)', 'Maharlika Highway (AH26/N1)', 'Manila South Road', 'Marilaque Highway (N68)', 'Manila East Road (N601)', 'Aguinaldo Highway (N419)', 'Kennon Road (N208)'],
 		history: 'Established in 1913 during the American Commonwealth under the Bureau of Public Works (now DPWH). Positioned directly across the José Rizal Monument as the singular geodetic reference point for all road distances across Luzon.'
 	},
 	{
@@ -185,14 +185,61 @@ const HIGHWAY_CORRIDORS = [
 			{ km: 88, town: 'Lubao', prov: 'Pampanga', landmark: 'Historic San Agustin Parish Church (Oldest in Pampanga)', destTop: 'SAN FDO 14', lat: 14.9400, lon: 120.6000 },
 			{ km: 102, town: 'San Fernando Station', prov: 'Pampanga', landmark: 'Historic San Fernando Railway Station (Transfer to Boxcars)', destTop: 'CAPAS DEATH', lat: 15.0300, lon: 120.6900 }
 		]
+	},
+	{
+		id: 'marilaque',
+		name: 'Marilaque Highway (Marikina–Infanta Highway / Route N68)',
+		region: 'Eastern Rizal & Sierra Madre',
+		originKm: 'KM 0 (Luneta, Manila)',
+		termini: 'Manila / Marikina ↔ Infanta (Quezon Pacific Port)',
+		totalKm: 118.0,
+		description: 'The iconic trans-Sierra Madre mountain highway cutting through Antipolo, Tanay, and the Rizal highlands before descending into the Pacific coast at Infanta.',
+		color: '#059669',
+		markers: [
+			{ km: 0, town: 'Luneta, City of Manila', prov: 'NCR', landmark: 'José Rizal Monument, Kilometer Zero Obelisk', destTop: 'MARIKINA 15', lat: 14.5826, lon: 120.9787 },
+			{ km: 15, town: 'Marikina City / Marcos Hwy', prov: 'NCR', landmark: 'Marikina Riverbanks, SM City Marikina, N59 Junction', destTop: 'MASINAG 4', lat: 14.6285, lon: 121.0850 },
+			{ km: 19, town: 'Masinag, Antipolo City', prov: 'Rizal', landmark: 'LRT-2 Antipolo Station, Masinag Junction / Sumulong link', destTop: 'COGEO 6', lat: 14.6235, lon: 121.1215 },
+			{ km: 25, town: 'Cogeo, Antipolo City', prov: 'Rizal', landmark: 'Cogeo Gate 2 Market, Transition to Sierra Madre foothills', destTop: 'BOSO-BOSO 5', lat: 14.6190, lon: 121.1710 },
+			{ km: 30, town: 'Boso-Boso, Antipolo City', prov: 'Rizal', landmark: 'Nuestra Señora de la Annunciata Parish (Oldest church ruins in Upper Antipolo)', destTop: 'BARAS 12', lat: 14.6280, lon: 121.2160 },
+			{ km: 42, town: 'Pinugay / Baras Junction', prov: 'Rizal', landmark: 'Teresa–Baras cutoff road, Teresa bypass junction', destTop: 'CUYAMBAY 11', lat: 14.6050, lon: 121.3020 },
+			{ km: 53, town: 'Cuyambay, Tanay', prov: 'Rizal', landmark: 'Masungi Georeserve area, Cloud 9 ridge vista, Treasure Mountain gateway', destTop: 'SAMPALOC 15', lat: 14.6020, lon: 121.3650 },
+			{ km: 68, town: 'Sampaloc, Tanay', prov: 'Rizal', landmark: 'Sampaloc Junction (Tanay Proper, Daranak Falls, Regina RICA link)', destTop: 'REAL 38', lat: 14.5880, lon: 121.3980 },
+			{ km: 82, town: 'Sierra Madre Overlook, Tanay', prov: 'Rizal', landmark: 'Jariel’s Peak, Mt. Daraitan junction, highest road elevation in Rizal', destTop: 'INFANTA 36', lat: 14.6250, lon: 121.4650 },
+			{ km: 98, town: 'Magsaysay / Real Border', prov: 'Quezon', landmark: 'Binuangan River Bridge, Pacific mountain descent', destTop: 'INFANTA 20', lat: 14.6650, lon: 121.5750 },
+			{ km: 118, town: 'Infanta Port, Infanta', prov: 'Quezon', landmark: 'Pacific Ocean Coastline, Dinahican Port to Polillo Island', destTop: 'POLILLO FERRY', lat: 14.7450, lon: 121.6500 }
+		]
+	},
+	{
+		id: 'manila_east',
+		name: 'Manila East Road (Rizal Lakeshore Artery / N601 & N60)',
+		region: 'Rizal Lakeshore Corridor',
+		originKm: 'KM 0 (Luneta, Manila)',
+		termini: 'Manila / Pasig ↔ Pililla & Famy (Laguna Border)',
+		totalKm: 68.0,
+		description: 'The historic circumferential eastern artery traversing Cainta, Taytay, Angono, Binangonan, Cardona, Morong, Baras, Tanay, and Pililla along the northern rim of Laguna de Bay.',
+		color: '#2563EB',
+		markers: [
+			{ km: 0, town: 'Luneta, City of Manila', prov: 'NCR', landmark: 'José Rizal Monument, Kilometer Zero Obelisk', destTop: 'CAINTA 16', lat: 14.5826, lon: 120.9787 },
+			{ km: 14, town: 'Pasig City / Rosario', prov: 'NCR', landmark: 'Rosario Bridge, Ortigas Ave Extension junction', destTop: 'CAINTA 2', lat: 14.5850, lon: 121.0850 },
+			{ km: 16, town: 'Cainta Junction', prov: 'Rizal', landmark: 'Our Lady of Light Parish, Valley Golf, Felix Avenue junction', destTop: 'TAYTAY 3', lat: 14.5780, lon: 121.1210 },
+			{ km: 19, town: 'Taytay Town Proper', prov: 'Rizal', landmark: 'St. John the Baptist Parish, Taytay Tiangge Garments Capital', destTop: 'ANGONO 7', lat: 14.5480, lon: 121.1320 },
+			{ km: 26, town: 'Angono (Art Capital)', prov: 'Rizal', landmark: 'Blanco Family Museum, Higantes Festival grounds, Petroglyphs gateway', destTop: 'BINANGONAN 6', lat: 14.5240, lon: 121.1550 },
+			{ km: 32, town: 'Binangonan Poblacion', prov: 'Rizal', landmark: 'Santa Ursula Parish, Binangonan Wharf to Talim Island', destTop: 'CARDONA 7', lat: 14.4650, lon: 121.1920 },
+			{ km: 39, town: 'Cardona', prov: 'Rizal', landmark: 'Cardona Coastal Strip, Laguna de Bay freshwater fish farming hubs', destTop: 'MORONG 6', lat: 14.4850, lon: 121.2280 },
+			{ km: 45, town: 'Morong Historic Town', prov: 'Rizal', landmark: 'St. Jerome Parish Church (Spanish Baroque Belltower), URS Morong', destTop: 'BARAS 4', lat: 14.5120, lon: 121.2380 },
+			{ km: 49, town: 'Baras Poblacion', prov: 'Rizal', landmark: 'St. Joseph Parish Church, Baras River Bridge', destTop: 'TANAY 5', lat: 14.5200, lon: 121.2650 },
+			{ km: 54, town: 'Tanay Town Center', prov: 'Rizal', landmark: 'San Ildefonso de Toledo Church, Tanay Town Park, Daranak Falls route', destTop: 'PILILLA 6', lat: 14.4980, lon: 121.2850 },
+			{ km: 60, town: 'Pililla Wind Farm Ridge', prov: 'Rizal', landmark: 'Pililla Windmill Viewpoint, Rizal–Laguna mountain crossover', destTop: 'FAMY 8', lat: 14.4750, lon: 121.3250 },
+			{ km: 68, town: 'Mabitac / Famy Junction', prov: 'Laguna', landmark: 'Rizal–Laguna Boundary, Gateway to Siniloan & Real', destTop: 'SINILOAN 4', lat: 14.4350, lon: 121.4350 }
+		]
 	}
 ];
 ---
 
 <BaseLayout
 	title="Philippine Highway Kilometer Post & KM 0 Marker Locator — mapaPH Tools"
-	description="Interactive locator and visualizer for Philippine Department of Public Works and Highways (DPWH) concrete kilometer posts and official Kilometer Zero monuments. Search milestone markers along MacArthur Highway, Maharlika Highway, Aguinaldo Highway, Kennon Road, and the Bataan Death March."
-	keywords="Philippine kilometer post finder, KM 0 Manila Luneta, Philippine highway markers, DPWH kilometer posts, MacArthur Highway km posts, Maharlika Highway km markers, Bataan Death March km markers, distance from Luneta KM 0, how to read Philippine KM posts"
+	description="Interactive locator and visualizer for Philippine Department of Public Works and Highways (DPWH) concrete kilometer posts and official Kilometer Zero monuments. Search milestone markers along MacArthur Highway, Maharlika Highway, Marilaque Highway (Rizal), Manila East Road, Aguinaldo Highway, Kennon Road, and the Bataan Death March."
+	keywords="Philippine kilometer post finder, KM 0 Manila Luneta, Philippine highway markers, DPWH kilometer posts, Marilaque highway km posts, Manila East Road Rizal, MacArthur Highway km posts, Maharlika Highway km markers, Bataan Death March km markers, distance from Luneta KM 0, how to read Philippine KM posts"
 >
 	<!-- Leaflet Stylesheet -->
 	<link
@@ -276,7 +323,7 @@ const HIGHWAY_CORRIDORS = [
 				Philippine Kilometer Post & KM 0 Locator
 			</h1>
 			<p class="font-sans text-base sm:text-lg text-mapa-ink/80 mt-2.5 max-w-3xl leading-relaxed">
-				Search, calculate, and inspect concrete DPWH highway milestone posts across the Philippines. Locate physical distance markers from Luzon's Kilometer Zero in Luneta, Marawi's Mindanao KM 0, provincial origins, and historic WWII memorial trail markers.
+				Search, calculate, and inspect concrete DPWH highway milestone posts across the Philippines. Locate physical distance markers from Luzon's Kilometer Zero in Luneta, Marilaque Highway across Rizal and the Sierra Madre, Manila East Road, Mindanao KM 0, and provincial origins.
 			</p>
 		</div>
 
