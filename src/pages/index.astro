@@ -17,7 +17,7 @@ import Footer from '../components/Footer.astro';
 <BaseLayout 
 	title="mapaPH — Open-Source Tools Based on the Philippine Map" 
 	description="mapaPH is an open-source hub of civic mapping tools, official Philippine Standard Geographic Code (PSGC) lookups, coordinate converters, and geographic datasets for the Philippines."
-	keywords="Philippine map, Philippine geospatial tools, PSGC lookup, Philippine Standard Geographic Code, Philippine zip codes, postal code Philippines, PHLPost zip codes, PRS92 converter, WGS84 GPS, Philippine GIS data, 82 provinces, 149 cities, Philippine boundaries GeoJSON, open source mapping Philippines"
+	keywords="Philippine map, Philippine geospatial tools, PSGC lookup, Philippine Standard Geographic Code, Philippine zip codes, postal code Philippines, Philippine bus fare calculator, jeepney fare calculator, LTFRB fare matrix, PRS92 converter, WGS84 GPS, Philippine GIS data, 82 provinces, 149 cities, Philippine boundaries GeoJSON, open source mapping Philippines"
 >
 	<script type="application/ld+json" slot="schema" is:inline>
 		{
@@ -64,6 +64,16 @@ import Footer from '../components/Footer.astro';
 						"name": "Philippine ZIP Code Directory",
 						"url": "https://mapaph.com/tools/zip-codes",
 						"description": "Instant search and 1-click copy directory for official 4-digit Philippine postal codes across Metro Manila and all 82 provinces."
+					}
+				},
+				{
+					"@type": "ListItem",
+					"position": 5,
+					"item": {
+						"@type": "WebApplication",
+						"name": "Philippine Commute Fare Estimator",
+						"url": "https://mapaph.com/tools/fare-calculator",
+						"description": "Official LTFRB distance-based public transit fare calculator for Aircon Buses, Ordinary Buses, Modern Jeepneys, Traditional Jeepneys, and MRT/LRT."
 					}
 				}
 			]
