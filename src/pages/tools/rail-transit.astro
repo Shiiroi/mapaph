@@ -1,0 +1,1122 @@
+---
+/**
+ * @file rail-transit.astro
+ * @description Interactive Metro Manila Rail Transit Map, Station-to-Station Fare Calculator, and Transfer Guide.
+ * Covers LRT-1 (Green), LRT-2 (Purple), and MRT-3 (Blue) with official DOTr/LRTA fare tables, travel times, and transfer paths.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+
+// Structured line data
+const RAIL_LINES = [
+	{
+		id: 'lrt1',
+		name: 'LRT Line 1',
+		operator: 'LRTC / Light Rail Manila Corporation (LRMC)',
+		color: '#00843D',
+		bgLight: 'bg-emerald-500/10 text-emerald-800 border-emerald-500/30',
+		terminals: 'Fernando Poe Jr. (North) ↔ Dr. Santos / Baclaran (South)',
+		trains: 'Light Rail Vehicles (1G, 2G, 3G, 4G CAF)',
+		stationsCount: 25,
+		operatingHours: '4:30 AM – 10:15 PM'
+	},
+	{
+		id: 'mrt3',
+		name: 'MRT Line 3',
+		operator: 'Department of Transportation (DOTr MRT-3)',
+		color: '#0055A5',
+		bgLight: 'bg-blue-500/10 text-blue-800 border-blue-500/30',
+		terminals: 'North Avenue ↔ Taft Avenue',
+		trains: 'ČKD Tatra RT8D5M / Dalian 8MLB',
+		stationsCount: 13,
+		operatingHours: '4:36 AM – 10:11 PM'
+	},
+	{
+		id: 'lrt2',
+		name: 'LRT Line 2',
+		operator: 'Light Rail Transit Authority (LRTA)',
+		color: '#6F2C91',
+		bgLight: 'bg-purple-500/10 text-purple-800 border-purple-500/30',
+		terminals: 'Recto (Manila) ↔ Antipolo (Rizal)',
+		trains: 'Rotem Heavy Rail EMUs',
+		stationsCount: 13,
+		operatingHours: '5:00 AM – 9:30 PM'
+	}
+];
+
+// Major Transfer Hubs
+const TRANSFER_HUBS = [
+	{
+		name: 'EDSA – Taft Interchange',
+		lines: ['LRT-1', 'MRT-3', 'EDSA Busway'],
+		walkTime: '3–5 mins',
+		walkDistance: '200 meters',
+		description: 'Connected via covered elevated pedestrian bridge between LRT-1 EDSA station and MRT-3 Taft Avenue mezzanine level.'
+	},
+	{
+		name: 'Doroteo Jose – Recto Walkway',
+		lines: ['LRT-1', 'LRT-2'],
+		walkTime: '4–6 mins',
+		walkDistance: '240 meters',
+		description: 'Direct elevated, weather-proof footbridge spanning Rizal Avenue and Recto Avenue connecting LRT-1 Doroteo Jose and LRT-2 Recto station concourse.'
+	},
+	{
+		name: 'Araneta Center-Cubao Hub',
+		lines: ['MRT-3', 'LRT-2'],
+		walkTime: '5–7 mins',
+		walkDistance: '350 meters',
+		description: 'Connected through Farmers Plaza and Gateway Mall indoor air-conditioned walkways between MRT-3 Cubao and LRT-2 Cubao station.'
+	},
+	{
+		name: 'North Avenue Grand Central Area',
+		lines: ['MRT-3', 'LRT-1 (Planned Unified)', 'EDSA Busway'],
+		walkTime: '3–6 mins',
+		walkDistance: '250 meters',
+		description: 'North terminal hub connecting MRT-3 North Avenue concourse to TriNoma, SM North EDSA, and the EDSA Carousel Busway terminal.'
+	}
+];
+---
+
+<BaseLayout
+	title="Metro Manila Rail Transit Map & Station Fare Guide (LRT-1, LRT-2, MRT-3) — mapaPH Tools"
+	description="Interactive Metro Manila train map and station-to-station fare calculator for LRT-1, LRT-2, and MRT-3. Calculate single journey and beep card fares, travel times, transfer points, and operating hours."
+	keywords="MRT 3 fare calculator, LRT 1 fare matrix, LRT 2 fare table, Metro Manila train map, MRT station list, LRT transfer stations, beep card fares, Doroteo Jose Recto transfer, EDSA Taft transfer, Cubao MRT LRT walkway, train operating hours Manila"
+>
+	<!-- Leaflet Stylesheet -->
+	<link
+		rel="stylesheet"
+		href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+		integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+		crossorigin=""
+		slot="schema"
+	/>
+
+	<script type="application/ld+json" slot="schema" is:inline>
+		{
+			"@context": "https://schema.org",
+			"@graph": [
+				{
+					"@type": "WebApplication",
+					"name": "Metro Manila Rail Transit Map & Station Fare Calculator",
+					"url": "https://mapaph.com/tools/rail-transit",
+					"applicationCategory": "Public Transit & Commuter Utility",
+					"operatingSystem": "All",
+					"description": "Interactive transit routing and fare estimation utility for Metro Manila rail lines (LRT-1, LRT-2, MRT-3) with official DOTr/LRTA fare schedules.",
+					"provider": {
+						"@type": "Organization",
+						"name": "mapaPH",
+						"url": "https://mapaph.com"
+					}
+				},
+				{
+					"@type": "FAQPage",
+					"mainEntity": [
+						{
+							"@type": "Question",
+							"name": "How much does it cost to ride MRT-3 and LRT in Metro Manila?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "For MRT-3, fares range from ₱13 (1 to 2 stations) to ₱28 (end-to-end North Ave to Taft Ave). For LRT-1, stored value (beep) fares start at ₱15 base boarding fare plus ₱1.21/km (up to ₱35 to Baclaran and ₱45 to Dr. Santos). For LRT-2, fares range from ₱14 to ₱33. Single Journey Tickets (SJT) are rounded to the nearest ₱5."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "How do I transfer between MRT-3 and LRT-1?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "The primary transfer point is at Taft Avenue / EDSA. Commuters exit MRT-3 Taft Avenue station and walk approximately 200 meters across the covered elevated footbridge directly into LRT-1 EDSA station. You will need to tap out of MRT-3 and tap into LRT-1."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "How do I transfer between LRT-1 and LRT-2?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "Commuters transfer between LRT-1 Doroteo Jose station and LRT-2 Recto station using the dedicated 240-meter elevated pedestrian walkway. The walkway is fully covered and takes about 4 minutes to walk."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "Are students, seniors, and PWDs entitled to discounts on LRT and MRT?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "Yes. Under RA 11314 (Student Fare Discount Act), RA 9994 (Expanded Senior Citizens Act), and RA 10754 (Persons with Disability Act), eligible passengers receive a mandatory 20% discount on all lines using special concessionary beep cards or upon presenting a valid ID at ticket booths."
+							}
+						}
+					]
+				}
+			]
+		}
+	</script>
+
+	<Navbar />
+
+	<main class="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-mapa-ink">
+		<!-- Header -->
+		<div class="max-w-3xl mb-8">
+			<div class="flex items-center gap-2 mb-2">
+				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
+					Transit & Mobility Utility
+				</span>
+				<span class="font-sans text-xs text-mapa-clay">
+					Official DOTr & LRTA Matrices
+				</span>
+			</div>
+			<h1 class="text-3xl sm:text-4xl font-extrabold text-mapa-green font-serif tracking-tight">
+				Metro Manila Rail Transit Map & Fare Guide
+			</h1>
+			<p class="font-sans text-sm sm:text-base text-mapa-ink/80 mt-2 leading-relaxed">
+				Interactive station-to-station fare calculator, line transfer guide, and system map for LRT Line 1, LRT Line 2, and MRT Line 3. Computes regular cash fares, stored value beep™ card savings, 20% statutory discounts, and real travel times.
+			</p>
+		</div>
+
+		<!-- Main 2-Column App Grid -->
+		<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+			
+			<!-- Left Column: Interactive Map & Station Explorer (7 cols) -->
+			<div class="lg:col-span-7 flex flex-col gap-6 font-sans">
+				<!-- Map Container Card -->
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs flex flex-col">
+					<!-- Map Header Bar -->
+					<div class="p-4 border-b border-mapa-contour/50 flex flex-wrap items-center justify-between gap-3 bg-mapa-canvas">
+						<div class="flex items-center gap-2">
+							<span class="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
+							<span class="text-xs font-bold uppercase tracking-wider text-mapa-ink">
+								System Network Visualizer
+							</span>
+						</div>
+						<!-- Line Filter Toggles -->
+						<div class="flex items-center gap-1.5 text-xs">
+							<button
+								id="toggle-lrt1"
+								class="px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all bg-emerald-600 text-white border-emerald-700 shadow-xs"
+								data-line="lrt1"
+							>
+								LRT-1
+							</button>
+							<button
+								id="toggle-mrt3"
+								class="px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all bg-blue-600 text-white border-blue-700 shadow-xs"
+								data-line="mrt3"
+							>
+								MRT-3
+							</button>
+							<button
+								id="toggle-lrt2"
+								class="px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all bg-purple-700 text-white border-purple-800 shadow-xs"
+								data-line="lrt2"
+							>
+								LRT-2
+							</button>
+						</div>
+					</div>
+
+					<!-- Leaflet Map Canvas -->
+					<div
+						id="rail-map"
+						class="w-full h-[460px] sm:h-[520px] bg-stone-100 z-0 relative"
+						aria-label="Interactive Metro Manila rail transit map"
+					></div>
+
+					<!-- Map Legend & Helper -->
+					<div class="p-3.5 bg-mapa-canvas border-t border-mapa-contour/50 flex flex-wrap items-center justify-between text-xs text-mapa-ink/70 gap-2">
+						<div class="flex items-center gap-3">
+							<span class="inline-flex items-center gap-1">
+								<span class="w-3 h-1 rounded-full bg-[#00843D]"></span>
+								<span>LRT-1</span>
+							</span>
+							<span class="inline-flex items-center gap-1">
+								<span class="w-3 h-1 rounded-full bg-[#0055A5]"></span>
+								<span>MRT-3</span>
+							</span>
+							<span class="inline-flex items-center gap-1">
+								<span class="w-3 h-1 rounded-full bg-[#6F2C91]"></span>
+								<span>LRT-2</span>
+							</span>
+							<span class="inline-flex items-center gap-1">
+								<span class="w-2.5 h-2.5 rounded-full border-2 border-amber-500 bg-white"></span>
+								<span>Transfer Hub</span>
+							</span>
+						</div>
+						<span class="text-[11px] text-mapa-clay italic">
+							Click any station pin to set origin/destination
+						</span>
+					</div>
+				</div>
+
+				<!-- Major Transfer Hubs Cards -->
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-5 shadow-xs">
+					<h3 class="font-serif text-lg font-bold text-mapa-ink mb-3">
+						Key Metro Manila Rail Interchange Points
+					</h3>
+					<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+						{TRANSFER_HUBS.map(hub => (
+							<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-3 flex flex-col justify-between">
+								<div>
+									<div class="flex items-center justify-between gap-2 mb-1.5">
+										<h4 class="font-bold text-mapa-ink">{hub.name}</h4>
+										<span class="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-800 text-[10px] font-semibold">
+											{hub.walkTime}
+										</span>
+									</div>
+									<div class="flex items-center gap-1.5 mb-2">
+										{hub.lines.map(line => (
+											<span class="px-1.5 py-0.5 rounded bg-mapa-canvas-dark border border-mapa-contour/60 text-[10px] text-mapa-ink/80">
+												{line}
+											</span>
+										))}
+									</div>
+									<p class="text-mapa-ink/75 leading-relaxed text-[11px]">
+										{hub.description}
+									</p>
+								</div>
+								<div class="mt-2.5 pt-2 border-t border-mapa-contour/40 text-[10px] text-mapa-clay">
+									Approx. walking span: {hub.walkDistance}
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+			</div>
+
+			<!-- Right Column: Fare Calculator & Itinerary (5 cols) -->
+			<div class="lg:col-span-5 flex flex-col gap-6 font-sans">
+				
+				<!-- Calculator Input Card -->
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-xs">
+					<h2 class="font-serif text-xl font-bold text-mapa-ink mb-4 pb-2 border-b border-mapa-contour/50">
+						Station-to-Station Route Planner
+					</h2>
+
+					<!-- Origin Selection -->
+					<div class="mb-4">
+						<label for="origin-select" class="block text-xs font-bold uppercase tracking-wider text-mapa-clay mb-1.5">
+							Origin Station (Where are you boarding?)
+						</label>
+						<select
+							id="origin-select"
+							class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green"
+						>
+							<optgroup label="LRT Line 1 (Green)">
+								<!-- Populated dynamically via JS -->
+							</optgroup>
+						</select>
+					</div>
+
+					<!-- Swap Button -->
+					<div class="flex justify-center -my-1 relative z-10">
+						<button
+							id="swap-stations-btn"
+							type="button"
+							class="bg-mapa-canvas hover:bg-mapa-canvas-dark border border-mapa-contour rounded-full p-2 text-mapa-ink/70 hover:text-mapa-green transition-all shadow-xs"
+							aria-label="Swap origin and destination stations"
+						>
+							<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+							</svg>
+						</button>
+					</div>
+
+					<!-- Destination Selection -->
+					<div class="mb-5">
+						<label for="destination-select" class="block text-xs font-bold uppercase tracking-wider text-mapa-clay mb-1.5">
+							Destination Station (Where are you getting off?)
+						</label>
+						<select
+							id="destination-select"
+							class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green"
+						>
+							<!-- Populated dynamically via JS -->
+						</select>
+					</div>
+
+					<!-- Discount Switch -->
+					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-3.5 mb-5 flex items-center justify-between gap-3">
+						<div>
+							<div class="text-xs font-bold text-mapa-ink">
+								20% Statutory Discount
+							</div>
+							<div class="text-[11px] text-mapa-clay">
+								Students (RA 11314), Seniors (RA 9994), PWDs (RA 10754)
+							</div>
+						</div>
+						<label class="relative inline-flex items-center cursor-pointer shrink-0">
+							<input type="checkbox" id="discount-toggle" class="sr-only peer" />
+							<div class="w-11 h-6 bg-stone-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-mapa-green"></div>
+						</label>
+					</div>
+
+					<!-- Results Panel -->
+					<div id="results-card" class="bg-mapa-canvas border border-mapa-contour rounded-xl p-4 flex flex-col gap-4">
+						
+						<!-- Fare Summary Header -->
+						<div class="flex items-center justify-between pb-3 border-b border-mapa-contour/40">
+							<div>
+								<span class="text-[11px] font-bold uppercase tracking-wider text-mapa-clay">
+									Estimated Fare
+								</span>
+								<div class="flex items-baseline gap-2 mt-0.5">
+									<span id="fare-beep" class="text-3xl font-extrabold text-mapa-green font-serif">
+										₱28.00
+									</span>
+									<span id="fare-type-label" class="text-xs font-medium text-mapa-ink/70">
+										beep™ card
+									</span>
+								</div>
+							</div>
+							<div class="text-right">
+								<span class="text-[11px] text-mapa-clay block">Single Ticket (Cash)</span>
+								<span id="fare-sjt" class="text-lg font-bold text-mapa-ink font-serif">
+									₱30.00
+								</span>
+							</div>
+						</div>
+
+						<!-- Metric Badges: Time, Stations, Distance -->
+						<div class="grid grid-cols-3 gap-2 text-center">
+							<div class="bg-mapa-canvas-dark border border-mapa-contour/50 rounded-lg p-2">
+								<span class="block text-[10px] uppercase font-bold text-mapa-clay">Travel Time</span>
+								<span id="metric-time" class="text-sm font-extrabold text-mapa-ink">~32 mins</span>
+							</div>
+							<div class="bg-mapa-canvas-dark border border-mapa-contour/50 rounded-lg p-2">
+								<span class="block text-[10px] uppercase font-bold text-mapa-clay">Stations</span>
+								<span id="metric-stops" class="text-sm font-extrabold text-mapa-ink">13 stops</span>
+							</div>
+							<div class="bg-mapa-canvas-dark border border-mapa-contour/50 rounded-lg p-2">
+								<span class="block text-[10px] uppercase font-bold text-mapa-clay">Distance</span>
+								<span id="metric-distance" class="text-sm font-extrabold text-mapa-ink">16.9 km</span>
+							</div>
+						</div>
+
+						<!-- Transfer Alert (hidden when same line) -->
+						<div id="transfer-callout" class="hidden p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs text-amber-900 leading-relaxed">
+							<!-- Populated via JS -->
+						</div>
+
+						<!-- Step-by-Step Route Legs -->
+						<div class="pt-2">
+							<span class="text-[11px] font-bold uppercase tracking-wider text-mapa-clay block mb-2">
+								Journey Step-by-Step
+							</span>
+							<div id="route-steps-list" class="space-y-2 text-xs">
+								<!-- Populated dynamically via JS -->
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Popular Commuter Routes Quick Selector -->
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-5 shadow-xs">
+					<h3 class="text-xs font-bold uppercase tracking-wider text-mapa-clay mb-3">
+						Popular Commuter Corridors
+					</h3>
+					<div class="flex flex-wrap gap-2 text-xs">
+						<button
+							class="preset-btn px-2.5 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-all text-left"
+							data-origin="mrt3_north"
+							data-dest="mrt3_taft"
+						>
+							<span class="font-bold text-mapa-ink block">MRT-3 Full Line</span>
+							<span class="text-[10px] text-mapa-clay">North Ave ↔ Taft Ave</span>
+						</button>
+						<button
+							class="preset-btn px-2.5 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-all text-left"
+							data-origin="lrt1_roosevelt"
+							data-dest="lrt1_baclaran"
+						>
+							<span class="font-bold text-mapa-ink block">LRT-1 Classic Trunk</span>
+							<span class="text-[10px] text-mapa-clay">FPJ ↔ Baclaran</span>
+						</button>
+						<button
+							class="preset-btn px-2.5 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-all text-left"
+							data-origin="lrt2_recto"
+							data-dest="lrt2_antipolo"
+						>
+							<span class="font-bold text-mapa-ink block">LRT-2 East-West</span>
+							<span class="text-[10px] text-mapa-clay">Recto ↔ Antipolo</span>
+						</button>
+						<button
+							class="preset-btn px-2.5 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-all text-left"
+							data-origin="lrt1_central"
+							data-dest="mrt3_ayala"
+						>
+							<span class="font-bold text-mapa-ink block">Manila to Makati CBD</span>
+							<span class="text-[10px] text-mapa-clay">Central ↔ Ayala (Transfer)</span>
+						</button>
+						<button
+							class="preset-btn px-2.5 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-all text-left"
+							data-origin="lrt2_katipunan"
+							data-dest="mrt3_ortigas"
+						>
+							<span class="font-bold text-mapa-ink block">Katipunan to Ortigas</span>
+							<span class="text-[10px] text-mapa-clay">Transfer at Cubao</span>
+						</button>
+					</div>
+				</div>
+
+				<!-- Lines Overview Badge Grid -->
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-5 shadow-xs">
+					<h3 class="text-xs font-bold uppercase tracking-wider text-mapa-clay mb-3">
+						Lines At A Glance
+					</h3>
+					<div class="space-y-2.5 text-xs">
+						{RAIL_LINES.map(line => (
+							<div class="bg-mapa-canvas border border-mapa-contour/60 rounded-xl p-3 flex items-center justify-between">
+								<div class="flex items-center gap-2.5">
+									<span class="w-3.5 h-3.5 rounded-full shrink-0" style={`background-color: ${line.color};`}></span>
+									<div>
+										<h4 class="font-bold text-mapa-ink">{line.name}</h4>
+										<p class="text-[11px] text-mapa-clay">{line.terminals}</p>
+									</div>
+								</div>
+								<div class="text-right shrink-0">
+									<span class="text-[10px] text-mapa-clay block">Hours</span>
+									<span class="font-semibold text-mapa-ink text-[11px]">{line.operatingHours}</span>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<!-- Comprehensive Editorial & Regulatory Reference Section -->
+		<article class="mt-16 max-w-4xl mx-auto font-sans border-t border-mapa-contour/60 pt-12 space-y-10">
+			
+			<!-- Section 1: Official Fare Formulas -->
+			<section>
+				<h2 class="font-serif text-2xl font-bold text-mapa-ink tracking-tight mb-4">
+					1. Official DOTr & LRTA Fare Determination Matrices
+				</h2>
+				<p class="text-sm text-mapa-ink/80 leading-relaxed mb-4">
+					Rail transit fares in the Greater Manila Area are statutory public tariffs regulated by the <strong>Department of Transportation (DOTr)</strong> and the <strong>Light Rail Transit Authority (LRTA)</strong>. Fares are constructed using a two-part tariff consisting of a <em>boarding fee</em> (flagdown rate) plus a distance-based <em>per-kilometer rate</em>.
+				</p>
+				<div class="overflow-x-auto border border-mapa-contour/80 rounded-xl bg-mapa-canvas mb-4 shadow-xs">
+					<table class="w-full text-left text-xs border-collapse">
+						<thead>
+							<tr class="border-b border-mapa-contour bg-mapa-canvas-dark font-serif text-mapa-ink">
+								<th class="p-3 font-bold">Transit System</th>
+								<th class="p-3 font-bold">Boarding Base Fare</th>
+								<th class="p-3 font-bold">Per-Km Rate</th>
+								<th class="p-3 font-bold">beep™ Card Range</th>
+								<th class="p-3 font-bold">Single Journey Ticket (SJT)</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/80">
+							<tr>
+								<td class="p-3 font-semibold text-emerald-800">LRT Line 1</td>
+								<td class="p-3">₱15.00</td>
+								<td class="p-3">₱1.21 / km</td>
+								<td class="p-3">₱15.00 – ₱45.00</td>
+								<td class="p-3">Rounded to nearest ₱5.00 (₱15–₱45)</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-semibold text-blue-800">MRT Line 3</td>
+								<td class="p-3">₱13.00</td>
+								<td class="p-3">₱1.00 / station tier</td>
+								<td class="p-3">₱13.00 – ₱28.00</td>
+								<td class="p-3">₱13.00 – ₱28.00 exact station tiers</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-semibold text-purple-800">LRT Line 2</td>
+								<td class="p-3">₱14.00</td>
+								<td class="p-3">₱1.21 / km</td>
+								<td class="p-3">₱14.00 – ₱33.00</td>
+								<td class="p-3">Rounded to nearest ₱5.00 (₱15–₱35)</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<p class="text-xs text-mapa-clay leading-relaxed">
+					<em>Note:</em> Single Journey Tickets (paper magnetics / QR tokens) are rounded up to the nearest 5-peso denomination under LRTA guidelines to simplify cash handling at passenger ticket sales offices (TSO). Using an electronic stored-value beep™ card guarantees the exact statutory centavo computation and avoids token queues.
+				</p>
+			</section>
+
+			<!-- Section 2: Statutory 20% Discounts -->
+			<section>
+				<h2 class="font-serif text-2xl font-bold text-mapa-ink tracking-tight mb-4">
+					2. Statutory 20% Discount Rights (Students, Seniors, PWDs)
+				</h2>
+				<p class="text-sm text-mapa-ink/80 leading-relaxed mb-4">
+					By national law, all public rail transit operators in the Philippines must provide a 20% discount on standard commuter tariffs:
+				</p>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4">
+						<h3 class="font-bold text-mapa-ink text-sm mb-1.5">Students (RA 11314)</h3>
+						<p class="text-mapa-ink/75 leading-relaxed">
+							Applies to all Filipino students from primary to undergraduate tertiary and technical-vocational levels. Valid <strong>365 days a year</strong> including weekends, semestral breaks, and national holidays.
+						</p>
+					</div>
+					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4">
+						<h3 class="font-bold text-mapa-ink text-sm mb-1.5">Senior Citizens (RA 9994)</h3>
+						<p class="text-mapa-ink/75 leading-relaxed">
+							All Filipino citizens aged 60 years and above are entitled to 20% off all rail fares and exemption from value-added tax upon showing an OSCA ID or valid Philippine passport.
+						</p>
+					</div>
+					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4">
+						<h3 class="font-bold text-mapa-ink text-sm mb-1.5">Persons with Disabilities (RA 10754)</h3>
+						<p class="text-mapa-ink/75 leading-relaxed">
+							Eligible PWDs presenting a valid PDAO (Persons with Disability Affairs Office) ID or National Council on Disability Affairs (NCDA) card receive 20% discount and priority car access.
+						</p>
+					</div>
+				</div>
+			</section>
+
+			<!-- Section 3: beep Card Commuter Guide -->
+			<section>
+				<h2 class="font-serif text-2xl font-bold text-mapa-ink tracking-tight mb-4">
+					3. beep™ Card Rules, Expiration, and Reloading
+				</h2>
+				<p class="text-sm text-mapa-ink/80 leading-relaxed mb-4">
+					The contactless contactless smart card system (operated by AF Payments Inc.) is interoperable across LRT-1, LRT-2, MRT-3, EDSA Carousel buses, BGC Bus, and select modern PUVs:
+				</p>
+				<ul class="space-y-3 text-xs text-mapa-ink/80 list-disc pl-5 leading-relaxed">
+					<li>
+						<strong>Card Validity:</strong> Standard blue beep cards are valid for <strong>4 years</strong> from issuance. You can extend an expiring card for an additional 1 year at any station Teller Ticket Booth for a nominal ₱10 extension fee.
+					</li>
+					<li>
+						<strong>Concessionary Cards:</strong> White/Gold Concessionary beep cards are personalized for Seniors and PWDs, encoding the 20% discount automatically at turnstiles without needing ticket window verification on each trip.
+					</li>
+					<li>
+						<strong>Minimum Balance Requirement:</strong> To enter turnstiles, a card must have at least the minimum boarding fee of the line (₱15 on LRT-1, ₱13 on MRT-3, ₱14 on LRT-2). If your exit station incurs a higher fare than your balance, the turnstile will reject exit until you reload at the station excess fare booth.
+					</li>
+				</ul>
+			</section>
+
+			<!-- Section 4: Baggage, Bicycles & Commuter Etiquette -->
+			<section>
+				<h2 class="font-serif text-2xl font-bold text-mapa-ink tracking-tight mb-4">
+					4. Luggage Limits, Folding Bicycles, and Security Regulations
+				</h2>
+				<div class="space-y-3 text-xs text-mapa-ink/80 leading-relaxed">
+					<p>
+						<strong>Luggage Dimensions:</strong> Bags or cargo measuring over 2 feet by 2 feet by 2 feet (60 cm x 60 cm x 60 cm) or weighing more than 30 kilograms are prohibited from boarding during peak commute hours.
+					</p>
+					<p>
+						<strong>Folding Bikes and Kick Scooters:</strong> Under DOTr Memorandum Circular, folding bicycles with wheels not exceeding <strong>20 inches</strong> (406 mm / 451 mm) and folded kick scooters are permitted on LRT-1, LRT-2, and MRT-3. Bikes must be folded before entering the station security inspection checkpoint.
+					</p>
+					<p>
+						<strong>Priority Passenger Car:</strong> The first car of every train is legally reserved for Senior Citizens, Persons with Disabilities, Pregnant Women, and passengers traveling with toddlers/infants.
+					</p>
+				</div>
+			</section>
+
+		</article>
+	</main>
+
+	<Footer />
+
+	<!-- Leaflet JS from CDN -->
+	<script
+		is:inline
+		src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+		integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+		crossorigin=""
+	></script>
+
+	<!-- Interactive Station & Fare Logic -->
+	<script is:inline>
+		(function () {
+			// Complete Station Geographic & Matrix Data
+			const STATIONS_DATA = {
+				lrt1: [
+					{ id: 'lrt1_fpj', name: 'Fernando Poe Jr. (Roosevelt)', lat: 14.6576, lon: 121.0211, km: 0.0, isTransfer: false },
+					{ id: 'lrt1_balintawak', name: 'Balintawak', lat: 14.6574, lon: 121.0042, km: 1.8, isTransfer: false },
+					{ id: 'lrt1_monumento', name: 'Monumento', lat: 14.6543, lon: 120.9839, km: 4.1, isTransfer: false },
+					{ id: 'lrt1_5th_ave', name: '5th Avenue', lat: 14.6444, lon: 120.9836, km: 5.2, isTransfer: false },
+					{ id: 'lrt1_r_papa', name: 'R. Papa', lat: 14.6361, lon: 120.9831, km: 6.2, isTransfer: false },
+					{ id: 'lrt1_abad_santos', name: 'Abad Santos', lat: 14.6306, lon: 120.9814, km: 6.9, isTransfer: false },
+					{ id: 'lrt1_blumentritt', name: 'Blumentritt', lat: 14.6226, lon: 120.9831, km: 7.8, isTransfer: false },
+					{ id: 'lrt1_tayuman', name: 'Tayuman', lat: 14.6167, lon: 120.9831, km: 8.5, isTransfer: false },
+					{ id: 'lrt1_bambang', name: 'Bambang', lat: 14.6083, lon: 120.9822, km: 9.1, isTransfer: false },
+					{ id: 'lrt1_doroteo_jose', name: 'Doroteo Jose (Transfer LRT-2)', lat: 14.6053, lon: 120.9819, km: 9.8, isTransfer: true, transferTo: 'lrt2_recto' },
+					{ id: 'lrt1_carriedo', name: 'Carriedo', lat: 14.5997, lon: 120.9814, km: 10.5, isTransfer: false },
+					{ id: 'lrt1_central', name: 'Central Terminal', lat: 14.5928, lon: 120.9817, km: 11.2, isTransfer: false },
+					{ id: 'lrt1_un_ave', name: 'United Nations', lat: 14.5828, lon: 120.9844, km: 12.4, isTransfer: false },
+					{ id: 'lrt1_pedro_gil', name: 'Pedro Gil', lat: 14.5767, lon: 120.9875, km: 13.2, isTransfer: false },
+					{ id: 'lrt1_quirino', name: 'Quirino', lat: 14.5703, lon: 120.9917, km: 14.0, isTransfer: false },
+					{ id: 'lrt1_vito_cruz', name: 'Vito Cruz', lat: 14.5636, lon: 120.9947, km: 14.8, isTransfer: false },
+					{ id: 'lrt1_gil_puyat', name: 'Gil Puyat (Buendia)', lat: 14.5542, lon: 120.9972, km: 15.8, isTransfer: false },
+					{ id: 'lrt1_libertad', name: 'Libertad', lat: 14.5478, lon: 120.9986, km: 16.6, isTransfer: false },
+					{ id: 'lrt1_edsa', name: 'EDSA (Transfer MRT-3)', lat: 14.5389, lon: 121.0006, km: 17.6, isTransfer: true, transferTo: 'mrt3_taft' },
+					{ id: 'lrt1_baclaran', name: 'Baclaran', lat: 14.5342, lon: 120.9983, km: 18.2, isTransfer: false },
+					{ id: 'lrt1_redemptorist', name: 'Redemptorist (Aseana)', lat: 14.5290, lon: 120.9950, km: 19.3, isTransfer: false },
+					{ id: 'lrt1_mia_road', name: 'MIA Road', lat: 14.5200, lon: 120.9920, km: 20.6, isTransfer: false },
+					{ id: 'lrt1_asia_world', name: 'Asia World (PITX)', lat: 14.5120, lon: 120.9910, km: 21.8, isTransfer: false },
+					{ id: 'lrt1_ninoy_aquino', name: 'Ninoy Aquino', lat: 14.5030, lon: 120.9925, km: 23.1, isTransfer: false },
+					{ id: 'lrt1_dr_santos', name: 'Dr. Santos (Sucat)', lat: 14.4920, lon: 120.9950, km: 24.5, isTransfer: false }
+				],
+				mrt3: [
+					{ id: 'mrt3_north', name: 'North Avenue', lat: 14.6531, lon: 121.0322, km: 0.0, isTransfer: true },
+					{ id: 'mrt3_q_ave', name: 'Quezon Avenue', lat: 14.6425, lon: 121.0383, km: 1.2, isTransfer: false },
+					{ id: 'mrt3_kamuning', name: 'GMA-Kamuning', lat: 14.6353, lon: 121.0433, km: 2.2, isTransfer: false },
+					{ id: 'mrt3_cubao', name: 'Araneta Center-Cubao (Transfer LRT-2)', lat: 14.6194, lon: 121.0519, km: 4.1, isTransfer: true, transferTo: 'lrt2_cubao' },
+					{ id: 'mrt3_santolan', name: 'Santolan-Annapolis', lat: 14.6078, lon: 121.0564, km: 5.6, isTransfer: false },
+					{ id: 'mrt3_ortigas', name: 'Ortigas', lat: 14.5878, lon: 121.0567, km: 7.9, isTransfer: false },
+					{ id: 'mrt3_shaw', name: 'Shaw Boulevard', lat: 14.5811, lon: 121.0536, km: 8.7, isTransfer: false },
+					{ id: 'mrt3_boni', name: 'Boni', lat: 14.5739, lon: 121.0481, km: 9.7, isTransfer: false },
+					{ id: 'mrt3_guadalupe', name: 'Guadalupe', lat: 14.5672, lon: 121.0456, km: 10.5, isTransfer: false },
+					{ id: 'mrt3_buendia', name: 'Buendia', lat: 14.5542, lon: 121.0347, km: 12.5, isTransfer: false },
+					{ id: 'mrt3_ayala', name: 'Ayala', lat: 14.5492, lon: 121.0281, km: 13.4, isTransfer: false },
+					{ id: 'mrt3_magallanes', name: 'Magallanes', lat: 14.5422, lon: 121.0194, km: 14.6, isTransfer: false },
+					{ id: 'mrt3_taft', name: 'Taft Avenue (Transfer LRT-1)', lat: 14.5375, lon: 121.0006, km: 16.9, isTransfer: true, transferTo: 'lrt1_edsa' }
+				],
+				lrt2: [
+					{ id: 'lrt2_recto', name: 'Recto (Transfer LRT-1)', lat: 14.6036, lon: 120.9844, km: 0.0, isTransfer: true, transferTo: 'lrt1_doroteo_jose' },
+					{ id: 'lrt2_legarda', name: 'Legarda', lat: 14.5997, lon: 120.9925, km: 1.1, isTransfer: false },
+					{ id: 'lrt2_pureza', name: 'Pureza', lat: 14.6014, lon: 121.0050, km: 2.5, isTransfer: false },
+					{ id: 'lrt2_v_mapa', name: 'V. Mapa', lat: 14.6042, lon: 121.0172, km: 3.8, isTransfer: false },
+					{ id: 'lrt2_j_ruiz', name: 'J. Ruiz', lat: 14.6106, lon: 121.0261, km: 5.0, isTransfer: false },
+					{ id: 'lrt2_gilmore', name: 'Gilmore', lat: 14.6136, lon: 121.0342, km: 6.0, isTransfer: false },
+					{ id: 'lrt2_betty_go', name: 'Betty Go-Belmonte', lat: 14.6186, lon: 121.0428, km: 7.1, isTransfer: false },
+					{ id: 'lrt2_cubao', name: 'Araneta Center-Cubao (Transfer MRT-3)', lat: 14.6225, lon: 121.0531, km: 8.3, isTransfer: true, transferTo: 'mrt3_cubao' },
+					{ id: 'lrt2_anonas', name: 'Anonas', lat: 14.6278, lon: 121.0647, km: 9.7, isTransfer: false },
+					{ id: 'lrt2_katipunan', name: 'Katipunan', lat: 14.6308, lon: 121.0728, km: 10.7, isTransfer: false },
+					{ id: 'lrt2_santolan', name: 'Santolan', lat: 14.6222, lon: 121.0856, km: 12.7, isTransfer: false },
+					{ id: 'lrt2_marikina', name: 'Marikina-Pasig', lat: 14.6208, lon: 121.1000, km: 14.5, isTransfer: false },
+					{ id: 'lrt2_antipolo', name: 'Antipolo', lat: 14.6247, lon: 121.1214, km: 16.8, isTransfer: false }
+				]
+			};
+
+			const LINE_COLORS = {
+				lrt1: '#00843D',
+				mrt3: '#0055A5',
+				lrt2: '#6F2C91'
+			};
+
+			// Flatten list of all stations with line tag
+			const ALL_STATIONS = [];
+			Object.keys(STATIONS_DATA).forEach(lineKey => {
+				STATIONS_DATA[lineKey].forEach((st, idx) => {
+					ALL_STATIONS.push({
+						...st,
+						lineKey,
+						indexInLine: idx
+					});
+				});
+			});
+
+			function getStationById(id) {
+				return ALL_STATIONS.find(s => s.id === id);
+			}
+
+			// DOM Elements
+			const originSelect = document.getElementById('origin-select');
+			const destSelect = document.getElementById('destination-select');
+			const discountToggle = document.getElementById('discount-toggle');
+			const swapBtn = document.getElementById('swap-stations-btn');
+
+			const fareBeepEl = document.getElementById('fare-beep');
+			const fareSjtEl = document.getElementById('fare-sjt');
+			const metricTimeEl = document.getElementById('metric-time');
+			const metricStopsEl = document.getElementById('metric-stops');
+			const metricDistEl = document.getElementById('metric-distance');
+			const transferCalloutEl = document.getElementById('transfer-callout');
+			const routeStepsListEl = document.getElementById('route-steps-list');
+
+			// Populate dropdowns with organized groups
+			function populateDropdowns() {
+				const groups = [
+					{ key: 'lrt1', label: 'LRT Line 1 (Green)' },
+					{ key: 'mrt3', label: 'MRT Line 3 (Blue)' },
+					{ key: 'lrt2', label: 'LRT Line 2 (Purple)' }
+				];
+
+				[originSelect, destSelect].forEach(select => {
+					select.innerHTML = '';
+					groups.forEach(g => {
+						const optgroup = document.createElement('optgroup');
+						optgroup.label = g.label;
+						STATIONS_DATA[g.key].forEach(st => {
+							const opt = document.createElement('option');
+							opt.value = st.id;
+							opt.textContent = `${st.name}`;
+							optgroup.appendChild(opt);
+						});
+						select.appendChild(optgroup);
+					});
+				});
+
+				// Defaults: MRT-3 North Avenue to MRT-3 Taft Avenue
+				originSelect.value = 'mrt3_north';
+				destSelect.value = 'mrt3_taft';
+			}
+
+			populateDropdowns();
+
+			// Initialize Leaflet Map
+			const map = L.map('rail-map', {
+				center: [14.595, 121.03],
+				zoom: 12,
+				zoomControl: true,
+				scrollWheelZoom: true
+			});
+
+			L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+				attribution: '&copy; OpenStreetMap &copy; CARTO',
+				maxZoom: 19
+			}).addTo(map);
+
+			// Render Track Lines and Station Markers
+			const linePolylines = {};
+			const stationMarkers = {};
+			let activeRoutePolyline = null;
+
+			Object.keys(STATIONS_DATA).forEach(lineKey => {
+				const coords = STATIONS_DATA[lineKey].map(s => [s.lat, s.lon]);
+				linePolylines[lineKey] = L.polyline(coords, {
+					color: LINE_COLORS[lineKey],
+					weight: 5,
+					opacity: 0.85,
+					smoothFactor: 1
+				}).addTo(map);
+
+				STATIONS_DATA[lineKey].forEach(st => {
+					const isTransfer = st.isTransfer;
+					const marker = L.circleMarker([st.lat, st.lon], {
+						radius: isTransfer ? 7 : 5,
+						fillColor: isTransfer ? '#F59E0B' : '#FFFFFF',
+						color: LINE_COLORS[lineKey],
+						weight: isTransfer ? 3 : 2,
+						opacity: 1,
+						fillOpacity: 1
+					}).addTo(map);
+
+					marker.bindTooltip(`<strong>${st.name}</strong><br><span style="font-size:11px;color:#666;">Line: ${lineKey.toUpperCase()}</span>`);
+					
+					marker.on('click', () => {
+						// Set destination if origin already picked, otherwise set origin
+						if (originSelect.value && originSelect.value !== st.id) {
+							destSelect.value = st.id;
+						} else {
+							originSelect.value = st.id;
+						}
+						calculateRoute();
+					});
+
+					stationMarkers[st.id] = marker;
+				});
+			});
+
+			// Filter visibility
+			['lrt1', 'mrt3', 'lrt2'].forEach(line => {
+				const btn = document.getElementById(`toggle-${line}`);
+				let isVisible = true;
+				btn.addEventListener('click', () => {
+					isVisible = !isVisible;
+					if (isVisible) {
+						map.addLayer(linePolylines[line]);
+						STATIONS_DATA[line].forEach(s => map.addLayer(stationMarkers[s.id]));
+						btn.classList.remove('opacity-40');
+					} else {
+						map.removeLayer(linePolylines[line]);
+						STATIONS_DATA[line].forEach(s => map.removeLayer(stationMarkers[s.id]));
+						btn.classList.add('opacity-40');
+					}
+				});
+			});
+
+			// Official Fare Calculation Helpers
+			function calcSingleLineFare(lineKey, distanceKm, stationCount) {
+				let beepFare = 15;
+				let sjtFare = 15;
+
+				if (lineKey === 'mrt3') {
+					// MRT-3 official tier matrix based on station count
+					// 1-2 stations: 13; 3-5: 16; 6-8: 20; 9-11: 24; 12+: 28
+					if (stationCount <= 2) {
+						beepFare = 13;
+					} else if (stationCount <= 5) {
+						beepFare = 16;
+					} else if (stationCount <= 8) {
+						beepFare = 20;
+					} else if (stationCount <= 11) {
+						beepFare = 24;
+					} else {
+						beepFare = 28;
+					}
+					sjtFare = beepFare;
+				} else if (lineKey === 'lrt1') {
+					// LRT-1: 15 base + 1.21/km
+					beepFare = 15 + (distanceKm * 1.21);
+					// Cap between 15 and 45
+					beepFare = Math.min(45, Math.max(15, Math.round(beepFare)));
+					// SJT rounded to nearest 5
+					sjtFare = Math.ceil(beepFare / 5) * 5;
+				} else if (lineKey === 'lrt2') {
+					// LRT-2: 14 base + 1.21/km
+					beepFare = 14 + (distanceKm * 1.21);
+					beepFare = Math.min(33, Math.max(14, Math.round(beepFare)));
+					sjtFare = Math.ceil(beepFare / 5) * 5;
+				}
+
+				return { beepFare, sjtFare };
+			}
+
+			function getLineTravelTime(lineKey, stops) {
+				// Commercial operational pace
+				if (lineKey === 'mrt3') return stops * 2.5;
+				if (lineKey === 'lrt1') return stops * 2.3;
+				if (lineKey === 'lrt2') return stops * 2.8;
+				return stops * 2.5;
+			}
+
+			// Main Routing Algorithm
+			function calculateRoute() {
+				const originId = originSelect.value;
+				const destId = destSelect.value;
+
+				if (!originId || !destId) return;
+
+				const origin = getStationById(originId);
+				const dest = getStationById(destId);
+
+				if (!origin || !dest) return;
+
+				const hasDiscount = discountToggle.checked;
+
+				// Clear previous highlighted path
+				if (activeRoutePolyline) {
+					map.removeLayer(activeRoutePolyline);
+					activeRoutePolyline = null;
+				}
+
+				// Reset marker styles
+				ALL_STATIONS.forEach(s => {
+					const m = stationMarkers[s.id];
+					if (m) {
+						m.setStyle({
+							radius: s.isTransfer ? 7 : 5,
+							fillColor: s.isTransfer ? '#F59E0B' : '#FFFFFF',
+							weight: s.isTransfer ? 3 : 2
+						});
+					}
+				});
+
+				// Highlight origin and destination pins
+				stationMarkers[origin.id]?.setStyle({ radius: 9, fillColor: '#10B981', weight: 4 });
+				stationMarkers[dest.id]?.setStyle({ radius: 9, fillColor: '#EF4444', weight: 4 });
+
+				if (origin.id === dest.id) {
+					fareBeepEl.textContent = '₱0.00';
+					fareSjtEl.textContent = '₱0.00';
+					metricTimeEl.textContent = '0 min';
+					metricStopsEl.textContent = '0 stops';
+					metricDistEl.textContent = '0 km';
+					transferCalloutEl.classList.add('hidden');
+					routeStepsListEl.innerHTML = '<div class="text-mapa-clay italic p-2">Origin and destination are the same station.</div>';
+					return;
+				}
+
+				// CASE 1: Same rail line
+				if (origin.lineKey === dest.lineKey) {
+					const lineKey = origin.lineKey;
+					const stations = STATIONS_DATA[lineKey];
+					const idxA = origin.indexInLine;
+					const idxB = dest.indexInLine;
+					const minIdx = Math.min(idxA, idxB);
+					const maxIdx = Math.max(idxA, idxB);
+
+					const segment = stations.slice(minIdx, maxIdx + 1);
+					const stopsCount = maxIdx - minIdx;
+					const distanceKm = Math.abs(dest.km - origin.km);
+
+					const { beepFare, sjtFare } = calcSingleLineFare(lineKey, distanceKm, stopsCount);
+					const finalBeep = hasDiscount ? (beepFare * 0.8) : beepFare;
+					const finalSjt = hasDiscount ? (sjtFare * 0.8) : sjtFare;
+					const travelTime = Math.round(getLineTravelTime(lineKey, stopsCount));
+
+					fareBeepEl.textContent = `₱${finalBeep.toFixed(2)}`;
+					fareSjtEl.textContent = `₱${finalSjt.toFixed(2)}`;
+					metricTimeEl.textContent = `~${travelTime} mins`;
+					metricStopsEl.textContent = `${stopsCount} ${stopsCount === 1 ? 'stop' : 'stops'}`;
+					metricDistEl.textContent = `${distanceKm.toFixed(1)} km`;
+
+					transferCalloutEl.classList.add('hidden');
+
+					// Render steps
+					routeStepsListEl.innerHTML = `
+						<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/50">
+							<span class="w-3 h-3 rounded-full mt-0.5 shrink-0" style="background-color: ${LINE_COLORS[lineKey]}"></span>
+							<div class="space-y-1">
+								<div class="font-bold text-mapa-ink">Board ${lineKey.toUpperCase()}: ${origin.name}</div>
+								<div class="text-mapa-clay text-[11px]">Ride ${stopsCount} stations towards ${dest.name} (${distanceKm.toFixed(1)} km)</div>
+							</div>
+						</div>
+						<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/50">
+							<span class="w-3 h-3 rounded-full bg-emerald-600 mt-0.5 shrink-0"></span>
+							<div class="space-y-1">
+								<div class="font-bold text-mapa-ink">Alight at ${dest.name}</div>
+								<div class="text-mapa-clay text-[11px]">Tap out at turnstile. Total journey time approx. ${travelTime} minutes.</div>
+							</div>
+						</div>
+					`;
+
+					// Highlight polyline segment
+					const pathCoords = (idxA < idxB ? segment : segment.reverse()).map(s => [s.lat, s.lon]);
+					activeRoutePolyline = L.polyline(pathCoords, {
+						color: '#F59E0B',
+						weight: 6,
+						dashArray: '8, 8',
+						opacity: 0.95
+					}).addTo(map);
+
+					map.fitBounds(activeRoutePolyline.getBounds(), { padding: [40, 40] });
+					return;
+				}
+
+				// CASE 2: Cross-line transfer
+				// Determine optimal interchange station
+				let transferA = null;
+				let transferB = null;
+				let transferName = '';
+				let transferWalkTime = 5;
+
+				const pairKey = [origin.lineKey, dest.lineKey].sort().join('_');
+
+				if (pairKey === 'lrt1_mrt3') {
+					// Transfer at EDSA (LRT-1) <-> Taft (MRT-3)
+					transferA = getStationById(origin.lineKey === 'lrt1' ? 'lrt1_edsa' : 'mrt3_taft');
+					transferB = getStationById(dest.lineKey === 'lrt1' ? 'lrt1_edsa' : 'mrt3_taft');
+					transferName = 'EDSA-Taft Footbridge';
+					transferWalkTime = 4;
+				} else if (pairKey === 'lrt1_lrt2') {
+					// Transfer at Doroteo Jose (LRT-1) <-> Recto (LRT-2)
+					transferA = getStationById(origin.lineKey === 'lrt1' ? 'lrt1_doroteo_jose' : 'lrt2_recto');
+					transferB = getStationById(dest.lineKey === 'lrt1' ? 'lrt1_doroteo_jose' : 'lrt2_recto');
+					transferName = 'Doroteo Jose - Recto Elevated Walkway';
+					transferWalkTime = 5;
+				} else if (pairKey === 'lrt2_mrt3') {
+					// Transfer at Cubao (LRT-2) <-> Cubao (MRT-3)
+					transferA = getStationById(origin.lineKey === 'lrt2' ? 'lrt2_cubao' : 'mrt3_cubao');
+					transferB = getStationById(dest.lineKey === 'lrt2' ? 'lrt2_cubao' : 'mrt3_cubao');
+					transferName = 'Araneta Center-Cubao (Farmers/Gateway Walkway)';
+					transferWalkTime = 6;
+				}
+
+				if (!transferA || !transferB) return;
+
+				// Leg 1: Origin -> TransferA
+				const leg1Stops = Math.abs(origin.indexInLine - transferA.indexInLine);
+				const leg1Dist = Math.abs(origin.km - transferA.km);
+				const leg1Fare = calcSingleLineFare(origin.lineKey, leg1Dist, leg1Stops);
+				const leg1Time = getLineTravelTime(origin.lineKey, leg1Stops);
+
+				// Leg 2: TransferB -> Destination
+				const leg2Stops = Math.abs(transferB.indexInLine - dest.indexInLine);
+				const leg2Dist = Math.abs(transferB.km - dest.km);
+				const leg2Fare = calcSingleLineFare(dest.lineKey, leg2Dist, leg2Stops);
+				const leg2Time = getLineTravelTime(dest.lineKey, leg2Stops);
+
+				const totalBeep = leg1Fare.beepFare + leg2Fare.beepFare;
+				const totalSjt = leg1Fare.sjtFare + leg2Fare.sjtFare;
+				const finalBeep = hasDiscount ? (totalBeep * 0.8) : totalBeep;
+				const finalSjt = hasDiscount ? (totalSjt * 0.8) : totalSjt;
+
+				const totalStops = leg1Stops + leg2Stops;
+				const totalDist = leg1Dist + leg2Dist;
+				const totalTime = Math.round(leg1Time + transferWalkTime + leg2Time);
+
+				fareBeepEl.textContent = `₱${finalBeep.toFixed(2)}`;
+				fareSjtEl.textContent = `₱${finalSjt.toFixed(2)}`;
+				metricTimeEl.textContent = `~${totalTime} mins`;
+				metricStopsEl.textContent = `${totalStops} stops (1 transfer)`;
+				metricDistEl.textContent = `${totalDist.toFixed(1)} km`;
+
+				// Show transfer alert
+				transferCalloutEl.classList.remove('hidden');
+				transferCalloutEl.innerHTML = `
+					<div class="font-bold flex items-center gap-1.5 mb-1">
+						<span>🔄 Transfer Required:</span>
+						<span>${transferName}</span>
+					</div>
+					<div>Exit ${origin.lineKey.toUpperCase()} at <strong>${transferA.name}</strong>, walk ~${transferWalkTime} mins across the connecting walkway, and tap into ${dest.lineKey.toUpperCase()} at <strong>${transferB.name}</strong>.</div>
+				`;
+
+				// Render 4-step itinerary
+				routeStepsListEl.innerHTML = `
+					<div class="flex items-start gap-2.5 p-2 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/50">
+						<span class="w-3 h-3 rounded-full mt-0.5 shrink-0" style="background-color: ${LINE_COLORS[origin.lineKey]}"></span>
+						<div class="space-y-0.5">
+							<div class="font-bold text-mapa-ink">1. Board ${origin.lineKey.toUpperCase()}: ${origin.name}</div>
+							<div class="text-mapa-clay text-[11px]">Ride ${leg1Stops} stops (${leg1Dist.toFixed(1)} km) &bull; Fare: ₱${(hasDiscount ? leg1Fare.beepFare * 0.8 : leg1Fare.beepFare).toFixed(2)}</div>
+						</div>
+					</div>
+					<div class="flex items-start gap-2.5 p-2 rounded-lg bg-amber-500/10 border border-amber-500/30">
+						<span class="w-3 h-3 rounded-full bg-amber-500 mt-0.5 shrink-0"></span>
+						<div class="space-y-0.5">
+							<div class="font-bold text-amber-900">2. Transfer at ${transferA.name}</div>
+							<div class="text-amber-800 text-[11px]">Walk ~${transferWalkTime} mins via ${transferName} into ${transferB.name}</div>
+						</div>
+					</div>
+					<div class="flex items-start gap-2.5 p-2 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/50">
+						<span class="w-3 h-3 rounded-full mt-0.5 shrink-0" style="background-color: ${LINE_COLORS[dest.lineKey]}"></span>
+						<div class="space-y-0.5">
+							<div class="font-bold text-mapa-ink">3. Board ${dest.lineKey.toUpperCase()}: ${transferB.name}</div>
+							<div class="text-mapa-clay text-[11px]">Ride ${leg2Stops} stops (${leg2Dist.toFixed(1)} km) &bull; Fare: ₱${(hasDiscount ? leg2Fare.beepFare * 0.8 : leg2Fare.beepFare).toFixed(2)}</div>
+						</div>
+					</div>
+					<div class="flex items-start gap-2.5 p-2 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/50">
+						<span class="w-3 h-3 rounded-full bg-emerald-600 mt-0.5 shrink-0"></span>
+						<div class="space-y-0.5">
+							<div class="font-bold text-mapa-ink">4. Arrive at ${dest.name}</div>
+							<div class="text-mapa-clay text-[11px]">Total combined time approx. ${totalTime} minutes.</div>
+						</div>
+					</div>
+				`;
+
+				// Draw multi-leg highlighted path
+				const stListA = STATIONS_DATA[origin.lineKey];
+				const minA = Math.min(origin.indexInLine, transferA.indexInLine);
+				const maxA = Math.max(origin.indexInLine, transferA.indexInLine);
+				const leg1Coords = stListA.slice(minA, maxA + 1).map(s => [s.lat, s.lon]);
+
+				const stListB = STATIONS_DATA[dest.lineKey];
+				const minB = Math.min(dest.indexInLine, transferB.indexInLine);
+				const maxB = Math.max(dest.indexInLine, transferB.indexInLine);
+				const leg2Coords = stListB.slice(minB, maxB + 1).map(s => [s.lat, s.lon]);
+
+				const combinedCoords = [...leg1Coords, ...leg2Coords];
+				activeRoutePolyline = L.polyline(combinedCoords, {
+					color: '#F59E0B',
+					weight: 6,
+					dashArray: '8, 8',
+					opacity: 0.95
+				}).addTo(map);
+
+				map.fitBounds(activeRoutePolyline.getBounds(), { padding: [40, 40] });
+			}
+
+			// Event Listeners
+			originSelect.addEventListener('change', calculateRoute);
+			destSelect.addEventListener('change', calculateRoute);
+			discountToggle.addEventListener('change', calculateRoute);
+
+			swapBtn.addEventListener('click', () => {
+				const temp = originSelect.value;
+				originSelect.value = destSelect.value;
+				destSelect.value = temp;
+				calculateRoute();
+			});
+
+			// Presets
+			document.querySelectorAll('.preset-btn').forEach(btn => {
+				btn.addEventListener('click', () => {
+					const orig = btn.getAttribute('data-origin');
+					const dst = btn.getAttribute('data-dest');
+					if (orig && dst) {
+						originSelect.value = orig;
+						destSelect.value = dst;
+						calculateRoute();
+					}
+				});
+			});
+
+			// Initial Calculation
+			calculateRoute();
+		})();
+	</script>
+</BaseLayout>
