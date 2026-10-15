@@ -46,6 +46,102 @@ const RAIL_LINES = [
 	}
 ];
 
+// Complete Station Master Records for Static Schematic Graph
+const STATIONS_DATA = {
+	lrt1: [
+		{ id: 'lrt1_fpj', name: 'Fernando Poe Jr. (Roosevelt)', city: 'Quezon City', lat: 14.6576, lon: 121.0211, km: 0.0, isTransfer: false, lineName: 'LRT-1' },
+		{ id: 'lrt1_balintawak', name: 'Balintawak', city: 'Quezon City', lat: 14.6574, lon: 121.0042, km: 1.8, isTransfer: false, lineName: 'LRT-1' },
+		{ id: 'lrt1_monumento', name: 'Monumento', city: 'Caloocan', lat: 14.6543, lon: 120.9839, km: 4.1, isTransfer: true, transferLabel: 'EDSA Carousel Stop', lineName: 'LRT-1' },
+		{ id: 'lrt1_5th_ave', name: '5th Avenue', city: 'Caloocan', lat: 14.6444, lon: 120.9836, km: 5.2, isTransfer: false, lineName: 'LRT-1' },
+		{ id: 'lrt1_r_papa', name: 'R. Papa', city: 'Manila', lat: 14.6361, lon: 120.9831, km: 6.2, isTransfer: false, lineName: 'LRT-1' },
+		{ id: 'lrt1_abad_santos', name: 'Abad Santos', city: 'Manila', lat: 14.6306, lon: 120.9814, km: 6.9, isTransfer: false, lineName: 'LRT-1' },
+		{ id: 'lrt1_blumentritt', name: 'Blumentritt', city: 'Manila', lat: 14.6226, lon: 120.9831, km: 7.8, isTransfer: true, transferLabel: 'PNR Blumentritt Link', lineName: 'LRT-1' },
+		{ id: 'lrt1_tayuman', name: 'Tayuman', city: 'Manila', lat: 14.6167, lon: 120.9831, km: 8.5, isTransfer: false, lineName: 'LRT-1' },
+		{ id: 'lrt1_bambang', name: 'Bambang', city: 'Manila', lat: 14.6083, lon: 120.9822, km: 9.1, isTransfer: false, lineName: 'LRT-1' },
+		{ id: 'lrt1_doroteo_jose', name: 'Doroteo Jose', city: 'Manila', lat: 14.6053, lon: 120.9819, km: 9.8, isTransfer: true, transferTo: 'lrt2_recto', transferLabel: 'Walkway to LRT-2 Recto', lineName: 'LRT-1' },
+		{ id: 'lrt1_carriedo', name: 'Carriedo', city: 'Manila', lat: 14.5997, lon: 120.9814, km: 10.5, isTransfer: false, lineName: 'LRT-1' },
+		{ id: 'lrt1_central', name: 'Central Terminal', city: 'Manila', lat: 14.5928, lon: 120.9817, km: 11.2, isTransfer: false, lineName: 'LRT-1' },
+		{ id: 'lrt1_un_ave', name: 'United Nations', city: 'Manila', lat: 14.5828, lon: 120.9844, km: 12.4, isTransfer: false, lineName: 'LRT-1' },
+		{ id: 'lrt1_pedro_gil', name: 'Pedro Gil', city: 'Manila', lat: 14.5767, lon: 120.9875, km: 13.2, isTransfer: false, lineName: 'LRT-1' },
+		{ id: 'lrt1_quirino', name: 'Quirino', city: 'Manila', lat: 14.5703, lon: 120.9917, km: 14.0, isTransfer: false, lineName: 'LRT-1' },
+		{ id: 'lrt1_vito_cruz', name: 'Vito Cruz', city: 'Manila', lat: 14.5636, lon: 120.9947, km: 14.8, isTransfer: false, lineName: 'LRT-1' },
+		{ id: 'lrt1_gil_puyat', name: 'Gil Puyat (Buendia)', city: 'Pasay', lat: 14.5542, lon: 120.9972, km: 15.8, isTransfer: true, transferLabel: 'Batangas/Laguna Bus Hub', lineName: 'LRT-1' },
+		{ id: 'lrt1_libertad', name: 'Libertad', city: 'Pasay', lat: 14.5478, lon: 120.9986, km: 16.6, isTransfer: false, lineName: 'LRT-1' },
+		{ id: 'lrt1_edsa', name: 'EDSA', city: 'Pasay', lat: 14.5389, lon: 121.0006, km: 17.6, isTransfer: true, transferTo: 'mrt3_taft', transferLabel: 'Walkway to MRT-3 Taft & Busway', lineName: 'LRT-1' },
+		{ id: 'lrt1_baclaran', name: 'Baclaran', city: 'Pasay', lat: 14.5342, lon: 120.9983, km: 18.2, isTransfer: false, lineName: 'LRT-1' },
+		{ id: 'lrt1_redemptorist', name: 'Redemptorist (Aseana)', city: 'Parañaque', lat: 14.5290, lon: 120.9950, km: 19.3, isTransfer: false, lineName: 'LRT-1' },
+		{ id: 'lrt1_mia_road', name: 'MIA Road', city: 'Parañaque', lat: 14.5200, lon: 120.9920, km: 20.6, isTransfer: false, lineName: 'LRT-1' },
+		{ id: 'lrt1_asia_world', name: 'Asia World (PITX)', city: 'Parañaque', lat: 14.5120, lon: 120.9910, km: 21.8, isTransfer: true, transferLabel: 'Direct link to PITX Busway', lineName: 'LRT-1' },
+		{ id: 'lrt1_ninoy_aquino', name: 'Ninoy Aquino', city: 'Parañaque', lat: 14.5030, lon: 120.9925, km: 23.1, isTransfer: false, lineName: 'LRT-1' },
+		{ id: 'lrt1_dr_santos', name: 'Dr. Santos (Sucat)', city: 'Parañaque', lat: 14.4920, lon: 120.9950, km: 24.5, isTransfer: false, lineName: 'LRT-1' }
+	],
+	mrt3: [
+		{ id: 'mrt3_north', name: 'North Avenue', city: 'Quezon City', lat: 14.6531, lon: 121.0322, km: 0.0, isTransfer: true, transferLabel: 'EDSA Busway & TriNoma Hub', lineName: 'MRT-3' },
+		{ id: 'mrt3_q_ave', name: 'Quezon Avenue', city: 'Quezon City', lat: 14.6425, lon: 121.0383, km: 1.2, isTransfer: true, transferLabel: 'EDSA Busway Q-Ave', lineName: 'MRT-3' },
+		{ id: 'mrt3_kamuning', name: 'GMA-Kamuning', city: 'Quezon City', lat: 14.6353, lon: 121.0433, km: 2.2, isTransfer: false, lineName: 'MRT-3' },
+		{ id: 'mrt3_cubao', name: 'Araneta Center-Cubao', city: 'Quezon City', lat: 14.6194, lon: 121.0519, km: 4.1, isTransfer: true, transferTo: 'lrt2_cubao', transferLabel: 'Transfer to LRT-2 via Farmers/Gateway', lineName: 'MRT-3' },
+		{ id: 'mrt3_santolan', name: 'Santolan-Annapolis', city: 'Quezon City', lat: 14.6078, lon: 121.0564, km: 5.6, isTransfer: true, transferLabel: 'EDSA Busway Santolan', lineName: 'MRT-3' },
+		{ id: 'mrt3_ortigas', name: 'Ortigas', city: 'Mandaluyong', lat: 14.5878, lon: 121.0567, km: 7.9, isTransfer: true, transferLabel: 'EDSA Busway & Megamall Concourse', lineName: 'MRT-3' },
+		{ id: 'mrt3_shaw', name: 'Shaw Boulevard', city: 'Mandaluyong', lat: 14.5811, lon: 121.0536, km: 8.7, isTransfer: false, lineName: 'MRT-3' },
+		{ id: 'mrt3_boni', name: 'Boni', city: 'Mandaluyong', lat: 14.5739, lon: 121.0481, km: 9.7, isTransfer: false, lineName: 'MRT-3' },
+		{ id: 'mrt3_guadalupe', name: 'Guadalupe', city: 'Makati', lat: 14.5672, lon: 121.0456, km: 10.5, isTransfer: true, transferLabel: 'Pasig Ferry & EDSA Busway', lineName: 'MRT-3' },
+		{ id: 'mrt3_buendia', name: 'Buendia', city: 'Makati', lat: 14.5542, lon: 121.0347, km: 12.5, isTransfer: true, transferLabel: 'EDSA Busway & BGC Bus Hub', lineName: 'MRT-3' },
+		{ id: 'mrt3_ayala', name: 'Ayala', city: 'Makati', lat: 14.5492, lon: 121.0281, km: 13.4, isTransfer: true, transferLabel: 'One Ayala Hub & EDSA Busway', lineName: 'MRT-3' },
+		{ id: 'mrt3_magallanes', name: 'Magallanes', city: 'Makati', lat: 14.5422, lon: 121.0194, km: 14.6, isTransfer: true, transferLabel: 'PNR EDSA Station Link', lineName: 'MRT-3' },
+		{ id: 'mrt3_taft', name: 'Taft Avenue', city: 'Pasay', lat: 14.5375, lon: 121.0006, km: 16.9, isTransfer: true, transferTo: 'lrt1_edsa', transferLabel: 'Walkway to LRT-1 EDSA & Busway', lineName: 'MRT-3' }
+	],
+	lrt2: [
+		{ id: 'lrt2_recto', name: 'Recto', city: 'Manila', lat: 14.6036, lon: 120.9844, km: 0.0, isTransfer: true, transferTo: 'lrt1_doroteo_jose', transferLabel: 'Walkway to LRT-1 Doroteo Jose', lineName: 'LRT-2' },
+		{ id: 'lrt2_legarda', name: 'Legarda', city: 'Manila', lat: 14.5997, lon: 120.9925, km: 1.1, isTransfer: false, lineName: 'LRT-2' },
+		{ id: 'lrt2_pureza', name: 'Pureza', city: 'Manila', lat: 14.6014, lon: 121.0050, km: 2.5, isTransfer: true, transferLabel: 'PUP Manila Ferry / Jeep Link', lineName: 'LRT-2' },
+		{ id: 'lrt2_v_mapa', name: 'V. Mapa', city: 'Manila', lat: 14.6042, lon: 121.0172, km: 3.8, isTransfer: false, lineName: 'LRT-2' },
+		{ id: 'lrt2_j_ruiz', name: 'J. Ruiz', city: 'San Juan', lat: 14.6106, lon: 121.0261, km: 5.0, isTransfer: false, lineName: 'LRT-2' },
+		{ id: 'lrt2_gilmore', name: 'Gilmore', city: 'Quezon City', lat: 14.6136, lon: 121.0342, km: 6.0, isTransfer: false, lineName: 'LRT-2' },
+		{ id: 'lrt2_betty_go', name: 'Betty Go-Belmonte', city: 'Quezon City', lat: 14.6186, lon: 121.0428, km: 7.1, isTransfer: false, lineName: 'LRT-2' },
+		{ id: 'lrt2_cubao', name: 'Araneta Center-Cubao', city: 'Quezon City', lat: 14.6225, lon: 121.0531, km: 8.3, isTransfer: true, transferTo: 'mrt3_cubao', transferLabel: 'Transfer to MRT-3 via Gateway/Farmers', lineName: 'LRT-2' },
+		{ id: 'lrt2_anonas', name: 'Anonas', city: 'Quezon City', lat: 14.6278, lon: 121.0647, km: 9.7, isTransfer: false, lineName: 'LRT-2' },
+		{ id: 'lrt2_katipunan', name: 'Katipunan', city: 'Quezon City', lat: 14.6308, lon: 121.0728, km: 10.7, isTransfer: false, lineName: 'LRT-2' },
+		{ id: 'lrt2_santolan', name: 'Santolan', city: 'Pasig', lat: 14.6222, lon: 121.0856, km: 12.7, isTransfer: false, lineName: 'LRT-2' },
+		{ id: 'lrt2_marikina', name: 'Marikina-Pasig', city: 'Marikina', lat: 14.6208, lon: 121.1000, km: 14.5, isTransfer: false, lineName: 'LRT-2' },
+		{ id: 'lrt2_antipolo', name: 'Antipolo', city: 'Antipolo, Rizal', lat: 14.6247, lon: 121.1214, km: 16.8, isTransfer: false, lineName: 'LRT-2' }
+	]
+};
+
+type LineKey = 'lrt1' | 'mrt3' | 'lrt2';
+
+interface StationItem {
+	id: string;
+	name: string;
+	city: string;
+	lat: number;
+	lon: number;
+	km: number;
+	isTransfer: boolean;
+	lineName: string;
+	transferLabel?: string;
+	transferTo?: string;
+	lineKey: LineKey;
+	indexInLine: number;
+}
+
+const LINE_COLORS: Record<LineKey, string> = {
+	lrt1: '#00843D',
+	mrt3: '#0055A5',
+	lrt2: '#6F2C91'
+};
+
+// Flattened list with indices for sequence rendering
+const ALL_STATIONS: StationItem[] = [];
+(Object.keys(STATIONS_DATA) as LineKey[]).forEach(lineKey => {
+	STATIONS_DATA[lineKey].forEach((st, idx) => {
+		ALL_STATIONS.push({
+			...st,
+			lineKey,
+			indexInLine: idx
+		});
+	});
+});
+
 // Major Transfer Hubs
 const TRANSFER_HUBS = [
 	{
@@ -177,35 +273,125 @@ const TRANSFER_HUBS = [
 			
 			<!-- Left Column: Interactive Map & Station Explorer (7 cols) -->
 			<div class="lg:col-span-7 flex flex-col gap-6 font-sans">
-				<!-- Map Container Card -->
-				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs flex flex-col">
-					<!-- Map Header Bar -->
-					<div class="p-4 border-b border-mapa-contour/50 flex flex-wrap items-center justify-between gap-3 bg-mapa-canvas">
-						<div class="flex items-center gap-2">
-							<span class="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
-							<span class="text-xs font-bold uppercase tracking-wider text-mapa-ink">
-								System Network Visualizer
+				<!-- Station Click Target Selector & Journey Status Bar -->
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 shadow-xs flex flex-col gap-3">
+					<div class="flex flex-wrap items-center justify-between gap-3">
+						<div class="flex items-center gap-2 flex-wrap">
+							<span class="text-xs font-bold uppercase tracking-wider text-mapa-clay">
+								Clicking Station Sets:
+							</span>
+							<div class="inline-flex rounded-xl bg-mapa-canvas p-1 border border-mapa-contour text-xs font-bold">
+								<button
+									id="rail-target-origin"
+									type="button"
+									class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer ring-2 ring-emerald-500/50"
+									title="Clicking any station will set it as your Boarding point"
+								>
+									<span class="w-2 h-2 rounded-full bg-white"></span>
+									<span>🟢 Boarding (Start)</span>
+								</button>
+								<button
+									id="rail-target-dest"
+									type="button"
+									class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer"
+									title="Clicking any station will set it as your Destination"
+								>
+									<span class="w-2 h-2 rounded-full bg-blue-500"></span>
+									<span>🔵 Destination (Exit)</span>
+								</button>
+							</div>
+						</div>
+
+						<button
+							id="rail-quick-swap-btn"
+							type="button"
+							class="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green text-mapa-ink flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+							title="Swap Boarding and Destination stations"
+						>
+							<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+							</svg>
+							<span>⇄ Swap Stations</span>
+						</button>
+					</div>
+
+					<!-- Visual Hint for User -->
+					<div id="rail-click-hint" class="text-xs text-emerald-900 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium">
+						<span>👉</span>
+						<span>Click any station or tap <strong>[🟢 Board]</strong> to set where you enter the train.</span>
+					</div>
+
+					<!-- Active Route Summary Ribbon -->
+					<div class="bg-mapa-canvas border border-mapa-contour rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+						<div class="flex items-center gap-2 flex-wrap">
+							<span class="font-bold text-emerald-900 flex items-center gap-1 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">
+								<span>🟢 Board:</span>
+								<span id="summary-origin-name">North Avenue</span>
+							</span>
+							<span class="text-mapa-clay font-bold">➔</span>
+							<span class="font-bold text-blue-900 flex items-center gap-1 bg-blue-500/10 px-2.5 py-1 rounded-md border border-blue-500/20">
+								<span>🔵 Alight:</span>
+								<span id="summary-dest-name">Taft Avenue</span>
 							</span>
 						</div>
+						<div class="flex items-center gap-1.5">
+							<span id="summary-badge-metric" class="text-[11px] font-bold px-2.5 py-1 rounded-md bg-emerald-600 text-white shadow-2xs">
+								13 stops &bull; ₱28.00
+							</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- Dual-Mode Network Visualizer -->
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs flex flex-col">
+					<!-- Visualizer Header Bar -->
+					<div class="p-3.5 border-b border-mapa-contour/50 flex flex-wrap items-center justify-between gap-3 bg-mapa-canvas">
+						<div class="flex items-center gap-2">
+							<span class="text-xs font-bold uppercase tracking-wider text-mapa-clay">Display:</span>
+							<div class="inline-flex rounded-xl bg-mapa-canvas-dark p-1 border border-mapa-contour text-xs font-bold">
+								<button
+									id="rail-view-schematic"
+									type="button"
+									class="px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer"
+								>
+									🚊 Schematic Track Graph
+								</button>
+								<button
+									id="rail-view-geo"
+									type="button"
+									class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
+								>
+									🗺️ Free Geo Map (OSM)
+								</button>
+							</div>
+						</div>
+
 						<!-- Line Filter Toggles -->
-						<div class="flex items-center gap-1.5 text-xs">
+						<div class="flex items-center gap-1 text-xs">
 							<button
-								id="toggle-lrt1"
-								class="px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all bg-emerald-600 text-white border-emerald-700 shadow-xs"
+								type="button"
+								class="rail-line-tab px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all bg-mapa-ink text-white border-mapa-ink cursor-pointer"
+								data-line="all"
+							>
+								All Lines
+							</button>
+							<button
+								type="button"
+								class="rail-line-tab px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all bg-emerald-600 text-white border-emerald-700 cursor-pointer"
 								data-line="lrt1"
 							>
 								LRT-1
 							</button>
 							<button
-								id="toggle-mrt3"
-								class="px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all bg-blue-600 text-white border-blue-700 shadow-xs"
+								type="button"
+								class="rail-line-tab px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all bg-blue-600 text-white border-blue-700 cursor-pointer"
 								data-line="mrt3"
 							>
 								MRT-3
 							</button>
 							<button
-								id="toggle-lrt2"
-								class="px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all bg-purple-700 text-white border-purple-800 shadow-xs"
+								type="button"
+								class="rail-line-tab px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all bg-purple-700 text-white border-purple-800 cursor-pointer"
 								data-line="lrt2"
 							>
 								LRT-2
@@ -213,36 +399,129 @@ const TRANSFER_HUBS = [
 						</div>
 					</div>
 
-					<!-- Leaflet Map Canvas -->
-					<div
-						id="rail-map"
-						class="w-full h-[460px] sm:h-[520px] bg-stone-100 z-0 relative"
-						aria-label="Interactive Metro Manila rail transit map"
-					></div>
-
-					<!-- Map Legend & Helper -->
-					<div class="p-3.5 bg-mapa-canvas border-t border-mapa-contour/50 flex flex-wrap items-center justify-between text-xs text-mapa-ink/70 gap-2">
-						<div class="flex items-center gap-3">
-							<span class="inline-flex items-center gap-1">
-								<span class="w-3 h-1 rounded-full bg-[#00843D]"></span>
-								<span>LRT-1</span>
+					<!-- VIEW 1: Schematic Line Graph Container (Primary Default) -->
+					<div id="rail-schematic-container" class="p-4 bg-mapa-canvas-dark">
+						<div class="flex items-center justify-between pb-2 mb-3 border-b border-mapa-contour/50 text-xs">
+							<span class="text-mapa-clay">
+								Select stations directly or tap <strong>[🟢 Board]</strong> / <strong>[🔵 Alight]</strong>:
 							</span>
-							<span class="inline-flex items-center gap-1">
-								<span class="w-3 h-1 rounded-full bg-[#0055A5]"></span>
-								<span>MRT-3</span>
-							</span>
-							<span class="inline-flex items-center gap-1">
-								<span class="w-3 h-1 rounded-full bg-[#6F2C91]"></span>
-								<span>LRT-2</span>
-							</span>
-							<span class="inline-flex items-center gap-1">
-								<span class="w-2.5 h-2.5 rounded-full border-2 border-amber-500 bg-white"></span>
-								<span>Transfer Hub</span>
+							<span class="text-[11px] font-semibold text-mapa-ink/70">
+								51 Total Stations
 							</span>
 						</div>
-						<span class="text-[11px] text-mapa-clay italic">
-							Click any station pin to set origin/destination
-						</span>
+
+						<!-- Scrollable Station Sequence Strip -->
+						<div class="relative pl-7 pr-1 py-2 max-h-[560px] overflow-y-auto space-y-2.5 custom-scrollbar">
+							<!-- Central Vertical Backbone Track Guide -->
+							<div class="absolute left-[19px] top-4 bottom-4 w-1.5 bg-stone-300 dark:bg-stone-700 rounded-full"></div>
+
+							<!-- Static Station Rows -->
+							{ALL_STATIONS.map((st) => (
+								<div
+									id={`rail-node-${st.id}`}
+									data-station-id={st.id}
+									data-line={st.lineKey}
+									data-km={st.km}
+									class="rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-transparent hover:border-mapa-green/40 hover:bg-mapa-canvas transition-all cursor-pointer group"
+								>
+									<!-- Circle Track Node -->
+									<div
+										class="absolute left-[-23px] w-5 h-5 rounded-full bg-mapa-canvas-dark border-2 flex items-center justify-center group-hover:scale-110 transition-transform z-10"
+										style={`border-color: ${LINE_COLORS[st.lineKey]};`}
+									>
+										<div
+											class="w-2 h-2 rounded-full"
+											style={`background-color: ${LINE_COLORS[st.lineKey]};`}
+										></div>
+									</div>
+
+									<!-- Station Description -->
+									<div class="flex flex-col ml-2.5 pr-2 min-w-0">
+										<div class="flex items-center gap-1.5 flex-wrap">
+											<span class="font-serif font-bold text-sm text-mapa-ink group-hover:text-mapa-green transition-colors">
+												{st.name}
+											</span>
+											<!-- Active Selection Badge Container -->
+											<span id={`rail-badge-${st.id}`} class="station-status-badge hidden text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-2xs"></span>
+										</div>
+
+										<div class="flex items-center gap-2 text-[11px] text-mapa-clay mt-0.5 flex-wrap">
+											<span class="font-semibold uppercase tracking-wider text-[10px]" style={`color: ${LINE_COLORS[st.lineKey]};`}>
+												{st.lineName}
+											</span>
+											<span>&bull;</span>
+											<span>{st.city}</span>
+											<span>&bull;</span>
+											<span>KM {st.km.toFixed(1)}</span>
+										</div>
+
+										{st.isTransfer && (
+											<div class="mt-1">
+												<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-[10px] font-medium text-amber-800">
+													<span>🔄</span>
+													<span>{st.transferLabel || 'Interchange Point'}</span>
+												</span>
+											</div>
+										)}
+									</div>
+
+									<!-- 1-Click Action Buttons -->
+									<div class="flex items-center gap-1.5 shrink-0 ml-2">
+										<button
+											type="button"
+											class="btn-board-quick px-2 py-1 text-[11px] font-bold rounded-md bg-emerald-600/10 hover:bg-emerald-600 text-emerald-800 hover:text-white transition-all border border-emerald-600/30 cursor-pointer shadow-2xs"
+											data-station-id={st.id}
+											title={`Set ${st.name} as Boarding (Start)`}
+										>
+											🟢 Board
+										</button>
+										<button
+											type="button"
+											class="btn-alight-quick px-2 py-1 text-[11px] font-bold rounded-md bg-blue-600/10 hover:bg-blue-600 text-blue-800 hover:text-white transition-all border border-blue-600/30 cursor-pointer shadow-2xs"
+											data-station-id={st.id}
+											title={`Set ${st.name} as Destination (Exit)`}
+										>
+											🔵 Alight
+										</button>
+									</div>
+								</div>
+							))}
+						</div>
+					</div>
+
+					<!-- VIEW 2: OpenStreetMap Geo View Container (Hidden initially) -->
+					<div id="rail-geo-container" class="hidden">
+						<!-- Leaflet Map Canvas -->
+						<div
+							id="rail-map"
+							class="w-full h-[520px] bg-stone-100 z-0 relative"
+							aria-label="Interactive Metro Manila rail transit map"
+						></div>
+
+						<!-- Map Legend & Attribution -->
+						<div class="p-3.5 bg-mapa-canvas border-t border-mapa-contour/50 flex flex-wrap items-center justify-between text-xs text-mapa-ink/70 gap-2">
+							<div class="flex items-center gap-3">
+								<span class="inline-flex items-center gap-1">
+									<span class="w-3 h-1 rounded-full bg-[#00843D]"></span>
+									<span>LRT-1</span>
+								</span>
+								<span class="inline-flex items-center gap-1">
+									<span class="w-3 h-1 rounded-full bg-[#0055A5]"></span>
+									<span>MRT-3</span>
+								</span>
+								<span class="inline-flex items-center gap-1">
+									<span class="w-3 h-1 rounded-full bg-[#6F2C91]"></span>
+									<span>LRT-2</span>
+								</span>
+								<span class="inline-flex items-center gap-1">
+									<span class="w-2.5 h-2.5 rounded-full border-2 border-amber-500 bg-white"></span>
+									<span>Transfer Hub</span>
+								</span>
+							</div>
+							<span class="text-[11px] text-mapa-clay">
+								100% Free OpenStreetMap &bull; Zero API Key Required
+							</span>
+						</div>
 					</div>
 				</div>
 
@@ -292,12 +571,13 @@ const TRANSFER_HUBS = [
 
 					<!-- Origin Selection -->
 					<div class="mb-4">
-						<label for="origin-select" class="block text-xs font-bold uppercase tracking-wider text-mapa-clay mb-1.5">
-							Origin Station (Where are you boarding?)
+						<label for="origin-select" class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-800 mb-1.5">
+							<span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+							<span>Origin Station (Boarding / Start)</span>
 						</label>
 						<select
 							id="origin-select"
-							class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green"
+							class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-emerald-600"
 						>
 							<optgroup label="LRT Line 1 (Green)">
 								<!-- Populated dynamically via JS -->
@@ -310,8 +590,9 @@ const TRANSFER_HUBS = [
 						<button
 							id="swap-stations-btn"
 							type="button"
-							class="bg-mapa-canvas hover:bg-mapa-canvas-dark border border-mapa-contour rounded-full p-2 text-mapa-ink/70 hover:text-mapa-green transition-all shadow-xs"
+							class="bg-mapa-canvas hover:bg-mapa-canvas-dark border border-mapa-contour rounded-full p-2 text-mapa-ink/70 hover:text-mapa-green transition-all shadow-xs cursor-pointer"
 							aria-label="Swap origin and destination stations"
+							title="Swap Boarding and Destination stations"
 						>
 							<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
@@ -321,12 +602,13 @@ const TRANSFER_HUBS = [
 
 					<!-- Destination Selection -->
 					<div class="mb-5">
-						<label for="destination-select" class="block text-xs font-bold uppercase tracking-wider text-mapa-clay mb-1.5">
-							Destination Station (Where are you getting off?)
+						<label for="destination-select" class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-800 mb-1.5">
+							<span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+							<span>Destination Station (Alighting / Exit)</span>
 						</label>
 						<select
 							id="destination-select"
-							class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green"
+							class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-blue-600"
 						>
 							<!-- Populated dynamically via JS -->
 						</select>
@@ -620,64 +902,64 @@ const TRANSFER_HUBS = [
 	<!-- Interactive Station & Fare Logic -->
 	<script is:inline>
 		(function () {
-			// Complete Station Geographic & Matrix Data
+			// Master Station Data
 			const STATIONS_DATA = {
 				lrt1: [
-					{ id: 'lrt1_fpj', name: 'Fernando Poe Jr. (Roosevelt)', lat: 14.6576, lon: 121.0211, km: 0.0, isTransfer: false },
-					{ id: 'lrt1_balintawak', name: 'Balintawak', lat: 14.6574, lon: 121.0042, km: 1.8, isTransfer: false },
-					{ id: 'lrt1_monumento', name: 'Monumento', lat: 14.6543, lon: 120.9839, km: 4.1, isTransfer: false },
-					{ id: 'lrt1_5th_ave', name: '5th Avenue', lat: 14.6444, lon: 120.9836, km: 5.2, isTransfer: false },
-					{ id: 'lrt1_r_papa', name: 'R. Papa', lat: 14.6361, lon: 120.9831, km: 6.2, isTransfer: false },
-					{ id: 'lrt1_abad_santos', name: 'Abad Santos', lat: 14.6306, lon: 120.9814, km: 6.9, isTransfer: false },
-					{ id: 'lrt1_blumentritt', name: 'Blumentritt', lat: 14.6226, lon: 120.9831, km: 7.8, isTransfer: false },
-					{ id: 'lrt1_tayuman', name: 'Tayuman', lat: 14.6167, lon: 120.9831, km: 8.5, isTransfer: false },
-					{ id: 'lrt1_bambang', name: 'Bambang', lat: 14.6083, lon: 120.9822, km: 9.1, isTransfer: false },
-					{ id: 'lrt1_doroteo_jose', name: 'Doroteo Jose (Transfer LRT-2)', lat: 14.6053, lon: 120.9819, km: 9.8, isTransfer: true, transferTo: 'lrt2_recto' },
-					{ id: 'lrt1_carriedo', name: 'Carriedo', lat: 14.5997, lon: 120.9814, km: 10.5, isTransfer: false },
-					{ id: 'lrt1_central', name: 'Central Terminal', lat: 14.5928, lon: 120.9817, km: 11.2, isTransfer: false },
-					{ id: 'lrt1_un_ave', name: 'United Nations', lat: 14.5828, lon: 120.9844, km: 12.4, isTransfer: false },
-					{ id: 'lrt1_pedro_gil', name: 'Pedro Gil', lat: 14.5767, lon: 120.9875, km: 13.2, isTransfer: false },
-					{ id: 'lrt1_quirino', name: 'Quirino', lat: 14.5703, lon: 120.9917, km: 14.0, isTransfer: false },
-					{ id: 'lrt1_vito_cruz', name: 'Vito Cruz', lat: 14.5636, lon: 120.9947, km: 14.8, isTransfer: false },
-					{ id: 'lrt1_gil_puyat', name: 'Gil Puyat (Buendia)', lat: 14.5542, lon: 120.9972, km: 15.8, isTransfer: false },
-					{ id: 'lrt1_libertad', name: 'Libertad', lat: 14.5478, lon: 120.9986, km: 16.6, isTransfer: false },
-					{ id: 'lrt1_edsa', name: 'EDSA (Transfer MRT-3)', lat: 14.5389, lon: 121.0006, km: 17.6, isTransfer: true, transferTo: 'mrt3_taft' },
-					{ id: 'lrt1_baclaran', name: 'Baclaran', lat: 14.5342, lon: 120.9983, km: 18.2, isTransfer: false },
-					{ id: 'lrt1_redemptorist', name: 'Redemptorist (Aseana)', lat: 14.5290, lon: 120.9950, km: 19.3, isTransfer: false },
-					{ id: 'lrt1_mia_road', name: 'MIA Road', lat: 14.5200, lon: 120.9920, km: 20.6, isTransfer: false },
-					{ id: 'lrt1_asia_world', name: 'Asia World (PITX)', lat: 14.5120, lon: 120.9910, km: 21.8, isTransfer: false },
-					{ id: 'lrt1_ninoy_aquino', name: 'Ninoy Aquino', lat: 14.5030, lon: 120.9925, km: 23.1, isTransfer: false },
-					{ id: 'lrt1_dr_santos', name: 'Dr. Santos (Sucat)', lat: 14.4920, lon: 120.9950, km: 24.5, isTransfer: false }
+					{ id: 'lrt1_fpj', name: 'Fernando Poe Jr. (Roosevelt)', city: 'Quezon City', lat: 14.6576, lon: 121.0211, km: 0.0, isTransfer: false },
+					{ id: 'lrt1_balintawak', name: 'Balintawak', city: 'Quezon City', lat: 14.6574, lon: 121.0042, km: 1.8, isTransfer: false },
+					{ id: 'lrt1_monumento', name: 'Monumento', city: 'Caloocan', lat: 14.6543, lon: 120.9839, km: 4.1, isTransfer: true },
+					{ id: 'lrt1_5th_ave', name: '5th Avenue', city: 'Caloocan', lat: 14.6444, lon: 120.9836, km: 5.2, isTransfer: false },
+					{ id: 'lrt1_r_papa', name: 'R. Papa', city: 'Manila', lat: 14.6361, lon: 120.9831, km: 6.2, isTransfer: false },
+					{ id: 'lrt1_abad_santos', name: 'Abad Santos', city: 'Manila', lat: 14.6306, lon: 120.9814, km: 6.9, isTransfer: false },
+					{ id: 'lrt1_blumentritt', name: 'Blumentritt', city: 'Manila', lat: 14.6226, lon: 120.9831, km: 7.8, isTransfer: true },
+					{ id: 'lrt1_tayuman', name: 'Tayuman', city: 'Manila', lat: 14.6167, lon: 120.9831, km: 8.5, isTransfer: false },
+					{ id: 'lrt1_bambang', name: 'Bambang', city: 'Manila', lat: 14.6083, lon: 120.9822, km: 9.1, isTransfer: false },
+					{ id: 'lrt1_doroteo_jose', name: 'Doroteo Jose', city: 'Manila', lat: 14.6053, lon: 120.9819, km: 9.8, isTransfer: true, transferTo: 'lrt2_recto' },
+					{ id: 'lrt1_carriedo', name: 'Carriedo', city: 'Manila', lat: 14.5997, lon: 120.9814, km: 10.5, isTransfer: false },
+					{ id: 'lrt1_central', name: 'Central Terminal', city: 'Manila', lat: 14.5928, lon: 120.9817, km: 11.2, isTransfer: false },
+					{ id: 'lrt1_un_ave', name: 'United Nations', city: 'Manila', lat: 14.5828, lon: 120.9844, km: 12.4, isTransfer: false },
+					{ id: 'lrt1_pedro_gil', name: 'Pedro Gil', city: 'Manila', lat: 14.5767, lon: 120.9875, km: 13.2, isTransfer: false },
+					{ id: 'lrt1_quirino', name: 'Quirino', city: 'Manila', lat: 14.5703, lon: 120.9917, km: 14.0, isTransfer: false },
+					{ id: 'lrt1_vito_cruz', name: 'Vito Cruz', city: 'Manila', lat: 14.5636, lon: 120.9947, km: 14.8, isTransfer: false },
+					{ id: 'lrt1_gil_puyat', name: 'Gil Puyat (Buendia)', city: 'Pasay', lat: 14.5542, lon: 120.9972, km: 15.8, isTransfer: true },
+					{ id: 'lrt1_libertad', name: 'Libertad', city: 'Pasay', lat: 14.5478, lon: 120.9986, km: 16.6, isTransfer: false },
+					{ id: 'lrt1_edsa', name: 'EDSA', city: 'Pasay', lat: 14.5389, lon: 121.0006, km: 17.6, isTransfer: true, transferTo: 'mrt3_taft' },
+					{ id: 'lrt1_baclaran', name: 'Baclaran', city: 'Pasay', lat: 14.5342, lon: 120.9983, km: 18.2, isTransfer: false },
+					{ id: 'lrt1_redemptorist', name: 'Redemptorist (Aseana)', city: 'Parañaque', lat: 14.5290, lon: 120.9950, km: 19.3, isTransfer: false },
+					{ id: 'lrt1_mia_road', name: 'MIA Road', city: 'Parañaque', lat: 14.5200, lon: 120.9920, km: 20.6, isTransfer: false },
+					{ id: 'lrt1_asia_world', name: 'Asia World (PITX)', city: 'Parañaque', lat: 14.5120, lon: 120.9910, km: 21.8, isTransfer: true },
+					{ id: 'lrt1_ninoy_aquino', name: 'Ninoy Aquino', city: 'Parañaque', lat: 14.5030, lon: 120.9925, km: 23.1, isTransfer: false },
+					{ id: 'lrt1_dr_santos', name: 'Dr. Santos (Sucat)', city: 'Parañaque', lat: 14.4920, lon: 120.9950, km: 24.5, isTransfer: false }
 				],
 				mrt3: [
-					{ id: 'mrt3_north', name: 'North Avenue', lat: 14.6531, lon: 121.0322, km: 0.0, isTransfer: true },
-					{ id: 'mrt3_q_ave', name: 'Quezon Avenue', lat: 14.6425, lon: 121.0383, km: 1.2, isTransfer: false },
-					{ id: 'mrt3_kamuning', name: 'GMA-Kamuning', lat: 14.6353, lon: 121.0433, km: 2.2, isTransfer: false },
-					{ id: 'mrt3_cubao', name: 'Araneta Center-Cubao (Transfer LRT-2)', lat: 14.6194, lon: 121.0519, km: 4.1, isTransfer: true, transferTo: 'lrt2_cubao' },
-					{ id: 'mrt3_santolan', name: 'Santolan-Annapolis', lat: 14.6078, lon: 121.0564, km: 5.6, isTransfer: false },
-					{ id: 'mrt3_ortigas', name: 'Ortigas', lat: 14.5878, lon: 121.0567, km: 7.9, isTransfer: false },
-					{ id: 'mrt3_shaw', name: 'Shaw Boulevard', lat: 14.5811, lon: 121.0536, km: 8.7, isTransfer: false },
-					{ id: 'mrt3_boni', name: 'Boni', lat: 14.5739, lon: 121.0481, km: 9.7, isTransfer: false },
-					{ id: 'mrt3_guadalupe', name: 'Guadalupe', lat: 14.5672, lon: 121.0456, km: 10.5, isTransfer: false },
-					{ id: 'mrt3_buendia', name: 'Buendia', lat: 14.5542, lon: 121.0347, km: 12.5, isTransfer: false },
-					{ id: 'mrt3_ayala', name: 'Ayala', lat: 14.5492, lon: 121.0281, km: 13.4, isTransfer: false },
-					{ id: 'mrt3_magallanes', name: 'Magallanes', lat: 14.5422, lon: 121.0194, km: 14.6, isTransfer: false },
-					{ id: 'mrt3_taft', name: 'Taft Avenue (Transfer LRT-1)', lat: 14.5375, lon: 121.0006, km: 16.9, isTransfer: true, transferTo: 'lrt1_edsa' }
+					{ id: 'mrt3_north', name: 'North Avenue', city: 'Quezon City', lat: 14.6531, lon: 121.0322, km: 0.0, isTransfer: true },
+					{ id: 'mrt3_q_ave', name: 'Quezon Avenue', city: 'Quezon City', lat: 14.6425, lon: 121.0383, km: 1.2, isTransfer: true },
+					{ id: 'mrt3_kamuning', name: 'GMA-Kamuning', city: 'Quezon City', lat: 14.6353, lon: 121.0433, km: 2.2, isTransfer: false },
+					{ id: 'mrt3_cubao', name: 'Araneta Center-Cubao', city: 'Quezon City', lat: 14.6194, lon: 121.0519, km: 4.1, isTransfer: true, transferTo: 'lrt2_cubao' },
+					{ id: 'mrt3_santolan', name: 'Santolan-Annapolis', city: 'Quezon City', lat: 14.6078, lon: 121.0564, km: 5.6, isTransfer: true },
+					{ id: 'mrt3_ortigas', name: 'Ortigas', city: 'Mandaluyong', lat: 14.5878, lon: 121.0567, km: 7.9, isTransfer: true },
+					{ id: 'mrt3_shaw', name: 'Shaw Boulevard', city: 'Mandaluyong', lat: 14.5811, lon: 121.0536, km: 8.7, isTransfer: false },
+					{ id: 'mrt3_boni', name: 'Boni', city: 'Mandaluyong', lat: 14.5739, lon: 121.0481, km: 9.7, isTransfer: false },
+					{ id: 'mrt3_guadalupe', name: 'Guadalupe', city: 'Makati', lat: 14.5672, lon: 121.0456, km: 10.5, isTransfer: true },
+					{ id: 'mrt3_buendia', name: 'Buendia', city: 'Makati', lat: 14.5542, lon: 121.0347, km: 12.5, isTransfer: true },
+					{ id: 'mrt3_ayala', name: 'Ayala', city: 'Makati', lat: 14.5492, lon: 121.0281, km: 13.4, isTransfer: true },
+					{ id: 'mrt3_magallanes', name: 'Magallanes', city: 'Makati', lat: 14.5422, lon: 121.0194, km: 14.6, isTransfer: true },
+					{ id: 'mrt3_taft', name: 'Taft Avenue', city: 'Pasay', lat: 14.5375, lon: 121.0006, km: 16.9, isTransfer: true, transferTo: 'lrt1_edsa' }
 				],
 				lrt2: [
-					{ id: 'lrt2_recto', name: 'Recto (Transfer LRT-1)', lat: 14.6036, lon: 120.9844, km: 0.0, isTransfer: true, transferTo: 'lrt1_doroteo_jose' },
-					{ id: 'lrt2_legarda', name: 'Legarda', lat: 14.5997, lon: 120.9925, km: 1.1, isTransfer: false },
-					{ id: 'lrt2_pureza', name: 'Pureza', lat: 14.6014, lon: 121.0050, km: 2.5, isTransfer: false },
-					{ id: 'lrt2_v_mapa', name: 'V. Mapa', lat: 14.6042, lon: 121.0172, km: 3.8, isTransfer: false },
-					{ id: 'lrt2_j_ruiz', name: 'J. Ruiz', lat: 14.6106, lon: 121.0261, km: 5.0, isTransfer: false },
-					{ id: 'lrt2_gilmore', name: 'Gilmore', lat: 14.6136, lon: 121.0342, km: 6.0, isTransfer: false },
-					{ id: 'lrt2_betty_go', name: 'Betty Go-Belmonte', lat: 14.6186, lon: 121.0428, km: 7.1, isTransfer: false },
-					{ id: 'lrt2_cubao', name: 'Araneta Center-Cubao (Transfer MRT-3)', lat: 14.6225, lon: 121.0531, km: 8.3, isTransfer: true, transferTo: 'mrt3_cubao' },
-					{ id: 'lrt2_anonas', name: 'Anonas', lat: 14.6278, lon: 121.0647, km: 9.7, isTransfer: false },
-					{ id: 'lrt2_katipunan', name: 'Katipunan', lat: 14.6308, lon: 121.0728, km: 10.7, isTransfer: false },
-					{ id: 'lrt2_santolan', name: 'Santolan', lat: 14.6222, lon: 121.0856, km: 12.7, isTransfer: false },
-					{ id: 'lrt2_marikina', name: 'Marikina-Pasig', lat: 14.6208, lon: 121.1000, km: 14.5, isTransfer: false },
-					{ id: 'lrt2_antipolo', name: 'Antipolo', lat: 14.6247, lon: 121.1214, km: 16.8, isTransfer: false }
+					{ id: 'lrt2_recto', name: 'Recto', city: 'Manila', lat: 14.6036, lon: 120.9844, km: 0.0, isTransfer: true, transferTo: 'lrt1_doroteo_jose' },
+					{ id: 'lrt2_legarda', name: 'Legarda', city: 'Manila', lat: 14.5997, lon: 120.9925, km: 1.1, isTransfer: false },
+					{ id: 'lrt2_pureza', name: 'Pureza', city: 'Manila', lat: 14.6014, lon: 121.0050, km: 2.5, isTransfer: true },
+					{ id: 'lrt2_v_mapa', name: 'V. Mapa', city: 'Manila', lat: 14.6042, lon: 121.0172, km: 3.8, isTransfer: false },
+					{ id: 'lrt2_j_ruiz', name: 'J. Ruiz', city: 'San Juan', lat: 14.6106, lon: 121.0261, km: 5.0, isTransfer: false },
+					{ id: 'lrt2_gilmore', name: 'Gilmore', city: 'Quezon City', lat: 14.6136, lon: 121.0342, km: 6.0, isTransfer: false },
+					{ id: 'lrt2_betty_go', name: 'Betty Go-Belmonte', city: 'Quezon City', lat: 14.6186, lon: 121.0428, km: 7.1, isTransfer: false },
+					{ id: 'lrt2_cubao', name: 'Araneta Center-Cubao', city: 'Quezon City', lat: 14.6225, lon: 121.0531, km: 8.3, isTransfer: true, transferTo: 'mrt3_cubao' },
+					{ id: 'lrt2_anonas', name: 'Anonas', city: 'Quezon City', lat: 14.6278, lon: 121.0647, km: 9.7, isTransfer: false },
+					{ id: 'lrt2_katipunan', name: 'Katipunan', city: 'Quezon City', lat: 14.6308, lon: 121.0728, km: 10.7, isTransfer: false },
+					{ id: 'lrt2_santolan', name: 'Santolan', city: 'Pasig', lat: 14.6222, lon: 121.0856, km: 12.7, isTransfer: false },
+					{ id: 'lrt2_marikina', name: 'Marikina-Pasig', city: 'Marikina', lat: 14.6208, lon: 121.1000, km: 14.5, isTransfer: false },
+					{ id: 'lrt2_antipolo', name: 'Antipolo', city: 'Antipolo, Rizal', lat: 14.6247, lon: 121.1214, km: 16.8, isTransfer: false }
 				]
 			};
 
@@ -687,7 +969,6 @@ const TRANSFER_HUBS = [
 				lrt2: '#6F2C91'
 			};
 
-			// Flatten list of all stations with line tag
 			const ALL_STATIONS = [];
 			Object.keys(STATIONS_DATA).forEach(lineKey => {
 				STATIONS_DATA[lineKey].forEach((st, idx) => {
@@ -708,6 +989,15 @@ const TRANSFER_HUBS = [
 			const destSelect = document.getElementById('destination-select');
 			const discountToggle = document.getElementById('discount-toggle');
 			const swapBtn = document.getElementById('swap-stations-btn');
+			const quickSwapBtn = document.getElementById('rail-quick-swap-btn');
+
+			const targetOriginBtn = document.getElementById('rail-target-origin');
+			const targetDestBtn = document.getElementById('rail-target-dest');
+			const clickHintEl = document.getElementById('rail-click-hint');
+
+			const summaryOriginEl = document.getElementById('summary-origin-name');
+			const summaryDestEl = document.getElementById('summary-dest-name');
+			const summaryMetricEl = document.getElementById('summary-badge-metric');
 
 			const fareBeepEl = document.getElementById('fare-beep');
 			const fareSjtEl = document.getElementById('fare-sjt');
@@ -716,6 +1006,32 @@ const TRANSFER_HUBS = [
 			const metricDistEl = document.getElementById('metric-distance');
 			const transferCalloutEl = document.getElementById('transfer-callout');
 			const routeStepsListEl = document.getElementById('route-steps-list');
+
+			const btnViewSchematic = document.getElementById('rail-view-schematic');
+			const btnViewGeo = document.getElementById('rail-view-geo');
+			const schematicContainer = document.getElementById('rail-schematic-container');
+			const geoContainer = document.getElementById('rail-geo-container');
+
+			// Current active click target mode: 'origin' or 'dest'
+			let currentTargetMode = 'origin';
+
+			function setTargetMode(mode) {
+				currentTargetMode = mode;
+				if (mode === 'origin') {
+					targetOriginBtn.className = 'px-3 py-1.5 rounded-lg bg-emerald-600 text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer ring-2 ring-emerald-500/50';
+					targetDestBtn.className = 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer';
+					clickHintEl.className = 'text-xs text-emerald-900 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium';
+					clickHintEl.innerHTML = '<span>👉</span><span>Click any station below or tap <strong>[🟢 Board]</strong> to set where you enter the train.</span>';
+				} else {
+					targetDestBtn.className = 'px-3 py-1.5 rounded-lg bg-blue-600 text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer ring-2 ring-blue-500/50';
+					targetOriginBtn.className = 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer';
+					clickHintEl.className = 'text-xs text-blue-900 bg-blue-500/10 border border-blue-500/20 px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium';
+					clickHintEl.innerHTML = '<span>👉</span><span>Click any station below or tap <strong>[🔵 Alight]</strong> to set your destination exit.</span>';
+				}
+			}
+
+			targetOriginBtn?.addEventListener('click', () => setTargetMode('origin'));
+			targetDestBtn?.addEventListener('click', () => setTargetMode('dest'));
 
 			// Populate dropdowns with organized groups
 			function populateDropdowns() {
@@ -747,75 +1063,177 @@ const TRANSFER_HUBS = [
 
 			populateDropdowns();
 
-			// Initialize Leaflet Map
-			const map = L.map('rail-map', {
-				center: [14.595, 121.03],
-				zoom: 12,
-				zoomControl: true,
-				scrollWheelZoom: true
+			// Public handler to set station
+			window.setTransitStation = function (stationId, type) {
+				const st = getStationById(stationId);
+				if (!st) return;
+
+				if (type === 'origin') {
+					originSelect.value = stationId;
+					// Automatically prompt destination next
+					setTargetMode('dest');
+					clickHintEl.innerHTML = `<span>👉</span><span>Boarding set to <strong>${st.name}</strong>! Now click your <strong>🔵 Destination Station</strong> below.</span>`;
+				} else {
+					destSelect.value = stationId;
+				}
+				calculateRoute();
+			};
+
+			// Leaflet Map state (100% Free OpenStreetMap - Zero API key)
+			let leafletMap = null;
+			let linePolylines = {};
+			let stationMarkers = {};
+			let activeRoutePolyline = null;
+			let isMapInitialized = false;
+
+			function initLeafletMap() {
+				if (isMapInitialized || typeof L === 'undefined') return;
+
+				leafletMap = L.map('rail-map', {
+					center: [14.595, 121.03],
+					zoom: 12,
+					zoomControl: true,
+					scrollWheelZoom: true
+				});
+
+				// 100% Free OpenStreetMap raster tiles (Zero API key required)
+				L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+					attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+					maxZoom: 19
+				}).addTo(leafletMap);
+
+				Object.keys(STATIONS_DATA).forEach(lineKey => {
+					const coords = STATIONS_DATA[lineKey].map(s => [s.lat, s.lon]);
+					linePolylines[lineKey] = L.polyline(coords, {
+						color: LINE_COLORS[lineKey],
+						weight: 5,
+						opacity: 0.85,
+						smoothFactor: 1
+					}).addTo(leafletMap);
+
+					STATIONS_DATA[lineKey].forEach(st => {
+						const isTransfer = st.isTransfer;
+						const marker = L.circleMarker([st.lat, st.lon], {
+							radius: isTransfer ? 7 : 5,
+							fillColor: isTransfer ? '#F59E0B' : '#FFFFFF',
+							color: LINE_COLORS[lineKey],
+							weight: isTransfer ? 3 : 2,
+							opacity: 1,
+							fillOpacity: 1
+						}).addTo(leafletMap);
+
+						marker.bindPopup(`
+							<div class="font-sans text-xs p-1">
+								<div class="font-bold text-sm text-gray-900">${st.name}</div>
+								<div class="text-[11px] text-gray-500 mb-2">${lineKey.toUpperCase()} &bull; KM ${st.km.toFixed(1)}</div>
+								<div class="flex gap-1.5">
+									<button type="button" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold shadow-xs cursor-pointer" onclick="window.setTransitStation('${st.id}', 'origin')">
+										🟢 Board Here
+									</button>
+									<button type="button" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-[11px] font-bold shadow-xs cursor-pointer" onclick="window.setTransitStation('${st.id}', 'dest')">
+										🔵 Alight Here
+									</button>
+								</div>
+							</div>
+						`);
+
+						marker.on('click', () => {
+							window.setTransitStation(st.id, currentTargetMode);
+						});
+
+						stationMarkers[st.id] = marker;
+					});
+				});
+
+				isMapInitialized = true;
+			}
+
+			// View Switcher logic (Schematic Strip vs Free Geo Map)
+			btnViewSchematic.addEventListener('click', () => {
+				btnViewSchematic.className = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer';
+				btnViewGeo.className = 'px-3 py-1.5 text-xs font-medium rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
+				schematicContainer.classList.remove('hidden');
+				geoContainer.classList.add('hidden');
 			});
 
-			L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-				attribution: '&copy; OpenStreetMap &copy; CARTO',
-				maxZoom: 19
-			}).addTo(map);
+			btnViewGeo.addEventListener('click', () => {
+				btnViewGeo.className = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer';
+				btnViewSchematic.className = 'px-3 py-1.5 text-xs font-medium rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
+				geoContainer.classList.remove('hidden');
+				schematicContainer.classList.add('hidden');
 
-			// Render Track Lines and Station Markers
-			const linePolylines = {};
-			const stationMarkers = {};
-			let activeRoutePolyline = null;
-
-			Object.keys(STATIONS_DATA).forEach(lineKey => {
-				const coords = STATIONS_DATA[lineKey].map(s => [s.lat, s.lon]);
-				linePolylines[lineKey] = L.polyline(coords, {
-					color: LINE_COLORS[lineKey],
-					weight: 5,
-					opacity: 0.85,
-					smoothFactor: 1
-				}).addTo(map);
-
-				STATIONS_DATA[lineKey].forEach(st => {
-					const isTransfer = st.isTransfer;
-					const marker = L.circleMarker([st.lat, st.lon], {
-						radius: isTransfer ? 7 : 5,
-						fillColor: isTransfer ? '#F59E0B' : '#FFFFFF',
-						color: LINE_COLORS[lineKey],
-						weight: isTransfer ? 3 : 2,
-						opacity: 1,
-						fillOpacity: 1
-					}).addTo(map);
-
-					marker.bindTooltip(`<strong>${st.name}</strong><br><span style="font-size:11px;color:#666;">Line: ${lineKey.toUpperCase()}</span>`);
-					
-					marker.on('click', () => {
-						// Set destination if origin already picked, otherwise set origin
-						if (originSelect.value && originSelect.value !== st.id) {
-							destSelect.value = st.id;
-						} else {
-							originSelect.value = st.id;
+				initLeafletMap();
+				setTimeout(() => {
+					if (leafletMap) {
+						leafletMap.invalidateSize();
+						if (activeRoutePolyline) {
+							leafletMap.fitBounds(activeRoutePolyline.getBounds(), { padding: [40, 40] });
 						}
-						calculateRoute();
+					}
+				}, 100);
+			});
+
+			// Line Filter Tabs
+			const lineTabs = document.querySelectorAll('.rail-line-tab');
+			lineTabs.forEach(tab => {
+				tab.addEventListener('click', () => {
+					const lineFilter = tab.getAttribute('data-line');
+
+					// Update tab styles
+					lineTabs.forEach(t => t.classList.add('opacity-40'));
+					tab.classList.remove('opacity-40');
+
+					// Filter schematic rows
+					document.querySelectorAll('.rail-station-row').forEach(row => {
+						const rowLine = row.getAttribute('data-line');
+						if (lineFilter === 'all' || rowLine === lineFilter) {
+							row.classList.remove('hidden');
+						} else {
+							row.classList.add('hidden');
+						}
 					});
 
-					stationMarkers[st.id] = marker;
+					// Filter geo map layers if initialized
+					if (leafletMap) {
+						['lrt1', 'mrt3', 'lrt2'].forEach(key => {
+							const shouldShow = (lineFilter === 'all' || key === lineFilter);
+							if (shouldShow) {
+								if (linePolylines[key]) leafletMap.addLayer(linePolylines[key]);
+								STATIONS_DATA[key].forEach(s => {
+									if (stationMarkers[s.id]) leafletMap.addLayer(stationMarkers[s.id]);
+								});
+							} else {
+								if (linePolylines[key]) leafletMap.removeLayer(linePolylines[key]);
+								STATIONS_DATA[key].forEach(s => {
+									if (stationMarkers[s.id]) leafletMap.removeLayer(stationMarkers[s.id]);
+								});
+							}
+						});
+					}
 				});
 			});
 
-			// Filter visibility
-			['lrt1', 'mrt3', 'lrt2'].forEach(line => {
-				const btn = document.getElementById(`toggle-${line}`);
-				let isVisible = true;
-				btn.addEventListener('click', () => {
-					isVisible = !isVisible;
-					if (isVisible) {
-						map.addLayer(linePolylines[line]);
-						STATIONS_DATA[line].forEach(s => map.addLayer(stationMarkers[s.id]));
-						btn.classList.remove('opacity-40');
-					} else {
-						map.removeLayer(linePolylines[line]);
-						STATIONS_DATA[line].forEach(s => map.removeLayer(stationMarkers[s.id]));
-						btn.classList.add('opacity-40');
-					}
+			// Wire station row clicks and quick action buttons
+			document.querySelectorAll('.rail-station-row').forEach(row => {
+				const stId = row.getAttribute('data-station-id');
+
+				// Clicking entire row sets according to active currentTargetMode
+				row.addEventListener('click', (e) => {
+					// Don't duplicate if clicked on inner action buttons
+					if (e.target.closest('.btn-board-quick') || e.target.closest('.btn-alight-quick')) return;
+					window.setTransitStation(stId, currentTargetMode);
+				});
+
+				const boardBtn = row.querySelector('.btn-board-quick');
+				boardBtn?.addEventListener('click', (e) => {
+					e.stopPropagation();
+					window.setTransitStation(stId, 'origin');
+				});
+
+				const alightBtn = row.querySelector('.btn-alight-quick');
+				alightBtn?.addEventListener('click', (e) => {
+					e.stopPropagation();
+					window.setTransitStation(stId, 'dest');
 				});
 			});
 
@@ -825,8 +1243,6 @@ const TRANSFER_HUBS = [
 				let sjtFare = 15;
 
 				if (lineKey === 'mrt3') {
-					// MRT-3 official tier matrix based on station count
-					// 1-2 stations: 13; 3-5: 16; 6-8: 20; 9-11: 24; 12+: 28
 					if (stationCount <= 2) {
 						beepFare = 13;
 					} else if (stationCount <= 5) {
@@ -840,14 +1256,10 @@ const TRANSFER_HUBS = [
 					}
 					sjtFare = beepFare;
 				} else if (lineKey === 'lrt1') {
-					// LRT-1: 15 base + 1.21/km
 					beepFare = 15 + (distanceKm * 1.21);
-					// Cap between 15 and 45
 					beepFare = Math.min(45, Math.max(15, Math.round(beepFare)));
-					// SJT rounded to nearest 5
 					sjtFare = Math.ceil(beepFare / 5) * 5;
 				} else if (lineKey === 'lrt2') {
-					// LRT-2: 14 base + 1.21/km
 					beepFare = 14 + (distanceKm * 1.21);
 					beepFare = Math.min(33, Math.max(14, Math.round(beepFare)));
 					sjtFare = Math.ceil(beepFare / 5) * 5;
@@ -857,11 +1269,39 @@ const TRANSFER_HUBS = [
 			}
 
 			function getLineTravelTime(lineKey, stops) {
-				// Commercial operational pace
 				if (lineKey === 'mrt3') return stops * 2.5;
 				if (lineKey === 'lrt1') return stops * 2.3;
 				if (lineKey === 'lrt2') return stops * 2.8;
 				return stops * 2.5;
+			}
+
+			// Synchronize Schematic Badges & Visual Highlights
+			function updateSchematicHighlights(origin, dest) {
+				const isSameLine = origin.lineKey === dest.lineKey;
+				const minIdx = Math.min(origin.indexInLine, dest.indexInLine);
+				const maxIdx = Math.max(origin.indexInLine, dest.indexInLine);
+
+				ALL_STATIONS.forEach(st => {
+					const rowEl = document.getElementById(`rail-node-${st.id}`);
+					const badgeEl = document.getElementById(`rail-badge-${st.id}`);
+					if (!rowEl || !badgeEl) return;
+
+					if (st.id === origin.id) {
+						rowEl.className = 'rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-emerald-600 bg-emerald-500/15 shadow-2xs transition-all cursor-pointer ring-1 ring-emerald-500/40';
+						badgeEl.textContent = '🟢 BOARDING (START)';
+						badgeEl.className = 'station-status-badge inline-block text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-600 text-white shadow-2xs';
+					} else if (st.id === dest.id) {
+						rowEl.className = 'rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-blue-600 bg-blue-500/15 shadow-2xs transition-all cursor-pointer ring-1 ring-blue-500/40';
+						badgeEl.textContent = '🔵 DESTINATION (EXIT)';
+						badgeEl.className = 'station-status-badge inline-block text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-600 text-white shadow-2xs';
+					} else if (isSameLine && st.lineKey === origin.lineKey && st.indexInLine > minIdx && st.indexInLine < maxIdx) {
+						rowEl.className = 'rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 transition-all cursor-pointer';
+						badgeEl.className = 'station-status-badge hidden';
+					} else {
+						rowEl.className = 'rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-transparent hover:border-mapa-green/40 hover:bg-mapa-canvas transition-all cursor-pointer group';
+						badgeEl.className = 'station-status-badge hidden';
+					}
+				});
 			}
 
 			// Main Routing Algorithm
@@ -878,27 +1318,34 @@ const TRANSFER_HUBS = [
 
 				const hasDiscount = discountToggle.checked;
 
-				// Clear previous highlighted path
-				if (activeRoutePolyline) {
-					map.removeLayer(activeRoutePolyline);
-					activeRoutePolyline = null;
-				}
+				// Update Summary Ribbon
+				if (summaryOriginEl) summaryOriginEl.textContent = origin.name;
+				if (summaryDestEl) summaryDestEl.textContent = dest.name;
 
-				// Reset marker styles
-				ALL_STATIONS.forEach(s => {
-					const m = stationMarkers[s.id];
-					if (m) {
-						m.setStyle({
-							radius: s.isTransfer ? 7 : 5,
-							fillColor: s.isTransfer ? '#F59E0B' : '#FFFFFF',
-							weight: s.isTransfer ? 3 : 2
-						});
+				// Update Schematic Visuals
+				updateSchematicHighlights(origin, dest);
+
+				// Reset / update Geo Map markers if initialized
+				if (leafletMap) {
+					if (activeRoutePolyline) {
+						leafletMap.removeLayer(activeRoutePolyline);
+						activeRoutePolyline = null;
 					}
-				});
 
-				// Highlight origin and destination pins
-				stationMarkers[origin.id]?.setStyle({ radius: 9, fillColor: '#10B981', weight: 4 });
-				stationMarkers[dest.id]?.setStyle({ radius: 9, fillColor: '#EF4444', weight: 4 });
+					ALL_STATIONS.forEach(s => {
+						const m = stationMarkers[s.id];
+						if (m) {
+							m.setStyle({
+								radius: s.isTransfer ? 7 : 5,
+								fillColor: s.isTransfer ? '#F59E0B' : '#FFFFFF',
+								weight: s.isTransfer ? 3 : 2
+							});
+						}
+					});
+
+					stationMarkers[origin.id]?.setStyle({ radius: 9, fillColor: '#10B981', weight: 4 });
+					stationMarkers[dest.id]?.setStyle({ radius: 9, fillColor: '#3B82F6', weight: 4 });
+				}
 
 				if (origin.id === dest.id) {
 					fareBeepEl.textContent = '₱0.00';
@@ -906,8 +1353,9 @@ const TRANSFER_HUBS = [
 					metricTimeEl.textContent = '0 min';
 					metricStopsEl.textContent = '0 stops';
 					metricDistEl.textContent = '0 km';
+					if (summaryMetricEl) summaryMetricEl.textContent = '0 stops • ₱0.00';
 					transferCalloutEl.classList.add('hidden');
-					routeStepsListEl.innerHTML = '<div class="text-mapa-clay italic p-2">Origin and destination are the same station.</div>';
+					routeStepsListEl.innerHTML = '<div class="text-mapa-clay italic p-2">Boarding and destination are the exact same station. Choose different stations to calculate fare.</div>';
 					return;
 				}
 
@@ -935,6 +1383,8 @@ const TRANSFER_HUBS = [
 					metricStopsEl.textContent = `${stopsCount} ${stopsCount === 1 ? 'stop' : 'stops'}`;
 					metricDistEl.textContent = `${distanceKm.toFixed(1)} km`;
 
+					if (summaryMetricEl) summaryMetricEl.textContent = `${stopsCount} stops • ₱${finalBeep.toFixed(2)}`;
+
 					transferCalloutEl.classList.add('hidden');
 
 					// Render steps
@@ -947,7 +1397,7 @@ const TRANSFER_HUBS = [
 							</div>
 						</div>
 						<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/50">
-							<span class="w-3 h-3 rounded-full bg-emerald-600 mt-0.5 shrink-0"></span>
+							<span class="w-3 h-3 rounded-full bg-blue-600 mt-0.5 shrink-0"></span>
 							<div class="space-y-1">
 								<div class="font-bold text-mapa-ink">Alight at ${dest.name}</div>
 								<div class="text-mapa-clay text-[11px]">Tap out at turnstile. Total journey time approx. ${travelTime} minutes.</div>
@@ -955,21 +1405,19 @@ const TRANSFER_HUBS = [
 						</div>
 					`;
 
-					// Highlight polyline segment
-					const pathCoords = (idxA < idxB ? segment : segment.reverse()).map(s => [s.lat, s.lon]);
-					activeRoutePolyline = L.polyline(pathCoords, {
-						color: '#F59E0B',
-						weight: 6,
-						dashArray: '8, 8',
-						opacity: 0.95
-					}).addTo(map);
-
-					map.fitBounds(activeRoutePolyline.getBounds(), { padding: [40, 40] });
+					if (leafletMap) {
+						const pathCoords = (idxA < idxB ? segment : segment.reverse()).map(s => [s.lat, s.lon]);
+						activeRoutePolyline = L.polyline(pathCoords, {
+							color: '#F59E0B',
+							weight: 6,
+							dashArray: '8, 8',
+							opacity: 0.95
+						}).addTo(leafletMap);
+					}
 					return;
 				}
 
 				// CASE 2: Cross-line transfer
-				// Determine optimal interchange station
 				let transferA = null;
 				let transferB = null;
 				let transferName = '';
@@ -978,19 +1426,16 @@ const TRANSFER_HUBS = [
 				const pairKey = [origin.lineKey, dest.lineKey].sort().join('_');
 
 				if (pairKey === 'lrt1_mrt3') {
-					// Transfer at EDSA (LRT-1) <-> Taft (MRT-3)
 					transferA = getStationById(origin.lineKey === 'lrt1' ? 'lrt1_edsa' : 'mrt3_taft');
 					transferB = getStationById(dest.lineKey === 'lrt1' ? 'lrt1_edsa' : 'mrt3_taft');
 					transferName = 'EDSA-Taft Footbridge';
 					transferWalkTime = 4;
 				} else if (pairKey === 'lrt1_lrt2') {
-					// Transfer at Doroteo Jose (LRT-1) <-> Recto (LRT-2)
 					transferA = getStationById(origin.lineKey === 'lrt1' ? 'lrt1_doroteo_jose' : 'lrt2_recto');
 					transferB = getStationById(dest.lineKey === 'lrt1' ? 'lrt1_doroteo_jose' : 'lrt2_recto');
 					transferName = 'Doroteo Jose - Recto Elevated Walkway';
 					transferWalkTime = 5;
 				} else if (pairKey === 'lrt2_mrt3') {
-					// Transfer at Cubao (LRT-2) <-> Cubao (MRT-3)
 					transferA = getStationById(origin.lineKey === 'lrt2' ? 'lrt2_cubao' : 'mrt3_cubao');
 					transferB = getStationById(dest.lineKey === 'lrt2' ? 'lrt2_cubao' : 'mrt3_cubao');
 					transferName = 'Araneta Center-Cubao (Farmers/Gateway Walkway)';
@@ -999,13 +1444,11 @@ const TRANSFER_HUBS = [
 
 				if (!transferA || !transferB) return;
 
-				// Leg 1: Origin -> TransferA
 				const leg1Stops = Math.abs(origin.indexInLine - transferA.indexInLine);
 				const leg1Dist = Math.abs(origin.km - transferA.km);
 				const leg1Fare = calcSingleLineFare(origin.lineKey, leg1Dist, leg1Stops);
 				const leg1Time = getLineTravelTime(origin.lineKey, leg1Stops);
 
-				// Leg 2: TransferB -> Destination
 				const leg2Stops = Math.abs(transferB.indexInLine - dest.indexInLine);
 				const leg2Dist = Math.abs(transferB.km - dest.km);
 				const leg2Fare = calcSingleLineFare(dest.lineKey, leg2Dist, leg2Stops);
@@ -1025,6 +1468,8 @@ const TRANSFER_HUBS = [
 				metricTimeEl.textContent = `~${totalTime} mins`;
 				metricStopsEl.textContent = `${totalStops} stops (1 transfer)`;
 				metricDistEl.textContent = `${totalDist.toFixed(1)} km`;
+
+				if (summaryMetricEl) summaryMetricEl.textContent = `${totalStops} stops (1 transfer) • ₱${finalBeep.toFixed(2)}`;
 
 				// Show transfer alert
 				transferCalloutEl.classList.remove('hidden');
@@ -1060,7 +1505,7 @@ const TRANSFER_HUBS = [
 						</div>
 					</div>
 					<div class="flex items-start gap-2.5 p-2 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/50">
-						<span class="w-3 h-3 rounded-full bg-emerald-600 mt-0.5 shrink-0"></span>
+						<span class="w-3 h-3 rounded-full bg-blue-600 mt-0.5 shrink-0"></span>
 						<div class="space-y-0.5">
 							<div class="font-bold text-mapa-ink">4. Arrive at ${dest.name}</div>
 							<div class="text-mapa-clay text-[11px]">Total combined time approx. ${totalTime} minutes.</div>
@@ -1068,26 +1513,25 @@ const TRANSFER_HUBS = [
 					</div>
 				`;
 
-				// Draw multi-leg highlighted path
-				const stListA = STATIONS_DATA[origin.lineKey];
-				const minA = Math.min(origin.indexInLine, transferA.indexInLine);
-				const maxA = Math.max(origin.indexInLine, transferA.indexInLine);
-				const leg1Coords = stListA.slice(minA, maxA + 1).map(s => [s.lat, s.lon]);
+				if (leafletMap) {
+					const stListA = STATIONS_DATA[origin.lineKey];
+					const minA = Math.min(origin.indexInLine, transferA.indexInLine);
+					const maxA = Math.max(origin.indexInLine, transferA.indexInLine);
+					const leg1Coords = stListA.slice(minA, maxA + 1).map(s => [s.lat, s.lon]);
 
-				const stListB = STATIONS_DATA[dest.lineKey];
-				const minB = Math.min(dest.indexInLine, transferB.indexInLine);
-				const maxB = Math.max(dest.indexInLine, transferB.indexInLine);
-				const leg2Coords = stListB.slice(minB, maxB + 1).map(s => [s.lat, s.lon]);
+					const stListB = STATIONS_DATA[dest.lineKey];
+					const minB = Math.min(dest.indexInLine, transferB.indexInLine);
+					const maxB = Math.max(dest.indexInLine, transferB.indexInLine);
+					const leg2Coords = stListB.slice(minB, maxB + 1).map(s => [s.lat, s.lon]);
 
-				const combinedCoords = [...leg1Coords, ...leg2Coords];
-				activeRoutePolyline = L.polyline(combinedCoords, {
-					color: '#F59E0B',
-					weight: 6,
-					dashArray: '8, 8',
-					opacity: 0.95
-				}).addTo(map);
-
-				map.fitBounds(activeRoutePolyline.getBounds(), { padding: [40, 40] });
+					const combinedCoords = [...leg1Coords, ...leg2Coords];
+					activeRoutePolyline = L.polyline(combinedCoords, {
+						color: '#F59E0B',
+						weight: 6,
+						dashArray: '8, 8',
+						opacity: 0.95
+					}).addTo(leafletMap);
+				}
 			}
 
 			// Event Listeners
@@ -1095,12 +1539,15 @@ const TRANSFER_HUBS = [
 			destSelect.addEventListener('change', calculateRoute);
 			discountToggle.addEventListener('change', calculateRoute);
 
-			swapBtn.addEventListener('click', () => {
+			function swapStations() {
 				const temp = originSelect.value;
 				originSelect.value = destSelect.value;
 				destSelect.value = temp;
 				calculateRoute();
-			});
+			}
+
+			swapBtn.addEventListener('click', swapStations);
+			quickSwapBtn?.addEventListener('click', swapStations);
 
 			// Presets
 			document.querySelectorAll('.preset-btn').forEach(btn => {
