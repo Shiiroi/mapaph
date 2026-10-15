@@ -1,0 +1,1120 @@
+---
+/**
+ * @file edsa-carousel.astro
+ * @description Interactive EDSA Carousel Busway (Route E) Stop-by-Stop Fare Calculator, Route Map, and Interchange Guide.
+ * Features dual schematic busway strip & geographic Leaflet corridor mapping, official LTFRB distance-based tariffs, 20% statutory discounts, and 24/7 operating schedules.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+
+// 21 Official EDSA Carousel Busway Stops (Monumento ↔ PITX)
+const BUSWAY_STOPS = [
+	{
+		id: 'monumento',
+		name: 'Monumento',
+		city: 'Caloocan',
+		km: 0.0,
+		platform: 'Median Island with Barrier',
+		access: 'Pedestrian Footbridge & Street Crosswalk',
+		interchanges: ['LRT-1 Monumento', 'Caloocan Jeepney Hub'],
+		landmarks: 'Bonifacio Monument Circle, SM Center Sangandaan, Victory Central Mall',
+		lat: 14.6575,
+		lon: 120.9836,
+		isTerminus: true
+	},
+	{
+		id: 'bagong_barrio',
+		name: 'Bagong Barrio',
+		city: 'Caloocan',
+		km: 1.6,
+		platform: 'Median Barrier Platform',
+		access: 'Elevated Footbridge',
+		interchanges: ['NLEX Harbor Link Entry', 'Malabon Jeepneys'],
+		landmarks: 'Bagong Barrio Commercial Strip, NLEX Tollgate Link',
+		lat: 14.6582,
+		lon: 120.9985,
+		isTerminus: false
+	},
+	{
+		id: 'balintawak',
+		name: 'Balintawak',
+		city: 'Quezon City',
+		km: 2.7,
+		platform: 'Median Island Platform',
+		access: 'Elevated Footbridge / Concourse Walkway',
+		interchanges: ['LRT-1 Balintawak', 'Skyway Stage 3', 'A. Bonifacio UV Express'],
+		landmarks: 'Ayala Malls Cloverleaf, Balintawak Wholesale Market, Puregold Balintawak',
+		lat: 14.6578,
+		lon: 121.0028,
+		isTerminus: false
+	},
+	{
+		id: 'kaingin',
+		name: 'Kaingin Road',
+		city: 'Quezon City',
+		km: 4.2,
+		platform: 'Median Barrier Platform',
+		access: 'Pedestrian Overpass',
+		interchanges: ['Kaingin Local Tricycle / Jeepney routes'],
+		landmarks: 'Balintawak Industrial Estate, Kaingin Residential District',
+		lat: 14.6562,
+		lon: 121.0152,
+		isTerminus: false
+	},
+	{
+		id: 'roosevelt',
+		name: 'Roosevelt / Fernando Poe Jr.',
+		city: 'Quezon City',
+		km: 5.3,
+		platform: 'Median Island Platform',
+		access: 'Direct Footbridge to Station Concourse',
+		interchanges: ['LRT-1 FPJ / Roosevelt', 'Congressional Ave Busses & Jeeps'],
+		landmarks: 'Muñoz Market, Congressional Town Center, WalterMart North EDSA',
+		lat: 14.6575,
+		lon: 121.0210,
+		isTerminus: false
+	},
+	{
+		id: 'north_ave',
+		name: 'North Avenue',
+		city: 'Quezon City',
+		km: 6.8,
+		platform: 'Median Island Platform with Turnstiles',
+		access: 'Direct Elevated Footbridge from TriNoma & SM North',
+		interchanges: ['MRT-3 North Avenue', 'Future Unified Grand Central', 'Mindanao Ave UV Express'],
+		landmarks: 'TriNoma, SM City North EDSA, Vertis North, Ayala Malls Vertis',
+		lat: 14.6525,
+		lon: 121.0322,
+		isTerminus: false
+	},
+	{
+		id: 'quezon_ave',
+		name: 'Quezon Avenue',
+		city: 'Quezon City',
+		km: 8.1,
+		platform: 'Median Island Platform',
+		access: 'Direct Overpass to Centris Concourse',
+		interchanges: ['MRT-3 Quezon Avenue', 'Quezon Ave / Fairview Bus Hub', 'Agham Road UV Express'],
+		landmarks: 'Eton Centris, Philippine Science High School, NAPOCOR, Cyberpod Centris',
+		lat: 14.6425,
+		lon: 121.0385,
+		isTerminus: false
+	},
+	{
+		id: 'q_mart',
+		name: 'Q-Mart (Nepa Q-Mart)',
+		city: 'Quezon City',
+		km: 9.3,
+		platform: 'Median Island Platform',
+		access: 'Pedestrian Overpass',
+		interchanges: ['Kamuning / Ermin Garcia Jeeps'],
+		landmarks: 'Nepa Q-Mart Wet Market, Ramon Magsaysay High School, Kamuning Area',
+		lat: 14.6315,
+		lon: 121.0440,
+		isTerminus: false
+	},
+	{
+		id: 'main_ave',
+		name: 'Main Avenue (Cubao)',
+		city: 'Quezon City',
+		km: 10.4,
+		platform: 'Median Barrier Platform',
+		access: 'Elevated Footbridge',
+		interchanges: ['MRT-3 Cubao (450m Walk)', 'LRT-2 Cubao via Gateway', 'Provincial Bus Terminals'],
+		landmarks: 'Araneta City, Farmers Plaza, Ali Mall, Smart Araneta Coliseum',
+		lat: 14.6212,
+		lon: 121.0505,
+		isTerminus: false
+	},
+	{
+		id: 'santolan',
+		name: 'Santolan-Annapolis',
+		city: 'Quezon City / San Juan',
+		km: 12.1,
+		platform: 'Median Barrier Platform',
+		access: 'Pedestrian Overpass',
+		interchanges: ['MRT-3 Santolan', 'Greenhills Shuttle / Annapolis Jeeps'],
+		landmarks: 'Camp Crame (PNP Headquarters), Camp Aguinaldo (AFP HQ), Greenhills Shopping Center',
+		lat: 14.6080,
+		lon: 121.0560,
+		isTerminus: false
+	},
+	{
+		id: 'ortigas',
+		name: 'Ortigas',
+		city: 'Mandaluyong / Pasig',
+		km: 14.3,
+		platform: 'Median Island Platform',
+		access: 'Direct Concourse Walkway from Megamall & Galleria',
+		interchanges: ['MRT-3 Ortigas', 'Ortigas Center UV Express', 'Rizal Bus Hub'],
+		landmarks: 'SM Megamall, Robinsons Galleria, ADB Headquarters, The Podium',
+		lat: 14.5878,
+		lon: 121.0565,
+		isTerminus: false
+	},
+	{
+		id: 'guadalupe',
+		name: 'Guadalupe',
+		city: 'Makati',
+		km: 16.7,
+		platform: 'Median Platform with Rail Connection',
+		access: 'Direct Footbridge to MRT-3 & Ferry Wharf',
+		interchanges: ['MRT-3 Guadalupe', 'Pasig River Ferry (Guadalupe Wharf)', 'Taguig/Pateros Jeeps'],
+		landmarks: 'Guadalupe Commercial Complex, Rockwell Center / Power Plant Mall, Nuestra Señora de Gracia',
+		lat: 14.5672,
+		lon: 121.0455,
+		isTerminus: false
+	},
+	{
+		id: 'buendia',
+		name: 'Buendia (Sen. Gil Puyat)',
+		city: 'Makati',
+		km: 18.2,
+		platform: 'Median Island Platform',
+		access: 'Direct Overpass to MRT Concourse',
+		interchanges: ['MRT-3 Buendia', 'BGC Bus North Route', 'Ayala Ave UV Express'],
+		landmarks: 'Kalayaan Flyover, Makati CBD North, Urdaneta Village, Bel-Air',
+		lat: 14.5540,
+		lon: 121.0335,
+		isTerminus: false
+	},
+	{
+		id: 'ayala',
+		name: 'Ayala (One Ayala)',
+		city: 'Makati',
+		km: 19.5,
+		platform: 'Intermodal Concourse Terminal',
+		access: 'Direct Indoor Connection inside One Ayala',
+		interchanges: ['MRT-3 Ayala', 'One Ayala Intermodal Terminal', 'BGC Bus Terminal', 'P2P South Hub'],
+		landmarks: 'One Ayala, SM Makati, Glorietta, Greenbelt, Ayala Center',
+		lat: 14.5492,
+		lon: 121.0280,
+		isTerminus: false
+	},
+	{
+		id: 'tramo',
+		name: 'Tramo',
+		city: 'Pasay',
+		km: 21.2,
+		platform: 'Median Barrier Platform',
+		access: 'Pedestrian Overpass',
+		interchanges: ['Aurora Blvd / Tramo Local Jeeps'],
+		landmarks: 'Pasay General Hospital, Cabrera St, Tramo Commercial Hub',
+		lat: 14.5420,
+		lon: 121.0080,
+		isTerminus: false
+	},
+	{
+		id: 'taft_ave',
+		name: 'Taft Avenue (Pasay Rotonda)',
+		city: 'Pasay',
+		km: 22.3,
+		platform: 'Median Island Platform',
+		access: 'Elevated Overpass connected to MRT-3 Taft & LRT-1 EDSA',
+		interchanges: ['MRT-3 Taft Avenue', 'LRT-1 EDSA', 'Cavite/Laguna Provincial Buses'],
+		landmarks: 'Metropoint Mall, Pasay Rotonda, Winston Hotel, San Roque Parish',
+		lat: 14.5375,
+		lon: 121.0015,
+		isTerminus: false
+	},
+	{
+		id: 'roxas_blvd',
+		name: 'Roxas Boulevard',
+		city: 'Pasay',
+		km: 23.8,
+		platform: 'Curbside / Dedicated Median Platform',
+		access: 'Signalized Crosswalk & Overpass',
+		interchanges: ['Roxas Blvd Coastal Jeeps', 'Baclaran Market Hub'],
+		landmarks: 'Heritage Hotel, Baclaran Church (National Shrine of Our Mother of Perpetual Help)',
+		lat: 14.5320,
+		lon: 120.9920,
+		isTerminus: false
+	},
+	{
+		id: 'macapagal',
+		name: 'Macapagal Boulevard',
+		city: 'Parañaque',
+		km: 25.0,
+		platform: 'Curbside Dedicated Bay',
+		access: 'Street Crosswalk',
+		interchanges: ['Aseana City Shuttle', 'Bradco Ave Trikes'],
+		landmarks: 'City of Dreams Manila, Bradco Avenue, Aseana One & Two',
+		lat: 14.5240,
+		lon: 120.9880,
+		isTerminus: false
+	},
+	{
+		id: 'dfa_aseana',
+		name: 'DFA Aseana',
+		city: 'Parañaque',
+		km: 26.1,
+		platform: 'Curbside Dedicated Bay',
+		access: 'Signalized Pedestrian Crossing',
+		interchanges: ['Aseana City Shuttles'],
+		landmarks: 'Department of Foreign Affairs (DFA Consular Office), DoubleDragon Plaza',
+		lat: 14.5180,
+		lon: 120.9890,
+		isTerminus: false
+	},
+	{
+		id: 'ayala_manila_bay',
+		name: 'Ayala Malls Manila Bay',
+		city: 'Parañaque',
+		km: 27.0,
+		platform: 'Curbside Dedicated Bay',
+		access: 'Direct Mall Footbridge & Ground Entrance',
+		interchanges: ['Entertainment City Casino Shuttles (Solaire, Okada, COD)'],
+		landmarks: 'Ayala Malls Manila Bay, Solaire Resort, Okada Manila Link',
+		lat: 14.5140,
+		lon: 120.9900,
+		isTerminus: false
+	},
+	{
+		id: 'pitx',
+		name: 'PITX (Parañaque Integrated Terminal Exchange)',
+		city: 'Parañaque',
+		km: 28.1,
+		platform: 'Intermodal Grand Terminal Bay',
+		access: 'Direct Indoor Terminal Concourse',
+		interchanges: ['Cavite & Batangas Provincial Buses', 'Bicol & Visayas Buses', 'Modern Jeepney Hub', 'LRT-1 Cavite Extension (Asia World)'],
+		landmarks: 'Parañaque Integrated Terminal Exchange, Coastal Road / CAVITEX, Asia World',
+		lat: 14.5090,
+		lon: 120.9920,
+		isTerminus: true
+	}
+];
+
+// Major Multimodal Transit Interchange Hubs along EDSA Carousel
+const INTERCHANGE_HUBS = [
+	{
+		title: 'One Ayala Intermodal Terminal',
+		stop: 'Ayala (One Ayala)',
+		description: 'Metro Manila’s premier private-public transit interchange connecting EDSA Carousel with MRT-3 Ayala, BGC Bus, point-to-point (P2P) buses to Laguna/Cavite, and city UV Express vans.',
+		badge: 'Terminal Concourse'
+	},
+	{
+		title: 'PITX (Parañaque Integrated Terminal Exchange)',
+		stop: 'PITX',
+		description: 'South Luzon gateway terminal providing seamless transfers to Southwest provincial buses (Cavite, Batangas), Bicol express lines, modern jeepneys, and future LRT-1 Asia World station.',
+		badge: 'Grand Intermodal'
+	},
+	{
+		title: 'North Avenue Grand Central Hub',
+		stop: 'North Avenue',
+		description: 'Northern junction connecting EDSA Carousel with MRT-3 North Avenue, TriNoma, SM City North EDSA, and the future Unified Grand Central Station (LRT-1 / MRT-3 / MRT-7 / Metro Manila Subway).',
+		badge: 'Mega Transit Hub'
+	},
+	{
+		title: 'Pasay Rotonda Interchange',
+		stop: 'Taft Avenue',
+		description: 'Dense multi-tiered transfer point between the EDSA Carousel median busway, MRT-3 Taft Avenue terminus, and LRT-1 EDSA station via an elevated pedestrian footbridge network.',
+		badge: 'Dual Rail Link'
+	}
+];
+
+const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
+	const dist = stop.km;
+	let regFare = dist <= 4.0 ? 15.0 : 15.0 + (dist - 4.0) * 2.65;
+	regFare = Math.min(75.5, Math.max(15.0, Math.round(regFare * 2) / 2));
+	const discFare = Math.round(regFare * 0.8 * 2) / 2;
+	return {
+		...stop,
+		regFare,
+		discFare
+	};
+});
+---
+
+<BaseLayout
+	title="EDSA Carousel Busway Stop-by-Stop Fare & Route Map — mapaPH Tools"
+	description="Interactive EDSA Carousel Busway (Route E) stop-by-stop fare calculator, schematic transit ribbon, and geographic route map. Computes official LTFRB distance-based fares, 20% statutory discounts, travel times, and rail interchanges between Monumento and PITX."
+	keywords="EDSA Carousel fare calculator, EDSA Busway stops, Monumento to PITX fare, EDSA Carousel map, LTFRB bus fare matrix, One Ayala busway, MRT 3 to EDSA Carousel transfer, 24/7 bus EDSA, PITX busway stops, Ayala Malls Manila Bay bus stop"
+>
+	<!-- Leaflet Stylesheet -->
+	<link
+		rel="stylesheet"
+		href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+		integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+		crossorigin=""
+		slot="schema"
+	/>
+
+	<script type="application/ld+json" slot="schema" is:inline>
+		{
+			"@context": "https://schema.org",
+			"@graph": [
+				{
+					"@type": "WebApplication",
+					"name": "EDSA Carousel Busway Stop-by-Stop Fare & Route Map",
+					"url": "https://mapaph.com/tools/edsa-carousel",
+					"applicationCategory": "Public Transit & Commuter Utility",
+					"operatingSystem": "All",
+					"description": "Interactive fare calculator and dual schematic/geographic route map for the EDSA Carousel Busway (Route E) from Monumento to PITX with official LTFRB distance tariffs.",
+					"provider": {
+						"@type": "Organization",
+						"name": "mapaPH",
+						"url": "https://mapaph.com"
+					}
+				},
+				{
+					"@type": "BreadcrumbList",
+					"itemListElement": [
+						{
+							"@type": "ListItem",
+							"position": 1,
+							"name": "Home",
+							"item": "https://mapaph.com"
+						},
+						{
+							"@type": "ListItem",
+							"position": 2,
+							"name": "Tools",
+							"item": "https://mapaph.com/tools"
+						},
+						{
+							"@type": "ListItem",
+							"position": 3,
+							"name": "EDSA Carousel Busway Guide",
+							"item": "https://mapaph.com/tools/edsa-carousel"
+						}
+					]
+				}
+			]
+		}
+	</script>
+
+	<Navbar />
+
+	<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 text-mapa-ink">
+		<!-- Header Breadcrumb & Tag -->
+		<div class="mb-8">
+			<nav class="flex items-center gap-2 text-xs font-sans text-mapa-clay mb-3">
+				<a href="/" class="hover:text-mapa-green transition-colors">Home</a>
+				<span>/</span>
+				<a href="/tools" class="hover:text-mapa-green transition-colors">Tools</a>
+				<span>/</span>
+				<span class="text-mapa-ink font-semibold">EDSA Carousel Busway</span>
+			</nav>
+
+			<div class="flex flex-wrap items-center gap-2.5">
+				<span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-600/15 text-emerald-800 border border-emerald-600/30">
+					Route E &bull; Median Bus Rapid Transit (BRT)
+				</span>
+				<span class="text-xs font-medium px-2.5 py-1 rounded-full bg-mapa-canvas-dark border border-mapa-contour text-mapa-ink/75">
+					21 Stations &bull; 28.1 Kilometers
+				</span>
+				<span class="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-800 border border-blue-500/20">
+					24/7 Operating Hours
+				</span>
+			</div>
+
+			<h1 class="text-3xl sm:text-5xl font-extrabold text-mapa-green font-serif tracking-tight mt-3">
+				EDSA Carousel Busway Fare & Route Map
+			</h1>
+			<p class="font-sans text-base sm:text-lg text-mapa-ink/80 mt-2.5 max-w-3xl leading-relaxed">
+				Official LTFRB distance-based fare calculator, schematic transit strip, and geographic route map for Metro Manila's 24/7 inner-lane busway connecting Caloocan (Monumento) to Parañaque (PITX).
+			</p>
+		</div>
+
+		<!-- Top Summary Stat Badges -->
+		<div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-4 mb-8 font-sans">
+			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-4 shadow-2xs">
+				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-clay">Base Fare</div>
+				<div class="text-2xl font-extrabold text-mapa-ink mt-1">₱15.00</div>
+				<div class="text-[11px] text-mapa-ink/65 mt-0.5">First 4.0 km (Aircon BRT)</div>
+			</div>
+			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-4 shadow-2xs">
+				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-clay">Per KM Tariff</div>
+				<div class="text-2xl font-extrabold text-mapa-ink mt-1">₱2.65 <span class="text-xs font-normal text-mapa-ink/60">/ km</span></div>
+				<div class="text-[11px] text-mapa-ink/65 mt-0.5">Every succeeding kilometer</div>
+			</div>
+			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-4 shadow-2xs">
+				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-clay">Maximum Fare</div>
+				<div class="text-2xl font-extrabold text-emerald-800 mt-1">₱75.50</div>
+				<div class="text-[11px] text-mapa-ink/65 mt-0.5">End-to-End (Monumento ↔ PITX)</div>
+			</div>
+			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-4 shadow-2xs">
+				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-clay">Statutory Discount</div>
+				<div class="text-2xl font-extrabold text-blue-700 mt-1">20% OFF</div>
+				<div class="text-[11px] text-mapa-ink/65 mt-0.5">Students, Seniors, PWDs (₱60.50 max)</div>
+			</div>
+		</div>
+
+		<!-- Main Interactive Tool Section: 2 Columns (Control & Result Panel + Dual Visualizer) -->
+		<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-12">
+			
+			<!-- Left Column: Controls, Fare Result, and Station Details (5 cols) -->
+			<div class="lg:col-span-5 flex flex-col gap-6 font-sans">
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-xs">
+					<div class="flex items-center justify-between border-b border-mapa-contour/50 pb-3 mb-5">
+						<h2 class="text-lg font-serif font-bold text-mapa-ink">
+							Journey Fare Calculator
+						</h2>
+						<button
+							id="swap-stops-btn"
+							type="button"
+							class="text-xs font-semibold text-mapa-green hover:underline inline-flex items-center gap-1 cursor-pointer"
+							title="Swap Boarding and Alighting stops"
+						>
+							<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+							</svg>
+							<span>Reverse Direction</span>
+						</button>
+					</div>
+
+					<!-- Form Controls -->
+					<div class="space-y-4">
+						<!-- Origin Stop -->
+						<div>
+							<label for="origin-select" class="block text-xs font-bold uppercase tracking-wider text-mapa-clay mb-1.5">
+								Boarding Stop (Origin)
+							</label>
+							<div class="relative">
+								<select
+									id="origin-select"
+									class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/40 cursor-pointer"
+								>
+									{BUSWAY_STOPS.map((stop, index) => (
+										<option value={stop.id} selected={index === 0}>
+											{index + 1}. {stop.name} ({stop.city}) — KM {stop.km.toFixed(1)}
+										</option>
+									))}
+								</select>
+							</div>
+						</div>
+
+						<!-- Destination Stop -->
+						<div>
+							<label for="dest-select" class="block text-xs font-bold uppercase tracking-wider text-mapa-clay mb-1.5">
+								Alighting Stop (Destination)
+							</label>
+							<div class="relative">
+								<select
+									id="dest-select"
+									class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/40 cursor-pointer"
+								>
+									{BUSWAY_STOPS.map((stop, index) => (
+										<option value={stop.id} selected={index === BUSWAY_STOPS.length - 1}>
+											{index + 1}. {stop.name} ({stop.city}) — KM {stop.km.toFixed(1)}
+										</option>
+									))}
+								</select>
+							</div>
+						</div>
+
+						<!-- Discount Toggle -->
+						<div class="pt-2">
+							<label class="flex items-center justify-between p-3 rounded-xl bg-mapa-canvas border border-mapa-contour/70 cursor-pointer hover:border-mapa-green/50 transition-colors">
+								<div class="flex flex-col">
+									<span class="text-xs font-bold text-mapa-ink">20% Statutory Discount</span>
+									<span class="text-[11px] text-mapa-clay">Student (RA 11314), Senior Citizen (RA 9994), PWD (RA 10754)</span>
+								</div>
+								<input
+									type="checkbox"
+									id="discount-toggle"
+									class="w-4 h-4 rounded text-mapa-green focus:ring-mapa-green cursor-pointer"
+								/>
+							</label>
+						</div>
+					</div>
+
+					<!-- Calculation Result Card -->
+					<div class="mt-6 p-5 rounded-xl bg-emerald-600/10 border border-emerald-600/30">
+						<div class="flex items-center justify-between mb-2">
+							<span class="text-xs font-bold uppercase tracking-wider text-emerald-900">Estimated Busway Fare</span>
+							<span id="fare-rate-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white">Regular</span>
+						</div>
+
+						<div class="flex items-baseline gap-2">
+							<span id="computed-fare" class="text-4xl font-extrabold text-emerald-950 font-serif">₱75.50</span>
+							<span id="discounted-fare-strikethrough" class="text-sm line-through text-mapa-clay hidden">₱75.50</span>
+						</div>
+
+						<div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-emerald-600/20 text-center text-xs">
+							<div>
+								<div class="text-[10px] text-mapa-clay uppercase font-bold">Corridor Distance</div>
+								<div id="stat-distance" class="font-bold text-mapa-ink mt-0.5">28.1 km</div>
+							</div>
+							<div>
+								<div class="text-[10px] text-mapa-clay uppercase font-bold">Stops Traversed</div>
+								<div id="stat-stops" class="font-bold text-mapa-ink mt-0.5">20 stops</div>
+							</div>
+							<div>
+								<div class="text-[10px] text-mapa-clay uppercase font-bold">Est. Travel Time</div>
+								<div id="stat-time" class="font-bold text-mapa-ink mt-0.5">~55–70 mins</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Quick Summary Notice -->
+					<div class="mt-4 p-3 bg-mapa-canvas rounded-lg border border-mapa-contour text-[11px] text-mapa-ink/75 leading-relaxed">
+						<p>
+							<strong>Note:</strong> EDSA Carousel operates <strong>24/7</strong>. Fare collection is conducted inside the bus upon boarding or at ticketing booths stationed in high-density median island platforms (such as Monumento, Ayala, and PITX). Have exact cash ready or consult station conductors.
+						</p>
+					</div>
+				</div>
+
+				<!-- Selected Stop Info Card -->
+				<div id="active-stop-card" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-xs">
+					<div class="flex items-center justify-between border-b border-mapa-contour/50 pb-3 mb-4">
+						<div>
+							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay">Selected Station Details</span>
+							<h3 id="card-stop-name" class="font-serif text-xl font-bold text-mapa-ink">Monumento</h3>
+						</div>
+						<span id="card-stop-city" class="text-xs font-semibold px-2.5 py-1 rounded bg-mapa-canvas border border-mapa-contour text-mapa-green">
+							Caloocan
+						</span>
+					</div>
+
+					<div class="space-y-3 text-xs">
+						<div>
+							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay">Platform Configuration</div>
+							<p id="card-stop-platform" class="text-mapa-ink/90 font-medium mt-0.5">Median Island with Barrier</p>
+						</div>
+						<div>
+							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay">Pedestrian Access & Entry</div>
+							<p id="card-stop-access" class="text-mapa-ink/90 font-medium mt-0.5">Pedestrian Footbridge & Street Crosswalk</p>
+						</div>
+						<div>
+							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay">Connecting Interchanges</div>
+							<div id="card-stop-interchanges" class="flex flex-wrap gap-1.5 mt-1">
+								<span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-800 border border-emerald-500/20">LRT-1 Monumento</span>
+								<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour">Caloocan Jeepney Hub</span>
+							</div>
+						</div>
+						<div>
+							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay">Nearby Landmarks</div>
+							<p id="card-stop-landmarks" class="text-mapa-ink/80 mt-0.5">Bonifacio Monument Circle, SM Center Sangandaan, Victory Central Mall</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Right Column: Dual Visualizer (Schematic Busway Ribbon vs. Geographic Map) (7 cols) -->
+			<div class="lg:col-span-7 flex flex-col gap-4 font-sans">
+				<!-- Visualizer Controls: View Mode Switcher -->
+				<div class="flex items-center justify-between bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-3.5 shadow-2xs">
+					<div class="flex items-center gap-2">
+						<span class="text-xs font-bold uppercase tracking-wider text-mapa-clay pl-2">Display View:</span>
+						<div class="inline-flex rounded-xl bg-mapa-canvas p-1 border border-mapa-contour">
+							<button
+								id="btn-view-schematic"
+								type="button"
+								class="px-3 py-1.5 text-xs font-bold rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer"
+							>
+								Schematic Strip
+							</button>
+							<button
+								id="btn-view-geo"
+								type="button"
+								class="px-3 py-1.5 text-xs font-medium rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
+							>
+								Geographic Map
+							</button>
+						</div>
+					</div>
+
+					<div class="text-xs text-mapa-clay hidden sm:block">
+						<span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-600 mr-1 align-middle"></span>
+						Inner Median Busway
+					</div>
+				</div>
+
+				<!-- VIEW 1: Schematic Busway Strip Container -->
+				<div id="schematic-view-container" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-xs overflow-hidden">
+					<div class="flex items-center justify-between pb-3 mb-4 border-b border-mapa-contour/50">
+						<div>
+							<h3 class="font-serif text-lg font-bold text-mapa-ink">EDSA Carousel Corridor Strip</h3>
+							<p class="text-xs text-mapa-clay">Sequential median island stations from North (Monumento) to South (PITX)</p>
+						</div>
+						<span class="text-[11px] font-mono px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour text-mapa-green">
+							Route E Strip
+						</span>
+					</div>
+
+					<!-- Vertical Schematic Ribbon with Platform Nodes -->
+					<div class="relative pl-8 pr-2 py-4 max-h-[640px] overflow-y-auto space-y-3 custom-scrollbar">
+						<!-- Central Vertical Backbone Line -->
+						<div class="absolute left-[22px] top-6 bottom-6 w-1.5 bg-emerald-600/30 rounded-full"></div>
+
+						<!-- Dynamic Stops Rendering -->
+						{BUSWAY_STOPS.map((stop, index) => (
+							<div
+								id={`schematic-node-${stop.id}`}
+								data-stop-id={stop.id}
+								data-km={stop.km}
+								class="schematic-node relative flex items-center justify-between p-3 rounded-xl border border-transparent hover:border-mapa-green/40 hover:bg-mapa-canvas transition-all cursor-pointer group"
+							>
+								<!-- Circle Node Indicator -->
+								<div class="absolute left-[-24px] w-6 h-6 rounded-full bg-mapa-canvas-dark border-2 border-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform z-10">
+									<div class="w-2 h-2 rounded-full bg-emerald-600"></div>
+								</div>
+
+								<div class="flex flex-col ml-3">
+									<div class="flex items-center gap-2">
+										<span class="font-serif font-bold text-sm text-mapa-ink group-hover:text-mapa-green transition-colors">
+											{index + 1}. {stop.name}
+										</span>
+										{stop.isTerminus && (
+											<span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-600 text-white">
+												Terminus
+											</span>
+										)}
+									</div>
+									<span class="text-[11px] text-mapa-clay mt-0.5">
+										{stop.city} &bull; KM {stop.km.toFixed(1)} &bull; {stop.platform}
+									</span>
+									{stop.interchanges && stop.interchanges.length > 0 && (
+										<div class="flex flex-wrap gap-1 mt-1.5">
+											{stop.interchanges.map((ic) => (
+												<span class="text-[10px] px-1.5 py-0.5 rounded bg-mapa-canvas border border-mapa-contour text-mapa-ink/75">
+													{ic}
+												</span>
+											))}
+										</div>
+									)}
+								</div>
+
+								<div class="text-right flex-shrink-0 ml-4">
+									<button
+										type="button"
+										class="node-select-btn text-xs font-semibold text-mapa-green opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 rounded bg-mapa-green/10"
+									>
+										Inspect
+									</button>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+
+				<!-- VIEW 2: Geographic Leaflet Map Container -->
+				<div id="geo-view-container" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 shadow-xs hidden">
+					<div class="flex items-center justify-between pb-3 mb-2 border-b border-mapa-contour/50">
+						<div>
+							<h3 class="font-serif text-lg font-bold text-mapa-ink">Geographic Corridor Map</h3>
+							<p class="text-xs text-mapa-clay">CartoDB Voyager map of Epifanio de los Santos Ave & Macapagal Blvd</p>
+						</div>
+						<div class="text-xs text-mapa-clay flex items-center gap-2">
+							<span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+							<span>Busway Route</span>
+						</div>
+					</div>
+
+					<!-- Map Div -->
+					<div id="busway-map" class="w-full h-[580px] rounded-xl overflow-hidden border border-mapa-contour/60"></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Major Multimodal Interchanges Section -->
+		<section class="mb-14 font-sans">
+			<div class="border-b border-mapa-contour/50 pb-3 mb-6">
+				<h2 class="text-2xl font-serif font-bold text-mapa-ink">
+					Major Multimodal Transfer Terminals
+				</h2>
+				<p class="text-sm text-mapa-clay mt-1">
+					Key interchange concourses connecting the EDSA Carousel to rail networks, provincial buses, and business districts.
+				</p>
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+				{INTERCHANGE_HUBS.map(hub => (
+					<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5 flex flex-col justify-between hover:border-mapa-green/50 transition-colors shadow-2xs">
+						<div>
+							<div class="flex items-center justify-between gap-2 mb-2">
+								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-600/15 text-emerald-800 border border-emerald-600/30">
+									{hub.badge}
+								</span>
+								<span class="text-xs font-semibold text-mapa-green">
+									{hub.stop}
+								</span>
+							</div>
+							<h3 class="font-serif text-base font-bold text-mapa-ink mt-2">
+								{hub.title}
+							</h3>
+							<p class="text-xs text-mapa-ink/75 mt-2 leading-relaxed">
+								{hub.description}
+							</p>
+						</div>
+					</div>
+				))}
+			</div>
+		</section>
+
+		<!-- Complete Station Directory & Fare Reference Table -->
+		<section class="mb-14 font-sans">
+			<div class="border-b border-mapa-contour/50 pb-3 mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+				<div>
+					<h2 class="text-2xl font-serif font-bold text-mapa-ink">
+						Complete 21-Station Reference Directory
+					</h2>
+					<p class="text-sm text-mapa-clay mt-1">
+						Distance from Monumento, platform access type, and regular passenger fare schedule.
+					</p>
+				</div>
+				<span class="text-xs text-mapa-clay font-medium">
+					LTFRB Fare Matrix 2026
+				</span>
+			</div>
+
+			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs">
+				<div class="overflow-x-auto">
+					<table class="w-full text-left text-xs text-mapa-ink">
+						<thead class="bg-mapa-canvas border-b border-mapa-contour text-mapa-clay uppercase text-[10px] font-bold tracking-wider">
+							<tr>
+								<th class="py-3 px-4">#</th>
+								<th class="py-3 px-4">Station Name</th>
+								<th class="py-3 px-4">City</th>
+								<th class="py-3 px-4">KM Post</th>
+								<th class="py-3 px-4">Platform Type</th>
+								<th class="py-3 px-4">Rail / Transit Links</th>
+								<th class="py-3 px-4 text-right">Fare from Monumento</th>
+								<th class="py-3 px-4 text-right">Discount (20%)</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-mapa-contour/40">
+							{BUSWAY_STOPS_WITH_FARES.map((stop, idx) => (
+								<tr class="hover:bg-mapa-canvas/60 transition-colors">
+									<td class="py-3 px-4 font-mono font-bold text-mapa-clay">{idx + 1}</td>
+									<td class="py-3 px-4 font-bold text-mapa-ink">{stop.name}</td>
+									<td class="py-3 px-4 text-mapa-ink/75">{stop.city}</td>
+									<td class="py-3 px-4 font-mono text-mapa-clay">KM {stop.km.toFixed(1)}</td>
+									<td class="py-3 px-4 text-mapa-ink/80">{stop.platform}</td>
+									<td class="py-3 px-4">
+										{stop.interchanges && stop.interchanges.length > 0 ? (
+											<div class="flex flex-wrap gap-1">
+												{stop.interchanges.map(ic => (
+													<span class="px-1.5 py-0.2 rounded bg-mapa-canvas border border-mapa-contour/70 text-[10px]">
+														{ic}
+													</span>
+												))}
+											</div>
+										) : (
+											<span class="text-mapa-clay">—</span>
+										)}
+									</td>
+									<td class="py-3 px-4 text-right font-bold text-emerald-800">₱{stop.regFare.toFixed(2)}</td>
+									<td class="py-3 px-4 text-right font-bold text-blue-700">₱{stop.discFare.toFixed(2)}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+
+		<!-- Frequently Asked Questions (FAQ) Section -->
+		<section class="border-t border-mapa-contour/50 pt-10 font-sans">
+			<h2 class="text-2xl font-serif font-bold text-mapa-ink mb-6">
+				Frequently Asked Questions About the EDSA Carousel Busway
+			</h2>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5">
+					<h3 class="font-bold text-mapa-ink mb-2">What are the operating hours of the EDSA Carousel?</h3>
+					<p class="text-mapa-ink/80 leading-relaxed text-xs">
+						The EDSA Carousel operates <strong>24 hours a day, 7 days a week (24/7)</strong>. Peak daytime services run with high frequency (every 2 to 5 minutes) between 4:00 AM and 11:00 PM, while nighttime service runs at 10 to 15 minute headways between 11:00 PM and 4:00 AM.
+					</p>
+				</div>
+
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5">
+					<h3 class="font-bold text-mapa-ink mb-2">How do I board and pay for the EDSA Carousel?</h3>
+					<p class="text-mapa-ink/80 leading-relaxed text-xs">
+						Passengers access the median busway via dedicated pedestrian footbridges or elevator-equipped concourses (such as One Ayala and PITX). Fare payment is made upon entry at median turnstiles or directly to the bus conductor inside the vehicle. Always prepare small bills or coins.
+					</p>
+				</div>
+
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5">
+					<h3 class="font-bold text-mapa-ink mb-2">Who is entitled to the 20% statutory fare discount?</h3>
+					<p class="text-mapa-ink/80 leading-relaxed text-xs">
+						Under Philippine statutes—Republic Act No. 11314 (Student Fare Discount Act), Republic Act No. 9994 (Expanded Senior Citizens Act), and Republic Act No. 10754 (Persons with Disability Act)—bona fide students, senior citizens, and PWDs are entitled to a mandatory 20% fare discount upon presenting valid IDs.
+					</p>
+				</div>
+
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5">
+					<h3 class="font-bold text-mapa-ink mb-2">How does EDSA Carousel connect to MRT-3 and LRT-1?</h3>
+					<p class="text-mapa-ink/80 leading-relaxed text-xs">
+						EDSA Carousel links directly with LRT-1 at Monumento, Balintawak, and Roosevelt (FPJ). It shares direct footbridge walkways with MRT-3 at North Avenue, Quezon Avenue, Santolan, Ortigas, Guadalupe, Buendia, and Ayala. At Taft Avenue, it connects to both MRT-3 and LRT-1 EDSA station.
+					</p>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<Footer />
+
+	<!-- Leaflet Bundle Script -->
+	<script
+		src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+		integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+		crossorigin=""
+		is:inline
+	></script>
+
+	<!-- Interactive Client Logic -->
+	<script is:inline define:vars={{ BUSWAY_STOPS }}>
+		document.addEventListener('DOMContentLoaded', () => {
+			const originSelect = document.getElementById('origin-select');
+			const destSelect = document.getElementById('dest-select');
+			const discountToggle = document.getElementById('discount-toggle');
+			const swapBtn = document.getElementById('swap-stops-btn');
+
+			const computedFareEl = document.getElementById('computed-fare');
+			const strikeFareEl = document.getElementById('discounted-fare-strikethrough');
+			const fareRateBadge = document.getElementById('fare-rate-badge');
+
+			const statDistanceEl = document.getElementById('stat-distance');
+			const statStopsEl = document.getElementById('stat-stops');
+			const statTimeEl = document.getElementById('stat-time');
+
+			const cardStopName = document.getElementById('card-stop-name');
+			const cardStopCity = document.getElementById('card-stop-city');
+			const cardStopPlatform = document.getElementById('card-stop-platform');
+			const cardStopAccess = document.getElementById('card-stop-access');
+			const cardStopInterchanges = document.getElementById('card-stop-interchanges');
+			const cardStopLandmarks = document.getElementById('card-stop-landmarks');
+
+			const btnViewSchematic = document.getElementById('btn-view-schematic');
+			const btnViewGeo = document.getElementById('btn-view-geo');
+			const schematicContainer = document.getElementById('schematic-view-container');
+			const geoContainer = document.getElementById('geo-view-container');
+
+			let leafletMap = null;
+			let mapMarkers = [];
+			let routePolyline = null;
+
+			// Stop Lookup Map
+			const stopsMap = new Map();
+			BUSWAY_STOPS.forEach((stop, idx) => {
+				stopsMap.set(stop.id, { ...stop, index: idx });
+			});
+
+			function calculateFare() {
+				const originId = originSelect.value;
+				const destId = destSelect.value;
+				const hasDiscount = discountToggle.checked;
+
+				const origin = stopsMap.get(originId);
+				const dest = stopsMap.get(destId);
+
+				if (!origin || !dest) return;
+
+				const distance = Math.abs(dest.km - origin.km);
+				const stopsTraversed = Math.abs(dest.index - origin.index);
+
+				// LTFRB EDSA Carousel tariff:
+				// First 4.0 km = ₱15.00
+				// Succeeding = ₱2.65 / km
+				let regFare = 15.0;
+				if (distance > 4.0) {
+					regFare += (distance - 4.0) * 2.65;
+				}
+				// Cap to official max fare ₱75.50
+				regFare = Math.min(75.5, Math.max(15.0, Math.round(regFare * 2) / 2));
+				const discFare = Math.round(regFare * 0.8 * 2) / 2;
+
+				if (hasDiscount) {
+					computedFareEl.textContent = `₱${discFare.toFixed(2)}`;
+					strikeFareEl.textContent = `₱${regFare.toFixed(2)}`;
+					strikeFareEl.classList.remove('hidden');
+					fareRateBadge.textContent = '20% Discount';
+					fareRateBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-600 text-white';
+				} else {
+					computedFareEl.textContent = `₱${regFare.toFixed(2)}`;
+					strikeFareEl.classList.add('hidden');
+					fareRateBadge.textContent = 'Regular';
+					fareRateBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white';
+				}
+
+				statDistanceEl.textContent = `${distance.toFixed(1)} km`;
+				statStopsEl.textContent = `${stopsTraversed} ${stopsTraversed === 1 ? 'stop' : 'stops'}`;
+
+				// Travel time estimate: ~2.2 - 2.8 mins per stop including dwell time
+				const estMin = Math.max(5, Math.round(stopsTraversed * 2.2));
+				const estMax = Math.max(8, Math.round(stopsTraversed * 3.1));
+				statTimeEl.textContent = stopsTraversed === 0 ? '0 mins' : `~${estMin}–${estMax} mins`;
+
+				updateSchematicHighlight(origin.index, dest.index);
+				updateMapHighlight(origin, dest);
+			}
+
+			function updateSchematicHighlight(idx1, idx2) {
+				const minIdx = Math.min(idx1, idx2);
+				const maxIdx = Math.max(idx1, idx2);
+
+				BUSWAY_STOPS.forEach((stop, index) => {
+					const nodeEl = document.getElementById(`schematic-node-${stop.id}`);
+					if (!nodeEl) return;
+
+					if (index === idx1) {
+						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-emerald-600 bg-emerald-500/15 transition-all cursor-pointer';
+					} else if (index === idx2) {
+						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-blue-600 bg-blue-500/15 transition-all cursor-pointer';
+					} else if (index > minIdx && index < maxIdx) {
+						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 transition-all cursor-pointer';
+					} else {
+						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-transparent hover:border-mapa-green/40 hover:bg-mapa-canvas transition-all cursor-pointer group';
+					}
+				});
+			}
+
+			function inspectStop(stop) {
+				if (!stop) return;
+				cardStopName.textContent = stop.name;
+				cardStopCity.textContent = stop.city;
+				cardStopPlatform.textContent = stop.platform;
+				cardStopAccess.textContent = stop.access;
+				cardStopLandmarks.textContent = stop.landmarks;
+
+				// Clear and rebuild interchanges
+				cardStopInterchanges.innerHTML = '';
+				if (stop.interchanges && stop.interchanges.length > 0) {
+					stop.interchanges.forEach(ic => {
+						const span = document.createElement('span');
+						span.className = 'px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-800 border border-emerald-500/20';
+						span.textContent = ic;
+						cardStopInterchanges.appendChild(span);
+					});
+				} else {
+					const span = document.createElement('span');
+					span.className = 'text-mapa-clay';
+					span.textContent = 'None / Local street connections';
+					cardStopInterchanges.appendChild(span);
+				}
+			}
+
+			function initLeafletMap() {
+				if (leafletMap || typeof L === 'undefined') return;
+
+				leafletMap = L.map('busway-map', {
+					center: [14.582, 121.03],
+					zoom: 12,
+					scrollWheelZoom: true
+				});
+
+				L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+					attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+					maxZoom: 19
+				}).addTo(leafletMap);
+
+				// Route coordinates array
+				const latLngs = BUSWAY_STOPS.map(s => [s.lat, s.lon]);
+
+				// Add background route line
+				routePolyline = L.polyline(latLngs, {
+					color: '#059669',
+					weight: 5,
+					opacity: 0.85,
+					lineJoin: 'round'
+				}).addTo(leafletMap);
+
+				// Add markers for all 21 stops
+				BUSWAY_STOPS.forEach((stop, index) => {
+					const marker = L.circleMarker([stop.lat, stop.lon], {
+						radius: stop.isTerminus ? 8 : 6,
+						fillColor: stop.isTerminus ? '#047857' : '#10B981',
+						color: '#ffffff',
+						weight: 2,
+						opacity: 1,
+						fillOpacity: 0.95
+					}).addTo(leafletMap);
+
+					marker.bindPopup(`
+						<div class="font-sans text-xs">
+							<strong class="text-sm font-serif">${index + 1}. ${stop.name}</strong><br/>
+							<span class="text-gray-600">${stop.city} &bull; KM ${stop.km.toFixed(1)}</span><br/>
+							<span class="text-emerald-700 font-semibold">${stop.platform}</span>
+						</div>
+					`);
+
+					marker.on('click', () => {
+						inspectStop(stop);
+					});
+
+					mapMarkers.push({ id: stop.id, marker });
+				});
+
+				leafletMap.fitBounds(routePolyline.getBounds(), { padding: [40, 40] });
+			}
+
+			function updateMapHighlight(origin, dest) {
+				if (!leafletMap) return;
+
+				mapMarkers.forEach(({ id, marker }) => {
+					if (id === origin.id) {
+						marker.setStyle({ fillColor: '#059669', radius: 10, weight: 3 });
+					} else if (id === dest.id) {
+						marker.setStyle({ fillColor: '#2563EB', radius: 10, weight: 3 });
+					} else {
+						const isTerm = id === 'monumento' || id === 'pitx';
+						marker.setStyle({ fillColor: isTerm ? '#047857' : '#10B981', radius: isTerm ? 8 : 6, weight: 2 });
+					}
+				});
+			}
+
+			// Event Listeners
+			originSelect.addEventListener('change', () => {
+				const stop = stopsMap.get(originSelect.value);
+				inspectStop(stop);
+				calculateFare();
+			});
+
+			destSelect.addEventListener('change', () => {
+				const stop = stopsMap.get(destSelect.value);
+				inspectStop(stop);
+				calculateFare();
+			});
+
+			discountToggle.addEventListener('change', calculateFare);
+
+			swapBtn.addEventListener('click', () => {
+				const temp = originSelect.value;
+				originSelect.value = destSelect.value;
+				destSelect.value = temp;
+				calculateFare();
+			});
+
+			// Schematic node click delegation
+			document.querySelectorAll('.schematic-node').forEach(node => {
+				node.addEventListener('click', () => {
+					const stopId = node.getAttribute('data-stop-id');
+					const stop = stopsMap.get(stopId);
+					if (stop) {
+						inspectStop(stop);
+					}
+				});
+			});
+
+			// View Switcher logic
+			btnViewSchematic.addEventListener('click', () => {
+				btnViewSchematic.className = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer';
+				btnViewGeo.className = 'px-3 py-1.5 text-xs font-medium rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
+				schematicContainer.classList.remove('hidden');
+				geoContainer.classList.add('hidden');
+			});
+
+			btnViewGeo.addEventListener('click', () => {
+				btnViewGeo.className = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer';
+				btnViewSchematic.className = 'px-3 py-1.5 text-xs font-medium rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
+				geoContainer.classList.remove('hidden');
+				schematicContainer.classList.add('hidden');
+
+				initLeafletMap();
+				setTimeout(() => {
+					if (leafletMap) {
+						leafletMap.invalidateSize();
+						if (routePolyline) leafletMap.fitBounds(routePolyline.getBounds(), { padding: [40, 40] });
+					}
+				}, 100);
+			});
+
+			// Initial calculation
+			calculateFare();
+			inspectStop(BUSWAY_STOPS[0]);
+		});
+	</script>
+</BaseLayout>
