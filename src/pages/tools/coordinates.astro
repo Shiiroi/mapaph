@@ -84,7 +84,7 @@ import Footer from '../../components/Footer.astro';
 					</div>
 				</div>
 				<span id="active-landmark-badge" class="text-xs font-medium text-mapa-green bg-mapa-green/10 border border-mapa-green/20 px-2.5 py-1 rounded-md">
-					📍 Preset: Kilometer Zero, Luneta
+					Preset: Kilometer Zero, Luneta
 				</span>
 			</div>
 
@@ -108,7 +108,7 @@ import Footer from '../../components/Footer.astro';
 			</div>
 
 			<!-- Out-of-bounds Warning Banner -->
-			<div id="range-warning" role="status" aria-live="polite" class="hidden mb-6 p-3.5 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-950 font-sans text-xs leading-relaxed">
+			<div id="range-warning" role="status" aria-live="polite" class="hidden mb-6 p-3.5 rounded-xl bg-mapa-rust/10 border border-mapa-rust/30 text-mapa-rust font-sans text-xs leading-relaxed">
 			</div>
 
 			<!-- Dynamic Inputs / Outputs Grid -->
@@ -440,7 +440,7 @@ import Footer from '../../components/Footer.astro';
 					output1.textContent = 'Invalid Input';
 					output2.textContent = 'Invalid Input';
 					if (rangeWarning) {
-						rangeWarning.textContent = '⚠️ Please enter valid numeric coordinates in both fields.';
+						rangeWarning.textContent = 'Please enter valid numeric coordinates in both fields.';
 						rangeWarning.classList.remove('hidden');
 					}
 					return;
@@ -535,18 +535,18 @@ import Footer from '../../components/Footer.astro';
 			modePrsToWgs.addEventListener('click', () => setMode(false));
 			convertBtn.addEventListener('click', calculate);
 			input1.addEventListener('input', () => {
-				if (activeLandmarkBadge) activeLandmarkBadge.textContent = '📍 Custom Coordinates';
+				if (activeLandmarkBadge) activeLandmarkBadge.textContent = 'Custom Coordinates';
 				calculate();
 			});
 			input2.addEventListener('input', () => {
-				if (activeLandmarkBadge) activeLandmarkBadge.textContent = '📍 Custom Coordinates';
+				if (activeLandmarkBadge) activeLandmarkBadge.textContent = 'Custom Coordinates';
 				calculate();
 			});
 
 			presetBtns.forEach(btn => {
 				btn.addEventListener('click', () => {
 					const name = btn.getAttribute('data-name') || 'Landmark Preset';
-					if (activeLandmarkBadge) activeLandmarkBadge.textContent = `📍 Preset: ${name}`;
+					if (activeLandmarkBadge) activeLandmarkBadge.textContent = `Preset: ${name}`;
 					lastLat = parseFloat(btn.getAttribute('data-lat'));
 					lastLon = parseFloat(btn.getAttribute('data-lon'));
 					if (!isWgsToPrs) {

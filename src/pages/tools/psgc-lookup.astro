@@ -403,7 +403,7 @@ merged_map = boundaries.merge(census_df, on="psgc", how="inner")</code></pre>
 					: item.l === 'Province'
 					? 'bg-mapa-rust/10 text-mapa-rust border-mapa-rust/30'
 					: item.l === 'City'
-					? (item.cls === 'HUC' ? 'bg-mapa-green/20 text-mapa-green border-mapa-green/40' : item.cls === 'ICC' ? 'bg-amber-500/15 text-amber-800 border-amber-500/30' : 'bg-mapa-green/10 text-mapa-green border-mapa-green/30')
+					? (item.cls === 'HUC' ? 'bg-mapa-green/20 text-mapa-green border-mapa-green/40' : item.cls === 'ICC' ? 'bg-mapa-navy/15 text-mapa-navy border-mapa-navy/30' : 'bg-mapa-green/10 text-mapa-green border-mapa-green/30')
 					: 'bg-mapa-clay/20 text-mapa-ink border-mapa-clay/40';
 
 				let levelTitle = item.l;

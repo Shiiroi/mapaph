@@ -14,7 +14,6 @@ const FARE_RATES = {
 	airconBus: {
 		name: 'Airconditioned City Bus',
 		type: 'City Bus',
-		icon: '🚍',
 		baseFare: 15.0,
 		baseKm: 5,
 		perKm: 2.65,
@@ -27,20 +26,18 @@ const FARE_RATES = {
 	ordinaryBus: {
 		name: 'Ordinary (Non-Aircon) Bus',
 		type: 'City Bus',
-		icon: '🚌',
 		baseFare: 13.0,
 		baseKm: 5,
 		perKm: 2.25,
 		discountBase: 10.4,
 		discountPerKm: 1.8,
-		color: 'text-mapa-flag-blue',
-		bgLight: 'bg-mapa-flag-blue/10',
-		borderColor: 'border-mapa-flag-blue/30'
+		color: 'text-mapa-navy',
+		bgLight: 'bg-mapa-navy/10',
+		borderColor: 'border-mapa-navy/30'
 	},
 	modernJeep: {
 		name: 'Modern E-Jeepney (MPUJ)',
 		type: 'Public Utility Jeepney',
-		icon: '🚐',
 		baseFare: 15.0,
 		baseKm: 4,
 		perKm: 2.2,
@@ -53,28 +50,26 @@ const FARE_RATES = {
 	tradJeep: {
 		name: 'Traditional Jeepney (TPUJ)',
 		type: 'Public Utility Jeepney',
-		icon: '🚙',
 		baseFare: 13.0,
 		baseKm: 4,
 		perKm: 1.8,
 		discountBase: 10.4,
 		discountPerKm: 1.44,
-		color: 'text-amber-700',
-		bgLight: 'bg-amber-700/10',
-		borderColor: 'border-amber-700/30'
+		color: 'text-mapa-green',
+		bgLight: 'bg-mapa-green/10',
+		borderColor: 'border-mapa-green/30'
 	},
 	railTransit: {
 		name: 'Metro Manila Rail (LRT/MRT)',
 		type: 'Mass Rapid Transit',
-		icon: '🚆',
 		baseFare: 13.29,
 		baseKm: 1,
 		perKm: 1.21,
 		discountBase: 10.63,
 		discountPerKm: 0.97,
-		color: 'text-emerald-700',
-		bgLight: 'bg-emerald-700/10',
-		borderColor: 'border-emerald-700/30'
+		color: 'text-mapa-navy',
+		bgLight: 'bg-mapa-navy/10',
+		borderColor: 'border-mapa-navy/30'
 	}
 };
 ---
@@ -176,25 +171,25 @@ const FARE_RATES = {
 			<div class="mb-6 font-sans text-xs">
 				<span class="text-mapa-ink/60 font-medium mr-2">Popular Commuter Corridors:</span>
 				<div class="inline-flex flex-wrap gap-2 mt-2 sm:mt-0">
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-km="8">
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="8">
 						Cebu Colon ↔ Mandaue (8 km)
 					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-km="9.5">
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="9.5">
 						Cubao ↔ Makati / Buendia (9.5 km)
 					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-km="14">
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="14">
 						Fairview ↔ Cubao (14 km)
 					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-km="16">
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="16">
 						Commonwealth ↔ Quiapo (16 km)
 					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-km="22">
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="22">
 						Alabang ↔ Lawton Manila (22 km)
 					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-km="24">
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="24">
 						Monumento ↔ Baclaran (24 km)
 					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-km="28">
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="28">
 						PITX ↔ Monumento EDSA (28 km)
 					</button>
 				</div>
@@ -250,14 +245,14 @@ const FARE_RATES = {
 							<button
 								type="button"
 								id="btn-regular-fare"
-								class="fare-toggle-btn active py-2.5 px-3 rounded-lg text-center transition-all bg-mapa-green text-white font-semibold shadow-xs"
+								class="fare-toggle-btn active py-2.5 px-3 rounded-lg text-center transition-all bg-mapa-green text-white font-semibold shadow-xs cursor-pointer"
 							>
 								Regular Adult Fare
 							</button>
 							<button
 								type="button"
 								id="btn-discount-fare"
-								class="fare-toggle-btn py-2.5 px-3 rounded-lg text-center transition-all text-mapa-ink/80 hover:text-mapa-green hover:bg-mapa-contour/30"
+								class="fare-toggle-btn py-2.5 px-3 rounded-lg text-center transition-all text-mapa-ink/80 hover:text-mapa-green hover:bg-mapa-contour/30 cursor-pointer"
 							>
 								20% Statutory Discount
 							</button>
@@ -289,7 +284,6 @@ const FARE_RATES = {
 					<div class="fare-card p-5 rounded-xl bg-mapa-canvas border border-mapa-contour/90 hover:border-mapa-green/60 transition-all flex flex-col justify-between group shadow-2xs cursor-pointer" data-mode="airconBus">
 						<div>
 							<div class="flex items-center justify-between gap-2 mb-2">
-								<span class="text-2xl">🚍</span>
 								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-green/10 text-mapa-green border border-mapa-green/20">
 									City Bus
 								</span>
@@ -311,8 +305,7 @@ const FARE_RATES = {
 					<div class="fare-card p-5 rounded-xl bg-mapa-canvas border border-mapa-contour/90 hover:border-mapa-green/60 transition-all flex flex-col justify-between group shadow-2xs cursor-pointer" data-mode="ordinaryBus">
 						<div>
 							<div class="flex items-center justify-between gap-2 mb-2">
-								<span class="text-2xl">🚌</span>
-								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-flag-blue/10 text-mapa-flag-blue border border-mapa-flag-blue/20">
+								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-navy/10 text-mapa-navy border border-mapa-navy/20">
 									Ordinary Bus
 								</span>
 							</div>
@@ -324,7 +317,7 @@ const FARE_RATES = {
 
 						<div class="mt-5 pt-3 border-t border-mapa-contour/50">
 							<div class="text-[10px] uppercase font-bold text-mapa-clay">Legal Fare</div>
-							<div id="fare-ordinaryBus" class="text-2xl sm:text-3xl font-bold font-mono text-mapa-flag-blue mt-0.5">₱24.25</div>
+							<div id="fare-ordinaryBus" class="text-2xl sm:text-3xl font-bold font-mono text-mapa-navy mt-0.5">₱24.25</div>
 							<div id="math-ordinaryBus" class="text-[10px] text-mapa-clay font-mono mt-1">₱13.00 + 5.0 km × ₱2.25</div>
 						</div>
 					</div>
@@ -333,7 +326,6 @@ const FARE_RATES = {
 					<div class="fare-card p-5 rounded-xl bg-mapa-canvas border border-mapa-contour/90 hover:border-mapa-green/60 transition-all flex flex-col justify-between group shadow-2xs cursor-pointer" data-mode="modernJeep">
 						<div>
 							<div class="flex items-center justify-between gap-2 mb-2">
-								<span class="text-2xl">🚐</span>
 								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-rust/10 text-mapa-rust border border-mapa-rust/20">
 									Modern PUJ
 								</span>
@@ -355,8 +347,7 @@ const FARE_RATES = {
 					<div class="fare-card p-5 rounded-xl bg-mapa-canvas border border-mapa-contour/90 hover:border-mapa-green/60 transition-all flex flex-col justify-between group shadow-2xs cursor-pointer" data-mode="tradJeep">
 						<div>
 							<div class="flex items-center justify-between gap-2 mb-2">
-								<span class="text-2xl">🚙</span>
-								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-700/10 text-amber-700 border border-amber-700/20">
+								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-green/10 text-mapa-green border border-mapa-green/20">
 									Traditional PUJ
 								</span>
 							</div>
@@ -368,7 +359,7 @@ const FARE_RATES = {
 
 						<div class="mt-5 pt-3 border-t border-mapa-contour/50">
 							<div class="text-[10px] uppercase font-bold text-mapa-clay">Legal Fare</div>
-							<div id="fare-tradJeep" class="text-2xl sm:text-3xl font-bold font-mono text-amber-800 mt-0.5">₱23.80</div>
+							<div id="fare-tradJeep" class="text-2xl sm:text-3xl font-bold font-mono text-mapa-green mt-0.5">₱23.80</div>
 							<div id="math-tradJeep" class="text-[10px] text-mapa-clay font-mono mt-1">₱13.00 + 6.0 km × ₱1.80</div>
 						</div>
 					</div>
@@ -377,8 +368,7 @@ const FARE_RATES = {
 					<div class="fare-card p-5 rounded-xl bg-mapa-canvas border border-mapa-contour/90 hover:border-mapa-green/60 transition-all flex flex-col justify-between group shadow-2xs cursor-pointer" data-mode="railTransit">
 						<div>
 							<div class="flex items-center justify-between gap-2 mb-2">
-								<span class="text-2xl">🚆</span>
-								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-700/10 text-emerald-700 border border-emerald-700/20">
+								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-navy/10 text-mapa-navy border border-mapa-navy/20">
 									MRT / LRT
 								</span>
 							</div>
@@ -390,7 +380,7 @@ const FARE_RATES = {
 
 						<div class="mt-5 pt-3 border-t border-mapa-contour/50">
 							<div class="text-[10px] uppercase font-bold text-mapa-clay">Estimated Fare</div>
-							<div id="fare-railTransit" class="text-2xl sm:text-3xl font-bold font-mono text-emerald-800 mt-0.5">₱25.00</div>
+							<div id="fare-railTransit" class="text-2xl sm:text-3xl font-bold font-mono text-mapa-navy mt-0.5">₱25.00</div>
 							<div id="math-railTransit" class="text-[10px] text-mapa-clay font-mono mt-1">Single Journey / Stored Value</div>
 						</div>
 					</div>
@@ -469,7 +459,7 @@ const FARE_RATES = {
 					</div>
 
 					<div class="p-5 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/80">
-						<h4 class="font-serif font-bold text-base text-amber-800 mb-2">Traditional PUJs</h4>
+						<h4 class="font-serif font-bold text-base text-mapa-green mb-2">Traditional PUJs</h4>
 						<ul class="text-xs text-mapa-ink/80 space-y-1.5 leading-relaxed list-disc pl-4">
 							<li>Base Fare: <strong>₱13.00</strong> (first 4 km) + <strong>₱1.80/km</strong>.</li>
 							<li>Open-air non-airconditioned chassis with parallel bench seating.</li>

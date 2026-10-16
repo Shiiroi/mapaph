@@ -15,8 +15,8 @@ const RAIL_LINES = [
 		id: 'lrt1',
 		name: 'LRT Line 1',
 		operator: 'LRTC / Light Rail Manila Corporation (LRMC)',
-		color: '#00843D',
-		bgLight: 'bg-emerald-500/10 text-emerald-800 border-emerald-500/30',
+		color: '#3D5A45',
+		bgLight: 'bg-mapa-green/10 text-mapa-green border-mapa-green/30',
 		terminals: 'Fernando Poe Jr. (North) ↔ Dr. Santos / Baclaran (South)',
 		trains: 'Light Rail Vehicles (1G, 2G, 3G, 4G CAF)',
 		stationsCount: 25,
@@ -26,8 +26,8 @@ const RAIL_LINES = [
 		id: 'mrt3',
 		name: 'MRT Line 3',
 		operator: 'Department of Transportation (DOTr MRT-3)',
-		color: '#0055A5',
-		bgLight: 'bg-blue-500/10 text-blue-800 border-blue-500/30',
+		color: '#1B2A4A',
+		bgLight: 'bg-mapa-navy/10 text-mapa-navy border-mapa-navy/30',
 		terminals: 'North Avenue ↔ Taft Avenue',
 		trains: 'ČKD Tatra RT8D5M / Dalian 8MLB',
 		stationsCount: 13,
@@ -37,8 +37,8 @@ const RAIL_LINES = [
 		id: 'lrt2',
 		name: 'LRT Line 2',
 		operator: 'Light Rail Transit Authority (LRTA)',
-		color: '#6F2C91',
-		bgLight: 'bg-purple-500/10 text-purple-800 border-purple-500/30',
+		color: '#9E391A',
+		bgLight: 'bg-mapa-rust/10 text-mapa-rust border-mapa-rust/30',
 		terminals: 'Recto (Manila) ↔ Antipolo (Rizal)',
 		trains: 'Rotem Heavy Rail EMUs',
 		stationsCount: 13,
@@ -284,18 +284,18 @@ const TRANSFER_HUBS = [
 				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 shadow-xs flex flex-col gap-3">
 					<div class="flex flex-wrap items-center justify-between gap-3">
 						<div class="flex items-center gap-2 flex-wrap">
-							<span class="text-xs font-bold uppercase tracking-wider text-mapa-clay">
-								Clicking Station Sets:
+							<span class="text-xs font-bold uppercase tracking-wider text-mapa-muted">
+								Click Station Sets:
 							</span>
 							<div class="inline-flex rounded-xl bg-mapa-canvas p-1 border border-mapa-contour text-xs font-bold">
 								<button
 									id="rail-target-origin"
 									type="button"
-									class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer ring-2 ring-emerald-500/50"
+									class="px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
 									title="Clicking any station will set it as your Boarding point"
 								>
 									<span class="w-2 h-2 rounded-full bg-white"></span>
-									<span>🟢 Boarding (Start)</span>
+									<span>Boarding (Start)</span>
 								</button>
 								<button
 									id="rail-target-dest"
@@ -303,8 +303,8 @@ const TRANSFER_HUBS = [
 									class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer"
 									title="Clicking any station will set it as your Destination"
 								>
-									<span class="w-2 h-2 rounded-full bg-blue-500"></span>
-									<span>🔵 Destination (Exit)</span>
+									<span class="w-2 h-2 rounded-full bg-mapa-navy"></span>
+									<span>Destination (Exit)</span>
 								</button>
 							</div>
 						</div>
@@ -318,31 +318,33 @@ const TRANSFER_HUBS = [
 							<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
 							</svg>
-							<span>⇄ Swap Stations</span>
+							<span>Swap Stations</span>
 						</button>
 					</div>
 
 					<!-- Visual Hint for User -->
-					<div id="rail-click-hint" class="text-xs text-emerald-900 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium">
-						<span>👉</span>
-						<span>Click any station or tap <strong>[🟢 Board]</strong> to set where you enter the train.</span>
+					<div id="rail-click-hint" class="text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium">
+						<span class="w-1.5 h-1.5 rounded-full bg-mapa-green shrink-0"></span>
+						<span>Click any station row or use <strong>Board</strong> / <strong>Alight</strong> to select your route.</span>
 					</div>
 
 					<!-- Active Route Summary Ribbon -->
 					<div class="bg-mapa-canvas border border-mapa-contour rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
 						<div class="flex items-center gap-2 flex-wrap">
-							<span class="font-bold text-emerald-900 flex items-center gap-1 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">
-								<span>🟢 Board:</span>
-								<span id="summary-origin-name">North Avenue</span>
+							<span class="font-bold text-mapa-green flex items-center gap-1.5 bg-mapa-green/10 px-2.5 py-1 rounded-md border border-mapa-green/25">
+								<span class="w-2 h-2 rounded-full bg-mapa-green"></span>
+								<span class="uppercase tracking-wider text-[10px] text-mapa-muted">Board:</span>
+								<span id="summary-origin-name" class="text-mapa-ink">North Avenue</span>
 							</span>
-							<span class="text-mapa-clay font-bold">➔</span>
-							<span class="font-bold text-blue-900 flex items-center gap-1 bg-blue-500/10 px-2.5 py-1 rounded-md border border-blue-500/20">
-								<span>🔵 Alight:</span>
-								<span id="summary-dest-name">Taft Avenue</span>
+							<span class="text-mapa-muted font-bold">&rarr;</span>
+							<span class="font-bold text-mapa-navy flex items-center gap-1.5 bg-mapa-navy/10 px-2.5 py-1 rounded-md border border-mapa-navy/25">
+								<span class="w-2 h-2 rounded-full bg-mapa-navy"></span>
+								<span class="uppercase tracking-wider text-[10px] text-mapa-muted">Alight:</span>
+								<span id="summary-dest-name" class="text-mapa-ink">Taft Avenue</span>
 							</span>
 						</div>
 						<div class="flex items-center gap-1.5">
-							<span id="summary-badge-metric" class="text-[11px] font-bold px-2.5 py-1 rounded-md bg-emerald-600 text-white shadow-2xs">
+							<span id="summary-badge-metric" class="text-[11px] font-bold px-2.5 py-1 rounded-md bg-mapa-green text-white shadow-2xs">
 								13 stops &bull; ₱28.00
 							</span>
 						</div>
@@ -354,28 +356,28 @@ const TRANSFER_HUBS = [
 					<!-- Visualizer Header Bar -->
 					<div class="p-3.5 border-b border-mapa-contour/50 flex flex-wrap items-center justify-between gap-3 bg-mapa-canvas">
 						<div class="flex items-center gap-2">
-							<span class="text-xs font-bold uppercase tracking-wider text-mapa-clay">Display:</span>
+							<span class="text-xs font-bold uppercase tracking-wider text-mapa-muted">Display:</span>
 							<div class="inline-flex rounded-xl bg-mapa-canvas-dark p-1 border border-mapa-contour text-xs font-bold">
 								<button
 									id="rail-view-list"
 									type="button"
 									class="px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer"
 								>
-									📋 List View
+									Station List
 								</button>
 								<button
 									id="rail-view-schematic"
 									type="button"
 									class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
 								>
-									🧭 Schematic View
+									Schematic Map
 								</button>
 								<button
 									id="rail-view-geo"
 									type="button"
 									class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
 								>
-									🗺️ Geo View
+									Geographic Map
 								</button>
 							</div>
 						</div>
@@ -391,24 +393,27 @@ const TRANSFER_HUBS = [
 							</button>
 							<button
 								type="button"
-								class="rail-line-tab px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all bg-emerald-600 text-white border-emerald-700 cursor-pointer"
+								class="rail-line-tab px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all bg-mapa-canvas text-mapa-ink border-mapa-contour hover:border-mapa-green inline-flex items-center gap-1.5 cursor-pointer"
 								data-line="lrt1"
 							>
-								LRT-1
+								<span class="w-2 h-2 rounded-full bg-[#00843D]"></span>
+								<span>LRT-1</span>
 							</button>
 							<button
 								type="button"
-								class="rail-line-tab px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all bg-blue-600 text-white border-blue-700 cursor-pointer"
+								class="rail-line-tab px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all bg-mapa-canvas text-mapa-ink border-mapa-contour hover:border-mapa-green inline-flex items-center gap-1.5 cursor-pointer"
 								data-line="mrt3"
 							>
-								MRT-3
+								<span class="w-2 h-2 rounded-full bg-[#0055A5]"></span>
+								<span>MRT-3</span>
 							</button>
 							<button
 								type="button"
-								class="rail-line-tab px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all bg-purple-700 text-white border-purple-800 cursor-pointer"
+								class="rail-line-tab px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all bg-mapa-canvas text-mapa-ink border-mapa-contour hover:border-mapa-green inline-flex items-center gap-1.5 cursor-pointer"
 								data-line="lrt2"
 							>
-								LRT-2
+								<span class="w-2 h-2 rounded-full bg-[#6F2C91]"></span>
+								<span>LRT-2</span>
 							</button>
 						</div>
 					</div>
@@ -416,8 +421,8 @@ const TRANSFER_HUBS = [
 					<!-- VIEW 1: Station List View Container -->
 					<div id="rail-list-container" class="p-4 bg-mapa-canvas-dark">
 						<div class="flex items-center justify-between pb-2 mb-3 border-b border-mapa-contour/50 text-xs">
-							<span class="text-mapa-clay">
-								Select stations directly or tap <strong>[🟢 Board]</strong> / <strong>[🔵 Alight]</strong>:
+							<span class="text-mapa-muted">
+								Click a station row or select <strong>Board</strong> / <strong>Alight</strong>:
 							</span>
 							<span class="text-[11px] font-semibold text-mapa-ink/70">
 								51 Total Stations
@@ -438,7 +443,7 @@ const TRANSFER_HUBS = [
 													<span class="w-3 h-3 rounded-full shrink-0 shadow-2xs" style={`background-color: ${LINE_COLORS[st.lineKey]}`}></span>
 													<span class="font-serif font-bold text-sm text-mapa-ink">{st.lineName}</span>
 												</div>
-												<span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60 text-mapa-clay">
+												<span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60 text-mapa-muted">
 													{STATIONS_DATA[st.lineKey].length} Stations
 												</span>
 											</div>
@@ -452,11 +457,11 @@ const TRANSFER_HUBS = [
 										>
 											{/* Top Half Track Segment - connects seamlessly upward without disappearing */}
 											{!isFirstInLine && (
-												<div class="rail-track-top absolute left-[-16px] top-[-12px] bottom-1/2 w-1.5 bg-stone-300 dark:bg-stone-700 transition-colors z-0"></div>
+												<div class="rail-track-top absolute left-[-16px] top-[-12px] bottom-1/2 w-1.5 bg-mapa-contour transition-colors z-0"></div>
 											)}
 											{/* Bottom Half Track Segment - connects seamlessly downward without disappearing */}
 											{!isLastInLine && (
-												<div class="rail-track-bottom absolute left-[-16px] top-1/2 bottom-[-12px] w-1.5 bg-stone-300 dark:bg-stone-700 transition-colors z-0"></div>
+												<div class="rail-track-bottom absolute left-[-16px] top-1/2 bottom-[-12px] w-1.5 bg-mapa-contour transition-colors z-0"></div>
 											)}
 
 											<!-- Circle Track Node -->
@@ -480,7 +485,7 @@ const TRANSFER_HUBS = [
 													<span id={`rail-badge-${st.id}`} class="station-status-badge hidden text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-2xs"></span>
 												</div>
 
-												<div class="flex items-center gap-2 text-[11px] text-mapa-clay mt-0.5 flex-wrap">
+												<div class="flex items-center gap-2 text-[11px] text-mapa-muted mt-0.5 flex-wrap">
 													<span class="font-semibold uppercase tracking-wider text-[10px]" style={`color: ${LINE_COLORS[st.lineKey]};`}>
 														{st.lineName}
 													</span>
@@ -492,8 +497,7 @@ const TRANSFER_HUBS = [
 
 												{st.isTransfer && (
 													<div class="mt-1">
-														<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-[10px] font-medium text-amber-800">
-															<span>🔄</span>
+														<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-mapa-rust/10 border border-mapa-rust/20 text-[10px] font-semibold text-mapa-rust">
 															<span>{st.transferLabel || 'Interchange Point'}</span>
 														</span>
 													</div>
@@ -504,19 +508,19 @@ const TRANSFER_HUBS = [
 											<div class="flex items-center gap-1.5 shrink-0 ml-2">
 												<button
 													type="button"
-													class="btn-board-quick px-2 py-1 text-[11px] font-bold rounded-md bg-emerald-600/10 hover:bg-emerald-600 text-emerald-800 hover:text-white transition-all border border-emerald-600/30 cursor-pointer shadow-2xs"
+													class="btn-board-quick px-2.5 py-1 text-[11px] font-bold rounded-md bg-mapa-canvas hover:bg-mapa-green text-mapa-green hover:text-white transition-all border border-mapa-contour hover:border-mapa-green cursor-pointer"
 													data-station-id={st.id}
 													title={`Set ${st.name} as Boarding (Start)`}
 												>
-													🟢 Board
+													Board
 												</button>
 												<button
 													type="button"
-													class="btn-alight-quick px-2 py-1 text-[11px] font-bold rounded-md bg-blue-600/10 hover:bg-blue-600 text-blue-800 hover:text-white transition-all border border-blue-600/30 cursor-pointer shadow-2xs"
+													class="btn-alight-quick px-2.5 py-1 text-[11px] font-bold rounded-md bg-mapa-canvas hover:bg-mapa-navy text-mapa-navy hover:text-white transition-all border border-mapa-contour hover:border-mapa-navy cursor-pointer"
 													data-station-id={st.id}
 													title={`Set ${st.name} as Destination (Exit)`}
 												>
-													🔵 Alight
+													Alight
 												</button>
 											</div>
 										</div>
@@ -531,12 +535,12 @@ const TRANSFER_HUBS = [
 						<div class="px-4 pt-3 pb-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-mapa-ink/70 border-b border-mapa-contour/50 bg-mapa-canvas">
 							<span>Tap any station dot to set it as your <strong id="diagram-target-label">Boarding</strong> point. Click stations to calculate trip.</span>
 							<span class="inline-flex items-center gap-3">
-								<span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-emerald-500/30"></span>Board</span>
-								<span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 ring-2 ring-blue-500/30"></span>Alight</span>
-								<span class="inline-flex items-center gap-1"><span class="w-4 h-1 rounded-full bg-amber-500"></span>Your route</span>
+								<span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-mapa-green"></span>Board</span>
+								<span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-mapa-navy"></span>Alight</span>
+								<span class="inline-flex items-center gap-1"><span class="w-4 h-1 rounded-full bg-mapa-rust"></span>Active route</span>
 							</span>
 						</div>
-						<div class="overflow-auto max-h-[680px] p-4 flex justify-center bg-stone-100/60 dark:bg-stone-950/40">
+						<div class="overflow-auto max-h-[680px] p-4 flex justify-center bg-mapa-canvas/60">
 							<svg
 								id="rail-diagram-svg"
 								viewBox="0 0 1260 1280"
@@ -552,7 +556,7 @@ const TRANSFER_HUBS = [
 						<!-- Leaflet Map Canvas -->
 						<div
 							id="rail-map"
-							class="w-full h-[520px] bg-stone-100 z-0 relative"
+							class="w-full h-[520px] bg-mapa-canvas z-0 relative"
 							aria-label="Interactive Metro Manila rail transit map"
 						></div>
 
@@ -572,11 +576,11 @@ const TRANSFER_HUBS = [
 									<span>LRT-2</span>
 								</span>
 								<span class="inline-flex items-center gap-1">
-									<span class="w-2.5 h-2.5 rounded-full border-2 border-amber-500 bg-white"></span>
+									<span class="w-2.5 h-2.5 rounded-full border-2 border-mapa-rust bg-white"></span>
 									<span>Transfer Hub</span>
 								</span>
 							</div>
-							<span class="text-[11px] text-mapa-clay">
+							<span class="text-[11px] text-mapa-muted">
 								100% Free OpenStreetMap &bull; Zero API Key Required
 							</span>
 						</div>
@@ -594,7 +598,7 @@ const TRANSFER_HUBS = [
 								<div>
 									<div class="flex items-center justify-between gap-2 mb-1.5">
 										<h4 class="font-bold text-mapa-ink">{hub.name}</h4>
-										<span class="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-800 text-[10px] font-semibold">
+										<span class="px-1.5 py-0.5 rounded bg-mapa-rust/10 text-mapa-rust text-[10px] font-semibold">
 											{hub.walkTime}
 										</span>
 									</div>
@@ -609,7 +613,7 @@ const TRANSFER_HUBS = [
 										{hub.description}
 									</p>
 								</div>
-								<div class="mt-2.5 pt-2 border-t border-mapa-contour/40 text-[10px] text-mapa-clay">
+								<div class="mt-2.5 pt-2 border-t border-mapa-contour/40 text-[10px] text-mapa-muted">
 									Approx. walking span: {hub.walkDistance}
 								</div>
 							</div>
@@ -629,13 +633,13 @@ const TRANSFER_HUBS = [
 
 					<!-- Origin Selection -->
 					<div class="mb-4">
-						<label for="origin-select" class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-800 mb-1.5">
-							<span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+						<label for="origin-select" class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-mapa-green mb-1.5">
+							<span class="w-2 h-2 rounded-full bg-mapa-green"></span>
 							<span>Origin Station (Boarding / Start)</span>
 						</label>
 						<select
 							id="origin-select"
-							class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-emerald-600"
+							class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green"
 						>
 							<optgroup label="LRT Line 1 (Green)">
 								<!-- Populated dynamically via JS -->
@@ -660,13 +664,13 @@ const TRANSFER_HUBS = [
 
 					<!-- Destination Selection -->
 					<div class="mb-5">
-						<label for="destination-select" class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-800 mb-1.5">
-							<span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+						<label for="destination-select" class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-mapa-navy mb-1.5">
+							<span class="w-2 h-2 rounded-full bg-mapa-navy"></span>
 							<span>Destination Station (Alighting / Exit)</span>
 						</label>
 						<select
 							id="destination-select"
-							class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-blue-600"
+							class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-navy"
 						>
 							<!-- Populated dynamically via JS -->
 						</select>
@@ -678,13 +682,13 @@ const TRANSFER_HUBS = [
 							<div class="text-xs font-bold text-mapa-ink">
 								20% Statutory Discount
 							</div>
-							<div class="text-[11px] text-mapa-clay">
+							<div class="text-[11px] text-mapa-muted">
 								Students (RA 11314), Seniors (RA 9994), PWDs (RA 10754)
 							</div>
 						</div>
 						<label class="relative inline-flex items-center cursor-pointer shrink-0">
 							<input type="checkbox" id="discount-toggle" class="sr-only peer" />
-							<div class="w-11 h-6 bg-stone-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-mapa-green"></div>
+							<div class="w-11 h-6 bg-mapa-contour peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-mapa-contour after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-mapa-green"></div>
 						</label>
 					</div>
 
@@ -694,7 +698,7 @@ const TRANSFER_HUBS = [
 						<!-- Fare Summary Header -->
 						<div class="flex items-center justify-between pb-3 border-b border-mapa-contour/40">
 							<div>
-								<span class="text-[11px] font-bold uppercase tracking-wider text-mapa-clay">
+								<span class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted">
 									Estimated Fare
 								</span>
 								<div class="flex items-baseline gap-2 mt-0.5">
@@ -707,7 +711,7 @@ const TRANSFER_HUBS = [
 								</div>
 							</div>
 							<div class="text-right">
-								<span class="text-[11px] text-mapa-clay block">Single Ticket (Cash)</span>
+								<span class="text-[11px] text-mapa-muted block">Single Ticket (Cash)</span>
 								<span id="fare-sjt" class="text-lg font-bold text-mapa-ink font-serif">
 									₱30.00
 								</span>
@@ -717,27 +721,27 @@ const TRANSFER_HUBS = [
 						<!-- Metric Badges: Time, Stations, Distance -->
 						<div class="grid grid-cols-3 gap-2 text-center">
 							<div class="bg-mapa-canvas-dark border border-mapa-contour/50 rounded-lg p-2">
-								<span class="block text-[10px] uppercase font-bold text-mapa-clay">Travel Time</span>
+								<span class="block text-[10px] uppercase font-bold text-mapa-muted">Travel Time</span>
 								<span id="metric-time" class="text-sm font-extrabold text-mapa-ink">~32 mins</span>
 							</div>
 							<div class="bg-mapa-canvas-dark border border-mapa-contour/50 rounded-lg p-2">
-								<span class="block text-[10px] uppercase font-bold text-mapa-clay">Stations</span>
+								<span class="block text-[10px] uppercase font-bold text-mapa-muted">Stations</span>
 								<span id="metric-stops" class="text-sm font-extrabold text-mapa-ink">13 stops</span>
 							</div>
 							<div class="bg-mapa-canvas-dark border border-mapa-contour/50 rounded-lg p-2">
-								<span class="block text-[10px] uppercase font-bold text-mapa-clay">Distance</span>
+								<span class="block text-[10px] uppercase font-bold text-mapa-muted">Distance</span>
 								<span id="metric-distance" class="text-sm font-extrabold text-mapa-ink">16.9 km</span>
 							</div>
 						</div>
 
 						<!-- Transfer Alert (hidden when same line) -->
-						<div id="transfer-callout" class="hidden p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs text-amber-900 leading-relaxed">
+						<div id="transfer-callout" class="hidden p-3 rounded-lg bg-mapa-rust/10 border border-mapa-rust/25 text-xs text-mapa-ink leading-relaxed">
 							<!-- Populated via JS -->
 						</div>
 
 						<!-- Step-by-Step Route Legs -->
 						<div class="pt-2">
-							<span class="text-[11px] font-bold uppercase tracking-wider text-mapa-clay block mb-2">
+							<span class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted block mb-2">
 								Journey Step-by-Step
 							</span>
 							<div id="route-steps-list" class="space-y-2 text-xs">
@@ -847,21 +851,21 @@ const TRANSFER_HUBS = [
 						</thead>
 						<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/80">
 							<tr>
-								<td class="p-3 font-semibold text-emerald-800">LRT Line 1</td>
+								<td class="p-3 font-semibold text-mapa-green">LRT Line 1</td>
 								<td class="p-3">₱15.00</td>
 								<td class="p-3">₱1.21 / km</td>
 								<td class="p-3">₱15.00 – ₱45.00</td>
 								<td class="p-3">Rounded to nearest ₱5.00 (₱15–₱45)</td>
 							</tr>
 							<tr>
-								<td class="p-3 font-semibold text-blue-800">MRT Line 3</td>
+								<td class="p-3 font-semibold text-mapa-navy">MRT Line 3</td>
 								<td class="p-3">₱13.00</td>
 								<td class="p-3">₱1.00 / station tier</td>
 								<td class="p-3">₱13.00 – ₱28.00</td>
 								<td class="p-3">₱13.00 – ₱28.00 exact station tiers</td>
 							</tr>
 							<tr>
-								<td class="p-3 font-semibold text-purple-800">LRT Line 2</td>
+								<td class="p-3 font-semibold text-mapa-ink">LRT Line 2</td>
 								<td class="p-3">₱14.00</td>
 								<td class="p-3">₱1.21 / km</td>
 								<td class="p-3">₱14.00 – ₱33.00</td>
@@ -870,7 +874,7 @@ const TRANSFER_HUBS = [
 						</tbody>
 					</table>
 				</div>
-				<p class="text-xs text-mapa-clay leading-relaxed">
+				<p class="text-xs text-mapa-muted leading-relaxed">
 					<em>Note:</em> Single Journey Tickets (paper magnetics / QR tokens) are rounded up to the nearest 5-peso denomination under LRTA guidelines to simplify cash handling at passenger ticket sales offices (TSO). Using an electronic stored-value beep™ card guarantees the exact statutory centavo computation and avoids token queues.
 				</p>
 			</section>
@@ -956,7 +960,7 @@ const TRANSFER_HUBS = [
 					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4 flex flex-col justify-between">
 						<div>
 							<div class="flex items-center gap-2 mb-1.5">
-								<span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+								<span class="w-2.5 h-2.5 rounded-full bg-mapa-green"></span>
 								<h3 class="font-bold text-mapa-ink text-sm">Light Rail Manila Corporation (LRMC) / LRT-1</h3>
 							</div>
 							<p class="text-mapa-ink/75 leading-relaxed">
@@ -979,7 +983,7 @@ const TRANSFER_HUBS = [
 					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4 flex flex-col justify-between">
 						<div>
 							<div class="flex items-center gap-2 mb-1.5">
-								<span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+								<span class="w-2.5 h-2.5 rounded-full bg-mapa-navy"></span>
 								<h3 class="font-bold text-mapa-ink text-sm">DOTr MRT-3 & LRTA LRT-2</h3>
 							</div>
 							<p class="text-mapa-ink/75 leading-relaxed">
@@ -1142,15 +1146,15 @@ const TRANSFER_HUBS = [
 					diagramTargetLabel.textContent = mode === 'origin' ? 'Boarding' : 'Destination';
 				}
 				if (mode === 'origin') {
-					targetOriginBtn.className = 'px-3 py-1.5 rounded-lg bg-emerald-600 text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer ring-2 ring-emerald-500/50';
+					targetOriginBtn.className = 'px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer';
 					targetDestBtn.className = 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer';
-					clickHintEl.className = 'text-xs text-emerald-900 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium';
-					clickHintEl.innerHTML = '<span>👉</span><span>Click any station below or tap <strong>[🟢 Board]</strong> to set where you enter the train.</span>';
+					clickHintEl.className = 'text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium';
+					clickHintEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-mapa-green shrink-0"></span><span>Click any station row or select <strong>Board</strong> to set your origin station.</span>';
 				} else {
-					targetDestBtn.className = 'px-3 py-1.5 rounded-lg bg-blue-600 text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer ring-2 ring-blue-500/50';
+					targetDestBtn.className = 'px-3 py-1.5 rounded-lg bg-mapa-navy text-white shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer';
 					targetOriginBtn.className = 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer';
-					clickHintEl.className = 'text-xs text-blue-900 bg-blue-500/10 border border-blue-500/20 px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium';
-					clickHintEl.innerHTML = '<span>👉</span><span>Click any station below or tap <strong>[🔵 Alight]</strong> to set your destination exit.</span>';
+					clickHintEl.className = 'text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium';
+					clickHintEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-mapa-navy shrink-0"></span><span>Click any station row or select <strong>Alight</strong> to set your destination station.</span>';
 				}
 			}
 
@@ -1196,7 +1200,7 @@ const TRANSFER_HUBS = [
 					originSelect.value = stationId;
 					// Automatically prompt destination next
 					setTargetMode('dest');
-					clickHintEl.innerHTML = `<span>👉</span><span>Boarding set to <strong>${st.name}</strong>! Now click your <strong>🔵 Destination Station</strong> below.</span>`;
+					clickHintEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-mapa-navy shrink-0"></span><span>Boarding set to <strong>${st.name}</strong>. Now select your <strong>Destination</strong> station.</span>`;
 				} else {
 					destSelect.value = stationId;
 				}
@@ -1349,7 +1353,7 @@ const TRANSFER_HUBS = [
 				diagramSvg.innerHTML = '';
 
 				// Dedicated high-contrast crisp canvas background
-				diagramSvg.appendChild(svgEl('rect', { width: '100%', height: '100%', rx: '16', fill: '#F8FAFC', stroke: '#E2E8F0', 'stroke-width': '2' }));
+				diagramSvg.appendChild(svgEl('rect', { width: '100%', height: '100%', rx: '16', fill: '#F7F3E9', stroke: '#E5D9C3', 'stroke-width': '2' }));
 
 				const gLines = svgEl('g', { id: 'dg-lines' });
 				Object.keys(diagramPts).forEach(k => {
@@ -1367,7 +1371,7 @@ const TRANSFER_HUBS = [
 				DIAGRAM_LINKS.forEach(([a, b]) => {
 					const pa = diagramPos[a];
 					const pb = diagramPos[b];
-					gLinks.appendChild(svgEl('line', { x1: pa.x, y1: pa.y, x2: pb.x, y2: pb.y, stroke: '#1c1917', 'stroke-width': 5, 'stroke-linecap': 'round' }));
+					gLinks.appendChild(svgEl('line', { x1: pa.x, y1: pa.y, x2: pb.x, y2: pb.y, stroke: '#211d16', 'stroke-width': 5, 'stroke-linecap': 'round' }));
 				});
 				diagramSvg.appendChild(gLinks);
 
@@ -1377,9 +1381,9 @@ const TRANSFER_HUBS = [
 					'font-family': 'ui-sans-serif, system-ui, -apple-system, sans-serif',
 					'font-size': '13.5',
 					'font-weight': '700',
-					fill: '#0F172A',
+					fill: '#211d16',
 					'paint-order': 'stroke fill',
-					stroke: '#FFFFFF',
+					stroke: '#F7F3E9',
 					'stroke-width': '4px',
 					'stroke-linejoin': 'round',
 					'pointer-events': 'none'
@@ -1389,7 +1393,7 @@ const TRANSFER_HUBS = [
 					if (!pos) return;
 					const g = svgEl('g', { 'data-station-id': st.id, 'data-line': st.lineKey, tabindex: 0, role: 'button', 'aria-label': `${st.name}, ${st.lineName}`, style: 'cursor:pointer' });
 					g.appendChild(svgEl('circle', { class: 'dg-ring', cx: pos.x, cy: pos.y, r: 16, fill: 'none', stroke: 'transparent', 'stroke-width': 4 }));
-					g.appendChild(svgEl('circle', { cx: pos.x, cy: pos.y, r: st.isTransfer ? 9.5 : 7, fill: st.isTransfer ? '#ffffff' : (DIAGRAM_LINE_COLORS[st.lineKey] || LINE_COLORS[st.lineKey]), stroke: st.isTransfer ? '#1c1917' : '#ffffff', 'stroke-width': st.isTransfer ? 3.5 : 2.5 }));
+					g.appendChild(svgEl('circle', { cx: pos.x, cy: pos.y, r: st.isTransfer ? 9.5 : 7, fill: st.isTransfer ? '#ffffff' : (DIAGRAM_LINE_COLORS[st.lineKey] || LINE_COLORS[st.lineKey]), stroke: st.isTransfer ? '#211d16' : '#ffffff', 'stroke-width': st.isTransfer ? 3.5 : 2.5 }));
 					g.appendChild(svgEl('circle', { cx: pos.x, cy: pos.y, r: 20, fill: 'transparent' }));
 					g.appendChild(svgEl('title', {}, `${st.name} (${st.lineName})`));
 					g.addEventListener('click', () => window.setTransitStation(st.id, currentTargetMode));
@@ -1435,12 +1439,12 @@ const TRANSFER_HUBS = [
 						const slice = diagramSlice(leg.line, leg.from.id, leg.to.id);
 						if (slice.length < 2) return;
 						// Orient so the path always runs in line order; roundedPath handles bends
-						gRoute.appendChild(svgEl('path', { d: roundedPath(slice), fill: 'none', stroke: '#F59E0B', 'stroke-width': 16, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: 0.95 }));
+						gRoute.appendChild(svgEl('path', { d: roundedPath(slice), fill: 'none', stroke: '#9E391A', 'stroke-width': 16, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: 0.95 }));
 						gRoute.appendChild(svgEl('path', { d: roundedPath(slice), fill: 'none', stroke: DIAGRAM_LINE_COLORS[leg.line] || LINE_COLORS[leg.line], 'stroke-width': 8, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
 					} else {
 						const pa = diagramPos[leg.from.id];
 						const pb = diagramPos[leg.to.id];
-						if (pa && pb) gRoute.appendChild(svgEl('line', { x1: pa.x, y1: pa.y, x2: pb.x, y2: pb.y, stroke: '#F59E0B', 'stroke-width': 10, 'stroke-linecap': 'round', 'stroke-dasharray': '6,4' }));
+						if (pa && pb) gRoute.appendChild(svgEl('line', { x1: pa.x, y1: pa.y, x2: pb.x, y2: pb.y, stroke: '#9E391A', 'stroke-width': 10, 'stroke-linecap': 'round', 'stroke-dasharray': '6,4' }));
 					}
 				});
 
@@ -1448,7 +1452,7 @@ const TRANSFER_HUBS = [
 					const id = g.getAttribute('data-station-id');
 					const ring = g.querySelector('.dg-ring');
 					if (ring) {
-						ring.setAttribute('stroke', id === originId ? '#10B981' : id === destId ? '#3B82F6' : 'transparent');
+						ring.setAttribute('stroke', id === originId ? '#3D5A45' : id === destId ? '#1B2A4A' : 'transparent');
 					}
 				});
 			}
@@ -1485,7 +1489,7 @@ const TRANSFER_HUBS = [
 						const isTransfer = st.isTransfer;
 						const marker = L.circleMarker([st.lat, st.lon], {
 							radius: isTransfer ? 7 : 5,
-							fillColor: isTransfer ? '#F59E0B' : '#FFFFFF',
+							fillColor: isTransfer ? '#9E391A' : '#FFFFFF',
 							color: LINE_COLORS[lineKey],
 							weight: isTransfer ? 3 : 2,
 							opacity: 1,
@@ -1494,14 +1498,14 @@ const TRANSFER_HUBS = [
 
 						marker.bindPopup(`
 							<div class="font-sans text-xs p-1">
-								<div class="font-bold text-sm text-gray-900">${st.name}</div>
-								<div class="text-[11px] text-gray-500 mb-2">${lineKey.toUpperCase()} &bull; KM ${st.km.toFixed(1)}</div>
+								<div class="font-bold text-sm text-mapa-ink">${st.name}</div>
+								<div class="text-[11px] text-mapa-muted mb-2">${lineKey.toUpperCase()} &bull; KM ${st.km.toFixed(1)}</div>
 								<div class="flex gap-1.5">
-									<button type="button" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold shadow-xs cursor-pointer" onclick="window.setTransitStation('${st.id}', 'origin')">
-										🟢 Board Here
+									<button type="button" class="px-2.5 py-1 bg-mapa-green text-white rounded text-[11px] font-bold shadow-xs cursor-pointer" onclick="window.setTransitStation('${st.id}', 'origin')">
+										Board Here
 									</button>
-									<button type="button" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-[11px] font-bold shadow-xs cursor-pointer" onclick="window.setTransitStation('${st.id}', 'dest')">
-										🔵 Alight Here
+									<button type="button" class="px-2.5 py-1 bg-mapa-navy text-white rounded text-[11px] font-bold shadow-xs cursor-pointer" onclick="window.setTransitStation('${st.id}', 'dest')">
+										Alight Here
 									</button>
 								</div>
 							</div>
@@ -1567,8 +1571,12 @@ const TRANSFER_HUBS = [
 					const lineFilter = tab.getAttribute('data-line');
 
 					// Update tab styles
-					lineTabs.forEach(t => t.classList.add('opacity-40'));
-					tab.classList.remove('opacity-40');
+					lineTabs.forEach(t => {
+						t.classList.remove('bg-mapa-ink', 'text-white', 'border-mapa-ink');
+						t.classList.add('bg-mapa-canvas', 'text-mapa-ink', 'border-mapa-contour');
+					});
+					tab.classList.remove('bg-mapa-canvas', 'text-mapa-ink', 'border-mapa-contour');
+					tab.classList.add('bg-mapa-ink', 'text-white', 'border-mapa-ink');
 
 					// Filter schematic rows and group headers in List View
 					document.querySelectorAll('.station-row-wrapper').forEach(wrapper => {
@@ -1828,26 +1836,26 @@ const TRANSFER_HUBS = [
 
 					// Reset track segments
 					if (trackTop) {
-						trackTop.className = 'rail-track-top absolute left-[-16px] top-[-12px] bottom-1/2 w-1.5 bg-stone-300 dark:bg-stone-700 transition-colors z-0';
+						trackTop.className = 'rail-track-top absolute left-[-16px] top-[-12px] bottom-1/2 w-1.5 bg-mapa-contour transition-colors z-0';
 					}
 					if (trackBottom) {
-						trackBottom.className = 'rail-track-bottom absolute left-[-16px] top-1/2 bottom-[-12px] w-1.5 bg-stone-300 dark:bg-stone-700 transition-colors z-0';
+						trackBottom.className = 'rail-track-bottom absolute left-[-16px] top-1/2 bottom-[-12px] w-1.5 bg-mapa-contour transition-colors z-0';
 					}
 
 					if (st.id === originId) {
-						rowEl.className = 'rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-emerald-600 bg-emerald-500/15 shadow-2xs transition-all cursor-pointer ring-1 ring-emerald-500/40';
-						badgeEl.textContent = '🟢 BOARDING (START)';
-						badgeEl.className = 'station-status-badge inline-block text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-600 text-white shadow-2xs';
+						rowEl.className = 'rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-mapa-green bg-mapa-green/10 transition-all cursor-pointer';
+						badgeEl.textContent = 'Boarding';
+						badgeEl.className = 'station-status-badge inline-block text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-mapa-green text-white';
 					} else if (st.id === destId) {
-						rowEl.className = 'rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-blue-600 bg-blue-500/15 shadow-2xs transition-all cursor-pointer ring-1 ring-blue-500/40';
-						badgeEl.textContent = '🔵 DESTINATION (EXIT)';
-						badgeEl.className = 'station-status-badge inline-block text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-600 text-white shadow-2xs';
+						rowEl.className = 'rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-mapa-navy bg-mapa-navy/10 transition-all cursor-pointer';
+						badgeEl.textContent = 'Alighting';
+						badgeEl.className = 'station-status-badge inline-block text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-mapa-navy text-white';
 					} else if (transferStations.has(st.id)) {
-						rowEl.className = 'rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-amber-500 bg-amber-500/15 shadow-2xs transition-all cursor-pointer ring-1 ring-amber-500/40';
-						badgeEl.textContent = '🔄 INTERCHANGE HUB';
-						badgeEl.className = 'station-status-badge inline-block text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-600 text-white shadow-2xs';
+						rowEl.className = 'rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-mapa-rust bg-mapa-rust/10 transition-all cursor-pointer';
+						badgeEl.textContent = 'Transfer Hub';
+						badgeEl.className = 'station-status-badge inline-block text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-mapa-rust text-white';
 					} else if (pathSet.has(st.id)) {
-						rowEl.className = 'rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 transition-all cursor-pointer';
+						rowEl.className = 'rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-mapa-green/35 bg-mapa-canvas transition-all cursor-pointer';
 						badgeEl.className = 'station-status-badge hidden';
 					} else {
 						rowEl.className = 'rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-transparent hover:border-mapa-green/40 hover:bg-mapa-canvas transition-all cursor-pointer group';
@@ -1859,7 +1867,7 @@ const TRANSFER_HUBS = [
 				if (routeResult?.legs) {
 					routeResult.legs.forEach(leg => {
 						if (leg.type === 'ride' && leg.stations.length >= 2) {
-							const lineColor = leg.line === 'lrt1' ? 'bg-emerald-600' : leg.line === 'mrt3' ? 'bg-blue-600' : 'bg-purple-600';
+							const lineColor = 'bg-mapa-green';
 							for (let k = 0; k < leg.stations.length - 1; k++) {
 								const sA = leg.stations[k];
 								const sB = leg.stations[k + 1];
@@ -1868,16 +1876,16 @@ const TRANSFER_HUBS = [
 
 								if (sA.indexInLine < sB.indexInLine) {
 									// Southbound / ascending index
-									rowA?.querySelector('.rail-track-bottom')?.classList.remove('bg-stone-300', 'dark:bg-stone-700');
-									rowA?.querySelector('.rail-track-bottom')?.classList.add(lineColor, 'shadow-xs');
-									rowB?.querySelector('.rail-track-top')?.classList.remove('bg-stone-300', 'dark:bg-stone-700');
-									rowB?.querySelector('.rail-track-top')?.classList.add(lineColor, 'shadow-xs');
+									rowA?.querySelector('.rail-track-bottom')?.classList.remove('bg-mapa-contour');
+									rowA?.querySelector('.rail-track-bottom')?.classList.add(lineColor);
+									rowB?.querySelector('.rail-track-top')?.classList.remove('bg-mapa-contour');
+									rowB?.querySelector('.rail-track-top')?.classList.add(lineColor);
 								} else {
 									// Northbound / descending index
-									rowA?.querySelector('.rail-track-top')?.classList.remove('bg-stone-300', 'dark:bg-stone-700');
-									rowA?.querySelector('.rail-track-top')?.classList.add(lineColor, 'shadow-xs');
-									rowB?.querySelector('.rail-track-bottom')?.classList.remove('bg-stone-300', 'dark:bg-stone-700');
-									rowB?.querySelector('.rail-track-bottom')?.classList.add(lineColor, 'shadow-xs');
+									rowA?.querySelector('.rail-track-top')?.classList.remove('bg-mapa-contour');
+									rowA?.querySelector('.rail-track-top')?.classList.add(lineColor);
+									rowB?.querySelector('.rail-track-bottom')?.classList.remove('bg-mapa-contour');
+									rowB?.querySelector('.rail-track-bottom')?.classList.add(lineColor);
 								}
 							}
 						}
@@ -1912,7 +1920,7 @@ const TRANSFER_HUBS = [
 					metricDistEl.textContent = '0 km';
 					if (summaryMetricEl) summaryMetricEl.textContent = '0 stops • ₱0.00';
 					transferCalloutEl.classList.add('hidden');
-					routeStepsListEl.innerHTML = '<div class="text-mapa-clay italic p-2">Boarding and destination are the exact same station. Choose different stations to calculate fare.</div>';
+					routeStepsListEl.innerHTML = '<div class="text-mapa-muted italic p-2">Boarding and destination are the same station. Select two different stations to calculate fare.</div>';
 					updateSchematicHighlights(null, origin.id, dest.id);
 					updateDiagram(null, origin.id, dest.id);
 					return;
@@ -1938,14 +1946,14 @@ const TRANSFER_HUBS = [
 						if (m) {
 							m.setStyle({
 								radius: s.isTransfer ? 7 : 5,
-								fillColor: s.isTransfer ? '#F59E0B' : '#FFFFFF',
+								fillColor: s.isTransfer ? '#9E391A' : '#FFFFFF',
 								weight: s.isTransfer ? 3 : 2
 							});
 						}
 					});
 
-					stationMarkers[origin.id]?.setStyle({ radius: 9, fillColor: '#10B981', weight: 4 });
-					stationMarkers[dest.id]?.setStyle({ radius: 9, fillColor: '#3B82F6', weight: 4 });
+					stationMarkers[origin.id]?.setStyle({ radius: 9, fillColor: '#3D5A45', weight: 4 });
+					stationMarkers[dest.id]?.setStyle({ radius: 9, fillColor: '#1B2A4A', weight: 4 });
 				}
 
 				// Compute Total Metrics across all legs
@@ -1976,8 +1984,8 @@ const TRANSFER_HUBS = [
 								<span class="w-3 h-3 rounded-full mt-0.5 shrink-0 shadow-2xs" style="background-color: ${LINE_COLORS[leg.line]}"></span>
 								<div class="space-y-0.5 flex-1">
 									<div class="flex items-center justify-between gap-1 flex-wrap">
-										<span class="font-bold text-mapa-ink">${legIdx + 1}. Ride ${leg.line.toUpperCase()}: ${leg.from.name} ➔ ${leg.to.name}</span>
-										<span class="text-[11px] font-bold text-emerald-800">₱${legFareBeep.toFixed(2)}</span>
+										<span class="font-bold text-mapa-ink">${legIdx + 1}. Ride ${leg.line.toUpperCase()}: ${leg.from.name} &rarr; ${leg.to.name}</span>
+										<span class="text-[11px] font-bold text-mapa-green">₱${legFareBeep.toFixed(2)}</span>
 									</div>
 									<div class="text-mapa-muted text-[11px]">
 										${leg.stops} ${leg.stops === 1 ? 'stop' : 'stops'} &bull; ${leg.dist.toFixed(1)} km &bull; ~${Math.round(leg.time)} mins
@@ -2000,14 +2008,14 @@ const TRANSFER_HUBS = [
 						totalTravelTime += leg.walkTime;
 
 						itineraryHtml += `
-							<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30">
-								<span class="w-3 h-3 rounded-full bg-amber-500 mt-0.5 shrink-0 shadow-2xs"></span>
+							<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-mapa-rust/10 border border-mapa-rust/25">
+								<span class="w-3 h-3 rounded-full bg-mapa-rust mt-0.5 shrink-0 shadow-2xs"></span>
 								<div class="space-y-0.5 flex-1">
 									<div class="flex items-center justify-between gap-1 flex-wrap">
-										<span class="font-bold text-amber-950">${legIdx + 1}. Interchange: ${leg.name}</span>
-										<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-900">Walkway</span>
+										<span class="font-bold text-mapa-ink">${legIdx + 1}. Interchange: ${leg.name}</span>
+										<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-mapa-rust/15 text-mapa-rust">Walkway</span>
 									</div>
-									<div class="text-amber-800 text-[11px]">
+									<div class="text-mapa-muted text-[11px]">
 										Exit ${leg.from.name}, walk ~${leg.walkTime} mins across the footbridge, and tap into ${leg.to.name}.
 									</div>
 								</div>
@@ -2035,11 +2043,11 @@ const TRANSFER_HUBS = [
 				if (transferWalkCount > 0) {
 					transferCalloutEl.classList.remove('hidden');
 					transferCalloutEl.innerHTML = `
-						<div class="font-bold flex items-center gap-1.5 mb-1 text-xs">
-							<span>🔄 Transfer Required:</span>
+						<div class="font-bold flex items-center gap-1.5 mb-1 text-xs text-mapa-rust">
+							<span>Transfer Required:</span>
 							<span>${transferWalkways.join(' &bull; ')}</span>
 						</div>
-						<div class="text-[11px] leading-relaxed">
+						<div class="text-[11px] leading-relaxed text-mapa-ink/85">
 							This journey requires <strong>${transferWalkCount} line interchange</strong>. Tap out at the transfer station, proceed through the covered pedestrian walkway, and tap into the connecting line turnstiles.
 						</div>
 					`;
@@ -2051,7 +2059,7 @@ const TRANSFER_HUBS = [
 
 				if (leafletMap && allPolylineCoords.length > 0) {
 					activeRoutePolyline = L.polyline(allPolylineCoords, {
-						color: '#F59E0B',
+						color: '#9E391A',
 						weight: 6,
 						dashArray: '8, 8',
 						opacity: 0.95,

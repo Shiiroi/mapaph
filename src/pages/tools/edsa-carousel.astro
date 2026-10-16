@@ -399,13 +399,13 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 			</nav>
 
 			<div class="flex flex-wrap items-center gap-2.5">
-				<span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-600/15 text-emerald-800 border border-emerald-600/30">
+				<span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-mapa-green/10 text-mapa-green border border-mapa-green/25">
 					Route E &bull; Median Bus Rapid Transit (BRT)
 				</span>
 				<span class="text-xs font-medium px-2.5 py-1 rounded-full bg-mapa-canvas-dark border border-mapa-contour text-mapa-ink/75">
 					21 Stations &bull; 28.1 Kilometers
 				</span>
-				<span class="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-800 border border-blue-500/20">
+				<span class="text-xs font-medium px-2.5 py-1 rounded-full bg-mapa-navy/10 text-mapa-navy border border-mapa-navy/20">
 					24/7 Operating Hours
 				</span>
 			</div>
@@ -421,24 +421,24 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 		<!-- Top Summary Stat Badges -->
 		<div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-4 mb-8 font-sans">
 			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-4 shadow-2xs">
-				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-clay">Base Fare</div>
+				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted">Base Fare</div>
 				<div class="text-2xl font-extrabold text-mapa-ink mt-1">₱15.00</div>
-				<div class="text-[11px] text-mapa-ink/65 mt-0.5">First 4.0 km (Aircon BRT)</div>
+				<div class="text-[11px] text-mapa-muted mt-0.5">First 4.0 km (Aircon BRT)</div>
 			</div>
 			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-4 shadow-2xs">
-				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-clay">Per KM Tariff</div>
-				<div class="text-2xl font-extrabold text-mapa-ink mt-1">₱2.65 <span class="text-xs font-normal text-mapa-ink/60">/ km</span></div>
-				<div class="text-[11px] text-mapa-ink/65 mt-0.5">Every succeeding kilometer</div>
+				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted">Per KM Tariff</div>
+				<div class="text-2xl font-extrabold text-mapa-ink mt-1">₱2.65 <span class="text-xs font-normal text-mapa-muted">/ km</span></div>
+				<div class="text-[11px] text-mapa-muted mt-0.5">Every succeeding kilometer</div>
 			</div>
 			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-4 shadow-2xs">
-				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-clay">Maximum Fare</div>
-				<div class="text-2xl font-extrabold text-emerald-800 mt-1">₱75.50</div>
-				<div class="text-[11px] text-mapa-ink/65 mt-0.5">End-to-End (Monumento ↔ PITX)</div>
+				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted">Maximum Fare</div>
+				<div class="text-2xl font-extrabold text-mapa-green mt-1">₱75.50</div>
+				<div class="text-[11px] text-mapa-muted mt-0.5">End-to-End (Monumento ↔ PITX)</div>
 			</div>
 			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-4 shadow-2xs">
-				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-clay">Statutory Discount</div>
-				<div class="text-2xl font-extrabold text-blue-700 mt-1">20% OFF</div>
-				<div class="text-[11px] text-mapa-ink/65 mt-0.5">Students, Seniors, PWDs (₱60.50 max)</div>
+				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted">Statutory Discount</div>
+				<div class="text-2xl font-extrabold text-mapa-navy mt-1">20% OFF</div>
+				<div class="text-[11px] text-mapa-muted mt-0.5">Students, Seniors, PWDs (₱60.50 max)</div>
 			</div>
 		</div>
 
@@ -469,14 +469,14 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					<div class="space-y-4">
 						<!-- Origin Stop -->
 						<div>
-							<label for="origin-select" class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-800 mb-1.5">
-								<span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+							<label for="origin-select" class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-mapa-green mb-1.5">
+								<span class="w-2 h-2 rounded-full bg-mapa-green"></span>
 								<span>Boarding Stop (Origin / Start)</span>
 							</label>
 							<div class="relative">
 								<select
 									id="origin-select"
-									class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-emerald-600 cursor-pointer"
+									class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green cursor-pointer"
 								>
 									{BUSWAY_STOPS.map((stop, index) => (
 										<option value={stop.id} selected={index === 0}>
@@ -489,14 +489,14 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 
 						<!-- Destination Stop -->
 						<div>
-							<label for="dest-select" class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-800 mb-1.5">
-								<span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+							<label for="dest-select" class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-mapa-navy mb-1.5">
+								<span class="w-2 h-2 rounded-full bg-mapa-navy"></span>
 								<span>Alighting Stop (Destination / Exit)</span>
 							</label>
 							<div class="relative">
 								<select
 									id="dest-select"
-									class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer"
+									class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-navy cursor-pointer"
 								>
 									{BUSWAY_STOPS.map((stop, index) => (
 										<option value={stop.id} selected={index === BUSWAY_STOPS.length - 1}>
@@ -512,7 +512,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 							<label class="flex items-center justify-between p-3 rounded-xl bg-mapa-canvas border border-mapa-contour/70 cursor-pointer hover:border-mapa-green/50 transition-colors">
 								<div class="flex flex-col">
 									<span class="text-xs font-bold text-mapa-ink">20% Statutory Discount</span>
-									<span class="text-[11px] text-mapa-clay">Student (RA 11314), Senior Citizen (RA 9994), PWD (RA 10754)</span>
+									<span class="text-[11px] text-mapa-muted">Student (RA 11314), Senior Citizen (RA 9994), PWD (RA 10754)</span>
 								</div>
 								<input
 									type="checkbox"
@@ -524,28 +524,28 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					</div>
 
 					<!-- Calculation Result Card -->
-					<div class="mt-6 p-5 rounded-xl bg-emerald-600/10 border border-emerald-600/30">
+					<div class="mt-6 p-5 rounded-xl bg-mapa-canvas border border-mapa-contour">
 						<div class="flex items-center justify-between mb-2">
-							<span class="text-xs font-bold uppercase tracking-wider text-emerald-900">Estimated Busway Fare</span>
-							<span id="fare-rate-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white">Regular</span>
+							<span class="text-xs font-bold uppercase tracking-wider text-mapa-muted">Estimated Busway Fare</span>
+							<span id="fare-rate-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-mapa-green text-white">Regular</span>
 						</div>
 
 						<div class="flex items-baseline gap-2">
-							<span id="computed-fare" class="text-4xl font-extrabold text-emerald-950 font-serif">₱75.50</span>
-							<span id="discounted-fare-strikethrough" class="text-sm line-through text-mapa-clay hidden">₱75.50</span>
+							<span id="computed-fare" class="text-4xl font-extrabold text-mapa-green font-serif">₱75.50</span>
+							<span id="discounted-fare-strikethrough" class="text-sm line-through text-mapa-muted hidden">₱75.50</span>
 						</div>
 
-						<div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-emerald-600/20 text-center text-xs">
+						<div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-mapa-contour/60 text-center text-xs">
 							<div>
-								<div class="text-[10px] text-mapa-clay uppercase font-bold">Corridor Distance</div>
+								<div class="text-[10px] text-mapa-muted uppercase font-bold">Corridor Distance</div>
 								<div id="stat-distance" class="font-bold text-mapa-ink mt-0.5">28.1 km</div>
 							</div>
 							<div>
-								<div class="text-[10px] text-mapa-clay uppercase font-bold">Stops Traversed</div>
+								<div class="text-[10px] text-mapa-muted uppercase font-bold">Stops Traversed</div>
 								<div id="stat-stops" class="font-bold text-mapa-ink mt-0.5">20 stops</div>
 							</div>
 							<div>
-								<div class="text-[10px] text-mapa-clay uppercase font-bold">Est. Travel Time</div>
+								<div class="text-[10px] text-mapa-muted uppercase font-bold">Est. Travel Time</div>
 								<div id="stat-time" class="font-bold text-mapa-ink mt-0.5">~55–70 mins</div>
 							</div>
 						</div>
@@ -563,7 +563,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				<div id="active-stop-card" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-xs">
 					<div class="flex items-center justify-between border-b border-mapa-contour/50 pb-3 mb-4">
 						<div>
-							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay">Selected Station Details</span>
+							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted">Selected Station Details</span>
 							<h3 id="card-stop-name" class="font-serif text-xl font-bold text-mapa-ink">Monumento</h3>
 						</div>
 						<span id="card-stop-city" class="text-xs font-semibold px-2.5 py-1 rounded bg-mapa-canvas border border-mapa-contour text-mapa-green">
@@ -573,22 +573,22 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 
 					<div class="space-y-3 text-xs">
 						<div>
-							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay">Platform Configuration</div>
+							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted">Platform Configuration</div>
 							<p id="card-stop-platform" class="text-mapa-ink/90 font-medium mt-0.5">Median Island with Barrier</p>
 						</div>
 						<div>
-							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay">Pedestrian Access & Entry</div>
+							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted">Pedestrian Access & Entry</div>
 							<p id="card-stop-access" class="text-mapa-ink/90 font-medium mt-0.5">Pedestrian Footbridge & Street Crosswalk</p>
 						</div>
 						<div>
-							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay">Connecting Interchanges</div>
+							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted">Connecting Interchanges</div>
 							<div id="card-stop-interchanges" class="flex flex-wrap gap-1.5 mt-1">
-								<span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-800 border border-emerald-500/20">LRT-1 Monumento</span>
+								<span class="px-2 py-0.5 rounded bg-mapa-green/10 text-mapa-green border border-mapa-green/25">LRT-1 Monumento</span>
 								<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour">Caloocan Jeepney Hub</span>
 							</div>
 						</div>
 						<div>
-							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay">Nearby Landmarks</div>
+							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted">Nearby Landmarks</div>
 							<p id="card-stop-landmarks" class="text-mapa-ink/80 mt-0.5">Bonifacio Monument Circle, SM Center Sangandaan, Victory Central Mall</p>
 						</div>
 					</div>
@@ -601,18 +601,18 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 shadow-xs flex flex-col gap-3">
 					<div class="flex flex-wrap items-center justify-between gap-3">
 						<div class="flex items-center gap-2 flex-wrap">
-							<span class="text-xs font-bold uppercase tracking-wider text-mapa-clay">
-								Clicking Stop Sets:
+							<span class="text-xs font-bold uppercase tracking-wider text-mapa-muted">
+								Click Stop Sets:
 							</span>
 							<div class="inline-flex rounded-xl bg-mapa-canvas p-1 border border-mapa-contour text-xs font-bold">
 								<button
 									id="busway-target-origin"
 									type="button"
-									class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer ring-2 ring-emerald-500/50"
+									class="px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
 									title="Clicking any stop will set it as your Boarding point"
 								>
 									<span class="w-2 h-2 rounded-full bg-white"></span>
-									<span>🟢 Boarding (Start)</span>
+									<span>Boarding (Start)</span>
 								</button>
 								<button
 									id="busway-target-dest"
@@ -620,8 +620,8 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 									class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer"
 									title="Clicking any stop will set it as your Destination"
 								>
-									<span class="w-2 h-2 rounded-full bg-blue-500"></span>
-									<span>🔵 Destination (Alight)</span>
+									<span class="w-2 h-2 rounded-full bg-mapa-navy"></span>
+									<span>Destination (Alight)</span>
 								</button>
 							</div>
 						</div>
@@ -635,31 +635,33 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 							<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
 							</svg>
-							<span>⇄ Swap Stops</span>
+							<span>Swap Stops</span>
 						</button>
 					</div>
 
 					<!-- Visual Hint for User -->
-					<div id="busway-click-hint" class="text-xs text-emerald-900 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium">
-						<span>👉</span>
-						<span>Click any stop or tap <strong>[🟢 Board]</strong> to set where you enter the busway.</span>
+					<div id="busway-click-hint" class="text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium">
+						<span class="w-1.5 h-1.5 rounded-full bg-mapa-green shrink-0"></span>
+						<span>Click any stop row or use <strong>Board</strong> / <strong>Alight</strong> to select your route.</span>
 					</div>
 
 					<!-- Active Route Summary Ribbon -->
 					<div class="bg-mapa-canvas border border-mapa-contour rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
 						<div class="flex items-center gap-2 flex-wrap">
-							<span class="font-bold text-emerald-900 flex items-center gap-1 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">
-								<span>🟢 Board:</span>
-								<span id="busway-summary-origin">Monumento</span>
+							<span class="font-bold text-mapa-green flex items-center gap-1.5 bg-mapa-green/10 px-2.5 py-1 rounded-md border border-mapa-green/25">
+								<span class="w-2 h-2 rounded-full bg-mapa-green"></span>
+								<span class="uppercase tracking-wider text-[10px] text-mapa-muted">Board:</span>
+								<span id="busway-summary-origin" class="text-mapa-ink">Monumento</span>
 							</span>
-							<span class="text-mapa-clay font-bold">➔</span>
-							<span class="font-bold text-blue-900 flex items-center gap-1 bg-blue-500/10 px-2.5 py-1 rounded-md border border-blue-500/20">
-								<span>🔵 Alight:</span>
-								<span id="busway-summary-dest">PITX</span>
+							<span class="text-mapa-muted font-bold">&rarr;</span>
+							<span class="font-bold text-mapa-navy flex items-center gap-1.5 bg-mapa-navy/10 px-2.5 py-1 rounded-md border border-mapa-navy/25">
+								<span class="w-2 h-2 rounded-full bg-mapa-navy"></span>
+								<span class="uppercase tracking-wider text-[10px] text-mapa-muted">Alight:</span>
+								<span id="busway-summary-dest" class="text-mapa-ink">PITX</span>
 							</span>
 						</div>
 						<div class="flex items-center gap-1.5">
-							<span id="busway-summary-metric" class="text-[11px] font-bold px-2.5 py-1 rounded-md bg-emerald-600 text-white shadow-2xs">
+							<span id="busway-summary-metric" class="text-[11px] font-bold px-2.5 py-1 rounded-md bg-mapa-green text-white shadow-2xs">
 								20 stops &bull; ₱75.50
 							</span>
 						</div>
@@ -669,34 +671,34 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				<!-- Visualizer Controls: View Mode Switcher -->
 				<div class="flex items-center justify-between bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-3.5 shadow-2xs">
 					<div class="flex items-center gap-2">
-						<span class="text-xs font-bold uppercase tracking-wider text-mapa-clay pl-2">Display View:</span>
+						<span class="text-xs font-bold uppercase tracking-wider text-mapa-muted pl-2">Display View:</span>
 						<div class="inline-flex rounded-xl bg-mapa-canvas p-1 border border-mapa-contour text-xs font-bold">
 							<button
 								id="btn-view-list"
 								type="button"
 								class="px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer"
 							>
-								📋 List View
+								Station List
 							</button>
 							<button
 								id="btn-view-schematic"
 								type="button"
 								class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
 							>
-								🧭 Schematic View
+								Schematic Map
 							</button>
 							<button
 								id="btn-view-geo"
 								type="button"
 								class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
 							>
-								🗺️ Geo View
+								Geographic Map
 							</button>
 						</div>
 					</div>
 
-					<div class="text-xs text-mapa-clay hidden sm:block">
-						<span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-600 mr-1 align-middle"></span>
+					<div class="text-xs text-mapa-muted hidden sm:block">
+						<span class="inline-block w-2.5 h-2.5 rounded-full bg-mapa-green mr-1 align-middle"></span>
 						Inner Median Busway
 					</div>
 				</div>
@@ -706,7 +708,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					<div class="flex items-center justify-between pb-3 mb-4 border-b border-mapa-contour/50">
 						<div>
 							<h3 class="font-serif text-lg font-bold text-mapa-ink">EDSA Carousel Station List</h3>
-							<p class="text-xs text-mapa-clay">Sequential median island stations from North (Monumento) to South (PITX)</p>
+							<p class="text-xs text-mapa-muted">Sequential median island stations from North (Monumento) to South (PITX)</p>
 						</div>
 						<span class="text-[11px] font-mono px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour text-mapa-green">
 							Route E Strip
@@ -728,16 +730,16 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 								>
 									{/* Top Track Segment */}
 									{!isFirst && (
-										<div class="busway-track-top absolute left-[-15px] top-[-14px] bottom-1/2 w-1.5 bg-emerald-600/25 dark:bg-emerald-600/35 transition-colors z-0"></div>
+										<div class="busway-track-top absolute left-[-15px] top-[-14px] bottom-1/2 w-1.5 bg-mapa-contour transition-colors z-0"></div>
 									)}
 									{/* Bottom Track Segment */}
 									{!isLast && (
-										<div class="busway-track-bottom absolute left-[-15px] top-1/2 bottom-[-14px] w-1.5 bg-emerald-600/25 dark:bg-emerald-600/35 transition-colors z-0"></div>
+										<div class="busway-track-bottom absolute left-[-15px] top-1/2 bottom-[-14px] w-1.5 bg-mapa-contour transition-colors z-0"></div>
 									)}
 
 									<!-- Circle Node Indicator -->
-									<div class="absolute left-[-24px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-mapa-canvas-dark border-2 border-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform z-10 shadow-2xs">
-										<div class="w-2 h-2 rounded-full bg-emerald-600"></div>
+									<div class="absolute left-[-24px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-mapa-canvas-dark border-2 border-mapa-green flex items-center justify-center group-hover:scale-110 transition-transform z-10 shadow-2xs">
+										<div class="w-2 h-2 rounded-full bg-mapa-green"></div>
 									</div>
 
 									<div class="flex flex-col ml-3 pr-2 min-w-0">
@@ -746,14 +748,14 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 												{index + 1}. {stop.name}
 											</span>
 											{stop.isTerminus && (
-												<span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-600 text-white shadow-2xs">
+												<span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-mapa-green text-white shadow-2xs">
 													Terminus
 												</span>
 											)}
 											<!-- Active Selection Badge Container -->
 											<span id={`busway-badge-${stop.id}`} class="busway-status-badge hidden text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-2xs"></span>
 										</div>
-										<span class="text-[11px] text-mapa-clay mt-0.5">
+										<span class="text-[11px] text-mapa-muted mt-0.5">
 											{stop.city} &bull; KM {stop.km.toFixed(1)} &bull; {stop.platform}
 										</span>
 										{stop.interchanges && stop.interchanges.length > 0 && (
@@ -771,19 +773,19 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 									<div class="flex items-center gap-1.5 shrink-0 ml-2">
 										<button
 											type="button"
-											class="btn-busway-board px-2 py-1 text-[11px] font-bold rounded-md bg-emerald-600/10 hover:bg-emerald-600 text-emerald-800 hover:text-white transition-all border border-emerald-600/30 cursor-pointer shadow-2xs"
+											class="btn-busway-board px-2.5 py-1 text-[11px] font-bold rounded-md bg-mapa-canvas hover:bg-mapa-green text-mapa-green hover:text-white transition-all border border-mapa-contour hover:border-mapa-green cursor-pointer"
 											data-stop-id={stop.id}
 											title={`Set ${stop.name} as Boarding (Start)`}
 										>
-											🟢 Board
+											Board
 										</button>
 										<button
 											type="button"
-											class="btn-busway-alight px-2 py-1 text-[11px] font-bold rounded-md bg-blue-600/10 hover:bg-blue-600 text-blue-800 hover:text-white transition-all border border-blue-600/30 cursor-pointer shadow-2xs"
+											class="btn-busway-alight px-2.5 py-1 text-[11px] font-bold rounded-md bg-mapa-canvas hover:bg-mapa-navy text-mapa-navy hover:text-white transition-all border border-mapa-contour hover:border-mapa-navy cursor-pointer"
 											data-stop-id={stop.id}
 											title={`Set ${stop.name} as Destination (Exit)`}
 										>
-											🔵 Alight
+											Alight
 										</button>
 									</div>
 								</div>
@@ -797,12 +799,12 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					<div class="px-4 pt-3 pb-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-mapa-ink/70 border-b border-mapa-contour/50 bg-mapa-canvas">
 						<span>Tap any busway stop dot to set it as your <strong id="busway-diagram-target-label">Boarding</strong> point. Click stops to calculate trip.</span>
 						<span class="inline-flex items-center gap-3">
-							<span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-emerald-500/30"></span>Board</span>
-							<span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 ring-2 ring-blue-500/30"></span>Alight</span>
-							<span class="inline-flex items-center gap-1"><span class="w-4 h-1 rounded-full bg-amber-500"></span>Your route</span>
+							<span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-mapa-green"></span>Board</span>
+							<span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-mapa-navy"></span>Alight</span>
+							<span class="inline-flex items-center gap-1"><span class="w-4 h-1 rounded-full bg-mapa-rust"></span>Active route</span>
 						</span>
 					</div>
-					<div class="overflow-auto max-h-[680px] p-4 flex justify-center bg-stone-100/60 dark:bg-stone-950/40">
+					<div class="overflow-auto max-h-[680px] p-4 flex justify-center bg-mapa-canvas/60">
 						<svg
 							id="busway-diagram-svg"
 							viewBox="0 0 920 1240"
@@ -818,10 +820,10 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					<div class="flex items-center justify-between pb-3 mb-2 border-b border-mapa-contour/50 text-xs">
 						<div>
 							<h3 class="font-serif text-lg font-bold text-mapa-ink">Geographic Corridor Map</h3>
-							<p class="text-xs text-mapa-clay">Epifanio de los Santos Ave & Macapagal Blvd Transit Corridor</p>
+							<p class="text-xs text-mapa-muted">Epifanio de los Santos Ave & Macapagal Blvd Transit Corridor</p>
 						</div>
-						<div class="text-mapa-clay flex items-center gap-2">
-							<span class="text-[11px] font-medium text-emerald-800 bg-emerald-500/10 px-2 py-0.5 rounded">
+						<div class="text-mapa-muted flex items-center gap-2">
+							<span class="text-[11px] font-medium text-mapa-green bg-mapa-green/10 px-2 py-0.5 rounded">
 								100% Free OpenStreetMap &bull; Zero API Key
 							</span>
 						</div>
@@ -839,7 +841,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				<h2 class="text-2xl font-serif font-bold text-mapa-ink">
 					Major Multimodal Transfer Terminals
 				</h2>
-				<p class="text-sm text-mapa-clay mt-1">
+				<p class="text-sm text-mapa-muted mt-1">
 					Key interchange concourses connecting the EDSA Carousel to rail networks, provincial buses, and business districts.
 				</p>
 			</div>
@@ -849,7 +851,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5 flex flex-col justify-between hover:border-mapa-green/50 transition-colors shadow-2xs">
 						<div>
 							<div class="flex items-center justify-between gap-2 mb-2">
-								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-600/15 text-emerald-800 border border-emerald-600/30">
+								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-green/10 text-mapa-green border border-mapa-green/25">
 									{hub.badge}
 								</span>
 								<span class="text-xs font-semibold text-mapa-green">
@@ -875,11 +877,11 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					<h2 class="text-2xl font-serif font-bold text-mapa-ink">
 						Complete 21-Station Reference Directory
 					</h2>
-					<p class="text-sm text-mapa-clay mt-1">
+					<p class="text-sm text-mapa-muted mt-1">
 						Distance from Monumento, platform access type, and regular passenger fare schedule.
 					</p>
 				</div>
-				<span class="text-xs text-mapa-clay font-medium">
+				<span class="text-xs text-mapa-muted font-medium">
 					LTFRB Fare Matrix 2026
 				</span>
 			</div>
@@ -887,7 +889,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs">
 				<div class="overflow-x-auto">
 					<table class="w-full text-left text-xs text-mapa-ink">
-						<thead class="bg-mapa-canvas border-b border-mapa-contour text-mapa-clay uppercase text-[10px] font-bold tracking-wider">
+						<thead class="bg-mapa-canvas border-b border-mapa-contour text-mapa-muted uppercase text-[10px] font-bold tracking-wider">
 							<tr>
 								<th class="py-3 px-4">#</th>
 								<th class="py-3 px-4">Station Name</th>
@@ -902,10 +904,10 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 						<tbody class="divide-y divide-mapa-contour/40">
 							{BUSWAY_STOPS_WITH_FARES.map((stop, idx) => (
 								<tr class="hover:bg-mapa-canvas/60 transition-colors">
-									<td class="py-3 px-4 font-mono font-bold text-mapa-clay">{idx + 1}</td>
+									<td class="py-3 px-4 font-mono font-bold text-mapa-muted">{idx + 1}</td>
 									<td class="py-3 px-4 font-bold text-mapa-ink">{stop.name}</td>
 									<td class="py-3 px-4 text-mapa-ink/75">{stop.city}</td>
-									<td class="py-3 px-4 font-mono text-mapa-clay">KM {stop.km.toFixed(1)}</td>
+									<td class="py-3 px-4 font-mono text-mapa-muted">KM {stop.km.toFixed(1)}</td>
 									<td class="py-3 px-4 text-mapa-ink/80">{stop.platform}</td>
 									<td class="py-3 px-4">
 										{stop.interchanges && stop.interchanges.length > 0 ? (
@@ -917,11 +919,11 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 												))}
 											</div>
 										) : (
-											<span class="text-mapa-clay">—</span>
+											<span class="text-mapa-muted">—</span>
 										)}
 									</td>
-									<td class="py-3 px-4 text-right font-bold text-emerald-800">₱{stop.regFare.toFixed(2)}</td>
-									<td class="py-3 px-4 text-right font-bold text-blue-700">₱{stop.discFare.toFixed(2)}</td>
+									<td class="py-3 px-4 text-right font-bold text-mapa-green">₱{stop.regFare.toFixed(2)}</td>
+									<td class="py-3 px-4 text-right font-bold text-mapa-navy">₱{stop.discFare.toFixed(2)}</td>
 								</tr>
 							))}
 						</tbody>
@@ -976,7 +978,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4 flex flex-col justify-between">
 					<div>
 						<div class="flex items-center gap-2 mb-1.5">
-							<span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+							<span class="w-2.5 h-2.5 rounded-full bg-mapa-green"></span>
 							<h3 class="font-bold text-mapa-ink text-sm">Land Transportation Franchising and Regulatory Board (LTFRB)</h3>
 						</div>
 						<p class="text-mapa-ink/75 leading-relaxed">
@@ -999,7 +1001,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4 flex flex-col justify-between">
 					<div>
 						<div class="flex items-center gap-2 mb-1.5">
-							<span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+							<span class="w-2.5 h-2.5 rounded-full bg-mapa-green"></span>
 							<h3 class="font-bold text-mapa-ink text-sm">DOTr & MMDA Busway Project Management Office</h3>
 						</div>
 						<p class="text-mapa-ink/75 leading-relaxed">
@@ -1092,15 +1094,15 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					buswayDiagramTargetLabel.textContent = mode === 'origin' ? 'Boarding' : 'Destination';
 				}
 				if (mode === 'origin') {
-					targetOriginBtn.className = 'px-3 py-1.5 rounded-lg bg-emerald-600 text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer ring-2 ring-emerald-500/50';
+					targetOriginBtn.className = 'px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer';
 					targetDestBtn.className = 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer';
-					clickHintEl.className = 'text-xs text-emerald-900 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium';
-					clickHintEl.innerHTML = '<span>👉</span><span>Click any stop below or tap <strong>[🟢 Board]</strong> to set where you enter the busway.</span>';
+					clickHintEl.className = 'text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium';
+					clickHintEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-mapa-green shrink-0"></span><span>Click any stop row or select <strong>Board</strong> to set your origin stop.</span>';
 				} else {
-					targetDestBtn.className = 'px-3 py-1.5 rounded-lg bg-blue-600 text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer ring-2 ring-blue-500/50';
+					targetDestBtn.className = 'px-3 py-1.5 rounded-lg bg-mapa-navy text-white shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer';
 					targetOriginBtn.className = 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer';
-					clickHintEl.className = 'text-xs text-blue-900 bg-blue-500/10 border border-blue-500/20 px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium';
-					clickHintEl.innerHTML = '<span>👉</span><span>Click any stop below or tap <strong>[🔵 Alight]</strong> to set your destination exit.</span>';
+					clickHintEl.className = 'text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium';
+					clickHintEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-mapa-navy shrink-0"></span><span>Click any stop row or select <strong>Alight</strong> to set your destination stop.</span>';
 				}
 			}
 
@@ -1116,7 +1118,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					originSelect.value = stopId;
 					// Automatically advance to destination mode
 					setTargetMode('dest');
-					clickHintEl.innerHTML = `<span>👉</span><span>Boarding set to <strong>${stop.name}</strong>! Now select your <strong>🔵 Destination Stop</strong> below.</span>`;
+					clickHintEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-mapa-navy shrink-0"></span><span>Boarding set to <strong>${stop.name}</strong>. Now select your <strong>Destination</strong> stop.</span>`;
 				} else {
 					destSelect.value = stopId;
 				}
@@ -1158,13 +1160,13 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					strikeFareEl.textContent = `₱${regFare.toFixed(2)}`;
 					strikeFareEl.classList.remove('hidden');
 					fareRateBadge.textContent = '20% Discount';
-					fareRateBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-600 text-white';
+					fareRateBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-mapa-navy text-white';
 					if (summaryMetricEl) summaryMetricEl.textContent = `${stopsTraversed} stops • ₱${discFare.toFixed(2)}`;
 				} else {
 					computedFareEl.textContent = `₱${regFare.toFixed(2)}`;
 					strikeFareEl.classList.add('hidden');
 					fareRateBadge.textContent = 'Regular';
-					fareRateBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white';
+					fareRateBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-mapa-green text-white';
 					if (summaryMetricEl) summaryMetricEl.textContent = `${stopsTraversed} stops • ₱${regFare.toFixed(2)}`;
 				}
 
@@ -1194,26 +1196,26 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 
 					// Reset track segments
 					if (trackTop) {
-						trackTop.className = 'busway-track-top absolute left-[-15px] top-[-14px] bottom-1/2 w-1.5 bg-emerald-600/25 dark:bg-emerald-600/35 transition-colors z-0';
+						trackTop.className = 'busway-track-top absolute left-[-15px] top-[-14px] bottom-1/2 w-1.5 bg-mapa-contour transition-colors z-0';
 					}
 					if (trackBottom) {
-						trackBottom.className = 'busway-track-bottom absolute left-[-15px] top-1/2 bottom-[-14px] w-1.5 bg-emerald-600/25 dark:bg-emerald-600/35 transition-colors z-0';
+						trackBottom.className = 'busway-track-bottom absolute left-[-15px] top-1/2 bottom-[-14px] w-1.5 bg-mapa-contour transition-colors z-0';
 					}
 
 					if (index === idx1) {
-						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-emerald-600 bg-emerald-500/15 ring-1 ring-emerald-500/40 shadow-2xs transition-all cursor-pointer';
+						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-mapa-green bg-mapa-green/10 transition-all cursor-pointer';
 						if (badgeEl) {
-							badgeEl.textContent = '🟢 BOARDING (START)';
-							badgeEl.className = 'busway-status-badge inline-block text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-600 text-white shadow-2xs';
+							badgeEl.textContent = 'Boarding';
+							badgeEl.className = 'busway-status-badge inline-block text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-mapa-green text-white';
 						}
 					} else if (index === idx2) {
-						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-blue-600 bg-blue-500/15 ring-1 ring-blue-500/40 shadow-2xs transition-all cursor-pointer';
+						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-mapa-navy bg-mapa-navy/10 transition-all cursor-pointer';
 						if (badgeEl) {
-							badgeEl.textContent = '🔵 DESTINATION (EXIT)';
-							badgeEl.className = 'busway-status-badge inline-block text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-600 text-white shadow-2xs';
+							badgeEl.textContent = 'Alighting';
+							badgeEl.className = 'busway-status-badge inline-block text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-mapa-navy text-white';
 						}
 					} else if (index > minIdx && index < maxIdx) {
-						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 transition-all cursor-pointer';
+						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-mapa-green/35 bg-mapa-canvas transition-all cursor-pointer';
 						if (badgeEl) badgeEl.className = 'busway-status-badge hidden';
 					} else {
 						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-transparent hover:border-mapa-green/40 hover:bg-mapa-canvas transition-all cursor-pointer group';
@@ -1223,10 +1225,10 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					// Light up track segments along the active busway journey path
 					if (idx1 !== idx2) {
 						if (index > minIdx && index <= maxIdx && trackTop) {
-							trackTop.className = 'busway-track-top absolute left-[-15px] top-[-14px] bottom-1/2 w-1.5 bg-emerald-600 shadow-xs transition-colors z-0';
+							trackTop.className = 'busway-track-top absolute left-[-15px] top-[-14px] bottom-1/2 w-1.5 bg-mapa-green transition-colors z-0';
 						}
 						if (index >= minIdx && index < maxIdx && trackBottom) {
-							trackBottom.className = 'busway-track-bottom absolute left-[-15px] top-1/2 bottom-[-14px] w-1.5 bg-emerald-600 shadow-xs transition-colors z-0';
+							trackBottom.className = 'busway-track-bottom absolute left-[-15px] top-1/2 bottom-[-14px] w-1.5 bg-mapa-green transition-colors z-0';
 						}
 					}
 				});
@@ -1245,13 +1247,13 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				if (stop.interchanges && stop.interchanges.length > 0) {
 					stop.interchanges.forEach(ic => {
 						const span = document.createElement('span');
-						span.className = 'px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-800 border border-emerald-500/20';
+						span.className = 'px-2 py-0.5 rounded bg-mapa-green/10 text-mapa-green border border-mapa-green/25';
 						span.textContent = ic;
 						cardStopInterchanges.appendChild(span);
 					});
 				} else {
 					const span = document.createElement('span');
-					span.className = 'text-mapa-clay';
+					span.className = 'text-mapa-muted';
 					span.textContent = 'None / Local street connections';
 					cardStopInterchanges.appendChild(span);
 				}
@@ -1362,7 +1364,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				buswayDiagramSvg.innerHTML = '';
 
 				// 1. High-contrast crisp canvas background
-				buswayDiagramSvg.appendChild(svgEl('rect', { width: '100%', height: '100%', rx: '16', fill: '#F8FAFC', stroke: '#E2E8F0', 'stroke-width': '2' }));
+				buswayDiagramSvg.appendChild(svgEl('rect', { width: '100%', height: '100%', rx: '16', fill: '#F7F3E9', stroke: '#E5D9C3', 'stroke-width': '2' }));
 
 				// 2. Sector Labels
 				const sectors = [
@@ -1376,7 +1378,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					buswayDiagramSvg.appendChild(svgEl('text', {
 						x: sec.x, y: sec.y, 'text-anchor': 'middle',
 						'font-family': 'ui-sans-serif, system-ui, sans-serif',
-						'font-size': '10', 'font-weight': '800', fill: '#94A3B8', 'letter-spacing': '2'
+						'font-size': '10', 'font-weight': '800', fill: '#5C5343', 'letter-spacing': '2'
 					}, sec.text));
 				});
 
@@ -1384,7 +1386,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				const fullD = getBuswayCorridorPath(0, BUSWAY_DIAGRAM_STATIONS.length - 1);
 				const gBaseLine = svgEl('g', { id: 'busway-base-line' });
 				gBaseLine.appendChild(svgEl('path', {
-					d: fullD, fill: 'none', stroke: '#059669', 'stroke-width': '10',
+					d: fullD, fill: 'none', stroke: '#3D5A45', 'stroke-width': '10',
 					'stroke-linecap': 'round', 'stroke-linejoin': 'round'
 				}));
 				buswayDiagramSvg.appendChild(gBaseLine);
@@ -1399,9 +1401,9 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					'font-family': 'ui-sans-serif, system-ui, -apple-system, sans-serif',
 					'font-size': '13',
 					'font-weight': '700',
-					fill: '#0F172A',
+					fill: '#211D16',
 					'paint-order': 'stroke fill',
-					stroke: '#FFFFFF',
+					stroke: '#F7F3E9',
 					'stroke-width': '4px',
 					'stroke-linejoin': 'round',
 					'pointer-events': 'none'
@@ -1415,7 +1417,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 						'aria-label': `${st.name} Busway Stop`, style: 'cursor:pointer'
 					});
 
-					// Pulse/selection ring
+					// Selection ring
 					g.appendChild(svgEl('circle', {
 						class: 'busway-ring', cx: st.x, cy: st.y, r: 16,
 						fill: 'none', stroke: 'transparent', 'stroke-width': 4
@@ -1425,8 +1427,8 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					g.appendChild(svgEl('circle', {
 						class: 'busway-dot', cx: st.x, cy: st.y,
 						r: isHub ? 9.5 : 7,
-						fill: isHub ? '#FFFFFF' : '#059669',
-						stroke: isHub ? '#059669' : '#FFFFFF',
+						fill: isHub ? '#FFFFFF' : '#3D5A45',
+						stroke: isHub ? '#3D5A45' : '#FFFFFF',
 						'stroke-width': isHub ? 3.5 : 2.5
 					}));
 
@@ -1457,7 +1459,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					if (st.hub) {
 						const tspan = svgEl('tspan', {
 							dx: 5, 'font-size': '10', 'font-weight': '800',
-							fill: '#047857', stroke: '#FFFFFF', 'stroke-width': '2px', 'paint-order': 'stroke fill'
+							fill: '#3D5A45', stroke: '#F7F3E9', 'stroke-width': '2px', 'paint-order': 'stroke fill'
 						}, `[${st.hub}]`);
 						textEl.appendChild(tspan);
 					}
@@ -1484,11 +1486,11 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					const subD = getBuswayCorridorPath(oStop.index, dStop.index);
 					if (subD) {
 						gRoute.appendChild(svgEl('path', {
-							d: subD, fill: 'none', stroke: '#F59E0B', 'stroke-width': 16,
+							d: subD, fill: 'none', stroke: '#9E391A', 'stroke-width': 16,
 							'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: 0.95
 						}));
 						gRoute.appendChild(svgEl('path', {
-							d: subD, fill: 'none', stroke: '#059669', 'stroke-width': 8,
+							d: subD, fill: 'none', stroke: '#3D5A45', 'stroke-width': 8,
 							'stroke-linecap': 'round', 'stroke-linejoin': 'round'
 						}));
 					}
@@ -1501,7 +1503,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					const id = g.getAttribute('data-stop-id');
 					const ring = g.querySelector('.busway-ring');
 					if (ring) {
-						ring.setAttribute('stroke', id === originId ? '#10B981' : id === destId ? '#3B82F6' : 'transparent');
+						ring.setAttribute('stroke', id === originId ? '#3D5A45' : id === destId ? '#1B2A4A' : 'transparent');
 					}
 				});
 			}
@@ -1526,7 +1528,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 
 				// Add background route line
 				routePolyline = L.polyline(latLngs, {
-					color: '#059669',
+					color: '#3D5A45',
 					weight: 5,
 					opacity: 0.85,
 					lineJoin: 'round',
@@ -1537,7 +1539,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				BUSWAY_STOPS.forEach((stop, index) => {
 					const marker = L.circleMarker([stop.lat, stop.lon], {
 						radius: stop.isTerminus ? 8 : 6,
-						fillColor: stop.isTerminus ? '#047857' : '#10B981',
+						fillColor: stop.isTerminus ? '#211D16' : '#3D5A45',
 						color: '#ffffff',
 						weight: 2,
 						opacity: 1,
@@ -1546,15 +1548,15 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 
 					marker.bindPopup(`
 						<div class="font-sans text-xs p-1">
-							<strong class="text-sm font-serif block">${index + 1}. ${stop.name}</strong>
-							<span class="text-gray-600 block text-[11px]">${stop.city} &bull; KM ${stop.km.toFixed(1)}</span>
-							<span class="text-emerald-700 font-semibold block text-[11px] mb-2">${stop.platform}</span>
+							<strong class="text-sm font-serif block text-mapa-ink">${index + 1}. ${stop.name}</strong>
+							<span class="text-mapa-muted block text-[11px]">${stop.city} &bull; KM ${stop.km.toFixed(1)}</span>
+							<span class="text-mapa-green font-semibold block text-[11px] mb-2">${stop.platform}</span>
 							<div class="flex gap-1.5 mt-2">
-								<button type="button" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold shadow-xs cursor-pointer" onclick="window.setBuswayStop('${stop.id}', 'origin')">
-									🟢 Board Here
+								<button type="button" class="px-2.5 py-1 bg-mapa-green text-white rounded text-[11px] font-bold shadow-xs cursor-pointer" onclick="window.setBuswayStop('${stop.id}', 'origin')">
+									Board Here
 								</button>
-								<button type="button" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-[11px] font-bold shadow-xs cursor-pointer" onclick="window.setBuswayStop('${stop.id}', 'dest')">
-									🔵 Alight Here
+								<button type="button" class="px-2.5 py-1 bg-mapa-navy text-white rounded text-[11px] font-bold shadow-xs cursor-pointer" onclick="window.setBuswayStop('${stop.id}', 'dest')">
+									Alight Here
 								</button>
 							</div>
 						</div>
@@ -1579,7 +1581,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				}
 				if (origin.id !== dest.id) {
 					activeRoutePolyline = L.polyline(pathBetween(origin.id, dest.id), {
-						color: '#F59E0B',
+						color: '#9E391A',
 						weight: 7,
 						opacity: 0.95,
 						lineJoin: 'round',
@@ -1590,12 +1592,12 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 
 				mapMarkers.forEach(({ id, marker }) => {
 					if (id === origin.id) {
-						marker.setStyle({ fillColor: '#059669', radius: 10, weight: 3 });
+						marker.setStyle({ fillColor: '#3D5A45', radius: 10, weight: 3 });
 					} else if (id === dest.id) {
-						marker.setStyle({ fillColor: '#2563EB', radius: 10, weight: 3 });
+						marker.setStyle({ fillColor: '#1B2A4A', radius: 10, weight: 3 });
 					} else {
 						const isTerm = id === 'monumento' || id === 'pitx';
-						marker.setStyle({ fillColor: isTerm ? '#047857' : '#10B981', radius: isTerm ? 8 : 6, weight: 2 });
+						marker.setStyle({ fillColor: isTerm ? '#211D16' : '#3D5A45', radius: isTerm ? 8 : 6, weight: 2 });
 					}
 				});
 			}

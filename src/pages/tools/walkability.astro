@@ -168,7 +168,7 @@ const PRESETS = [
 				</div>
 
 				<div class="text-mapa-clay text-[11px] flex items-center gap-1.5">
-					<span class="inline-block w-2.5 h-2.5 rounded-full bg-mapa-green animate-pulse"></span>
+					<span class="inline-block w-2.5 h-2.5 rounded-full bg-mapa-green"></span>
 					<span>Click or drag marker on map to reposition center</span>
 				</div>
 			</div>
@@ -184,7 +184,7 @@ const PRESETS = [
 					<button
 						type="button"
 						id="copy-coords-btn"
-						class="text-[10px] uppercase font-bold text-mapa-green hover:underline ml-1"
+						class="text-[10px] uppercase font-bold text-mapa-green hover:underline ml-1 cursor-pointer"
 						title="Copy GPS coordinates"
 					>
 						Copy
@@ -225,13 +225,13 @@ const PRESETS = [
 				</div>
 
 				<!-- 10 Min Ring -->
-				<div class="p-5 rounded-xl bg-mapa-canvas border border-mapa-flag-blue/40 flex flex-col justify-between shadow-2xs">
+				<div class="p-5 rounded-xl bg-mapa-canvas border border-mapa-navy/40 flex flex-col justify-between shadow-2xs">
 					<div>
 						<div class="flex items-center justify-between gap-2 mb-1.5">
-							<span class="text-xs font-bold uppercase tracking-wider text-mapa-flag-blue">
+							<span class="text-xs font-bold uppercase tracking-wider text-mapa-navy">
 								10-Minute Ring
 							</span>
-							<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-flag-blue/10 text-mapa-flag-blue">
+							<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-navy/10 text-mapa-navy">
 								Neighborhood Hub
 							</span>
 						</div>
@@ -245,7 +245,7 @@ const PRESETS = [
 					<div class="mt-4 pt-3 border-t border-mapa-contour/40 grid grid-cols-2 gap-2 text-xs font-mono">
 						<div>
 							<span class="text-[10px] text-mapa-clay block font-sans">Steps</span>
-							<span id="steps-10min" class="font-bold text-mapa-flag-blue">~1,060 steps</span>
+							<span id="steps-10min" class="font-bold text-mapa-navy">~1,060 steps</span>
 						</div>
 						<div>
 							<span class="text-[10px] text-mapa-clay block font-sans">Calories</span>
@@ -474,7 +474,7 @@ const PRESETS = [
 			const customIcon = L.divIcon({
 				className: 'custom-walk-pin',
 				html: `
-					<div style="background-color: #1a4d2e; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.35);"></div>
+					<div style="background-color: #3D5A45; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #F7F3E9; box-shadow: 0 2px 6px rgba(0,0,0,0.35);"></div>
 				`,
 				iconSize: [18, 18],
 				iconAnchor: [9, 9]
@@ -500,32 +500,32 @@ const PRESETS = [
 				if (circle10) map.removeLayer(circle10);
 				if (circle15) map.removeLayer(circle15);
 
-				// Draw 15 min outer ring (rust/orange tint)
+				// Draw 15 min outer ring (rust tint)
 				circle15 = L.circle([currentLat, currentLon], {
 					radius: r15,
-					color: '#c05621',
+					color: '#9E391A',
 					weight: 1.5,
 					dashArray: '4, 4',
-					fillColor: '#c05621',
+					fillColor: '#9E391A',
 					fillOpacity: 0.08
 				}).addTo(map);
 
-				// Draw 10 min middle ring (blue tint)
+				// Draw 10 min middle ring (navy tint)
 				circle10 = L.circle([currentLat, currentLon], {
 					radius: r10,
-					color: '#2b6cb0',
+					color: '#1B2A4A',
 					weight: 1.5,
 					dashArray: '3, 3',
-					fillColor: '#2b6cb0',
+					fillColor: '#1B2A4A',
 					fillOpacity: 0.12
 				}).addTo(map);
 
 				// Draw 5 min inner ring (green tint)
 				circle5 = L.circle([currentLat, currentLon], {
 					radius: r5,
-					color: '#1a4d2e',
+					color: '#3D5A45',
 					weight: 2,
-					fillColor: '#1a4d2e',
+					fillColor: '#3D5A45',
 					fillOpacity: 0.18
 				}).addTo(map);
 

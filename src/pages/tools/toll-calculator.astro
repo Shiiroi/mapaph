@@ -17,9 +17,9 @@ const EXPRESSWAYS = [
 		region: 'Luzon (North)',
 		operator: 'NLEX Corporation (Metro Pacific Tollways)',
 		rfid: 'Easytrip RFID',
-		rfidColor: 'bg-emerald-600 text-white',
+		rfidColor: 'bg-mapa-green text-white',
 		system: 'Open Barrier & Closed Distance',
-		color: '#059669',
+		color: '#3D5A45',
 		lengthKm: 84.0,
 		description: 'Major northern artery connecting Balintawak/Mindanao Ave to Sta. Ines, Pampanga and SCTEX.',
 		plazas: [
@@ -44,9 +44,9 @@ const EXPRESSWAYS = [
 		region: 'Luzon (South)',
 		operator: 'South Luzon Tollway Corporation (San Miguel)',
 		rfid: 'Autosweep RFID',
-		rfidColor: 'bg-blue-600 text-white',
+		rfidColor: 'bg-mapa-navy text-white',
 		system: 'Closed Distance-Based System',
-		color: '#2563EB',
+		color: '#1B2A4A',
 		lengthKm: 51.0,
 		description: 'Southern commercial expressway connecting Metro Manila to Laguna, Cavite, and Batangas.',
 		plazas: [
@@ -71,9 +71,9 @@ const EXPRESSWAYS = [
 		region: 'Metro Manila (Elevated)',
 		operator: 'Skyway O&M Corp (San Miguel)',
 		rfid: 'Autosweep RFID',
-		rfidColor: 'bg-blue-600 text-white',
+		rfidColor: 'bg-mapa-navy text-white',
 		system: 'Zoned Elevated Open & Closed',
-		color: '#4F46E5',
+		color: '#1B2A4A',
 		lengthKm: 38.0,
 		description: 'Complete continuous north-south elevated expressway from Alabang/Susana to Balintawak (NLEX).',
 		plazas: [
@@ -94,9 +94,9 @@ const EXPRESSWAYS = [
 		region: 'Central Luzon',
 		operator: 'NLEX Corp / BCDA',
 		rfid: 'Easytrip RFID',
-		rfidColor: 'bg-emerald-600 text-white',
+		rfidColor: 'bg-mapa-green text-white',
 		system: 'Closed Distance-Based System',
-		color: '#0D9488',
+		color: '#3D5A45',
 		lengthKm: 93.7,
 		description: 'Connects Subic Bay Freeport to Clark Freeport and Tarlac City (connecting to TPLEX).',
 		plazas: [
@@ -116,9 +116,9 @@ const EXPRESSWAYS = [
 		region: 'Northern Luzon',
 		operator: 'Private Infra Dev Corp (San Miguel)',
 		rfid: 'Autosweep RFID',
-		rfidColor: 'bg-blue-600 text-white',
+		rfidColor: 'bg-mapa-navy text-white',
 		system: 'Closed Distance-Based System',
-		color: '#D97706',
+		color: '#9E391A',
 		lengthKm: 89.2,
 		description: 'Northern trunk connecting Central Luzon through Pangasinan directly to Rosario, La Union (gateway to Baguio).',
 		plazas: [
@@ -139,9 +139,9 @@ const EXPRESSWAYS = [
 		region: 'CALABARZON',
 		operator: 'MPCALA Holdings (Metro Pacific)',
 		rfid: 'Easytrip RFID',
-		rfidColor: 'bg-emerald-600 text-white',
+		rfidColor: 'bg-mapa-green text-white',
 		system: 'Closed Distance-Based System',
-		color: '#10B981',
+		color: '#3D5A45',
 		lengthKm: 44.6,
 		description: 'Modern 4-lane expressway connecting SLEX Mamplasan to Tagaytay and Kawit (CAVITEX).',
 		plazas: [
@@ -159,9 +159,9 @@ const EXPRESSWAYS = [
 		region: 'Central Visayas (Cebu)',
 		operator: 'CCLEC (Metro Pacific Tollways)',
 		rfid: 'Easytrip / Cash / RFID',
-		rfidColor: 'bg-emerald-600 text-white',
+		rfidColor: 'bg-mapa-green text-white',
 		system: 'Open Fixed Barrier Toll',
-		color: '#0284C7',
+		color: '#3D5A45',
 		lengthKm: 8.9,
 		description: 'Iconic cable-stayed bridge expressway connecting Cebu City directly to Cordova and Mactan International Airport.',
 		plazas: [
@@ -292,18 +292,18 @@ const TRIP_PRESETS = [
 				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 shadow-xs flex flex-col gap-3">
 					<div class="flex flex-wrap items-center justify-between gap-3">
 						<div class="flex items-center gap-2 flex-wrap">
-							<span class="text-xs font-bold uppercase tracking-wider text-mapa-clay">
-								Clicking Plaza Sets:
+							<span class="text-xs font-bold uppercase tracking-wider text-mapa-muted">
+								Click Plaza Sets:
 							</span>
 							<div class="inline-flex rounded-xl bg-mapa-canvas p-1 border border-mapa-contour text-xs font-bold">
 								<button
 									id="toll-target-entry"
 									type="button"
-									class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer ring-2 ring-emerald-500/50"
+									class="px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
 									title="Clicking any plaza will set it as your Entry plaza"
 								>
 									<span class="w-2 h-2 rounded-full bg-white"></span>
-									<span>🟢 Entry Plaza (Start)</span>
+									<span>Entry Plaza (Start)</span>
 								</button>
 								<button
 									id="toll-target-exit"
@@ -311,8 +311,8 @@ const TRIP_PRESETS = [
 									class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer"
 									title="Clicking any plaza will set it as your Exit plaza"
 								>
-									<span class="w-2 h-2 rounded-full bg-rose-500"></span>
-									<span>🔴 Exit Plaza (End)</span>
+									<span class="w-2 h-2 rounded-full bg-mapa-rust"></span>
+									<span>Exit Plaza (End)</span>
 								</button>
 							</div>
 						</div>
@@ -326,31 +326,33 @@ const TRIP_PRESETS = [
 							<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
 							</svg>
-							<span>⇄ Swap Plazas</span>
+							<span>Swap Plazas</span>
 						</button>
 					</div>
 
 					<!-- Visual Hint for User -->
-					<div id="toll-click-hint" class="text-xs text-emerald-900 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium">
-						<span>👉</span>
-						<span>Click any plaza or tap <strong>[🟢 Entry]</strong> / <strong>[🔴 Exit]</strong> to customize your trip.</span>
+					<div id="toll-click-hint" class="text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium">
+						<span class="w-1.5 h-1.5 rounded-full bg-mapa-green shrink-0"></span>
+						<span>Click any plaza card or select <strong>Entry</strong> / <strong>Exit</strong> to customize your route.</span>
 					</div>
 
 					<!-- Active Route Summary Ribbon -->
 					<div class="bg-mapa-canvas border border-mapa-contour rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
 						<div class="flex items-center gap-2 flex-wrap">
-							<span class="font-bold text-emerald-900 flex items-center gap-1 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">
-								<span>🟢 Entry:</span>
-								<span id="summary-entry-name">Balintawak Barrier</span>
+							<span class="font-bold text-mapa-green flex items-center gap-1.5 bg-mapa-green/10 px-2.5 py-1 rounded-md border border-mapa-green/25">
+								<span class="w-2 h-2 rounded-full bg-mapa-green"></span>
+								<span class="uppercase tracking-wider text-[10px] text-mapa-muted">Entry:</span>
+								<span id="summary-entry-name" class="text-mapa-ink">Balintawak Barrier</span>
 							</span>
-							<span class="text-mapa-clay font-bold">➔</span>
-							<span class="font-bold text-rose-900 flex items-center gap-1 bg-rose-500/10 px-2.5 py-1 rounded-md border border-rose-500/20">
-								<span>🔴 Exit:</span>
-								<span id="summary-exit-name">Sta. Ines</span>
+							<span class="text-mapa-muted font-bold">&rarr;</span>
+							<span class="font-bold text-mapa-rust flex items-center gap-1.5 bg-mapa-rust/10 px-2.5 py-1 rounded-md border border-mapa-rust/25">
+								<span class="w-2 h-2 rounded-full bg-mapa-rust"></span>
+								<span class="uppercase tracking-wider text-[10px] text-mapa-muted">Exit:</span>
+								<span id="summary-exit-name" class="text-mapa-ink">Sta. Ines</span>
 							</span>
 						</div>
 						<div class="flex items-center gap-1.5">
-							<span id="summary-toll-metric" class="text-[11px] font-bold px-2.5 py-1 rounded-md bg-emerald-600 text-white shadow-2xs">
+							<span id="summary-toll-metric" class="text-[11px] font-bold px-2.5 py-1 rounded-md bg-mapa-green text-white shadow-2xs">
 								76.0 km &bull; ₱350.00
 							</span>
 						</div>
@@ -362,7 +364,7 @@ const TRIP_PRESETS = [
 					<!-- Visualizer Navigation Header Bar -->
 					<div class="p-4 border-b border-mapa-contour/50 flex flex-wrap items-center justify-between gap-3 bg-mapa-canvas">
 						<div class="flex items-center gap-2">
-							<span class="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
+							<span class="w-2.5 h-2.5 rounded-full bg-mapa-green"></span>
 							<span id="active-corridor-title" class="text-xs font-bold uppercase tracking-wider text-mapa-ink">
 								NLEX Corridor Visualizer
 							</span>
@@ -371,13 +373,13 @@ const TRIP_PRESETS = [
 						<div class="flex items-center bg-mapa-canvas-dark border border-mapa-contour/80 rounded-lg p-0.5 text-xs">
 							<button
 								id="btn-view-schematic"
-								class="px-2.5 py-1 rounded-md text-[11px] font-bold transition-all bg-mapa-canvas text-mapa-green shadow-xs"
+								class="px-2.5 py-1 rounded-md text-[11px] font-bold transition-all bg-mapa-canvas text-mapa-green shadow-xs cursor-pointer"
 							>
 								Schematic Strip
 							</button>
 							<button
 								id="btn-view-geo"
-								class="px-2.5 py-1 rounded-md text-[11px] font-medium text-mapa-ink/60 hover:text-mapa-ink transition-all"
+								class="px-2.5 py-1 rounded-md text-[11px] font-medium text-mapa-ink/60 hover:text-mapa-ink transition-all cursor-pointer"
 							>
 								Geographic Map
 							</button>
@@ -385,10 +387,10 @@ const TRIP_PRESETS = [
 					</div>
 
 					<!-- VIEW 1: Schematic Corridor Strip Canvas -->
-					<div id="schematic-view-container" class="p-6 bg-stone-50 overflow-x-auto min-h-[460px] flex flex-col justify-center">
-						<div class="text-xs text-mapa-clay mb-3 flex items-center justify-between">
+					<div id="schematic-view-container" class="p-6 bg-mapa-canvas/60 overflow-x-auto min-h-[460px] flex flex-col justify-center">
+						<div class="text-xs text-mapa-muted mb-3 flex items-center justify-between">
 							<span class="font-semibold uppercase tracking-wider text-[10px]">Diagrammatic Route Strip</span>
-							<span class="text-[11px]">Click any plaza node to select entry/exit</span>
+							<span class="text-[11px]">Click any plaza node to select entry or exit</span>
 						</div>
 						<!-- Rendered via JS -->
 						<div id="schematic-strip-canvas" class="space-y-4 py-2">
@@ -399,7 +401,7 @@ const TRIP_PRESETS = [
 					<!-- VIEW 2: Geographic Leaflet Map (Hidden by default) -->
 					<div
 						id="toll-geo-map"
-						class="w-full h-[460px] bg-stone-100 z-0 relative hidden"
+						class="w-full h-[460px] bg-mapa-canvas z-0 relative hidden"
 						aria-label="Geographic expressway map"
 					></div>
 
@@ -407,19 +409,19 @@ const TRIP_PRESETS = [
 					<div class="p-3.5 bg-mapa-canvas border-t border-mapa-contour/50 flex flex-wrap items-center justify-between text-xs text-mapa-ink/70 gap-2">
 						<div class="flex items-center gap-4">
 							<span class="inline-flex items-center gap-1.5">
-								<span class="w-3 h-3 rounded-full bg-emerald-600 border border-white"></span>
+								<span class="w-3 h-3 rounded-full bg-mapa-green border border-white"></span>
 								<span class="font-medium text-mapa-ink">Entry Plaza</span>
 							</span>
 							<span class="inline-flex items-center gap-1.5">
-								<span class="w-3 h-3 rounded-full bg-rose-600 border border-white"></span>
+								<span class="w-3 h-3 rounded-full bg-mapa-rust border border-white"></span>
 								<span class="font-medium text-mapa-ink">Exit Plaza</span>
 							</span>
 							<span class="inline-flex items-center gap-1.5">
-								<span class="w-2.5 h-2.5 rounded bg-amber-500"></span>
+								<span class="w-2.5 h-2.5 rounded bg-mapa-navy"></span>
 								<span>Toll Barrier</span>
 							</span>
 						</div>
-						<span id="corridor-rfid-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white">
+						<span id="corridor-rfid-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-mapa-green text-white">
 							Easytrip RFID
 						</span>
 					</div>
@@ -433,7 +435,7 @@ const TRIP_PRESETS = [
 					<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
 						{TRIP_PRESETS.map(preset => (
 							<button
-								class="preset-trip-btn p-3 rounded-xl bg-mapa-canvas border border-mapa-contour/70 hover:border-mapa-green transition-all text-left flex flex-col justify-between"
+								class="preset-trip-btn p-3 rounded-xl bg-mapa-canvas border border-mapa-contour/70 hover:border-mapa-green transition-all text-left flex flex-col justify-between cursor-pointer"
 								data-exp={preset.expId}
 								data-orig={preset.orig}
 								data-dest={preset.dest}
@@ -442,7 +444,7 @@ const TRIP_PRESETS = [
 									<span class="font-bold text-mapa-ink text-xs">{preset.name}</span>
 									<span class="text-[10px] text-mapa-green font-semibold shrink-0">Calculate &rarr;</span>
 								</div>
-								<p class="text-[11px] text-mapa-clay leading-relaxed">
+								<p class="text-[11px] text-mapa-muted leading-relaxed">
 									{preset.desc}
 								</p>
 							</button>
@@ -463,7 +465,7 @@ const TRIP_PRESETS = [
 
 					<!-- Expressway Selector -->
 					<div class="mb-4">
-						<label for="expressway-select" class="block text-xs font-bold uppercase tracking-wider text-mapa-clay mb-1.5">
+						<label for="expressway-select" class="block text-xs font-bold uppercase tracking-wider text-mapa-muted mb-1.5">
 							Select Expressway Network
 						</label>
 						<select
@@ -480,41 +482,42 @@ const TRIP_PRESETS = [
 
 					<!-- Vehicle Classification Selector -->
 					<div class="mb-5">
-						<label class="block text-xs font-bold uppercase tracking-wider text-mapa-clay mb-2">
+						<label class="block text-xs font-bold uppercase tracking-wider text-mapa-muted mb-2">
 							Vehicle Classification (TRB Category)
 						</label>
 						<div class="grid grid-cols-3 gap-2">
 							<button
 								type="button"
-								class="vehicle-class-btn p-2.5 rounded-xl border transition-all text-center bg-mapa-canvas border-mapa-green text-mapa-green shadow-xs font-bold"
+								class="vehicle-class-btn p-2.5 rounded-xl border transition-all text-center bg-mapa-canvas border-mapa-green text-mapa-green shadow-xs font-bold cursor-pointer"
 								data-class="1"
 							>
 								<span class="block text-sm">Class 1</span>
-								<span class="text-[10px] text-mapa-clay block font-normal mt-0.5">Cars / SUVs / 400cc+</span>
+								<span class="text-[10px] text-mapa-muted block font-normal mt-0.5">Cars / SUVs / 400cc+</span>
 							</button>
 							<button
 								type="button"
-								class="vehicle-class-btn p-2.5 rounded-xl border transition-all text-center bg-mapa-canvas border-mapa-contour text-mapa-ink/70 hover:border-mapa-green/50"
+								class="vehicle-class-btn p-2.5 rounded-xl border transition-all text-center bg-mapa-canvas border-mapa-contour text-mapa-ink/70 hover:border-mapa-green/50 cursor-pointer"
 								data-class="2"
 							>
 								<span class="block text-sm font-bold">Class 2</span>
-								<span class="text-[10px] text-mapa-clay block font-normal mt-0.5">Buses / 2-Axle Trucks</span>
+								<span class="text-[10px] text-mapa-muted block font-normal mt-0.5">Buses / 2-Axle Trucks</span>
 							</button>
 							<button
 								type="button"
-								class="vehicle-class-btn p-2.5 rounded-xl border transition-all text-center bg-mapa-canvas border-mapa-contour text-mapa-ink/70 hover:border-mapa-green/50"
+								class="vehicle-class-btn p-2.5 rounded-xl border transition-all text-center bg-mapa-canvas border-mapa-contour text-mapa-ink/70 hover:border-mapa-green/50 cursor-pointer"
 								data-class="3"
 							>
 								<span class="block text-sm font-bold">Class 3</span>
-								<span class="text-[10px] text-mapa-clay block font-normal mt-0.5">Heavy 3+ Axle Trucks</span>
+								<span class="text-[10px] text-mapa-muted block font-normal mt-0.5">Heavy 3+ Axle Trucks</span>
 							</button>
 						</div>
 					</div>
 
 					<!-- Entry Plaza -->
 					<div class="mb-3.5">
-						<label for="entry-plaza-select" class="block text-xs font-bold uppercase tracking-wider text-mapa-clay mb-1.5">
-							Entry Plaza (Where do you enter?)
+						<label for="entry-plaza-select" class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-mapa-green mb-1.5">
+							<span class="w-2 h-2 rounded-full bg-mapa-green"></span>
+							<span>Entry Plaza (Origin)</span>
 						</label>
 						<select
 							id="entry-plaza-select"
@@ -529,7 +532,7 @@ const TRIP_PRESETS = [
 						<button
 							id="swap-plazas-btn"
 							type="button"
-							class="bg-mapa-canvas hover:bg-mapa-canvas-dark border border-mapa-contour rounded-full p-2 text-mapa-ink/70 hover:text-mapa-green transition-all shadow-xs"
+							class="bg-mapa-canvas hover:bg-mapa-canvas-dark border border-mapa-contour rounded-full p-2 text-mapa-ink/70 hover:text-mapa-green transition-all shadow-xs cursor-pointer"
 							aria-label="Swap entry and exit plazas"
 						>
 							<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -540,12 +543,13 @@ const TRIP_PRESETS = [
 
 					<!-- Exit Plaza -->
 					<div class="mb-5">
-						<label for="exit-plaza-select" class="block text-xs font-bold uppercase tracking-wider text-mapa-clay mb-1.5">
-							Exit Plaza (Where do you exit?)
+						<label for="exit-plaza-select" class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-mapa-rust mb-1.5">
+							<span class="w-2 h-2 rounded-full bg-mapa-rust"></span>
+							<span>Exit Plaza (Destination)</span>
 						</label>
 						<select
 							id="exit-plaza-select"
-							class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green"
+							class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-rust"
 						>
 							<!-- Populated via JS -->
 						</select>
@@ -557,7 +561,7 @@ const TRIP_PRESETS = [
 						<!-- Fare Amount Header -->
 						<div class="flex items-center justify-between pb-3.5 border-b border-mapa-contour/50">
 							<div>
-								<span class="text-[11px] font-bold uppercase tracking-wider text-mapa-clay">
+								<span class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted">
 									Official TRB Toll Fee
 								</span>
 								<div class="flex items-baseline gap-2 mt-0.5">
@@ -567,8 +571,8 @@ const TRIP_PRESETS = [
 								</div>
 							</div>
 							<div class="text-right">
-								<span class="text-[10px] uppercase font-bold text-mapa-clay block">Accepted Tag</span>
-								<span id="required-rfid-tag" class="inline-block mt-0.5 px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-600 text-white shadow-xs">
+								<span class="text-[10px] uppercase font-bold text-mapa-muted block">Accepted Tag</span>
+								<span id="required-rfid-tag" class="inline-block mt-0.5 px-2.5 py-1 rounded-md text-xs font-bold bg-mapa-green text-white shadow-xs">
 									Easytrip RFID
 								</span>
 							</div>
@@ -576,8 +580,8 @@ const TRIP_PRESETS = [
 
 						<!-- Official Regulatory Citation Link -->
 						<div class="flex items-center justify-between pt-0.5 pb-2 border-b border-mapa-contour/30 text-xs">
-							<span class="text-mapa-clay text-[11px] flex items-center gap-1">
-								<span>⚖️ Regulated Tariff:</span>
+							<span class="text-mapa-muted text-[11px] flex items-center gap-1">
+								<span>Regulated Tariff:</span>
 								<span class="font-semibold text-mapa-ink">Toll Regulatory Board (TRB)</span>
 							</span>
 							<a
@@ -595,15 +599,15 @@ const TRIP_PRESETS = [
 						<!-- Distance, Rate & Kilometer Metrics -->
 						<div class="grid grid-cols-3 gap-2 text-center text-xs">
 							<div class="bg-mapa-canvas-dark border border-mapa-contour/50 rounded-lg p-2.5">
-								<span class="block text-[10px] uppercase font-bold text-mapa-clay">Highway Distance</span>
+								<span class="block text-[10px] uppercase font-bold text-mapa-muted">Highway Distance</span>
 								<span id="metric-toll-distance" class="text-base font-extrabold text-mapa-ink">76.0 km</span>
 							</div>
 							<div class="bg-mapa-canvas-dark border border-mapa-contour/50 rounded-lg p-2.5">
-								<span class="block text-[10px] uppercase font-bold text-mapa-clay">Est. Rate / KM</span>
-								<span id="metric-rate-km" class="text-base font-extrabold text-emerald-800">₱4.61 / km</span>
+								<span class="block text-[10px] uppercase font-bold text-mapa-muted">Est. Rate / KM</span>
+								<span id="metric-rate-km" class="text-base font-extrabold text-mapa-green">₱4.61 / km</span>
 							</div>
 							<div class="bg-mapa-canvas-dark border border-mapa-contour/50 rounded-lg p-2.5">
-								<span class="block text-[10px] uppercase font-bold text-mapa-clay">Toll System</span>
+								<span class="block text-[10px] uppercase font-bold text-mapa-muted">Toll System</span>
 								<span id="metric-toll-system" class="text-xs font-bold text-mapa-ink truncate">Closed Distance</span>
 							</div>
 						</div>
@@ -611,26 +615,26 @@ const TRIP_PRESETS = [
 						<!-- Details Breakdown List -->
 						<div class="space-y-2 pt-1 text-xs">
 							<div class="flex justify-between text-mapa-ink/80">
-								<span class="text-mapa-clay">Selected Vehicle:</span>
+								<span class="text-mapa-muted">Selected Vehicle:</span>
 								<span id="breakdown-vehicle" class="font-semibold text-mapa-ink">Class 1 (Cars, SUVs, 400cc+)</span>
 							</div>
 							<div class="flex justify-between text-mapa-ink/80">
-								<span class="text-mapa-clay">Corridor Operator:</span>
+								<span class="text-mapa-muted">Corridor Operator:</span>
 								<span id="breakdown-operator" class="font-semibold text-mapa-ink">NLEX Corporation</span>
 							</div>
 							<div class="flex justify-between text-mapa-ink/80">
-								<span class="text-mapa-clay">Interoperability Status:</span>
-								<span class="font-semibold text-emerald-800">Phase 2 Interoperable</span>
+								<span class="text-mapa-muted">Interoperability Status:</span>
+								<span class="font-semibold text-mapa-green">Phase 2 Interoperable</span>
 							</div>
 						</div>
 
 						<!-- Plaza-by-Plaza Traverse Pathway Timeline -->
 						<div class="pt-3 border-t border-mapa-contour/50">
 							<div class="flex items-center justify-between mb-2">
-								<span class="text-[11px] font-bold uppercase tracking-wider text-mapa-clay">
+								<span class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted">
 									Plaza Traverse Itinerary:
 								</span>
-								<span id="itinerary-stops-count" class="text-[10px] font-semibold text-mapa-clay">
+								<span id="itinerary-stops-count" class="text-[10px] font-semibold text-mapa-muted">
 									13 Plazas Traversed
 								</span>
 							</div>
@@ -640,8 +644,8 @@ const TRIP_PRESETS = [
 						</div>
 
 						<!-- Cashless Notice -->
-						<div class="p-2.5 rounded-lg bg-emerald-600/5 border border-emerald-600/20 text-[11px] text-mapa-ink/80 leading-relaxed">
-							<strong>💳 100% Cashless Reminder:</strong> TRB tollways enforce Electronic Toll Collection (ETC). Maintain sufficient balance on your RFID tag before entry to avoid delay at turnstiles.
+						<div class="p-2.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour text-[11px] text-mapa-ink/80 leading-relaxed">
+							<strong>100% Cashless Notice:</strong> TRB tollways enforce Electronic Toll Collection (ETC). Maintain sufficient balance on your RFID tag before entry to avoid delay at turnstiles.
 						</div>
 
 					</div>
@@ -656,7 +660,7 @@ const TRIP_PRESETS = [
 						<div class="p-2.5 rounded-lg bg-mapa-canvas border border-mapa-contour/60 flex items-center justify-between">
 							<div>
 								<span class="font-bold text-mapa-ink block">Metro Pacific (NLEX, SCTEX, CALAX, CAVITEX)</span>
-								<span class="text-[11px] text-mapa-clay">Emergency Hotline & Patrol</span>
+								<span class="text-[11px] text-mapa-muted">Emergency Hotline & Patrol</span>
 							</div>
 							<a href="tel:135000" class="font-mono font-bold text-mapa-green text-sm hover:underline">
 								1-35000
@@ -665,7 +669,7 @@ const TRIP_PRESETS = [
 						<div class="p-2.5 rounded-lg bg-mapa-canvas border border-mapa-contour/60 flex items-center justify-between">
 							<div>
 								<span class="font-bold text-mapa-ink block">San Miguel Tollways (SLEX, Skyway, TPLEX, NAIAX)</span>
-								<span class="text-[11px] text-mapa-clay">24/7 Command Center</span>
+								<span class="text-[11px] text-mapa-muted">24/7 Command Center</span>
 							</div>
 							<a href="tel:0253188655" class="font-mono font-bold text-mapa-green text-sm hover:underline">
 								(02) 5318-8655
@@ -674,7 +678,7 @@ const TRIP_PRESETS = [
 						<div class="p-2.5 rounded-lg bg-mapa-canvas border border-mapa-contour/60 flex items-center justify-between">
 							<div>
 								<span class="font-bold text-mapa-ink block">CCLEX Emergency Patrol (Cebu)</span>
-								<span class="text-[11px] text-mapa-clay">Cebu-Cordova Operations</span>
+								<span class="text-[11px] text-mapa-muted">Cebu-Cordova Operations</span>
 							</div>
 							<a href="tel:0324111637" class="font-mono font-bold text-mapa-green text-sm hover:underline">
 								(032) 411-1637
@@ -711,7 +715,7 @@ const TRIP_PRESETS = [
 						</ul>
 					</div>
 					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4 shadow-xs">
-						<span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-800 font-bold text-[10px] uppercase">
+						<span class="px-2 py-0.5 rounded bg-mapa-navy/10 text-mapa-navy font-bold text-[10px] uppercase">
 							Class 2
 						</span>
 						<h3 class="font-bold text-mapa-ink text-sm mt-2 mb-1.5">Medium Commercial & Buses</h3>
@@ -723,7 +727,7 @@ const TRIP_PRESETS = [
 						</ul>
 					</div>
 					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4 shadow-xs">
-						<span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-800 font-bold text-[10px] uppercase">
+						<span class="px-2 py-0.5 rounded bg-mapa-rust/10 text-mapa-rust font-bold text-[10px] uppercase">
 							Class 3
 						</span>
 						<h3 class="font-bold text-mapa-ink text-sm mt-2 mb-1.5">Heavy Freight & Multi-Axle Trucks</h3>
@@ -757,13 +761,13 @@ const TRIP_PRESETS = [
 						</thead>
 						<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/80">
 							<tr>
-								<td class="p-3 font-semibold text-blue-800">Autosweep RFID</td>
+								<td class="p-3 font-semibold text-mapa-navy">Autosweep RFID</td>
 								<td class="p-3">San Miguel Corporation (SMC)</td>
 								<td class="p-3">SLEX, Skyway 1/2/3, NAIAX, MCX, TPLEX, STAR Tollway</td>
 								<td class="p-3">GCash, Maya, BDO, BPI, 7-Eleven, Shell/Petron stations</td>
 							</tr>
 							<tr>
-								<td class="p-3 font-semibold text-emerald-800">Easytrip RFID</td>
+								<td class="p-3 font-semibold text-mapa-green">Easytrip RFID</td>
 								<td class="p-3">Metro Pacific Tollways (MPTC)</td>
 								<td class="p-3">NLEX, SCTEX, CAVITEX, CALAX, C5 South Link, CCLEX (Cebu)</td>
 								<td class="p-3">MPT DriveHub App, GCash, Maya, Bayad Center, Caltex stations</td>
@@ -771,7 +775,7 @@ const TRIP_PRESETS = [
 						</tbody>
 					</table>
 				</div>
-				<div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-900 leading-relaxed">
+				<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour text-xs text-mapa-ink/85 leading-relaxed">
 					<strong>Unified Interoperability (Important Note):</strong> Under the TRB's Phase 2 Interoperability program, motorists can register their existing physical Autosweep RFID tag with Easytrip (and vice-versa at customer service centers) so that a single sticker works on all expressways. However, <strong>wallets remain separate</strong>: your Autosweep wallet balance is deducted on SMC roads, and your Easytrip balance is deducted on MPTC roads. Both wallets must maintain a positive balance to avoid turnstile rejections.
 				</div>
 			</section>
@@ -921,18 +925,18 @@ const TRIP_PRESETS = [
 			function updateTargetModeUI() {
 				if (!targetEntryBtn || !targetExitBtn) return;
 				if (currentTollTargetMode === 'entry') {
-					targetEntryBtn.className = 'px-3 py-1.5 rounded-lg font-bold text-xs bg-emerald-600 text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer ring-2 ring-emerald-500/20';
+					targetEntryBtn.className = 'px-3 py-1.5 rounded-lg font-bold text-xs bg-mapa-green text-white shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer';
 					targetExitBtn.className = 'px-3 py-1.5 rounded-lg text-xs text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer';
 					if (clickHint) {
-						clickHint.innerHTML = '<span>👉</span><span>Clicking any plaza below will set it as your <strong>🟢 Entry Plaza</strong>.</span>';
-						clickHint.className = 'text-xs text-emerald-900 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium';
+						clickHint.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-mapa-green shrink-0"></span><span>Click any plaza card below to set it as your <strong>Entry Plaza</strong>.</span>';
+						clickHint.className = 'text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium';
 					}
 				} else {
-					targetExitBtn.className = 'px-3 py-1.5 rounded-lg font-bold text-xs bg-rose-600 text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer ring-2 ring-rose-500/20';
+					targetExitBtn.className = 'px-3 py-1.5 rounded-lg font-bold text-xs bg-mapa-rust text-white shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer';
 					targetEntryBtn.className = 'px-3 py-1.5 rounded-lg text-xs text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer';
 					if (clickHint) {
-						clickHint.innerHTML = '<span>👉</span><span>Clicking any plaza below will set it as your <strong>🔴 Exit Plaza</strong>.</span>';
-						clickHint.className = 'text-xs text-rose-900 bg-rose-500/10 border border-rose-500/20 px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium';
+						clickHint.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-mapa-rust shrink-0"></span><span>Click any plaza card below to set it as your <strong>Exit Plaza</strong>.</span>';
+						clickHint.className = 'text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium';
 					}
 				}
 			}
@@ -1045,7 +1049,7 @@ const TRIP_PRESETS = [
 
 				// Continuous Center Highway Track
 				const trackLine = document.createElement('div');
-				trackLine.className = 'absolute left-10 right-10 top-1/2 -translate-y-1/2 h-3 bg-stone-300 dark:bg-stone-700 rounded-full z-0';
+				trackLine.className = 'absolute left-10 right-10 top-1/2 -translate-y-1/2 h-2.5 bg-mapa-contour rounded-full z-0';
 				stripContainer.appendChild(trackLine);
 
 				// Active Highlight Track Segment spanning from entry node to exit node
@@ -1055,7 +1059,7 @@ const TRIP_PRESETS = [
 					const widthPx = rightPx - leftPx;
 
 					const activeHighlight = document.createElement('div');
-					activeHighlight.className = 'absolute top-1/2 -translate-y-1/2 h-3.5 bg-emerald-500 rounded-full z-1 transition-all shadow-md';
+					activeHighlight.className = 'absolute top-1/2 -translate-y-1/2 h-3 bg-mapa-green rounded-full z-1 transition-all';
 					activeHighlight.style.left = `${leftPx}px`;
 					activeHighlight.style.width = `${widthPx}px`;
 					stripContainer.appendChild(activeHighlight);
@@ -1073,24 +1077,24 @@ const TRIP_PRESETS = [
 
 					// Plaza Card
 					const card = document.createElement('div');
-					card.className = `w-[115px] p-2.5 rounded-xl border text-center transition-all cursor-pointer shadow-2xs ${
-						isEntry ? 'bg-emerald-500/15 border-emerald-600 ring-2 ring-emerald-500/40 shadow-xs' :
-						isExit ? 'bg-rose-500/15 border-rose-600 ring-2 ring-rose-500/40 shadow-xs' :
-						isIntermediate ? 'bg-emerald-500/10 border-emerald-500/40' :
-						plaza.isBarrier ? 'bg-amber-500/10 border-amber-500/40 hover:border-amber-500' :
-						'bg-mapa-canvas border-mapa-contour/70 hover:border-mapa-green hover:shadow-xs'
+					card.className = `w-[115px] p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
+						isEntry ? 'bg-mapa-green/10 border-mapa-green shadow-2xs' :
+						isExit ? 'bg-mapa-rust/10 border-mapa-rust shadow-2xs' :
+						isIntermediate ? 'bg-mapa-canvas border-mapa-green/40' :
+						plaza.isBarrier ? 'bg-mapa-canvas-dark border-mapa-contour hover:border-mapa-navy' :
+						'bg-mapa-canvas border-mapa-contour/70 hover:border-mapa-green'
 					}`;
 					card.title = `Click to set as ${currentTollTargetMode.toUpperCase()}: ${plaza.name}`;
 
 					let badgeHtml = '';
 					if (isEntry) {
-						badgeHtml = '<span class="inline-block text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded-full bg-emerald-600 text-white shadow-2xs">🟢 ENTRY</span>';
+						badgeHtml = '<span class="inline-block text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-mapa-green text-white">Entry</span>';
 					} else if (isExit) {
-						badgeHtml = '<span class="inline-block text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded-full bg-rose-600 text-white shadow-2xs">🔴 EXIT</span>';
+						badgeHtml = '<span class="inline-block text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-mapa-rust text-white">Exit</span>';
 					} else if (plaza.isBarrier) {
-						badgeHtml = '<span class="inline-block text-[8px] font-bold uppercase px-1.5 py-0.5 rounded-full bg-amber-500 text-white shadow-2xs">BARRIER</span>';
+						badgeHtml = '<span class="inline-block text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-mapa-navy text-white">Barrier</span>';
 					} else {
-						badgeHtml = `<span class="inline-block text-[9px] font-mono font-semibold text-mapa-clay">km ${plaza.km.toFixed(0)}</span>`;
+						badgeHtml = `<span class="inline-block text-[9px] font-mono font-semibold text-mapa-muted">km ${plaza.km.toFixed(0)}</span>`;
 					}
 
 					const cleanName = plaza.name.split(' (')[0];
@@ -1098,8 +1102,8 @@ const TRIP_PRESETS = [
 						<div class="mb-1">${badgeHtml}</div>
 						<div class="text-[11px] font-bold text-mapa-ink leading-snug line-clamp-2" title="${plaza.name}">${cleanName}</div>
 						<div class="flex items-center justify-center gap-1 mt-2 pt-1.5 border-t border-mapa-contour/40">
-							<button type="button" class="btn-quick-entry px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-600/15 hover:bg-emerald-600 text-emerald-800 hover:text-white transition-all cursor-pointer shadow-2xs" data-id="${plaza.id}">🟢 In</button>
-							<button type="button" class="btn-quick-exit px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-600/15 hover:bg-rose-600 text-rose-800 hover:text-white transition-all cursor-pointer shadow-2xs" data-id="${plaza.id}">🔴 Out</button>
+							<button type="button" class="btn-quick-entry px-2 py-0.5 rounded text-[9px] font-bold bg-mapa-canvas-dark hover:bg-mapa-green text-mapa-green hover:text-white border border-mapa-contour hover:border-mapa-green transition-all cursor-pointer" data-id="${plaza.id}">Entry</button>
+							<button type="button" class="btn-quick-exit px-2 py-0.5 rounded text-[9px] font-bold bg-mapa-canvas-dark hover:bg-mapa-rust text-mapa-rust hover:text-white border border-mapa-contour hover:border-mapa-rust transition-all cursor-pointer" data-id="${plaza.id}">Exit</button>
 						</div>
 					`;
 
@@ -1118,24 +1122,24 @@ const TRIP_PRESETS = [
 					// Connector line between card and track pin
 					const connector = document.createElement('div');
 					connector.className = `w-0.5 h-6 transition-colors ${
-						isIntermediate ? 'bg-emerald-500' : 'bg-stone-300 dark:bg-stone-600'
+						isIntermediate ? 'bg-mapa-green' : 'bg-mapa-contour'
 					}`;
 
 					// Pin dot on center highway track
 					const pin = document.createElement('div');
 					if (isEntry) {
-						pin.className = 'w-6 h-6 rounded-full bg-emerald-600 border-2 border-white shadow-md flex items-center justify-center text-white text-[9px] font-bold ring-4 ring-emerald-500/30 cursor-pointer animate-pulse';
-						pin.textContent = '🟢';
+						pin.className = 'w-5 h-5 rounded-full bg-mapa-green border-2 border-white shadow-xs flex items-center justify-center text-white text-[8px] font-bold cursor-pointer';
+						pin.textContent = 'IN';
 					} else if (isExit) {
-						pin.className = 'w-6 h-6 rounded-full bg-rose-600 border-2 border-white shadow-md flex items-center justify-center text-white text-[9px] font-bold ring-4 ring-rose-500/30 cursor-pointer animate-pulse';
-						pin.textContent = '🔴';
+						pin.className = 'w-5 h-5 rounded-full bg-mapa-rust border-2 border-white shadow-xs flex items-center justify-center text-white text-[8px] font-bold cursor-pointer';
+						pin.textContent = 'OUT';
 					} else if (isIntermediate) {
-						pin.className = 'w-4 h-4 rounded-full bg-emerald-500 border-2 border-white shadow-sm ring-2 ring-emerald-400/40 cursor-pointer';
+						pin.className = 'w-3.5 h-3.5 rounded-full bg-mapa-green border-2 border-white shadow-2xs cursor-pointer';
 					} else if (plaza.isBarrier) {
-						pin.className = 'w-4 h-4 rounded bg-amber-500 border border-white shadow-sm flex items-center justify-center text-[7px] text-white font-bold cursor-pointer';
-						pin.textContent = 'T';
+						pin.className = 'w-4 h-4 rounded bg-mapa-navy border border-white shadow-2xs flex items-center justify-center text-[7px] text-white font-bold cursor-pointer';
+						pin.textContent = 'B';
 					} else {
-						pin.className = 'w-3.5 h-3.5 rounded-full bg-stone-400 border-2 border-white shadow-2xs hover:scale-125 transition-transform cursor-pointer';
+						pin.className = 'w-3 h-3 rounded-full bg-mapa-clay border-2 border-white shadow-2xs hover:scale-125 transition-transform cursor-pointer';
 					}
 					pin.addEventListener('click', () => window.setTollPlaza(plaza.id, currentTollTargetMode));
 
@@ -1213,7 +1217,7 @@ const TRIP_PRESETS = [
 
 					if (routeCoords.length >= 2) {
 						activeRouteHighlightPolyline = L.polyline(routeCoords, {
-							color: '#F59E0B',
+							color: '#9E391A',
 							weight: 7,
 							opacity: 0.95,
 							dashArray: '8, 8'
@@ -1229,7 +1233,7 @@ const TRIP_PRESETS = [
 
 					const m = L.circleMarker([p.lat, p.lon], {
 						radius: isEntry || isExit ? 8 : isIntermediate ? 6 : 4,
-						fillColor: isEntry ? '#059669' : isExit ? '#E11D48' : isIntermediate ? '#F59E0B' : p.isBarrier ? '#F59E0B' : '#FFFFFF',
+						fillColor: isEntry ? '#3D5A45' : isExit ? '#9E391A' : isIntermediate ? '#3D5A45' : p.isBarrier ? '#1B2A4A' : '#FFFFFF',
 						color: isEntry || isExit ? '#FFFFFF' : exp.color,
 						weight: isEntry || isExit ? 3 : 2,
 						opacity: 1,
@@ -1238,14 +1242,14 @@ const TRIP_PRESETS = [
 
 					m.bindPopup(`
 						<div class="font-sans text-xs p-1">
-							<div class="font-bold text-sm text-gray-900">${p.name}</div>
-							<div class="text-[11px] text-gray-500 mb-2">${exp.name} &bull; KM ${p.km.toFixed(1)}</div>
+							<div class="font-bold text-sm text-mapa-ink">${p.name}</div>
+							<div class="text-[11px] text-mapa-muted mb-2">${exp.name} &bull; KM ${p.km.toFixed(1)}</div>
 							<div class="flex gap-1.5">
-								<button type="button" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold shadow-xs cursor-pointer" onclick="window.setTollPlaza('${p.id}', 'entry')">
-									🟢 Set Entry
+								<button type="button" class="px-2 py-1 bg-mapa-green text-white rounded text-[11px] font-bold shadow-xs cursor-pointer" onclick="window.setTollPlaza('${p.id}', 'entry')">
+									Set Entry
 								</button>
-								<button type="button" class="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-[11px] font-bold shadow-xs cursor-pointer" onclick="window.setTollPlaza('${p.id}', 'exit')">
-									🔴 Set Exit
+								<button type="button" class="px-2 py-1 bg-mapa-rust text-white rounded text-[11px] font-bold shadow-xs cursor-pointer" onclick="window.setTollPlaza('${p.id}', 'exit')">
+									Set Exit
 								</button>
 							</div>
 						</div>
@@ -1290,9 +1294,9 @@ const TRIP_PRESETS = [
 
 					const row = document.createElement('div');
 					row.className = `p-2 rounded-lg border flex items-center justify-between text-xs transition-colors ${
-						isStart ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-950 font-bold' :
-						isEnd ? 'bg-rose-500/10 border-rose-500/30 text-rose-950 font-bold' :
-						plaza.isBarrier ? 'bg-amber-500/10 border-amber-500/30 text-amber-950' :
+						isStart ? 'bg-mapa-green/10 border-mapa-green/30 text-mapa-ink font-bold' :
+						isEnd ? 'bg-mapa-rust/10 border-mapa-rust/30 text-mapa-ink font-bold' :
+						plaza.isBarrier ? 'bg-mapa-navy/10 border-mapa-navy/25 text-mapa-ink' :
 						'bg-mapa-canvas-dark border-mapa-contour/50 text-mapa-ink/80'
 					}`;
 
@@ -1301,13 +1305,13 @@ const TRIP_PRESETS = [
 
 					const dot = document.createElement('span');
 					if (isStart) {
-						dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-600';
+						dot.className = 'w-2 h-2 rounded-full bg-mapa-green';
 					} else if (isEnd) {
-						dot.className = 'w-2.5 h-2.5 rounded-full bg-rose-600';
+						dot.className = 'w-2 h-2 rounded-full bg-mapa-rust';
 					} else if (plaza.isBarrier) {
-						dot.className = 'w-2 h-2 rounded bg-amber-500';
+						dot.className = 'w-2 h-2 rounded bg-mapa-navy';
 					} else {
-						dot.className = 'w-1.5 h-1.5 rounded-full bg-stone-400';
+						dot.className = 'w-1.5 h-1.5 rounded-full bg-mapa-clay';
 					}
 					left.appendChild(dot);
 
@@ -1317,7 +1321,7 @@ const TRIP_PRESETS = [
 
 					if (plaza.isBarrier) {
 						const bTag = document.createElement('span');
-						bTag.className = 'text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500 text-white';
+						bTag.className = 'text-[9px] font-bold px-1.5 py-0.5 rounded bg-mapa-navy text-white';
 						bTag.textContent = 'Barrier';
 						left.appendChild(bTag);
 					}
