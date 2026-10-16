@@ -6,13 +6,18 @@
 
 import { Image } from 'astro:assets';
 import logoImg from '../assets/ph.svg';
+
+const pathname = Astro.url.pathname;
+const isTools = pathname.startsWith('/tools');
+const isAbout = pathname.startsWith('/about');
+const isDocs = pathname.startsWith('/docs');
 ---
 
-<header class="sticky top-0 z-50 bg-mapa-canvas border-b border-mapa-contour">
-	<div class="max-w-7xl mx-auto px-6 lg:px-8">
+<header class="sticky top-0 z-50 bg-mapa-canvas/95 backdrop-blur-md border-b border-mapa-contour">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<div class="flex items-center justify-between h-16">
 			<!-- Left: Logo & Wordmark -->
-			<a href="/" class="flex items-center gap-2 sm:gap-2.5 group">
+			<a href="/" class="flex items-center gap-2 sm:gap-2.5 py-2 pr-2 group">
 				<Image
 					src={logoImg}
 					alt="mapaPH Logo"
@@ -27,22 +32,40 @@ import logoImg from '../assets/ph.svg';
 			</a>
 
 			<!-- Right: Nav Links -->
-			<nav class="flex items-center gap-3 sm:gap-6 md:gap-8">
+			<nav aria-label="Main Navigation" class="flex items-center gap-1 sm:gap-2 md:gap-4">
 				<a
 					href="/tools"
-					class="font-sans text-sm font-medium text-mapa-ink hover:text-mapa-green transition-colors duration-200"
-					>Tools</a
+					aria-current={isTools ? 'page' : undefined}
+					class={`font-sans text-sm px-3 py-2 rounded-lg transition-colors duration-200 inline-flex items-center min-h-[40px] ${
+						isTools
+							? 'font-bold text-mapa-green bg-mapa-green/10'
+							: 'font-medium text-mapa-ink hover:text-mapa-green hover:bg-mapa-canvas-dark/70'
+					}`}
 				>
+					Tools
+				</a>
 				<a
 					href="/about"
-					class="font-sans text-sm font-medium text-mapa-ink hover:text-mapa-green transition-colors duration-200"
-					>About</a
+					aria-current={isAbout ? 'page' : undefined}
+					class={`font-sans text-sm px-3 py-2 rounded-lg transition-colors duration-200 inline-flex items-center min-h-[40px] ${
+						isAbout
+							? 'font-bold text-mapa-green bg-mapa-green/10'
+							: 'font-medium text-mapa-ink hover:text-mapa-green hover:bg-mapa-canvas-dark/70'
+					}`}
 				>
+					About
+				</a>
 				<a
 					href="/docs"
-					class="font-sans text-sm font-medium text-mapa-ink hover:text-mapa-green transition-colors duration-200"
-					>Docs</a
+					aria-current={isDocs ? 'page' : undefined}
+					class={`font-sans text-sm px-3 py-2 rounded-lg transition-colors duration-200 inline-flex items-center min-h-[40px] ${
+						isDocs
+							? 'font-bold text-mapa-green bg-mapa-green/10'
+							: 'font-medium text-mapa-ink hover:text-mapa-green hover:bg-mapa-canvas-dark/70'
+					}`}
 				>
+					Docs
+				</a>
 			</nav>
 		</div>
 	</div>
