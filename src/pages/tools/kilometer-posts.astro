@@ -9,7 +9,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 
-// Regional KM 0 Origin Benchmarks
+// Regional KM 0 Origin Benchmarks with Authentic Official Registries
 const KM_ZERO_ORIGINS = [
 	{
 		id: 'luzon',
@@ -20,7 +20,8 @@ const KM_ZERO_ORIGINS = [
 		lat: 14.5826,
 		lon: 120.9787,
 		markerBadge: 'National White Obelisk & Bronze Plaque',
-		gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=14.5826,120.9787',
+		refUrl: 'https://nhcp.gov.ph',
+		refName: 'NHCP National Historic Landmark Registry',
 		corridors: ['MacArthur Highway (N2/N1)', 'Maharlika Highway (AH26/N1)', 'Manila South Road', 'Marilaque Highway (N68)', 'Manila East Road (N601)', 'Aguinaldo Highway (N419)', 'Kennon Road (N208)'],
 		history: 'Established in 1913 during the American Commonwealth under the Bureau of Public Works (now DPWH). Positioned directly across the José Rizal Monument as the singular geodetic reference point for all road distances across Luzon.'
 	},
@@ -33,7 +34,8 @@ const KM_ZERO_ORIGINS = [
 		lat: 8.0019,
 		lon: 124.2858,
 		markerBadge: 'Lake Lanao Shore Survey Monument',
-		gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=8.0019,124.2858',
+		refUrl: 'https://mpw.bangsamoro.gov.ph',
+		refName: 'BARMM Ministry of Public Works Geodetic Baseline',
 		corridors: ['Marawi–Iligan Road', 'Sayre Highway (N10)', 'Davao–Cotabato Road', 'Surigao–Davao Coastal'],
 		history: 'Designated by early public works engineers as the primary surveying benchmark for the trans-Mindanao road network originating along the northern shore of Lake Lanao.'
 	},
@@ -46,7 +48,8 @@ const KM_ZERO_ORIGINS = [
 		lat: 10.3167,
 		lon: 123.8907,
 		markerBadge: 'Provincial Capitol Milestone',
-		gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=10.3167,123.8907',
+		refUrl: 'https://nhcp.gov.ph',
+		refName: 'NHCP Historical Landmark (Res. No. 2, s. 2008)',
 		corridors: ['Cebu North Coastal Road (N8)', 'Cebu South Road (N8)', 'Trans-Central Highway (N815)'],
 		history: 'Erected in front of the neoclassical Cebu Provincial Capitol building, serving as the benchmark for radial distances spanning from Daanbantayan in the north to Santander in the south.'
 	},
@@ -59,7 +62,8 @@ const KM_ZERO_ORIGINS = [
 		lat: 10.6969,
 		lon: 122.5644,
 		markerBadge: 'Casa Real de Iloilo Survey Pillar',
-		gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=10.6969,122.5644',
+		refUrl: 'https://nhcp.gov.ph',
+		refName: 'NHCP Historic Site Declaration (Casa Real de Iloilo)',
 		corridors: ['Iloilo–Capiz Road (N5)', 'Iloilo–Antique Road (N501)', 'Panay East Coast Highway'],
 		history: 'Positioned at the Casa Real de Iloilo (Old Provincial Capitol) as the surveying reference point for all national secondary and primary arterial routes across the four provinces of Panay.'
 	},
@@ -72,7 +76,8 @@ const KM_ZERO_ORIGINS = [
 		lat: 14.4333,
 		lon: 120.4833,
 		markerBadge: 'Historic WWII Memorial Obelisk',
-		gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=14.4333,120.4833',
+		refUrl: 'https://filipino-americanmemorials.org/bataan-death-march-markers/',
+		refName: 'FAME Bataan Death March Memorial Registry',
 		corridors: ['Roman Superhighway (N301)', 'Governor J.J. Linao Road', 'Old Bataan National Road'],
 		history: '138 white obelisk concrete markers erected by the Battling Bastards of Bataan and Filipino-American Memorial Foundation marking each kilometer marched by ~75,000 POWs from Mariveles/Bagac to San Fernando and Camp O’Donnell.'
 	}
@@ -403,15 +408,16 @@ const HIGHWAY_CORRIDORS = [
 							<span id="origin-banner-elevation" class="font-mono font-bold text-mapa-ink">3 m ASL</span>
 						</div>
 						<a
-							id="origin-banner-gmaps"
-							href={KM_ZERO_ORIGINS[0].gmapsUrl}
+							id="origin-banner-ref-link"
+							href={KM_ZERO_ORIGINS[0].refUrl}
 							target="_blank"
 							rel="noopener noreferrer"
-							class="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
-							title="View Kilometer Zero marker location on Google Maps"
+							class="px-3 py-2 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green text-mapa-ink font-semibold text-xs transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
+							title="View official registry record confirming this marker"
 						>
-							<span>📍 Google Maps</span>
-							<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<span>🏛️</span>
+							<span id="origin-banner-ref-label">{KM_ZERO_ORIGINS[0].refName}</span>
+							<svg class="w-3.5 h-3.5 text-mapa-clay" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
 							</svg>
 						</a>
@@ -725,25 +731,57 @@ const HIGHWAY_CORRIDORS = [
 				Official References & Data Sources
 			</h2>
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-mapa-ink/80 leading-relaxed">
-				<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5">
-					<div class="font-bold text-sm text-mapa-ink">Department of Public Works and Highways (DPWH)</div>
-					<p>Design Guidelines, Criteria and Standards (DGCS) Volume 4: Highway Design (Standard Kilometer Post Geometry, Color Codes, and Lettering Dimensions).</p>
-					<p class="text-[11px] text-mapa-clay">Official Road and Bridge Information Application (RBIA) & Highway Planning Division.</p>
+				<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5 flex flex-col justify-between">
+					<div>
+						<div class="font-bold text-sm text-mapa-ink">Department of Public Works and Highways (DPWH)</div>
+						<p>Design Guidelines, Criteria and Standards (DGCS) Volume 4: Highway Design (Standard Kilometer Post Geometry, Color Codes, and Lettering Dimensions).</p>
+						<p class="text-[11px] text-mapa-clay">Official Road and Bridge Information Application (RBIA) & Highway Planning Division.</p>
+					</div>
+					<div class="pt-2 border-t border-mapa-contour/40">
+						<a href="https://www.dpwh.gov.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1">
+							<span>DPWH Official Infrastructure Portal</span>
+							<span>&rarr;</span>
+						</a>
+					</div>
 				</div>
-				<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5">
-					<div class="font-bold text-sm text-mapa-ink">National Historical Commission of the Philippines (NHCP)</div>
-					<p>Historical Marker Register for Kilometer Zero Luneta (Manila), Banggolo Bridge (Marawi City), and Casa Real de Iloilo.</p>
-					<p class="text-[11px] text-mapa-clay">Executive Order No. 45 & Bureau of Public Works Historical Archives (1913).</p>
+				<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5 flex flex-col justify-between">
+					<div>
+						<div class="font-bold text-sm text-mapa-ink">National Historical Commission of the Philippines (NHCP)</div>
+						<p>Historical Marker Register for Kilometer Zero Luneta (Manila), Banggolo Bridge (Marawi City), and Casa Real de Iloilo.</p>
+						<p class="text-[11px] text-mapa-clay">Executive Order No. 45 & Bureau of Public Works Historical Archives (1913).</p>
+					</div>
+					<div class="pt-2 border-t border-mapa-contour/40">
+						<a href="https://nhcp.gov.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1">
+							<span>NHCP National Historical Landmark Registry</span>
+							<span>&rarr;</span>
+						</a>
+					</div>
 				</div>
-				<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5">
-					<div class="font-bold text-sm text-mapa-ink">Filipino-American Memorial Endowment (FAME)</div>
-					<p>Official Survey Registry of the 138 Bataan Death March Memorial Markers from KM 00 Mariveles/Bagac to Camp O'Donnell, Capas, Tarlac.</p>
-					<p class="text-[11px] text-mapa-clay">Battling Bastards of Bataan Foundation Historical Milepost Directory.</p>
+				<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5 flex flex-col justify-between">
+					<div>
+						<div class="font-bold text-sm text-mapa-ink">Filipino-American Memorial Endowment (FAME)</div>
+						<p>Official Survey Registry of the 138 Bataan Death March Memorial Markers from KM 00 Mariveles/Bagac to Camp O'Donnell, Capas, Tarlac.</p>
+						<p class="text-[11px] text-mapa-clay">Battling Bastards of Bataan Foundation Historical Milepost Directory.</p>
+					</div>
+					<div class="pt-2 border-t border-mapa-contour/40">
+						<a href="https://filipino-americanmemorials.org/bataan-death-march-markers/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1">
+							<span>FAME Bataan Memorial Markers Registry</span>
+							<span>&rarr;</span>
+						</a>
+					</div>
 				</div>
-				<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5">
-					<div class="font-bold text-sm text-mapa-ink">National Mapping and Resource Information Authority (NAMRIA)</div>
-					<p>Topographic basemaps, geodetic leveling benchmarks, and road network coordinates.</p>
-					<p class="text-[11px] text-mapa-clay">Philippine Reference System 1992 (PRS92) Geodetic Control Network.</p>
+				<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5 flex flex-col justify-between">
+					<div>
+						<div class="font-bold text-sm text-mapa-ink">National Mapping and Resource Information Authority (NAMRIA)</div>
+						<p>Topographic basemaps, geodetic leveling benchmarks, and road network coordinates.</p>
+						<p class="text-[11px] text-mapa-clay">Philippine Reference System 1992 (PRS92) Geodetic Control Network.</p>
+					</div>
+					<div class="pt-2 border-t border-mapa-contour/40">
+						<a href="https://www.namria.gov.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1">
+							<span>NAMRIA Geodetic Network Portal</span>
+							<span>&rarr;</span>
+						</a>
+					</div>
 				</div>
 			</div>
 		</section>
@@ -1019,11 +1057,13 @@ const HIGHWAY_CORRIDORS = [
 					originBannerLocation.textContent = origin.location;
 					originBannerCoords.textContent = `${origin.lat.toFixed(4)}° N, ${origin.lon.toFixed(4)}° E`;
 					originBannerElevation.textContent = origin.elevation;
-					originBannerHistory.textContent = origin.history;
-
-					const originGmaps = document.getElementById('origin-banner-gmaps');
-					if (originGmaps && origin.gmapsUrl) {
-						originGmaps.href = origin.gmapsUrl;
+					const originRefLink = document.getElementById('origin-banner-ref-link');
+					const originRefLabel = document.getElementById('origin-banner-ref-label');
+					if (originRefLink && origin.refUrl) {
+						originRefLink.href = origin.refUrl;
+					}
+					if (originRefLabel && origin.refName) {
+						originRefLabel.textContent = origin.refName;
 					}
 					const originBadge = document.getElementById('origin-banner-badge');
 					if (originBadge && origin.markerBadge) {
