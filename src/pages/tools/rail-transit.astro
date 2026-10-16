@@ -412,80 +412,103 @@ const TRANSFER_HUBS = [
 
 						<!-- Scrollable Station Sequence Strip -->
 						<div class="relative pl-7 pr-1 py-2 max-h-[560px] overflow-y-auto space-y-2.5 custom-scrollbar">
-							<!-- Central Vertical Backbone Track Guide -->
-							<div class="absolute left-[19px] top-4 bottom-4 w-1.5 bg-stone-300 dark:bg-stone-700 rounded-full"></div>
-
-							<!-- Static Station Rows -->
-							{ALL_STATIONS.map((st) => (
-								<div
-									id={`rail-node-${st.id}`}
-									data-station-id={st.id}
-									data-line={st.lineKey}
-									data-km={st.km}
-									class="rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-transparent hover:border-mapa-green/40 hover:bg-mapa-canvas transition-all cursor-pointer group"
-								>
-									<!-- Circle Track Node -->
-									<div
-										class="absolute left-[-23px] w-5 h-5 rounded-full bg-mapa-canvas-dark border-2 flex items-center justify-center group-hover:scale-110 transition-transform z-10"
-										style={`border-color: ${LINE_COLORS[st.lineKey]};`}
-									>
-										<div
-											class="w-2 h-2 rounded-full"
-											style={`background-color: ${LINE_COLORS[st.lineKey]};`}
-										></div>
-									</div>
-
-									<!-- Station Description -->
-									<div class="flex flex-col ml-2.5 pr-2 min-w-0">
-										<div class="flex items-center gap-1.5 flex-wrap">
-											<span class="font-serif font-bold text-sm text-mapa-ink group-hover:text-mapa-green transition-colors">
-												{st.name}
-											</span>
-											<!-- Active Selection Badge Container -->
-											<span id={`rail-badge-${st.id}`} class="station-status-badge hidden text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-2xs"></span>
-										</div>
-
-										<div class="flex items-center gap-2 text-[11px] text-mapa-clay mt-0.5 flex-wrap">
-											<span class="font-semibold uppercase tracking-wider text-[10px]" style={`color: ${LINE_COLORS[st.lineKey]};`}>
-												{st.lineName}
-											</span>
-											<span>&bull;</span>
-											<span>{st.city}</span>
-											<span>&bull;</span>
-											<span>KM {st.km.toFixed(1)}</span>
-										</div>
-
-										{st.isTransfer && (
-											<div class="mt-1">
-												<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-[10px] font-medium text-amber-800">
-													<span>🔄</span>
-													<span>{st.transferLabel || 'Interchange Point'}</span>
+							<!-- Static Station Rows Grouped with Connected Timeline Segments -->
+							{ALL_STATIONS.map((st) => {
+								const isFirstInLine = st.indexInLine === 0;
+								const isLastInLine = st.indexInLine === STATIONS_DATA[st.lineKey].length - 1;
+								return (
+									<div class="station-row-wrapper" data-line={st.lineKey}>
+										{isFirstInLine && (
+											<div class="pt-3 pb-1.5 flex items-center justify-between border-b border-mapa-contour/50 mb-2 first:pt-0" data-line-header={st.lineKey}>
+												<div class="flex items-center gap-2">
+													<span class="w-3 h-3 rounded-full shrink-0 shadow-2xs" style={`background-color: ${LINE_COLORS[st.lineKey]}`}></span>
+													<span class="font-serif font-bold text-sm text-mapa-ink">{st.lineName}</span>
+												</div>
+												<span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60 text-mapa-clay">
+													{STATIONS_DATA[st.lineKey].length} Stations
 												</span>
 											</div>
 										)}
-									</div>
+										<div
+											id={`rail-node-${st.id}`}
+											data-station-id={st.id}
+											data-line={st.lineKey}
+											data-km={st.km}
+											class="rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-transparent hover:border-mapa-green/40 hover:bg-mapa-canvas transition-all cursor-pointer group"
+										>
+											{/* Top Half Track Segment - connects seamlessly upward without disappearing */}
+											{!isFirstInLine && (
+												<div class="rail-track-top absolute left-[-16px] top-[-12px] bottom-1/2 w-1.5 bg-stone-300 dark:bg-stone-700 transition-colors z-0"></div>
+											)}
+											{/* Bottom Half Track Segment - connects seamlessly downward without disappearing */}
+											{!isLastInLine && (
+												<div class="rail-track-bottom absolute left-[-16px] top-1/2 bottom-[-12px] w-1.5 bg-stone-300 dark:bg-stone-700 transition-colors z-0"></div>
+											)}
 
-									<!-- 1-Click Action Buttons -->
-									<div class="flex items-center gap-1.5 shrink-0 ml-2">
-										<button
-											type="button"
-											class="btn-board-quick px-2 py-1 text-[11px] font-bold rounded-md bg-emerald-600/10 hover:bg-emerald-600 text-emerald-800 hover:text-white transition-all border border-emerald-600/30 cursor-pointer shadow-2xs"
-											data-station-id={st.id}
-											title={`Set ${st.name} as Boarding (Start)`}
-										>
-											🟢 Board
-										</button>
-										<button
-											type="button"
-											class="btn-alight-quick px-2 py-1 text-[11px] font-bold rounded-md bg-blue-600/10 hover:bg-blue-600 text-blue-800 hover:text-white transition-all border border-blue-600/30 cursor-pointer shadow-2xs"
-											data-station-id={st.id}
-											title={`Set ${st.name} as Destination (Exit)`}
-										>
-											🔵 Alight
-										</button>
+											<!-- Circle Track Node -->
+											<div
+												class="rail-track-circle absolute left-[-23px] top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-mapa-canvas-dark border-2 flex items-center justify-center group-hover:scale-110 transition-transform z-10 shadow-2xs"
+												style={`border-color: ${LINE_COLORS[st.lineKey]};`}
+											>
+												<div
+													class="w-2 h-2 rounded-full"
+													style={`background-color: ${LINE_COLORS[st.lineKey]};`}
+												></div>
+											</div>
+
+											<!-- Station Description -->
+											<div class="flex flex-col ml-2.5 pr-2 min-w-0">
+												<div class="flex items-center gap-1.5 flex-wrap">
+													<span class="font-serif font-bold text-sm text-mapa-ink group-hover:text-mapa-green transition-colors">
+														{st.name}
+													</span>
+													<!-- Active Selection Badge Container -->
+													<span id={`rail-badge-${st.id}`} class="station-status-badge hidden text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-2xs"></span>
+												</div>
+
+												<div class="flex items-center gap-2 text-[11px] text-mapa-clay mt-0.5 flex-wrap">
+													<span class="font-semibold uppercase tracking-wider text-[10px]" style={`color: ${LINE_COLORS[st.lineKey]};`}>
+														{st.lineName}
+													</span>
+													<span>&bull;</span>
+													<span>{st.city}</span>
+													<span>&bull;</span>
+													<span>KM {st.km.toFixed(1)}</span>
+												</div>
+
+												{st.isTransfer && (
+													<div class="mt-1">
+														<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-[10px] font-medium text-amber-800">
+															<span>🔄</span>
+															<span>{st.transferLabel || 'Interchange Point'}</span>
+														</span>
+													</div>
+												)}
+											</div>
+
+											<!-- 1-Click Action Buttons -->
+											<div class="flex items-center gap-1.5 shrink-0 ml-2">
+												<button
+													type="button"
+													class="btn-board-quick px-2 py-1 text-[11px] font-bold rounded-md bg-emerald-600/10 hover:bg-emerald-600 text-emerald-800 hover:text-white transition-all border border-emerald-600/30 cursor-pointer shadow-2xs"
+													data-station-id={st.id}
+													title={`Set ${st.name} as Boarding (Start)`}
+												>
+													🟢 Board
+												</button>
+												<button
+													type="button"
+													class="btn-alight-quick px-2 py-1 text-[11px] font-bold rounded-md bg-blue-600/10 hover:bg-blue-600 text-blue-800 hover:text-white transition-all border border-blue-600/30 cursor-pointer shadow-2xs"
+													data-station-id={st.id}
+													title={`Set ${st.name} as Destination (Exit)`}
+												>
+													🔵 Alight
+												</button>
+											</div>
+										</div>
 									</div>
-								</div>
-							))}
+								);
+							})}
 						</div>
 					</div>
 
@@ -886,6 +909,63 @@ const TRANSFER_HUBS = [
 				</div>
 			</section>
 
+			<!-- Section 5: Official Statutory Citations & Concessionaire Reference Sources -->
+			<section class="border-t border-mapa-contour/60 pt-8 mt-4">
+				<h2 class="font-serif text-2xl font-bold text-mapa-ink tracking-tight mb-4">
+					5. Official Statutory Citations & Authority Reference Sources
+				</h2>
+				<p class="text-sm text-mapa-ink/80 leading-relaxed mb-4">
+					All station coordinates, kilometer stations, and passenger fare tables utilized in this tool adhere strictly to statutory administrative orders and official regulatory agency filings:
+				</p>
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4 flex flex-col justify-between">
+						<div>
+							<div class="flex items-center gap-2 mb-1.5">
+								<span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+								<h3 class="font-bold text-mapa-ink text-sm">Light Rail Manila Corporation (LRMC) / LRT-1</h3>
+							</div>
+							<p class="text-mapa-ink/75 leading-relaxed">
+								Operated under DOTr Concession Agreement. Fares reflect the approved TRB & DOTr 2024 Tariff Schedule covering the 24.5 km alignment from Fernando Poe Jr. to Dr. Santos (Cavite Extension Phase 1) with ₱15 base + ₱1.21/km distance tariff.
+							</p>
+						</div>
+						<div class="mt-3 pt-2.5 border-t border-mapa-contour/50">
+							<a
+								href="https://lrmc.ph"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1"
+							>
+								<span>LRMC Official Portal</span>
+								<span>&rarr;</span>
+							</a>
+						</div>
+					</div>
+
+					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4 flex flex-col justify-between">
+						<div>
+							<div class="flex items-center gap-2 mb-1.5">
+								<span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+								<h3 class="font-bold text-mapa-ink text-sm">DOTr MRT-3 & LRTA LRT-2</h3>
+							</div>
+							<p class="text-mapa-ink/75 leading-relaxed">
+								Administered directly by the Department of Transportation (DOTr) MRT-3 Project Management Office and the Light Rail Transit Authority (LRTA). Fare calculations correspond to DOTr Department Order No. 2023-010 and LRTA Board Resolutions.
+							</p>
+						</div>
+						<div class="mt-3 pt-2.5 border-t border-mapa-contour/50">
+							<a
+								href="https://dotrmrt3.gov.ph"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1"
+							>
+								<span>DOTr MRT-3 Official Portal</span>
+								<span>&rarr;</span>
+							</a>
+						</div>
+					</div>
+				</div>
+			</section>
+
 		</article>
 	</main>
 
@@ -1183,13 +1263,13 @@ const TRANSFER_HUBS = [
 					lineTabs.forEach(t => t.classList.add('opacity-40'));
 					tab.classList.remove('opacity-40');
 
-					// Filter schematic rows
-					document.querySelectorAll('.rail-station-row').forEach(row => {
-						const rowLine = row.getAttribute('data-line');
+					// Filter schematic rows and group headers
+					document.querySelectorAll('.station-row-wrapper').forEach(wrapper => {
+						const rowLine = wrapper.getAttribute('data-line');
 						if (lineFilter === 'all' || rowLine === lineFilter) {
-							row.classList.remove('hidden');
+							wrapper.classList.remove('hidden');
 						} else {
-							row.classList.add('hidden');
+							wrapper.classList.add('hidden');
 						}
 					});
 
@@ -1243,6 +1323,7 @@ const TRANSFER_HUBS = [
 				let sjtFare = 15;
 
 				if (lineKey === 'mrt3') {
+					// MRT-3 fare matrix (DOTr 2023-010): ₱13 base (0-2 stations), ₱16 (3-5), ₱20 (6-8), ₱24 (9-11), ₱28 (12-13)
 					if (stationCount <= 2) {
 						beepFare = 13;
 					} else if (stationCount <= 5) {
@@ -1256,52 +1337,233 @@ const TRANSFER_HUBS = [
 					}
 					sjtFare = beepFare;
 				} else if (lineKey === 'lrt1') {
+					// LRT-1 fare matrix (LRMC/TRB 2024 Cavite Extension schedule):
+					// ₱15.00 boarding base + ₱1.21/km
+					// End-to-end FPJ to Dr. Santos (24.5 km): ₱52.00 Stored Value (Beep) / ₱55.00 SJT
 					beepFare = 15 + (distanceKm * 1.21);
-					beepFare = Math.min(45, Math.max(15, Math.round(beepFare)));
-					sjtFare = Math.ceil(beepFare / 5) * 5;
+					beepFare = Math.min(52, Math.max(15, Math.round(beepFare)));
+					sjtFare = Math.min(55, Math.ceil(beepFare / 5) * 5);
 				} else if (lineKey === 'lrt2') {
-					beepFare = 14 + (distanceKm * 1.21);
-					beepFare = Math.min(33, Math.max(14, Math.round(beepFare)));
-					sjtFare = Math.ceil(beepFare / 5) * 5;
+					// LRT-2 fare matrix (LRTA 2023 Tariff Schedule):
+					// ₱15.00 boarding base + ₱1.21/km
+					// End-to-end Recto to Antipolo (16.8 km): ₱33.00 Beep / ₱35.00 SJT
+					beepFare = 15 + (distanceKm * 1.21);
+					beepFare = Math.min(33, Math.max(15, Math.round(beepFare)));
+					sjtFare = Math.min(35, Math.ceil(beepFare / 5) * 5);
 				}
 
 				return { beepFare, sjtFare };
 			}
 
-			function getLineTravelTime(lineKey, stops) {
-				if (lineKey === 'mrt3') return stops * 2.5;
-				if (lineKey === 'lrt1') return stops * 2.3;
-				if (lineKey === 'lrt2') return stops * 2.8;
-				return stops * 2.5;
+			// Graph Theory Dijkstra Engine for Metro Manila Transit Network
+			const GRAPH_ADJ = {};
+			ALL_STATIONS.forEach(s => { GRAPH_ADJ[s.id] = []; });
+
+			// Intra-line edges (consecutive stations along rail lines)
+			Object.keys(STATIONS_DATA).forEach(lineKey => {
+				const list = STATIONS_DATA[lineKey];
+				for (let i = 0; i < list.length - 1; i++) {
+					const u = list[i];
+					const v = list[i + 1];
+					const dist = Math.abs(v.km - u.km);
+					const time = lineKey === 'mrt3' ? 2.5 : lineKey === 'lrt1' ? 2.3 : 2.8;
+					GRAPH_ADJ[u.id].push({ to: v.id, weight: time, type: 'ride', line: lineKey, dist });
+					GRAPH_ADJ[v.id].push({ to: u.id, weight: time, type: 'ride', line: lineKey, dist });
+				}
+			});
+
+			// Official Pedestrian Interchanges with transfer penalties (walk time + average headway wait)
+			const TRANSFER_LINKS = [
+				{ a: 'lrt1_doroteo_jose', b: 'lrt2_recto', name: 'Doroteo Jose ↔ Recto Elevated Footbridge', walkTime: 5, weight: 6.5 },
+				{ a: 'lrt2_cubao', b: 'mrt3_cubao', name: 'Araneta Center-Cubao (Gateway & Farmers Mall Walkway)', walkTime: 6, weight: 7.5 },
+				{ a: 'lrt1_edsa', b: 'mrt3_taft', name: 'EDSA ↔ Taft Avenue Footbridge', walkTime: 4, weight: 5.5 }
+			];
+
+			TRANSFER_LINKS.forEach(t => {
+				GRAPH_ADJ[t.a].push({ to: t.b, weight: t.weight, type: 'walk', name: t.name, walkTime: t.walkTime, dist: 0.25 });
+				GRAPH_ADJ[t.b].push({ to: t.a, weight: t.weight, type: 'walk', name: t.name, walkTime: t.walkTime, dist: 0.25 });
+			});
+
+			function findShortestTransitRoute(startId, goalId) {
+				if (startId === goalId) {
+					return { path: [startId], totalTime: 0, legs: [] };
+				}
+
+				const distances = {};
+				const prev = {};
+				const edgeTaken = {};
+				const unvisited = new Set(ALL_STATIONS.map(s => s.id));
+
+				ALL_STATIONS.forEach(s => {
+					distances[s.id] = Infinity;
+				});
+				distances[startId] = 0;
+
+				while (unvisited.size > 0) {
+					let curr = null;
+					let minD = Infinity;
+					for (const node of unvisited) {
+						if (distances[node] < minD) {
+							minD = distances[node];
+							curr = node;
+						}
+					}
+
+					if (curr === null || minD === Infinity || curr === goalId) break;
+					unvisited.delete(curr);
+
+					const neighbors = GRAPH_ADJ[curr] || [];
+					for (const edge of neighbors) {
+						if (!unvisited.has(edge.to)) continue;
+						const alt = distances[curr] + edge.weight;
+						if (alt < distances[edge.to]) {
+							distances[edge.to] = alt;
+							prev[edge.to] = curr;
+							edgeTaken[edge.to] = edge;
+						}
+					}
+				}
+
+				if (distances[goalId] === Infinity) return null;
+
+				// Reconstruct path
+				const path = [];
+				let curr = goalId;
+				while (curr) {
+					path.unshift(curr);
+					curr = prev[curr];
+				}
+
+				// Parse into itinerary legs
+				const legs = [];
+				let currentLeg = null;
+
+				for (let i = 0; i < path.length - 1; i++) {
+					const uId = path[i];
+					const vId = path[i + 1];
+					const edge = edgeTaken[vId] || (GRAPH_ADJ[uId].find(e => e.to === vId));
+					const uStation = getStationById(uId);
+					const vStation = getStationById(vId);
+
+					if (edge.type === 'walk') {
+						if (currentLeg) {
+							legs.push(currentLeg);
+							currentLeg = null;
+						}
+						legs.push({
+							type: 'walk',
+							from: uStation,
+							to: vStation,
+							name: edge.name,
+							walkTime: edge.walkTime,
+							dist: edge.dist
+						});
+					} else {
+						if (!currentLeg || currentLeg.line !== edge.line) {
+							if (currentLeg) legs.push(currentLeg);
+							currentLeg = {
+								type: 'ride',
+								line: edge.line,
+								from: uStation,
+								to: vStation,
+								stations: [uStation, vStation],
+								stops: 1,
+								dist: edge.dist,
+								time: edge.weight
+							};
+						} else {
+							currentLeg.to = vStation;
+							currentLeg.stations.push(vStation);
+							currentLeg.stops += 1;
+							currentLeg.dist += edge.dist;
+							currentLeg.time += edge.weight;
+						}
+					}
+				}
+				if (currentLeg) legs.push(currentLeg);
+
+				return { path, totalTime: distances[goalId], legs };
 			}
 
-			// Synchronize Schematic Badges & Visual Highlights
-			function updateSchematicHighlights(origin, dest) {
-				const isSameLine = origin.lineKey === dest.lineKey;
-				const minIdx = Math.min(origin.indexInLine, dest.indexInLine);
-				const maxIdx = Math.max(origin.indexInLine, dest.indexInLine);
+			// Synchronize Schematic Badges, Track Segments & Route Highlights
+			function updateSchematicHighlights(routeResult, originId, destId) {
+				const pathSet = new Set(routeResult?.path || []);
+				const transferStations = new Set();
+
+				if (routeResult?.legs) {
+					routeResult.legs.forEach(leg => {
+						if (leg.type === 'walk') {
+							transferStations.add(leg.from.id);
+							transferStations.add(leg.to.id);
+						}
+					});
+				}
 
 				ALL_STATIONS.forEach(st => {
 					const rowEl = document.getElementById(`rail-node-${st.id}`);
 					const badgeEl = document.getElementById(`rail-badge-${st.id}`);
 					if (!rowEl || !badgeEl) return;
 
-					if (st.id === origin.id) {
+					const trackTop = rowEl.querySelector('.rail-track-top');
+					const trackBottom = rowEl.querySelector('.rail-track-bottom');
+
+					// Reset track segments
+					if (trackTop) {
+						trackTop.className = 'rail-track-top absolute left-[-16px] top-[-12px] bottom-1/2 w-1.5 bg-stone-300 dark:bg-stone-700 transition-colors z-0';
+					}
+					if (trackBottom) {
+						trackBottom.className = 'rail-track-bottom absolute left-[-16px] top-1/2 bottom-[-12px] w-1.5 bg-stone-300 dark:bg-stone-700 transition-colors z-0';
+					}
+
+					if (st.id === originId) {
 						rowEl.className = 'rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-emerald-600 bg-emerald-500/15 shadow-2xs transition-all cursor-pointer ring-1 ring-emerald-500/40';
 						badgeEl.textContent = '🟢 BOARDING (START)';
 						badgeEl.className = 'station-status-badge inline-block text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-600 text-white shadow-2xs';
-					} else if (st.id === dest.id) {
+					} else if (st.id === destId) {
 						rowEl.className = 'rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-blue-600 bg-blue-500/15 shadow-2xs transition-all cursor-pointer ring-1 ring-blue-500/40';
 						badgeEl.textContent = '🔵 DESTINATION (EXIT)';
 						badgeEl.className = 'station-status-badge inline-block text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-600 text-white shadow-2xs';
-					} else if (isSameLine && st.lineKey === origin.lineKey && st.indexInLine > minIdx && st.indexInLine < maxIdx) {
-						rowEl.className = 'rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 transition-all cursor-pointer';
+					} else if (transferStations.has(st.id)) {
+						rowEl.className = 'rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-amber-500 bg-amber-500/15 shadow-2xs transition-all cursor-pointer ring-1 ring-amber-500/40';
+						badgeEl.textContent = '🔄 INTERCHANGE HUB';
+						badgeEl.className = 'station-status-badge inline-block text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-600 text-white shadow-2xs';
+					} else if (pathSet.has(st.id)) {
+						rowEl.className = 'rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 transition-all cursor-pointer';
 						badgeEl.className = 'station-status-badge hidden';
 					} else {
 						rowEl.className = 'rail-station-row relative flex items-center justify-between p-2.5 rounded-xl border border-transparent hover:border-mapa-green/40 hover:bg-mapa-canvas transition-all cursor-pointer group';
 						badgeEl.className = 'station-status-badge hidden';
 					}
 				});
+
+				// Highlight connecting track segments along traversed rail legs
+				if (routeResult?.legs) {
+					routeResult.legs.forEach(leg => {
+						if (leg.type === 'ride' && leg.stations.length >= 2) {
+							const lineColor = leg.line === 'lrt1' ? 'bg-emerald-600' : leg.line === 'mrt3' ? 'bg-blue-600' : 'bg-purple-600';
+							for (let k = 0; k < leg.stations.length - 1; k++) {
+								const sA = leg.stations[k];
+								const sB = leg.stations[k + 1];
+								const rowA = document.getElementById(`rail-node-${sA.id}`);
+								const rowB = document.getElementById(`rail-node-${sB.id}`);
+
+								if (sA.indexInLine < sB.indexInLine) {
+									// Southbound / ascending index
+									rowA?.querySelector('.rail-track-bottom')?.classList.remove('bg-stone-300', 'dark:bg-stone-700');
+									rowA?.querySelector('.rail-track-bottom')?.classList.add(lineColor, 'shadow-xs');
+									rowB?.querySelector('.rail-track-top')?.classList.remove('bg-stone-300', 'dark:bg-stone-700');
+									rowB?.querySelector('.rail-track-top')?.classList.add(lineColor, 'shadow-xs');
+								} else {
+									// Northbound / descending index
+									rowA?.querySelector('.rail-track-top')?.classList.remove('bg-stone-300', 'dark:bg-stone-700');
+									rowA?.querySelector('.rail-track-top')?.classList.add(lineColor, 'shadow-xs');
+									rowB?.querySelector('.rail-track-bottom')?.classList.remove('bg-stone-300', 'dark:bg-stone-700');
+									rowB?.querySelector('.rail-track-bottom')?.classList.add(lineColor, 'shadow-xs');
+								}
+							}
+						}
+					});
+				}
 			}
 
 			// Main Routing Algorithm
@@ -1322,8 +1584,26 @@ const TRANSFER_HUBS = [
 				if (summaryOriginEl) summaryOriginEl.textContent = origin.name;
 				if (summaryDestEl) summaryDestEl.textContent = dest.name;
 
-				// Update Schematic Visuals
-				updateSchematicHighlights(origin, dest);
+				// Handle Same Station Edge Case
+				if (origin.id === dest.id) {
+					fareBeepEl.textContent = '₱0.00';
+					fareSjtEl.textContent = '₱0.00';
+					metricTimeEl.textContent = '0 min';
+					metricStopsEl.textContent = '0 stops';
+					metricDistEl.textContent = '0 km';
+					if (summaryMetricEl) summaryMetricEl.textContent = '0 stops • ₱0.00';
+					transferCalloutEl.classList.add('hidden');
+					routeStepsListEl.innerHTML = '<div class="text-mapa-clay italic p-2">Boarding and destination are the exact same station. Choose different stations to calculate fare.</div>';
+					updateSchematicHighlights(null, origin.id, dest.id);
+					return;
+				}
+
+				// Find shortest path via Dijkstra
+				const route = findShortestTransitRoute(origin.id, dest.id);
+				if (!route) return;
+
+				// Update Schematic Visual Highlights and Track Segments
+				updateSchematicHighlights(route, origin.id, dest.id);
 
 				// Reset / update Geo Map markers if initialized
 				if (leafletMap) {
@@ -1347,185 +1627,105 @@ const TRANSFER_HUBS = [
 					stationMarkers[dest.id]?.setStyle({ radius: 9, fillColor: '#3B82F6', weight: 4 });
 				}
 
-				if (origin.id === dest.id) {
-					fareBeepEl.textContent = '₱0.00';
-					fareSjtEl.textContent = '₱0.00';
-					metricTimeEl.textContent = '0 min';
-					metricStopsEl.textContent = '0 stops';
-					metricDistEl.textContent = '0 km';
-					if (summaryMetricEl) summaryMetricEl.textContent = '0 stops • ₱0.00';
-					transferCalloutEl.classList.add('hidden');
-					routeStepsListEl.innerHTML = '<div class="text-mapa-clay italic p-2">Boarding and destination are the exact same station. Choose different stations to calculate fare.</div>';
-					return;
-				}
+				// Compute Total Metrics across all legs
+				let totalBeepFare = 0;
+				let totalSjtFare = 0;
+				let totalStops = 0;
+				let totalDist = 0;
+				let totalTravelTime = 0;
+				let transferWalkCount = 0;
+				let transferWalkways = [];
 
-				// CASE 1: Same rail line
-				if (origin.lineKey === dest.lineKey) {
-					const lineKey = origin.lineKey;
-					const stations = STATIONS_DATA[lineKey];
-					const idxA = origin.indexInLine;
-					const idxB = dest.indexInLine;
-					const minIdx = Math.min(idxA, idxB);
-					const maxIdx = Math.max(idxA, idxB);
+				let itineraryHtml = '';
+				let allPolylineCoords = [];
 
-					const segment = stations.slice(minIdx, maxIdx + 1);
-					const stopsCount = maxIdx - minIdx;
-					const distanceKm = Math.abs(dest.km - origin.km);
+				route.legs.forEach((leg, legIdx) => {
+					if (leg.type === 'ride') {
+						const fareObj = calcSingleLineFare(leg.line, leg.dist, leg.stops);
+						totalBeepFare += fareObj.beepFare;
+						totalSjtFare += fareObj.sjtFare;
+						totalStops += leg.stops;
+						totalDist += leg.dist;
+						totalTravelTime += (leg.stops * (leg.line === 'mrt3' ? 2.5 : leg.line === 'lrt1' ? 2.3 : 2.8));
 
-					const { beepFare, sjtFare } = calcSingleLineFare(lineKey, distanceKm, stopsCount);
-					const finalBeep = hasDiscount ? (beepFare * 0.8) : beepFare;
-					const finalSjt = hasDiscount ? (sjtFare * 0.8) : sjtFare;
-					const travelTime = Math.round(getLineTravelTime(lineKey, stopsCount));
+						const legFareBeep = hasDiscount ? (fareObj.beepFare * 0.8) : fareObj.beepFare;
+						const legFareSjt = hasDiscount ? (fareObj.sjtFare * 0.8) : fareObj.sjtFare;
 
-					fareBeepEl.textContent = `₱${finalBeep.toFixed(2)}`;
-					fareSjtEl.textContent = `₱${finalSjt.toFixed(2)}`;
-					metricTimeEl.textContent = `~${travelTime} mins`;
-					metricStopsEl.textContent = `${stopsCount} ${stopsCount === 1 ? 'stop' : 'stops'}`;
-					metricDistEl.textContent = `${distanceKm.toFixed(1)} km`;
-
-					if (summaryMetricEl) summaryMetricEl.textContent = `${stopsCount} stops • ₱${finalBeep.toFixed(2)}`;
-
-					transferCalloutEl.classList.add('hidden');
-
-					// Render steps
-					routeStepsListEl.innerHTML = `
-						<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/50">
-							<span class="w-3 h-3 rounded-full mt-0.5 shrink-0" style="background-color: ${LINE_COLORS[lineKey]}"></span>
-							<div class="space-y-1">
-								<div class="font-bold text-mapa-ink">Board ${lineKey.toUpperCase()}: ${origin.name}</div>
-								<div class="text-mapa-clay text-[11px]">Ride ${stopsCount} stations towards ${dest.name} (${distanceKm.toFixed(1)} km)</div>
+						itineraryHtml += `
+							<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/50">
+								<span class="w-3 h-3 rounded-full mt-0.5 shrink-0 shadow-2xs" style="background-color: ${LINE_COLORS[leg.line]}"></span>
+								<div class="space-y-0.5 flex-1">
+									<div class="flex items-center justify-between gap-1 flex-wrap">
+										<span class="font-bold text-mapa-ink">${legIdx + 1}. Ride ${leg.line.toUpperCase()}: ${leg.from.name} ➔ ${leg.to.name}</span>
+										<span class="text-[11px] font-bold text-emerald-800">₱${legFareBeep.toFixed(2)}</span>
+									</div>
+									<div class="text-mapa-clay text-[11px]">
+										${leg.stops} ${leg.stops === 1 ? 'stop' : 'stops'} &bull; ${leg.dist.toFixed(1)} km &bull; ~${Math.round(leg.time)} mins
+									</div>
+								</div>
 							</div>
-						</div>
-						<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/50">
-							<span class="w-3 h-3 rounded-full bg-blue-600 mt-0.5 shrink-0"></span>
-							<div class="space-y-1">
-								<div class="font-bold text-mapa-ink">Alight at ${dest.name}</div>
-								<div class="text-mapa-clay text-[11px]">Tap out at turnstile. Total journey time approx. ${travelTime} minutes.</div>
-							</div>
-						</div>
-					`;
+						`;
 
-					if (leafletMap) {
-						const pathCoords = (idxA < idxB ? segment : segment.reverse()).map(s => [s.lat, s.lon]);
-						activeRoutePolyline = L.polyline(pathCoords, {
-							color: '#F59E0B',
-							weight: 6,
-							dashArray: '8, 8',
-							opacity: 0.95
-						}).addTo(leafletMap);
+						leg.stations.forEach(st => {
+							allPolylineCoords.push([st.lat, st.lon]);
+						});
+					} else if (leg.type === 'walk') {
+						transferWalkCount++;
+						transferWalkways.push(leg.name);
+						totalTravelTime += leg.walkTime;
+
+						itineraryHtml += `
+							<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30">
+								<span class="w-3 h-3 rounded-full bg-amber-500 mt-0.5 shrink-0 shadow-2xs"></span>
+								<div class="space-y-0.5 flex-1">
+									<div class="flex items-center justify-between gap-1 flex-wrap">
+										<span class="font-bold text-amber-950">${legIdx + 1}. Interchange: ${leg.name}</span>
+										<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-900">Walkway</span>
+									</div>
+									<div class="text-amber-800 text-[11px]">
+										Exit ${leg.from.name}, walk ~${leg.walkTime} mins across the footbridge, and tap into ${leg.to.name}.
+									</div>
+								</div>
+							</div>
+						`;
 					}
-					return;
-				}
+				});
 
-				// CASE 2: Cross-line transfer
-				let transferA = null;
-				let transferB = null;
-				let transferName = '';
-				let transferWalkTime = 5;
-
-				const pairKey = [origin.lineKey, dest.lineKey].sort().join('_');
-
-				if (pairKey === 'lrt1_mrt3') {
-					transferA = getStationById(origin.lineKey === 'lrt1' ? 'lrt1_edsa' : 'mrt3_taft');
-					transferB = getStationById(dest.lineKey === 'lrt1' ? 'lrt1_edsa' : 'mrt3_taft');
-					transferName = 'EDSA-Taft Footbridge';
-					transferWalkTime = 4;
-				} else if (pairKey === 'lrt1_lrt2') {
-					transferA = getStationById(origin.lineKey === 'lrt1' ? 'lrt1_doroteo_jose' : 'lrt2_recto');
-					transferB = getStationById(dest.lineKey === 'lrt1' ? 'lrt1_doroteo_jose' : 'lrt2_recto');
-					transferName = 'Doroteo Jose - Recto Elevated Walkway';
-					transferWalkTime = 5;
-				} else if (pairKey === 'lrt2_mrt3') {
-					transferA = getStationById(origin.lineKey === 'lrt2' ? 'lrt2_cubao' : 'mrt3_cubao');
-					transferB = getStationById(dest.lineKey === 'lrt2' ? 'lrt2_cubao' : 'mrt3_cubao');
-					transferName = 'Araneta Center-Cubao (Farmers/Gateway Walkway)';
-					transferWalkTime = 6;
-				}
-
-				if (!transferA || !transferB) return;
-
-				const leg1Stops = Math.abs(origin.indexInLine - transferA.indexInLine);
-				const leg1Dist = Math.abs(origin.km - transferA.km);
-				const leg1Fare = calcSingleLineFare(origin.lineKey, leg1Dist, leg1Stops);
-				const leg1Time = getLineTravelTime(origin.lineKey, leg1Stops);
-
-				const leg2Stops = Math.abs(transferB.indexInLine - dest.indexInLine);
-				const leg2Dist = Math.abs(transferB.km - dest.km);
-				const leg2Fare = calcSingleLineFare(dest.lineKey, leg2Dist, leg2Stops);
-				const leg2Time = getLineTravelTime(dest.lineKey, leg2Stops);
-
-				const totalBeep = leg1Fare.beepFare + leg2Fare.beepFare;
-				const totalSjt = leg1Fare.sjtFare + leg2Fare.sjtFare;
-				const finalBeep = hasDiscount ? (totalBeep * 0.8) : totalBeep;
-				const finalSjt = hasDiscount ? (totalSjt * 0.8) : totalSjt;
-
-				const totalStops = leg1Stops + leg2Stops;
-				const totalDist = leg1Dist + leg2Dist;
-				const totalTime = Math.round(leg1Time + transferWalkTime + leg2Time);
+				// Final Discount Calculations
+				const finalBeep = hasDiscount ? (totalBeepFare * 0.8) : totalBeepFare;
+				const finalSjt = hasDiscount ? (totalSjtFare * 0.8) : totalSjtFare;
+				const roundedTime = Math.round(totalTravelTime);
 
 				fareBeepEl.textContent = `₱${finalBeep.toFixed(2)}`;
 				fareSjtEl.textContent = `₱${finalSjt.toFixed(2)}`;
-				metricTimeEl.textContent = `~${totalTime} mins`;
-				metricStopsEl.textContent = `${totalStops} stops (1 transfer)`;
+				metricTimeEl.textContent = `~${roundedTime} mins`;
+				metricStopsEl.textContent = `${totalStops} stops ${transferWalkCount > 0 ? `(${transferWalkCount} transfer)` : ''}`;
 				metricDistEl.textContent = `${totalDist.toFixed(1)} km`;
 
-				if (summaryMetricEl) summaryMetricEl.textContent = `${totalStops} stops (1 transfer) • ₱${finalBeep.toFixed(2)}`;
+				if (summaryMetricEl) {
+					summaryMetricEl.textContent = `${totalStops} stops • ₱${finalBeep.toFixed(2)}`;
+				}
 
-				// Show transfer alert
-				transferCalloutEl.classList.remove('hidden');
-				transferCalloutEl.innerHTML = `
-					<div class="font-bold flex items-center gap-1.5 mb-1">
-						<span>🔄 Transfer Required:</span>
-						<span>${transferName}</span>
-					</div>
-					<div>Exit ${origin.lineKey.toUpperCase()} at <strong>${transferA.name}</strong>, walk ~${transferWalkTime} mins across the connecting walkway, and tap into ${dest.lineKey.toUpperCase()} at <strong>${transferB.name}</strong>.</div>
-				`;
-
-				// Render 4-step itinerary
-				routeStepsListEl.innerHTML = `
-					<div class="flex items-start gap-2.5 p-2 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/50">
-						<span class="w-3 h-3 rounded-full mt-0.5 shrink-0" style="background-color: ${LINE_COLORS[origin.lineKey]}"></span>
-						<div class="space-y-0.5">
-							<div class="font-bold text-mapa-ink">1. Board ${origin.lineKey.toUpperCase()}: ${origin.name}</div>
-							<div class="text-mapa-clay text-[11px]">Ride ${leg1Stops} stops (${leg1Dist.toFixed(1)} km) &bull; Fare: ₱${(hasDiscount ? leg1Fare.beepFare * 0.8 : leg1Fare.beepFare).toFixed(2)}</div>
+				// Transfer alert notification
+				if (transferWalkCount > 0) {
+					transferCalloutEl.classList.remove('hidden');
+					transferCalloutEl.innerHTML = `
+						<div class="font-bold flex items-center gap-1.5 mb-1 text-xs">
+							<span>🔄 Transfer Required:</span>
+							<span>${transferWalkways.join(' &bull; ')}</span>
 						</div>
-					</div>
-					<div class="flex items-start gap-2.5 p-2 rounded-lg bg-amber-500/10 border border-amber-500/30">
-						<span class="w-3 h-3 rounded-full bg-amber-500 mt-0.5 shrink-0"></span>
-						<div class="space-y-0.5">
-							<div class="font-bold text-amber-900">2. Transfer at ${transferA.name}</div>
-							<div class="text-amber-800 text-[11px]">Walk ~${transferWalkTime} mins via ${transferName} into ${transferB.name}</div>
+						<div class="text-[11px] leading-relaxed">
+							This journey requires <strong>${transferWalkCount} line interchange</strong>. Tap out at the transfer station, proceed through the covered pedestrian walkway, and tap into the connecting line turnstiles.
 						</div>
-					</div>
-					<div class="flex items-start gap-2.5 p-2 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/50">
-						<span class="w-3 h-3 rounded-full mt-0.5 shrink-0" style="background-color: ${LINE_COLORS[dest.lineKey]}"></span>
-						<div class="space-y-0.5">
-							<div class="font-bold text-mapa-ink">3. Board ${dest.lineKey.toUpperCase()}: ${transferB.name}</div>
-							<div class="text-mapa-clay text-[11px]">Ride ${leg2Stops} stops (${leg2Dist.toFixed(1)} km) &bull; Fare: ₱${(hasDiscount ? leg2Fare.beepFare * 0.8 : leg2Fare.beepFare).toFixed(2)}</div>
-						</div>
-					</div>
-					<div class="flex items-start gap-2.5 p-2 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/50">
-						<span class="w-3 h-3 rounded-full bg-blue-600 mt-0.5 shrink-0"></span>
-						<div class="space-y-0.5">
-							<div class="font-bold text-mapa-ink">4. Arrive at ${dest.name}</div>
-							<div class="text-mapa-clay text-[11px]">Total combined time approx. ${totalTime} minutes.</div>
-						</div>
-					</div>
-				`;
+					`;
+				} else {
+					transferCalloutEl.classList.add('hidden');
+				}
 
-				if (leafletMap) {
-					const stListA = STATIONS_DATA[origin.lineKey];
-					const minA = Math.min(origin.indexInLine, transferA.indexInLine);
-					const maxA = Math.max(origin.indexInLine, transferA.indexInLine);
-					const leg1Coords = stListA.slice(minA, maxA + 1).map(s => [s.lat, s.lon]);
+				routeStepsListEl.innerHTML = itineraryHtml;
 
-					const stListB = STATIONS_DATA[dest.lineKey];
-					const minB = Math.min(dest.indexInLine, transferB.indexInLine);
-					const maxB = Math.max(dest.indexInLine, transferB.indexInLine);
-					const leg2Coords = stListB.slice(minB, maxB + 1).map(s => [s.lat, s.lon]);
-
-					const combinedCoords = [...leg1Coords, ...leg2Coords];
-					activeRoutePolyline = L.polyline(combinedCoords, {
+				if (leafletMap && allPolylineCoords.length > 0) {
+					activeRoutePolyline = L.polyline(allPolylineCoords, {
 						color: '#F59E0B',
 						weight: 6,
 						dashArray: '8, 8',

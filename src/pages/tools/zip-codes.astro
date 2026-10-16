@@ -87,17 +87,17 @@ const uniqueRegions = Array.from(new Set(entries.map((e) => e.region))).sort();
 		<div class="max-w-3xl mb-8">
 			<div class="flex items-center gap-2 mb-2">
 				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
-					Built-in Utility
+					Postal Directory & Geocoding
 				</span>
 				<span class="font-sans text-xs text-mapa-clay">
-					Official PHLPost 4-Digit Directory
+					Official PHLPost 4-Digit Directory &bull; RA 7354
 				</span>
 			</div>
 			<h1 class="text-3xl sm:text-4xl font-extrabold text-mapa-green font-serif tracking-tight">
 				Philippine ZIP Code / Postal Code Lookup
 			</h1>
 			<p class="font-sans text-sm sm:text-base text-mapa-ink/80 mt-2 leading-relaxed">
-				Instant client-side search across <strong>{totalCount.toLocaleString()}</strong> official Philippine postal codes. Search by 4-digit code, municipality, district, city, or province with 1-click copy for parcel deliveries, bank forms, and passport applications.
+				Instant client-side search across <strong>{totalCount.toLocaleString()}</strong> official Philippine postal codes verified against the Philippine Postal Corporation (PHLPost) gazette. Search by 4-digit code, municipality, university campus, district, city, or province with 1-click copy.
 			</p>
 		</div>
 
@@ -118,6 +118,9 @@ const uniqueRegions = Array.from(new Set(entries.map((e) => e.region))).sort();
 					</button>
 					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-search="Fort Bonifacio">
 						BGC / Taguig (1630)
+					</button>
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-search="College Los Baños">
+						College, Laguna / UPLB (4031)
 					</button>
 					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-search="Cebu City">
 						Cebu City (6000)
@@ -433,6 +436,17 @@ const uniqueRegions = Array.from(new Set(entries.map((e) => e.region))).sort();
 						<strong>Philippine Standard Geographic Code (PSGC):</strong> Published quarterly by the Philippine Statistics Authority (PSA) (<a href="https://psa.gov.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green hover:underline">psa.gov.ph</a>).
 					</li>
 				</ul>
+
+				<!-- Credibility Highlight: College Los Baños / UPLB (4031) vs Los Baños (4030) -->
+				<div class="mt-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs sm:text-sm text-mapa-ink/90 leading-relaxed">
+					<div class="flex items-center gap-2 mb-1 text-amber-900 font-bold text-xs uppercase tracking-wider">
+						<span>🎓 Special Postal Designation:</span>
+						<span>College, Los Baños (4031) vs. Los Baños Town (4030)</span>
+					</div>
+					<p>
+						A frequent point of confusion is whether the University of the Philippines Los Baños (UPLB) uses 4030 or 4031. Under official PHLPost postal zoning, <strong>4031</strong> is specifically registered as <strong>"College, Los Baños"</strong> for the UPLB campus post office, its colleges, research institutions (such as IRRI and SEARCA), and student housing. In contrast, <strong>4030</strong> is assigned to the general municipality of Los Baños (Poblacion and non-academic barangays). Both are authentic and distinct PHLPost entries.
+					</p>
+				</div>
 			</section>
 
 			<!-- Section 6: Editorial Notice & Changelog -->

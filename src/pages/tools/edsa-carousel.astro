@@ -708,70 +708,80 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 
 					<!-- Vertical Schematic Ribbon with Platform Nodes -->
 					<div class="relative pl-8 pr-2 py-4 max-h-[640px] overflow-y-auto space-y-3 custom-scrollbar">
-						<!-- Central Vertical Backbone Line -->
-						<div class="absolute left-[22px] top-6 bottom-6 w-1.5 bg-emerald-600/30 rounded-full"></div>
-
-						<!-- Dynamic Stops Rendering -->
-						{BUSWAY_STOPS.map((stop, index) => (
-							<div
-								id={`schematic-node-${stop.id}`}
-								data-stop-id={stop.id}
-								data-km={stop.km}
-								class="schematic-node relative flex items-center justify-between p-3 rounded-xl border border-transparent hover:border-mapa-green/40 hover:bg-mapa-canvas transition-all cursor-pointer group"
-							>
-								<!-- Circle Node Indicator -->
-								<div class="absolute left-[-24px] w-6 h-6 rounded-full bg-mapa-canvas-dark border-2 border-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform z-10">
-									<div class="w-2 h-2 rounded-full bg-emerald-600"></div>
-								</div>
-
-								<div class="flex flex-col ml-3 pr-2 min-w-0">
-									<div class="flex items-center gap-2 flex-wrap">
-										<span class="font-serif font-bold text-sm text-mapa-ink group-hover:text-mapa-green transition-colors">
-											{index + 1}. {stop.name}
-										</span>
-										{stop.isTerminus && (
-											<span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-600 text-white">
-												Terminus
-											</span>
-										)}
-										<!-- Active Selection Badge Container -->
-										<span id={`busway-badge-${stop.id}`} class="busway-status-badge hidden text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-2xs"></span>
-									</div>
-									<span class="text-[11px] text-mapa-clay mt-0.5">
-										{stop.city} &bull; KM {stop.km.toFixed(1)} &bull; {stop.platform}
-									</span>
-									{stop.interchanges && stop.interchanges.length > 0 && (
-										<div class="flex flex-wrap gap-1 mt-1.5">
-											{stop.interchanges.map((ic) => (
-												<span class="text-[10px] px-1.5 py-0.5 rounded bg-mapa-canvas border border-mapa-contour text-mapa-ink/75">
-													{ic}
-												</span>
-											))}
-										</div>
+						<!-- Dynamic Stops Rendering with Continuous Timeline Segments -->
+						{BUSWAY_STOPS.map((stop, index) => {
+							const isFirst = index === 0;
+							const isLast = index === BUSWAY_STOPS.length - 1;
+							return (
+								<div
+									id={`schematic-node-${stop.id}`}
+									data-stop-id={stop.id}
+									data-km={stop.km}
+									class="schematic-node relative flex items-center justify-between p-3 rounded-xl border border-transparent hover:border-mapa-green/40 hover:bg-mapa-canvas transition-all cursor-pointer group"
+								>
+									{/* Top Track Segment */}
+									{!isFirst && (
+										<div class="busway-track-top absolute left-[-15px] top-[-14px] bottom-1/2 w-1.5 bg-emerald-600/25 dark:bg-emerald-600/35 transition-colors z-0"></div>
 									)}
-								</div>
+									{/* Bottom Track Segment */}
+									{!isLast && (
+										<div class="busway-track-bottom absolute left-[-15px] top-1/2 bottom-[-14px] w-1.5 bg-emerald-600/25 dark:bg-emerald-600/35 transition-colors z-0"></div>
+									)}
 
-								<!-- 1-Click Action Buttons -->
-								<div class="flex items-center gap-1.5 shrink-0 ml-2">
-									<button
-										type="button"
-										class="btn-busway-board px-2 py-1 text-[11px] font-bold rounded-md bg-emerald-600/10 hover:bg-emerald-600 text-emerald-800 hover:text-white transition-all border border-emerald-600/30 cursor-pointer shadow-2xs"
-										data-stop-id={stop.id}
-										title={`Set ${stop.name} as Boarding (Start)`}
-									>
-										🟢 Board
-									</button>
-									<button
-										type="button"
-										class="btn-busway-alight px-2 py-1 text-[11px] font-bold rounded-md bg-blue-600/10 hover:bg-blue-600 text-blue-800 hover:text-white transition-all border border-blue-600/30 cursor-pointer shadow-2xs"
-										data-stop-id={stop.id}
-										title={`Set ${stop.name} as Destination (Exit)`}
-									>
-										🔵 Alight
-									</button>
+									<!-- Circle Node Indicator -->
+									<div class="absolute left-[-24px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-mapa-canvas-dark border-2 border-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform z-10 shadow-2xs">
+										<div class="w-2 h-2 rounded-full bg-emerald-600"></div>
+									</div>
+
+									<div class="flex flex-col ml-3 pr-2 min-w-0">
+										<div class="flex items-center gap-2 flex-wrap">
+											<span class="font-serif font-bold text-sm text-mapa-ink group-hover:text-mapa-green transition-colors">
+												{index + 1}. {stop.name}
+											</span>
+											{stop.isTerminus && (
+												<span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-600 text-white shadow-2xs">
+													Terminus
+												</span>
+											)}
+											<!-- Active Selection Badge Container -->
+											<span id={`busway-badge-${stop.id}`} class="busway-status-badge hidden text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-2xs"></span>
+										</div>
+										<span class="text-[11px] text-mapa-clay mt-0.5">
+											{stop.city} &bull; KM {stop.km.toFixed(1)} &bull; {stop.platform}
+										</span>
+										{stop.interchanges && stop.interchanges.length > 0 && (
+											<div class="flex flex-wrap gap-1 mt-1.5">
+												{stop.interchanges.map((ic) => (
+													<span class="text-[10px] px-1.5 py-0.5 rounded bg-mapa-canvas border border-mapa-contour text-mapa-ink/75">
+														{ic}
+													</span>
+												))}
+											</div>
+										)}
+									</div>
+
+									<!-- 1-Click Action Buttons -->
+									<div class="flex items-center gap-1.5 shrink-0 ml-2">
+										<button
+											type="button"
+											class="btn-busway-board px-2 py-1 text-[11px] font-bold rounded-md bg-emerald-600/10 hover:bg-emerald-600 text-emerald-800 hover:text-white transition-all border border-emerald-600/30 cursor-pointer shadow-2xs"
+											data-stop-id={stop.id}
+											title={`Set ${stop.name} as Boarding (Start)`}
+										>
+											🟢 Board
+										</button>
+										<button
+											type="button"
+											class="btn-busway-alight px-2 py-1 text-[11px] font-bold rounded-md bg-blue-600/10 hover:bg-blue-600 text-blue-800 hover:text-white transition-all border border-blue-600/30 cursor-pointer shadow-2xs"
+											data-stop-id={stop.id}
+											title={`Set ${stop.name} as Destination (Exit)`}
+										>
+											🔵 Alight
+										</button>
+									</div>
 								</div>
-							</div>
-						))}
+							);
+						})}
 					</div>
 				</div>
 
@@ -925,6 +935,60 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					<p class="text-mapa-ink/80 leading-relaxed text-xs">
 						EDSA Carousel links directly with LRT-1 at Monumento, Balintawak, and Roosevelt (FPJ). It shares direct footbridge walkways with MRT-3 at North Avenue, Quezon Avenue, Santolan, Ortigas, Guadalupe, Buendia, and Ayala. At Taft Avenue, it connects to both MRT-3 and LRT-1 EDSA station.
 					</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- Official Statutory Citations & Reference Sources -->
+		<section class="border-t border-mapa-contour/50 pt-10 font-sans">
+			<h2 class="text-2xl font-serif font-bold text-mapa-ink mb-6">
+				Official Statutory Citations & Regulatory Reference Sources
+			</h2>
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+				<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4 flex flex-col justify-between">
+					<div>
+						<div class="flex items-center gap-2 mb-1.5">
+							<span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+							<h3 class="font-bold text-mapa-ink text-sm">Land Transportation Franchising and Regulatory Board (LTFRB)</h3>
+						</div>
+						<p class="text-mapa-ink/75 leading-relaxed">
+							Authorized under <strong>LTFRB Route E (EDSA Carousel Busway)</strong> Fare Matrix Orders. Base commuter fare is ₱15.00 for the initial 4.0 km with a succeeding distance rate of ₱2.65/km, regulated across all consortium bus operators.
+						</p>
+					</div>
+					<div class="mt-3 pt-2.5 border-t border-mapa-contour/50">
+						<a
+							href="https://ltfrb.gov.ph"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1"
+						>
+							<span>LTFRB Official Portal</span>
+							<span>&rarr;</span>
+						</a>
+					</div>
+				</div>
+
+				<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4 flex flex-col justify-between">
+					<div>
+						<div class="flex items-center gap-2 mb-1.5">
+							<span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+							<h3 class="font-bold text-mapa-ink text-sm">DOTr & MMDA Busway Project Management Office</h3>
+						</div>
+						<p class="text-mapa-ink/75 leading-relaxed">
+							Jointly administered by the Department of Transportation (DOTr) Road Transport Sector and Metropolitan Manila Development Authority (MMDA) for dedicated median corridor traffic enforcement, footbridge concourses, and PITX terminal operations.
+						</p>
+					</div>
+					<div class="mt-3 pt-2.5 border-t border-mapa-contour/50">
+						<a
+							href="https://dotr.gov.ph"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1"
+						>
+							<span>DOTr Official Portal</span>
+							<span>&rarr;</span>
+						</a>
+					</div>
 				</div>
 			</div>
 		</section>
@@ -1088,6 +1152,17 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					const badgeEl = document.getElementById(`busway-badge-${stop.id}`);
 					if (!nodeEl) return;
 
+					const trackTop = nodeEl.querySelector('.busway-track-top');
+					const trackBottom = nodeEl.querySelector('.busway-track-bottom');
+
+					// Reset track segments
+					if (trackTop) {
+						trackTop.className = 'busway-track-top absolute left-[-15px] top-[-14px] bottom-1/2 w-1.5 bg-emerald-600/25 dark:bg-emerald-600/35 transition-colors z-0';
+					}
+					if (trackBottom) {
+						trackBottom.className = 'busway-track-bottom absolute left-[-15px] top-1/2 bottom-[-14px] w-1.5 bg-emerald-600/25 dark:bg-emerald-600/35 transition-colors z-0';
+					}
+
 					if (index === idx1) {
 						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-emerald-600 bg-emerald-500/15 ring-1 ring-emerald-500/40 shadow-2xs transition-all cursor-pointer';
 						if (badgeEl) {
@@ -1106,6 +1181,16 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					} else {
 						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-transparent hover:border-mapa-green/40 hover:bg-mapa-canvas transition-all cursor-pointer group';
 						if (badgeEl) badgeEl.className = 'busway-status-badge hidden';
+					}
+
+					// Light up track segments along the active busway journey path
+					if (idx1 !== idx2) {
+						if (index > minIdx && index <= maxIdx && trackTop) {
+							trackTop.className = 'busway-track-top absolute left-[-15px] top-[-14px] bottom-1/2 w-1.5 bg-emerald-600 shadow-xs transition-colors z-0';
+						}
+						if (index >= minIdx && index < maxIdx && trackBottom) {
+							trackBottom.className = 'busway-track-bottom absolute left-[-15px] top-1/2 bottom-[-14px] w-1.5 bg-emerald-600 shadow-xs transition-colors z-0';
+						}
 					}
 				});
 			}

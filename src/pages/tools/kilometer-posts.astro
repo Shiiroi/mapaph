@@ -19,6 +19,8 @@ const KM_ZERO_ORIGINS = [
 		elevation: '3 meters ASL',
 		lat: 14.5826,
 		lon: 120.9787,
+		markerBadge: 'National White Obelisk & Bronze Plaque',
+		gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=14.5826,120.9787',
 		corridors: ['MacArthur Highway (N2/N1)', 'Maharlika Highway (AH26/N1)', 'Manila South Road', 'Marilaque Highway (N68)', 'Manila East Road (N601)', 'Aguinaldo Highway (N419)', 'Kennon Road (N208)'],
 		history: 'Established in 1913 during the American Commonwealth under the Bureau of Public Works (now DPWH). Positioned directly across the José Rizal Monument as the singular geodetic reference point for all road distances across Luzon.'
 	},
@@ -30,6 +32,8 @@ const KM_ZERO_ORIGINS = [
 		elevation: '700 meters ASL',
 		lat: 8.0019,
 		lon: 124.2858,
+		markerBadge: 'Lake Lanao Shore Survey Monument',
+		gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=8.0019,124.2858',
 		corridors: ['Marawi–Iligan Road', 'Sayre Highway (N10)', 'Davao–Cotabato Road', 'Surigao–Davao Coastal'],
 		history: 'Designated by early public works engineers as the primary surveying benchmark for the trans-Mindanao road network originating along the northern shore of Lake Lanao.'
 	},
@@ -41,6 +45,8 @@ const KM_ZERO_ORIGINS = [
 		elevation: '12 meters ASL',
 		lat: 10.3167,
 		lon: 123.8907,
+		markerBadge: 'Provincial Capitol Milestone',
+		gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=10.3167,123.8907',
 		corridors: ['Cebu North Coastal Road (N8)', 'Cebu South Road (N8)', 'Trans-Central Highway (N815)'],
 		history: 'Erected in front of the neoclassical Cebu Provincial Capitol building, serving as the benchmark for radial distances spanning from Daanbantayan in the north to Santander in the south.'
 	},
@@ -52,6 +58,8 @@ const KM_ZERO_ORIGINS = [
 		elevation: '5 meters ASL',
 		lat: 10.6969,
 		lon: 122.5644,
+		markerBadge: 'Casa Real de Iloilo Survey Pillar',
+		gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=10.6969,122.5644',
 		corridors: ['Iloilo–Capiz Road (N5)', 'Iloilo–Antique Road (N501)', 'Panay East Coast Highway'],
 		history: 'Positioned at the Casa Real de Iloilo (Old Provincial Capitol) as the surveying reference point for all national secondary and primary arterial routes across the four provinces of Panay.'
 	},
@@ -63,6 +71,8 @@ const KM_ZERO_ORIGINS = [
 		elevation: '15 meters ASL',
 		lat: 14.4333,
 		lon: 120.4833,
+		markerBadge: 'Historic WWII Memorial Obelisk',
+		gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=14.4333,120.4833',
 		corridors: ['Roman Superhighway (N301)', 'Governor J.J. Linao Road', 'Old Bataan National Road'],
 		history: '138 white obelisk concrete markers erected by the Battling Bastards of Bataan and Filipino-American Memorial Foundation marking each kilometer marched by ~75,000 POWs from Mariveles/Bagac to San Fernando and Camp O’Donnell.'
 	}
@@ -392,12 +402,30 @@ const HIGHWAY_CORRIDORS = [
 							<span class="text-[10px] text-mapa-clay uppercase font-bold block">Elevation</span>
 							<span id="origin-banner-elevation" class="font-mono font-bold text-mapa-ink">3 m ASL</span>
 						</div>
+						<a
+							id="origin-banner-gmaps"
+							href={KM_ZERO_ORIGINS[0].gmapsUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+							title="View Kilometer Zero marker location on Google Maps"
+						>
+							<span>📍 Google Maps</span>
+							<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+							</svg>
+						</a>
 					</div>
 				</div>
 
-				<p id="origin-banner-history" class="text-xs text-mapa-ink/80 leading-relaxed">
-					{KM_ZERO_ORIGINS[0].history}
-				</p>
+				<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2">
+					<p id="origin-banner-history" class="text-xs text-mapa-ink/80 leading-relaxed flex-1">
+						{KM_ZERO_ORIGINS[0].history}
+					</p>
+					<span id="origin-banner-badge" class="px-2.5 py-1 rounded bg-mapa-canvas border border-mapa-contour text-[11px] font-bold text-mapa-green shrink-0">
+						{KM_ZERO_ORIGINS[0].markerBadge}
+					</span>
+				</div>
 			</div>
 		</section>
 
@@ -501,7 +529,7 @@ const HIGHWAY_CORRIDORS = [
 					</div>
 
 					<!-- Computed Marker Location Details -->
-					<div id="active-marker-card" class="mt-5 p-4 rounded-xl bg-mapa-canvas border border-mapa-contour text-xs space-y-2">
+					<div id="active-marker-card" class="mt-5 p-4 rounded-xl bg-mapa-canvas border border-mapa-contour text-xs space-y-2.5">
 						<div class="flex items-center justify-between border-b border-mapa-contour/50 pb-2">
 							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay">Location Status</span>
 							<span id="marker-town-badge" class="font-bold text-mapa-green">San Fernando City, Pampanga</span>
@@ -510,9 +538,24 @@ const HIGHWAY_CORRIDORS = [
 							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay block">Prominent Landmark</span>
 							<p id="marker-landmark" class="text-mapa-ink/85 mt-0.5">Pampanga Provincial Capitol, San Fernando Train Station</p>
 						</div>
-						<div class="flex justify-between items-center pt-1 text-[11px] text-mapa-clay">
+						<div class="flex flex-wrap justify-between items-center pt-1 text-[11px] text-mapa-clay gap-2">
 							<span>Highway Code: <strong id="marker-route-code" class="text-mapa-ink">N2 / MacArthur Hwy</strong></span>
 							<span>Approx. Coords: <strong id="marker-coords" class="font-mono text-mapa-ink">15.0300° N, 120.6900° E</strong></span>
+						</div>
+						<div class="pt-2 border-t border-mapa-contour/40">
+							<a
+								id="marker-gmaps-link"
+								href="https://www.google.com/maps/search/?api=1&query=15.0300,120.6900"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="w-full py-2 px-3 rounded-lg bg-emerald-600/10 hover:bg-emerald-600 text-emerald-800 hover:text-white font-semibold text-xs border border-emerald-600/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+								title="Open this concrete kilometer post location in Google Maps"
+							>
+								<span>📍 Open Milestone in Google Maps</span>
+								<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+								</svg>
+							</a>
 						</div>
 					</div>
 				</div>
@@ -675,6 +718,35 @@ const HIGHWAY_CORRIDORS = [
 				</div>
 			</div>
 		</section>
+
+		<!-- Official References & Statutory Sources -->
+		<section class="border-t border-mapa-contour/50 pt-10 font-sans mt-10">
+			<h2 class="text-2xl font-serif font-bold text-mapa-ink mb-4">
+				Official References & Data Sources
+			</h2>
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-mapa-ink/80 leading-relaxed">
+				<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5">
+					<div class="font-bold text-sm text-mapa-ink">Department of Public Works and Highways (DPWH)</div>
+					<p>Design Guidelines, Criteria and Standards (DGCS) Volume 4: Highway Design (Standard Kilometer Post Geometry, Color Codes, and Lettering Dimensions).</p>
+					<p class="text-[11px] text-mapa-clay">Official Road and Bridge Information Application (RBIA) & Highway Planning Division.</p>
+				</div>
+				<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5">
+					<div class="font-bold text-sm text-mapa-ink">National Historical Commission of the Philippines (NHCP)</div>
+					<p>Historical Marker Register for Kilometer Zero Luneta (Manila), Banggolo Bridge (Marawi City), and Casa Real de Iloilo.</p>
+					<p class="text-[11px] text-mapa-clay">Executive Order No. 45 & Bureau of Public Works Historical Archives (1913).</p>
+				</div>
+				<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5">
+					<div class="font-bold text-sm text-mapa-ink">Filipino-American Memorial Endowment (FAME)</div>
+					<p>Official Survey Registry of the 138 Bataan Death March Memorial Markers from KM 00 Mariveles/Bagac to Camp O'Donnell, Capas, Tarlac.</p>
+					<p class="text-[11px] text-mapa-clay">Battling Bastards of Bataan Foundation Historical Milepost Directory.</p>
+				</div>
+				<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5">
+					<div class="font-bold text-sm text-mapa-ink">National Mapping and Resource Information Authority (NAMRIA)</div>
+					<p>Topographic basemaps, geodetic leveling benchmarks, and road network coordinates.</p>
+					<p class="text-[11px] text-mapa-clay">Philippine Reference System 1992 (PRS92) Geodetic Control Network.</p>
+				</div>
+			</div>
+		</section>
 	</main>
 
 	<Footer />
@@ -790,6 +862,11 @@ const HIGHWAY_CORRIDORS = [
 				markerRouteCode.textContent = corridor.name.split('(')[0].trim();
 				markerCoords.textContent = `${marker.lat.toFixed(4)}° N, ${marker.lon.toFixed(4)}° E`;
 
+				const gmapsLink = document.getElementById('marker-gmaps-link');
+				if (gmapsLink) {
+					gmapsLink.href = `https://www.google.com/maps/search/?api=1&query=${marker.lat},${marker.lon}`;
+				}
+
 				// Highlight active schematic node
 				document.querySelectorAll('.chain-node').forEach(node => {
 					const nodeKm = parseInt(node.getAttribute('data-km'), 10);
@@ -822,20 +899,32 @@ const HIGHWAY_CORRIDORS = [
 					item.setAttribute('data-km', marker.km.toString());
 
 					item.innerHTML = `
-						<div class="flex items-center gap-3">
-							<div class="w-11 h-11 rounded-lg bg-slate-100 border-2 border-slate-300 flex flex-col items-center justify-center font-mono flex-shrink-0">
+						<div class="flex items-center gap-3 min-w-0 pr-2">
+							<div class="w-11 h-11 rounded-lg bg-slate-100 border-2 border-slate-300 flex flex-col items-center justify-center font-mono flex-shrink-0 shadow-2xs">
 								<span class="text-[8px] font-bold text-slate-500">KM</span>
 								<span class="text-xs font-extrabold text-slate-800 leading-none">${marker.km}</span>
 							</div>
-							<div>
-								<div class="font-serif font-bold text-sm text-mapa-ink">${marker.town}</div>
-								<div class="text-[11px] text-mapa-clay">${marker.prov} &bull; ${marker.landmark}</div>
+							<div class="min-w-0">
+								<div class="font-serif font-bold text-sm text-mapa-ink truncate">${marker.town}</div>
+								<div class="text-[11px] text-mapa-clay truncate">${marker.prov} &bull; ${marker.landmark}</div>
 							</div>
 						</div>
-						<div class="text-right">
+						<div class="flex items-center gap-2 shrink-0">
 							<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour text-mapa-clay">
 								${marker.destTop}
 							</span>
+							<a
+								href="https://www.google.com/maps/search/?api=1&query=${marker.lat},${marker.lon}"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="p-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:bg-emerald-600 hover:text-white text-emerald-800 transition-all shadow-2xs"
+								title="View KM ${marker.km} on Google Maps"
+								onclick="event.stopPropagation()"
+							>
+								<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+								</svg>
+							</a>
 						</div>
 					`;
 
@@ -931,6 +1020,15 @@ const HIGHWAY_CORRIDORS = [
 					originBannerCoords.textContent = `${origin.lat.toFixed(4)}° N, ${origin.lon.toFixed(4)}° E`;
 					originBannerElevation.textContent = origin.elevation;
 					originBannerHistory.textContent = origin.history;
+
+					const originGmaps = document.getElementById('origin-banner-gmaps');
+					if (originGmaps && origin.gmapsUrl) {
+						originGmaps.href = origin.gmapsUrl;
+					}
+					const originBadge = document.getElementById('origin-banner-badge');
+					if (originBadge && origin.markerBadge) {
+						originBadge.textContent = origin.markerBadge;
+					}
 				});
 			});
 
