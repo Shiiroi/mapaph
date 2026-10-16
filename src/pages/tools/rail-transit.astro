@@ -520,7 +520,7 @@ const TRANSFER_HUBS = [
 					</div>
 
 					<!-- VIEW 2: 2D Schematic Network Diagram (SVG, inspired by user reference) -->
-					<div id="rail-schematic-container" class="hidden bg-stone-100 dark:bg-stone-900">
+					<div id="rail-schematic-container" class="hidden bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs">
 						<div class="px-4 pt-3 pb-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-mapa-ink/70 border-b border-mapa-contour/50 bg-mapa-canvas">
 							<span>Tap any station dot to set it as your <strong id="diagram-target-label">Boarding</strong> point. Click stations to calculate trip.</span>
 							<span class="inline-flex items-center gap-3">
@@ -529,7 +529,7 @@ const TRANSFER_HUBS = [
 								<span class="inline-flex items-center gap-1"><span class="w-4 h-1 rounded-full bg-amber-500"></span>Your route</span>
 							</span>
 						</div>
-						<div class="overflow-auto max-h-[680px] p-4 flex justify-center bg-stone-100 dark:bg-stone-900">
+						<div class="overflow-auto max-h-[680px] p-4 flex justify-center bg-stone-100/60 dark:bg-stone-950/40">
 							<svg
 								id="rail-diagram-svg"
 								viewBox="0 0 1150 1280"
@@ -1339,6 +1339,17 @@ const TRANSFER_HUBS = [
 				if (!diagramSvg) return;
 				diagramSvg.innerHTML = '';
 
+				// Dedicated high-contrast crisp canvas background
+				diagramSvg.appendChild(svgEl('rect', { width: '100%', height: '100%', rx: '16', fill: '#F8FAFC', stroke: '#E2E8F0', 'stroke-width': '2' }));
+
+				// Subtle Manila Bay coastal wash on the west
+				diagramSvg.appendChild(svgEl('path', { d: 'M 0,0 L 160,0 L 160,820 Q 160,950 240,1050 L 240,1280 L 0,1280 Z', fill: '#E0F2FE', opacity: '0.65' }));
+				diagramSvg.appendChild(svgEl('text', { x: '70', y: '640', 'font-family': 'ui-sans-serif, system-ui, sans-serif', 'font-size': '16', 'font-weight': '800', fill: '#0284C7', opacity: '0.35', transform: 'rotate(-90 70 640)', 'letter-spacing': '4' }, 'MANILA BAY'));
+
+				// Subtle Pasig River crossing through Manila into Laguna Lake
+				diagramSvg.appendChild(svgEl('path', { d: 'M 1150,560 C 900,580 750,620 660,650 C 500,700 350,640 160,650 L 120,652', fill: 'none', stroke: '#BAE6FD', 'stroke-width': '14', 'stroke-linecap': 'round', opacity: '0.75' }));
+				diagramSvg.appendChild(svgEl('text', { x: '820', y: '575', 'font-family': 'ui-sans-serif, system-ui, sans-serif', 'font-size': '11', 'font-weight': '700', fill: '#0284C7', opacity: '0.55' }, 'Pasig River'));
+
 				const gLines = svgEl('g', { id: 'dg-lines' });
 				Object.keys(diagramPts).forEach(k => {
 					gLines.appendChild(svgEl('path', {
@@ -1360,7 +1371,18 @@ const TRANSFER_HUBS = [
 				diagramSvg.appendChild(gLinks);
 
 				const gStations = svgEl('g', { id: 'dg-stations' });
-				const gLabels = svgEl('g', { id: 'dg-labels', 'font-family': 'ui-sans-serif, system-ui, sans-serif', 'font-size': 14, 'font-weight': '600', fill: '#1c1917', 'pointer-events': 'none' });
+				const gLabels = svgEl('g', {
+					id: 'dg-labels',
+					'font-family': 'ui-sans-serif, system-ui, -apple-system, sans-serif',
+					'font-size': '13.5',
+					'font-weight': '700',
+					fill: '#0F172A',
+					'paint-order': 'stroke fill',
+					stroke: '#FFFFFF',
+					'stroke-width': '4px',
+					'stroke-linejoin': 'round',
+					'pointer-events': 'none'
+				});
 				ALL_STATIONS.forEach(st => {
 					const pos = diagramPos[st.id];
 					if (!pos) return;
