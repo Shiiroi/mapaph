@@ -313,10 +313,10 @@ const HIGHWAY_CORRIDORS = [
 
 	<Navbar />
 
-	<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 text-mapa-ink">
+	<main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 text-mapa-ink">
 		<!-- Header Breadcrumb & Tag -->
 		<div class="mb-8">
-			<nav class="flex items-center gap-2 text-xs font-sans text-mapa-clay mb-3">
+			<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs font-sans text-mapa-muted mb-3">
 				<a href="/" class="hover:text-mapa-green transition-colors">Home</a>
 				<span>/</span>
 				<a href="/tools" class="hover:text-mapa-green transition-colors">Tools</a>
@@ -1075,6 +1075,9 @@ const HIGHWAY_CORRIDORS = [
 					originBannerLocation.textContent = origin.location;
 					originBannerCoords.textContent = `${origin.lat.toFixed(4)}° N, ${origin.lon.toFixed(4)}° E`;
 					originBannerElevation.textContent = origin.elevation;
+					if (originBannerHistory) {
+						originBannerHistory.textContent = origin.history;
+					}
 					const originRefLink = document.getElementById('origin-banner-ref-link');
 					const originRefLabel = document.getElementById('origin-banner-ref-label');
 					if (originRefLink && origin.refUrl) {

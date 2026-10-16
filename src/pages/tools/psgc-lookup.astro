@@ -84,14 +84,21 @@ const directoryItems = [
 
 	<Navbar />
 
-	<main class="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-mapa-ink">
+	<main id="main-content" class="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-mapa-ink">
 		<!-- Header -->
 		<div class="max-w-3xl mb-8">
-			<div class="flex items-center gap-2 mb-2">
+			<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs font-sans text-mapa-muted mb-3">
+				<a href="/" class="hover:text-mapa-green transition-colors">Home</a>
+				<span>/</span>
+				<a href="/tools" class="hover:text-mapa-green transition-colors">Tools</a>
+				<span>/</span>
+				<span class="text-mapa-ink font-semibold">PSGC Lookup</span>
+			</nav>
+			<div class="flex flex-wrap items-center gap-2 mb-2">
 				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
 					Geographic Standards
 				</span>
-				<span class="font-sans text-xs text-mapa-clay">
+				<span class="font-sans text-xs text-mapa-muted">
 					Official Philippine Statistics Authority (PSA) Standard
 				</span>
 			</div>
@@ -116,16 +123,24 @@ const directoryItems = [
 						type="search"
 						id="psgc-search-input"
 						placeholder="Search by name (e.g. Adams, Cebu City, Batanes) or code (e.g. 0102801000)..."
-						class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-4 py-3.5 pl-11 text-base text-mapa-ink placeholder-mapa-ink/40 focus:outline-none focus:ring-2 focus:ring-mapa-green/50 font-sans shadow-inner"
+						class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-4 py-3.5 pl-11 pr-20 text-base text-mapa-ink placeholder-mapa-ink/40 focus:outline-none focus:ring-2 focus:ring-mapa-green/50 font-sans shadow-inner"
 					/>
 					<svg
-						class="absolute left-3.5 top-3.5 w-5 h-5 text-mapa-clay pointer-events-none"
+						class="absolute left-3.5 top-3.5 w-5 h-5 text-mapa-muted pointer-events-none"
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"
 					>
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 					</svg>
+					<button
+						type="button"
+						id="clear-psgc-search-btn"
+						class="hidden absolute right-3 top-2.5 px-2.5 py-1.5 text-xs font-sans font-semibold text-mapa-muted hover:text-mapa-ink bg-mapa-canvas-dark rounded-md border border-mapa-contour/60 cursor-pointer"
+						aria-label="Clear search query"
+					>
+						Clear
+					</button>
 				</div>
 
 				<!-- Filter Pills -->
@@ -362,6 +377,7 @@ merged_map = boundaries.merge(census_df, on="psgc", how="inner")</code></pre>
 			let activeItem = items.find(i => i.n === 'Adams') || items[0];
 
 			const searchInput = document.getElementById('psgc-search-input');
+			const clearSearchBtn = document.getElementById('clear-psgc-search-btn');
 			const resultsContainer = document.getElementById('results-container');
 			const resultsCount = document.getElementById('results-count');
 			const inspectorCard = document.getElementById('inspector-card');
@@ -697,9 +713,43 @@ merged_map = boundaries.merge(census_df, on="psgc", how="inner")</code></pre>
 				});
 			});
 
+			function syncClearBtn() {
+				if (!clearSearchBtn) return;
+				if (searchInput.value.trim().length > 0) {
+					clearSearchBtn.classList.remove('hidden');
+				} else {
+					clearSearchBtn.classList.add('hidden');
+				}
+			}
+
 			searchInput.addEventListener('input', () => {
+				syncClearBtn();
 				renderResults();
 			});
+
+			if (clearSearchBtn) {
+				clearSearchBtn.addEventListener('click', () => {
+					searchInput.value = '';
+					syncClearBtn();
+					renderResults();
+					searchInput.focus();
+				});
+			}
+
+			// Support incoming ?q= URL search parameter (e.g. from ZIP Codes "Find in PSGC" link)
+			const params = new URLSearchParams(window.location.search);
+			const initialQuery = params.get('q');
+			if (initialQuery && searchInput) {
+				searchInput.value = initialQuery.trim();
+				syncClearBtn();
+				const qLower = initialQuery.trim().toLowerCase();
+				const exactOrFirst =
+					items.find(i => i.n.toLowerCase() === qLower) ||
+					items.find(i => i.n.toLowerCase().includes(qLower) || String(i.p).includes(qLower) || (i.c9 && String(i.c9).includes(qLower)));
+				if (exactOrFirst) {
+					activeItem = exactOrFirst;
+				}
+			}
 
 			// Initial render
 			renderInspector(activeItem);

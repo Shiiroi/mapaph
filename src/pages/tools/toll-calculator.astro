@@ -256,14 +256,21 @@ const TRIP_PRESETS = [
 
 	<Navbar />
 
-	<main class="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-mapa-ink">
+	<main id="main-content" class="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-mapa-ink">
 		<!-- Header -->
 		<div class="max-w-3xl mb-8">
-			<div class="flex items-center gap-2 mb-2">
+			<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs font-sans text-mapa-muted mb-3">
+				<a href="/" class="hover:text-mapa-green transition-colors">Home</a>
+				<span>/</span>
+				<a href="/tools" class="hover:text-mapa-green transition-colors">Tools</a>
+				<span>/</span>
+				<span class="text-mapa-ink font-semibold">Expressway Toll Calculator</span>
+			</nav>
+			<div class="flex flex-wrap items-center gap-2 mb-2">
 				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
 					Expressway & Toll Utility
 				</span>
-				<span class="font-sans text-xs text-mapa-clay">
+				<span class="font-sans text-xs text-mapa-muted">
 					Official TRB Regulated Tariffs
 				</span>
 			</div>
@@ -991,11 +998,6 @@ const TRIP_PRESETS = [
 				calculateToll();
 			};
 
-			// Handle plaza selection from schematic node or map marker
-			function handlePlazaClick(plazaId) {
-				window.setTollPlaza(plazaId, currentTollTargetMode);
-			}
-
 			// Populate Entry and Exit dropdowns for active expressway
 			function populatePlazaDropdowns() {
 				const exp = getActiveExpressway();
@@ -1265,7 +1267,7 @@ const TRIP_PRESETS = [
 			}
 
 			// Render dynamic itinerary list of traversed plazas
-			function renderItinerary(exp, entryIdx, exitIdx, distKm, fee) {
+			function renderItinerary(exp, entryIdx, exitIdx, distKm) {
 				if (!tollItineraryList) return;
 				tollItineraryList.innerHTML = '';
 
@@ -1321,7 +1323,7 @@ const TRIP_PRESETS = [
 					}
 
 					const right = document.createElement('span');
-					right.className = 'text-[11px] font-mono text-mapa-clay';
+					right.className = 'text-[11px] font-mono text-mapa-muted';
 					right.textContent = `km ${plaza.km.toFixed(1)}`;
 
 					row.appendChild(left);
@@ -1392,7 +1394,7 @@ const TRIP_PRESETS = [
 				if (summaryTollMetric) summaryTollMetric.textContent = `${distKm.toFixed(1)} km • ₱${fee.toFixed(2)}`;
 
 				renderSchematicStrip();
-				renderItinerary(exp, entryIdx, exitIdx, distKm, fee);
+				renderItinerary(exp, entryIdx, exitIdx, distKm);
 
 				if (currentView === 'geo' && map) {
 					initOrUpdateGeoMap();

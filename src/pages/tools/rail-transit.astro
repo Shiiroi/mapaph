@@ -249,14 +249,21 @@ const TRANSFER_HUBS = [
 
 	<Navbar />
 
-	<main class="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-mapa-ink">
+	<main id="main-content" class="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-mapa-ink">
 		<!-- Header -->
 		<div class="max-w-3xl mb-8">
-			<div class="flex items-center gap-2 mb-2">
+			<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs font-sans text-mapa-muted mb-3">
+				<a href="/" class="hover:text-mapa-green transition-colors">Home</a>
+				<span>/</span>
+				<a href="/tools" class="hover:text-mapa-green transition-colors">Tools</a>
+				<span>/</span>
+				<span class="text-mapa-ink font-semibold">Rail Transit Map</span>
+			</nav>
+			<div class="flex flex-wrap items-center gap-2 mb-2">
 				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
 					Transit & Mobility Utility
 				</span>
-				<span class="font-sans text-xs text-mapa-clay">
+				<span class="font-sans text-xs text-mapa-muted">
 					Official DOTr & LRTA Matrices
 				</span>
 			</div>
@@ -755,12 +762,12 @@ const TRANSFER_HUBS = [
 							<span class="text-[10px] text-mapa-clay">North Ave ↔ Taft Ave</span>
 						</button>
 						<button
-							class="preset-btn px-2.5 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-all text-left"
-							data-origin="lrt1_roosevelt"
+							class="preset-btn px-2.5 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-all text-left cursor-pointer"
+							data-origin="lrt1_fpj"
 							data-dest="lrt1_baclaran"
 						>
 							<span class="font-bold text-mapa-ink block">LRT-1 Classic Trunk</span>
-							<span class="text-[10px] text-mapa-clay">FPJ ↔ Baclaran</span>
+							<span class="text-[10px] text-mapa-muted">FPJ ↔ Baclaran</span>
 						</button>
 						<button
 							class="preset-btn px-2.5 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-all text-left"
@@ -1963,7 +1970,6 @@ const TRANSFER_HUBS = [
 						totalTravelTime += (leg.stops * (leg.line === 'mrt3' ? 2.5 : leg.line === 'lrt1' ? 2.3 : 2.8));
 
 						const legFareBeep = hasDiscount ? (fareObj.beepFare * 0.8) : fareObj.beepFare;
-						const legFareSjt = hasDiscount ? (fareObj.sjtFare * 0.8) : fareObj.sjtFare;
 
 						itineraryHtml += `
 							<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/50">
@@ -1973,16 +1979,21 @@ const TRANSFER_HUBS = [
 										<span class="font-bold text-mapa-ink">${legIdx + 1}. Ride ${leg.line.toUpperCase()}: ${leg.from.name} ➔ ${leg.to.name}</span>
 										<span class="text-[11px] font-bold text-emerald-800">₱${legFareBeep.toFixed(2)}</span>
 									</div>
-									<div class="text-mapa-clay text-[11px]">
+									<div class="text-mapa-muted text-[11px]">
 										${leg.stops} ${leg.stops === 1 ? 'stop' : 'stops'} &bull; ${leg.dist.toFixed(1)} km &bull; ~${Math.round(leg.time)} mins
 									</div>
 								</div>
 							</div>
 						`;
 
-						leg.stations.forEach(st => {
-							allPolylineCoords.push([st.lat, st.lon]);
-						});
+						const curvedCoords = geoSlice(leg.line, leg.from.id, leg.to.id);
+						if (curvedCoords.length > 0) {
+							curvedCoords.forEach(ll => allPolylineCoords.push(ll));
+						} else {
+							leg.stations.forEach(st => {
+								allPolylineCoords.push([st.lat, st.lon]);
+							});
+						}
 					} else if (leg.type === 'walk') {
 						transferWalkCount++;
 						transferWalkways.push(leg.name);

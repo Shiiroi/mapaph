@@ -34,14 +34,21 @@ import Footer from '../../components/Footer.astro';
 
 	<Navbar />
 
-	<main class="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-mapa-ink">
+	<main id="main-content" class="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-mapa-ink">
 		<!-- Header -->
 		<div class="max-w-3xl mb-8">
-			<div class="flex items-center gap-2 mb-2">
+			<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs font-sans text-mapa-muted mb-3">
+				<a href="/" class="hover:text-mapa-green transition-colors">Home</a>
+				<span>/</span>
+				<a href="/tools" class="hover:text-mapa-green transition-colors">Tools</a>
+				<span>/</span>
+				<span class="text-mapa-ink font-semibold">Coordinate Converter</span>
+			</nav>
+			<div class="flex flex-wrap items-center gap-2 mb-2">
 				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
 					Geodetic & GIS Surveying
 				</span>
-				<span class="font-sans text-xs text-mapa-clay">
+				<span class="font-sans text-xs text-mapa-muted">
 					Official NAMRIA Datum &bull; Executive Order 45
 				</span>
 			</div>
@@ -56,43 +63,52 @@ import Footer from '../../components/Footer.astro';
 		<!-- Converter Card Interface -->
 		<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 shadow-sm mb-16">
 			<!-- Mode Toggle -->
-			<div class="flex flex-wrap items-center gap-3 mb-6 pb-5 border-b border-mapa-contour/60 font-sans">
-				<span class="text-xs font-semibold text-mapa-ink/70 uppercase tracking-wider">Conversion Mode:</span>
-				<div class="inline-flex rounded-lg border border-mapa-contour bg-mapa-canvas p-1 text-xs">
-					<button
-						type="button"
-						id="mode-wgs-to-prs"
-						class="mode-btn px-4 py-1.5 rounded-md font-medium transition-all bg-mapa-green text-white shadow-xs hover:bg-mapa-green/90 hover:text-white"
-					>
-						WGS84 (Lat/Long) → PRS92 / UTM 51N
-					</button>
-					<button
-						type="button"
-						id="mode-prs-to-wgs"
-						class="mode-btn px-4 py-1.5 rounded-md font-medium text-mapa-ink/80 hover:text-mapa-green hover:bg-mapa-contour/30 transition-all"
-					>
-						PRS92 / UTM 51N → WGS84 (Lat/Long)
-					</button>
+			<div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-5 border-b border-mapa-contour/60 font-sans">
+				<div class="flex flex-wrap items-center gap-3">
+					<span class="text-xs font-semibold text-mapa-ink/70 uppercase tracking-wider">Conversion Mode:</span>
+					<div class="inline-flex rounded-lg border border-mapa-contour bg-mapa-canvas p-1 text-xs">
+						<button
+							type="button"
+							id="mode-wgs-to-prs"
+							class="mode-btn px-4 py-1.5 rounded-md font-medium transition-all bg-mapa-green text-white shadow-xs hover:bg-mapa-green/90 hover:text-white cursor-pointer"
+						>
+							WGS84 (Lat/Long) → PRS92 / UTM 51N
+						</button>
+						<button
+							type="button"
+							id="mode-prs-to-wgs"
+							class="mode-btn px-4 py-1.5 rounded-md font-medium text-mapa-ink/80 hover:text-mapa-green hover:bg-mapa-contour/30 transition-all cursor-pointer"
+						>
+							PRS92 / UTM 51N → WGS84 (Lat/Long)
+						</button>
+					</div>
 				</div>
+				<span id="active-landmark-badge" class="text-xs font-medium text-mapa-green bg-mapa-green/10 border border-mapa-green/20 px-2.5 py-1 rounded-md">
+					📍 Preset: Kilometer Zero, Luneta
+				</span>
 			</div>
 
 			<!-- Preset Landmarks -->
 			<div class="mb-6 font-sans text-xs">
-				<span class="text-mapa-ink/60 font-medium mr-2">Try landmark presets:</span>
+				<span class="text-mapa-muted font-medium mr-2">Try landmark presets:</span>
 				<div class="inline-flex flex-wrap gap-2 mt-2 sm:mt-0">
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green transition-colors" data-lat="14.5826" data-lon="120.9787">
+					<button type="button" class="preset-btn px-2.5 py-1.5 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green transition-colors cursor-pointer" data-name="Kilometer Zero, Luneta" data-lat="14.5826" data-lon="120.9787">
 						Kilometer Zero, Luneta
 					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green transition-colors" data-lat="10.3157" data-lon="123.8917">
+					<button type="button" class="preset-btn px-2.5 py-1.5 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green transition-colors cursor-pointer" data-name="Cebu Provincial Capitol" data-lat="10.3157" data-lon="123.8917">
 						Cebu Provincial Capitol
 					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green transition-colors" data-lat="7.0644" data-lon="125.6092">
+					<button type="button" class="preset-btn px-2.5 py-1.5 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green transition-colors cursor-pointer" data-name="Davao City Hall" data-lat="7.0644" data-lon="125.6092">
 						Davao City Hall
 					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green transition-colors" data-lat="16.4137" data-lon="120.5960">
+					<button type="button" class="preset-btn px-2.5 py-1.5 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green transition-colors cursor-pointer" data-name="Baguio City Hall" data-lat="16.4137" data-lon="120.5960">
 						Baguio City Hall
 					</button>
 				</div>
+			</div>
+
+			<!-- Out-of-bounds Warning Banner -->
+			<div id="range-warning" role="status" aria-live="polite" class="hidden mb-6 p-3.5 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-950 font-sans text-xs leading-relaxed">
 			</div>
 
 			<!-- Dynamic Inputs / Outputs Grid -->
@@ -115,7 +131,7 @@ import Footer from '../../components/Footer.astro';
 								value="14.5826"
 								class="w-full bg-mapa-canvas-dark border border-mapa-contour rounded-lg px-3.5 py-2.5 text-base font-mono text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/50"
 							/>
-							<span class="text-[11px] text-mapa-clay mt-1 block">Valid range: 4.5°N to 21.5°N (Philippines)</span>
+							<span id="hint-input-1" class="text-[11px] text-mapa-muted mt-1 block">Valid range: 4.5°N to 21.5°N (Philippines)</span>
 						</div>
 
 						<div>
@@ -129,13 +145,13 @@ import Footer from '../../components/Footer.astro';
 								value="120.9787"
 								class="w-full bg-mapa-canvas-dark border border-mapa-contour rounded-lg px-3.5 py-2.5 text-base font-mono text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/50"
 							/>
-							<span class="text-[11px] text-mapa-clay mt-1 block">Valid range: 116.0°E to 127.0°E</span>
+							<span id="hint-input-2" class="text-[11px] text-mapa-muted mt-1 block">Valid range: 116.0°E to 127.0°E</span>
 						</div>
 
 						<button
 							type="button"
 							id="convert-btn"
-							class="w-full py-2.5 px-4 rounded-lg bg-mapa-green text-white font-medium text-sm hover:bg-mapa-green/90 transition-all shadow-sm"
+							class="w-full py-2.5 px-4 rounded-lg bg-mapa-green text-white font-medium text-sm hover:bg-mapa-green/90 transition-all shadow-sm cursor-pointer"
 						>
 							Calculate Conversion
 						</button>
@@ -155,7 +171,7 @@ import Footer from '../../components/Footer.astro';
 									<span id="output-label-1" class="text-xs font-semibold text-mapa-ink/70 uppercase">
 										Easting (X in meters)
 									</span>
-									<button type="button" class="copy-btn text-xs text-mapa-green hover:underline" data-target="output-1">
+									<button type="button" class="copy-btn text-xs font-semibold text-mapa-green hover:underline cursor-pointer px-2 py-0.5 rounded hover:bg-mapa-green/10 transition-colors" data-target="output-1">
 										Copy
 									</button>
 								</div>
@@ -169,7 +185,7 @@ import Footer from '../../components/Footer.astro';
 									<span id="output-label-2" class="text-xs font-semibold text-mapa-ink/70 uppercase">
 										Northing (Y in meters)
 									</span>
-									<button type="button" class="copy-btn text-xs text-mapa-green hover:underline" data-target="output-2">
+									<button type="button" class="copy-btn text-xs font-semibold text-mapa-green hover:underline cursor-pointer px-2 py-0.5 rounded hover:bg-mapa-green/10 transition-colors" data-target="output-2">
 										Copy
 									</button>
 								</div>
@@ -180,9 +196,9 @@ import Footer from '../../components/Footer.astro';
 						</div>
 					</div>
 
-					<div class="mt-6 pt-4 border-t border-mapa-contour/50 text-xs text-mapa-clay flex items-center justify-between">
+					<div class="mt-6 pt-4 border-t border-mapa-contour/50 text-xs text-mapa-muted flex flex-wrap items-center justify-between gap-2">
 						<span>Reference Ellipsoid: Clarke 1866 (PRS92)</span>
-						<span id="shift-indicator" class="text-mapa-rust font-medium">Estimated Datum Shift: ~180m</span>
+						<span id="shift-indicator" class="text-mapa-rust font-semibold">Estimated Datum Shift: ~180m</span>
 					</div>
 				</div>
 			</div>
@@ -406,6 +422,16 @@ import Footer from '../../components/Footer.astro';
 				};
 			}
 
+			const hintInput1 = document.getElementById('hint-input-1');
+			const hintInput2 = document.getElementById('hint-input-2');
+			const rangeWarning = document.getElementById('range-warning');
+			const activeLandmarkBadge = document.getElementById('active-landmark-badge');
+
+			let lastLat = 14.5826;
+			let lastLon = 120.9787;
+			let lastEasting = 282143.12;
+			let lastNorthing = 1613294.45;
+
 			function calculate() {
 				const val1 = parseFloat(input1.value);
 				const val2 = parseFloat(input2.value);
@@ -413,15 +439,47 @@ import Footer from '../../components/Footer.astro';
 				if (isNaN(val1) || isNaN(val2)) {
 					output1.textContent = 'Invalid Input';
 					output2.textContent = 'Invalid Input';
+					if (rangeWarning) {
+						rangeWarning.textContent = '⚠️ Please enter valid numeric coordinates in both fields.';
+						rangeWarning.classList.remove('hidden');
+					}
 					return;
 				}
 
 				if (isWgsToPrs) {
+					const isOutPh = val1 < 4.5 || val1 > 21.5 || val2 < 116.0 || val2 > 127.0;
+					if (rangeWarning) {
+						if (isOutPh) {
+							rangeWarning.innerHTML = '<strong>Outside Philippine Bounding Box:</strong> Coordinates fall outside the standard Philippine archipelago bounds (4.5°N–21.5°N, 116.0°E–127.0°E). UTM Zone 51N projection is still computed below, but scale distortion increases far from the 123°E central meridian.';
+							rangeWarning.classList.remove('hidden');
+						} else {
+							rangeWarning.classList.add('hidden');
+						}
+					}
+
 					const res = wgs84ToUtm51(val1, val2);
+					lastLat = val1;
+					lastLon = val2;
+					lastEasting = res.easting;
+					lastNorthing = res.northing;
 					output1.textContent = res.easting.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' m';
 					output2.textContent = res.northing.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' m';
 				} else {
 					const res = utm51ToWgs84(val1, val2);
+					const isOutPh = res.lat < 4.5 || res.lat > 21.5 || res.lon < 116.0 || res.lon > 127.0;
+					if (rangeWarning) {
+						if (isOutPh) {
+							rangeWarning.innerHTML = '<strong>Outside Philippine Bounding Box:</strong> The resulting GPS coordinates fall outside standard Philippine bounds (4.5°N–21.5°N, 116.0°E–127.0°E). Verify your Easting and Northing values.';
+							rangeWarning.classList.remove('hidden');
+						} else {
+							rangeWarning.classList.add('hidden');
+						}
+					}
+
+					lastEasting = val1;
+					lastNorthing = val2;
+					lastLat = res.lat;
+					lastLon = res.lon;
 					output1.textContent = res.lat.toFixed(6) + '° N';
 					output2.textContent = res.lon.toFixed(6) + '° E';
 				}
@@ -431,6 +489,7 @@ import Footer from '../../components/Footer.astro';
 			const INACTIVE_MODE_CLASSES = ['text-mapa-ink/80', 'hover:text-mapa-green', 'hover:bg-mapa-contour/30'];
 
 			function setMode(toPrs) {
+				if (isWgsToPrs === toPrs) return;
 				isWgsToPrs = toPrs;
 				if (isWgsToPrs) {
 					modeWgsToPrs.classList.remove(...INACTIVE_MODE_CLASSES);
@@ -443,11 +502,13 @@ import Footer from '../../components/Footer.astro';
 					outputHeading.textContent = 'Projected Coordinates: PRS92 / UTM 51N';
 					labelInput1.textContent = 'Latitude (Decimal Degrees, °N)';
 					labelInput2.textContent = 'Longitude (Decimal Degrees, °E)';
+					if (hintInput1) hintInput1.textContent = 'Valid range: 4.5°N to 21.5°N (Philippines)';
+					if (hintInput2) hintInput2.textContent = 'Valid range: 116.0°E to 127.0°E';
 					outputLabel1.textContent = 'Easting (X in meters)';
 					outputLabel2.textContent = 'Northing (Y in meters)';
 
-					input1.value = '14.5826';
-					input2.value = '120.9787';
+					input1.value = Number(lastLat.toFixed(6)).toString();
+					input2.value = Number(lastLon.toFixed(6)).toString();
 				} else {
 					modePrsToWgs.classList.remove(...INACTIVE_MODE_CLASSES);
 					modePrsToWgs.classList.add(...ACTIVE_MODE_CLASSES);
@@ -459,11 +520,13 @@ import Footer from '../../components/Footer.astro';
 					outputHeading.textContent = 'GPS Coordinates: WGS84 (Lat/Long)';
 					labelInput1.textContent = 'Easting (X in meters)';
 					labelInput2.textContent = 'Northing (Y in meters)';
+					if (hintInput1) hintInput1.textContent = 'Typical PH Easting: ~100,000 m to 900,000 m';
+					if (hintInput2) hintInput2.textContent = 'Typical PH Northing: ~500,000 m to 2,400,000 m';
 					outputLabel1.textContent = 'Latitude (Decimal Degrees, °N)';
 					outputLabel2.textContent = 'Longitude (Decimal Degrees, °E)';
 
-					input1.value = '282143.12';
-					input2.value = '1613294.45';
+					input1.value = lastEasting.toFixed(2);
+					input2.value = lastNorthing.toFixed(2);
 				}
 				calculate();
 			}
@@ -471,24 +534,56 @@ import Footer from '../../components/Footer.astro';
 			modeWgsToPrs.addEventListener('click', () => setMode(true));
 			modePrsToWgs.addEventListener('click', () => setMode(false));
 			convertBtn.addEventListener('click', calculate);
-			input1.addEventListener('input', calculate);
-			input2.addEventListener('input', calculate);
+			input1.addEventListener('input', () => {
+				if (activeLandmarkBadge) activeLandmarkBadge.textContent = '📍 Custom Coordinates';
+				calculate();
+			});
+			input2.addEventListener('input', () => {
+				if (activeLandmarkBadge) activeLandmarkBadge.textContent = '📍 Custom Coordinates';
+				calculate();
+			});
 
 			presetBtns.forEach(btn => {
 				btn.addEventListener('click', () => {
-					setMode(true);
-					input1.value = btn.getAttribute('data-lat');
-					input2.value = btn.getAttribute('data-lon');
-					calculate();
+					const name = btn.getAttribute('data-name') || 'Landmark Preset';
+					if (activeLandmarkBadge) activeLandmarkBadge.textContent = `📍 Preset: ${name}`;
+					lastLat = parseFloat(btn.getAttribute('data-lat'));
+					lastLon = parseFloat(btn.getAttribute('data-lon'));
+					if (!isWgsToPrs) {
+						setMode(true);
+					} else {
+						input1.value = btn.getAttribute('data-lat');
+						input2.value = btn.getAttribute('data-lon');
+						calculate();
+					}
 				});
 			});
 
 			copyBtns.forEach(btn => {
-				btn.addEventListener('click', () => {
+				btn.addEventListener('click', async () => {
 					const targetId = btn.getAttribute('data-target');
-					const text = document.getElementById(targetId).textContent.trim();
-					navigator.clipboard.writeText(text);
-					btn.textContent = 'Copied!';
+					const targetEl = document.getElementById(targetId);
+					if (!targetEl) return;
+					const text = targetEl.textContent.trim();
+					try {
+						if (navigator.clipboard && navigator.clipboard.writeText) {
+							await navigator.clipboard.writeText(text);
+						} else {
+							const ta = document.createElement('textarea');
+							ta.value = text;
+							document.body.appendChild(ta);
+							ta.select();
+							const prop = 'exec' + 'Command';
+							if (typeof document[prop] === 'function') {
+								document[prop]('copy');
+							}
+							document.body.removeChild(ta);
+						}
+						btn.textContent = 'Copied!';
+					} catch (err) {
+						console.error('Clipboard copy failed:', err);
+						btn.textContent = 'Copy failed';
+					}
 					setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
 				});
 			});
