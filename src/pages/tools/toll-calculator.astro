@@ -567,6 +567,24 @@ const TRIP_PRESETS = [
 							</div>
 						</div>
 
+						<!-- Official Regulatory Citation Link -->
+						<div class="flex items-center justify-between pt-0.5 pb-2 border-b border-mapa-contour/30 text-xs">
+							<span class="text-mapa-clay text-[11px] flex items-center gap-1">
+								<span>⚖️ Regulated Tariff:</span>
+								<span class="font-semibold text-mapa-ink">Toll Regulatory Board (TRB)</span>
+							</span>
+							<a
+								href="https://trb.gov.ph/index.php/toll-rates/"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="text-mapa-green hover:underline font-bold text-[11px] flex items-center gap-1"
+								title="View official TRB Approved Toll Rate Directory"
+							>
+								<span>Official TRB Schedule</span>
+								<span>&rarr;</span>
+							</a>
+						</div>
+
 						<!-- Distance, Rate & Kilometer Metrics -->
 						<div class="grid grid-cols-3 gap-2 text-center text-xs">
 							<div class="bg-mapa-canvas-dark border border-mapa-contour/50 rounded-lg p-2.5">
@@ -772,28 +790,56 @@ const TRIP_PRESETS = [
 			<!-- Section 4: Official Statutory Citations & Sources -->
 			<section class="border-t border-mapa-contour/50 pt-8 mt-8 font-sans">
 				<h2 class="font-serif text-2xl font-bold text-mapa-ink tracking-tight mb-4">
-					4. Official Statutory Citations & Concessionaire Sources
+					4. Official Statutory Citations & Concessionaire Tariff Matrices
 				</h2>
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-mapa-ink/80 leading-relaxed">
-					<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5">
-						<div class="font-bold text-sm text-mapa-ink">Toll Regulatory Board (TRB)</div>
-						<p>Official Approved Toll Rate Schedules & Vehicle Classification Matrix under Presidential Decree No. 1112 and Republic Act No. 2000.</p>
-						<p class="text-[11px] text-mapa-clay">Department of Transportation (DOTr) Attached Agency (<a href="https://trb.gov.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green hover:underline">trb.gov.ph</a>).</p>
+					<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5 flex flex-col justify-between">
+						<div>
+							<div class="font-bold text-sm text-mapa-ink">Toll Regulatory Board (TRB)</div>
+							<p>Official Approved Toll Rate Schedules & Vehicle Classification Matrix under Presidential Decree No. 1112 and Republic Act No. 2000.</p>
+						</div>
+						<div class="pt-2 border-t border-mapa-contour/40">
+							<a href="https://trb.gov.ph/index.php/toll-rates/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1">
+								<span>TRB Toll Rate Schedule Directory</span>
+								<span>&rarr;</span>
+							</a>
+						</div>
 					</div>
-					<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5">
-						<div class="font-bold text-sm text-mapa-ink">San Miguel Corporation Infrastructure (SMC)</div>
-						<p>Official concessionaire for South Luzon Expressway (SLEX), Skyway Stages 1–3, NAIA Expressway (NAIAX), TPLEX, MCX, and STAR Tollway.</p>
-						<p class="text-[11px] text-mapa-clay">Autosweep RFID Operations (<a href="https://autosweeprfid.com" target="_blank" rel="noopener noreferrer" class="text-mapa-green hover:underline">autosweeprfid.com</a>).</p>
+					<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5 flex flex-col justify-between">
+						<div>
+							<div class="font-bold text-sm text-mapa-ink">San Miguel Corporation Infrastructure (SMC)</div>
+							<p>Official concessionaire for South Luzon Expressway (SLEX), Skyway Stages 1–3, NAIA Expressway (NAIAX), TPLEX, MCX, and STAR Tollway.</p>
+						</div>
+						<div class="pt-2 border-t border-mapa-contour/40">
+							<a href="https://autosweeprfid.com/v2/toll-rates" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1">
+								<span>Autosweep RFID Official Toll Rates</span>
+								<span>&rarr;</span>
+							</a>
+						</div>
 					</div>
-					<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5">
-						<div class="font-bold text-sm text-mapa-ink">Metro Pacific Tollways Corporation (MPTC)</div>
-						<p>Official concessionaire for North Luzon Expressway (NLEX), Subic–Clark–Tarlac Expressway (SCTEX), CAVITEX, CALAX, and C5 South Link.</p>
-						<p class="text-[11px] text-mapa-clay">Easytrip Services Corporation (<a href="https://easytrip.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green hover:underline">easytrip.ph</a> / MPT DriveHub).</p>
+					<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5 flex flex-col justify-between">
+						<div>
+							<div class="font-bold text-sm text-mapa-ink">Metro Pacific Tollways Corporation (MPTC)</div>
+							<p>Official concessionaire for North Luzon Expressway (NLEX), Subic–Clark–Tarlac Expressway (SCTEX), CAVITEX, CALAX, and C5 South Link.</p>
+						</div>
+						<div class="pt-2 border-t border-mapa-contour/40">
+							<a href="https://nlex.com.ph/toll-rates/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1">
+								<span>NLEX & SCTEX Official Tariff Matrix</span>
+								<span>&rarr;</span>
+							</a>
+						</div>
 					</div>
-					<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5">
-						<div class="font-bold text-sm text-mapa-ink">Cebu Cordova Link Expressway Corporation (CCLEC)</div>
-						<p>Official concessionaire and operator of CCLEX (Cebu–Cordova Bridge Expressway).</p>
-						<p class="text-[11px] text-mapa-clay">Metro Pacific Tollways Regional Concession (<a href="https://cclex.com.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green hover:underline">cclex.com.ph</a>).</p>
+					<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5 flex flex-col justify-between">
+						<div>
+							<div class="font-bold text-sm text-mapa-ink">Cebu Cordova Link Expressway Corporation (CCLEC)</div>
+							<p>Official concessionaire and operator of CCLEX (Cebu–Cordova Bridge Expressway).</p>
+						</div>
+						<div class="pt-2 border-t border-mapa-contour/40">
+							<a href="https://cclex.com.ph/toll-rates/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1">
+								<span>CCLEX Official Bridge Toll Table</span>
+								<span>&rarr;</span>
+							</a>
+						</div>
 					</div>
 				</div>
 			</section>
@@ -898,19 +944,56 @@ const TRIP_PRESETS = [
 				});
 			}
 
-			// Handle plaza selection from schematic node or map marker
-			function handlePlazaClick(plazaId) {
-				if (currentTollTargetMode === 'entry') {
+			// Highway Waypoints for realistic road curvature on geographic map
+			const EXPRESSWAY_GEO_WAYPOINTS = {
+				slex: [
+					[14.5422, 121.0194], [14.5180, 121.0250], [14.4850, 121.0450], [14.4550, 121.0430],
+					[14.4150, 121.0420], [14.3750, 121.0480], [14.3500, 121.0550], [14.3200, 121.0650],
+					[14.2900, 121.0600], [14.2650, 121.0800], [14.2400, 121.0950], [14.2150, 121.1100],
+					[14.1900, 121.1250], [14.1800, 121.1350], [14.1650, 121.1450], [14.1100, 121.1600]
+				],
+				nlex: [
+					[14.6580, 121.0030], [14.7150, 120.9850], [14.7400, 120.9600], [14.7700, 120.9400],
+					[14.8100, 120.9150], [14.8350, 120.9000], [14.8600, 120.8750], [14.8950, 120.8300],
+					[14.9850, 120.7300], [15.0350, 120.6800], [15.0750, 120.6900], [15.1450, 120.6100],
+					[15.1850, 120.5850], [15.2250, 120.5700]
+				],
+				skyway: [
+					[14.4150, 121.0420], [14.4550, 121.0430], [14.4850, 121.0450], [14.5422, 121.0194],
+					[14.5600, 121.0050], [14.5800, 120.9980], [14.5950, 121.0020], [14.6280, 121.0120],
+					[14.6600, 121.0050]
+				]
+			};
+
+			let activeRouteHighlightPolyline = null;
+
+			// Global public handler for setting plazas from buttons or popups
+			window.setTollPlaza = function (plazaId, targetMode) {
+				if (targetMode === 'entry') {
 					currentEntryId = plazaId;
 					entrySelect.value = plazaId;
-					// Automatically switch to exit mode for intuitive sequential selection
 					currentTollTargetMode = 'exit';
 					updateTargetModeUI();
-				} else {
+				} else if (targetMode === 'exit') {
 					currentExitId = plazaId;
 					exitSelect.value = plazaId;
+				} else {
+					if (currentTollTargetMode === 'entry') {
+						currentEntryId = plazaId;
+						entrySelect.value = plazaId;
+						currentTollTargetMode = 'exit';
+						updateTargetModeUI();
+					} else {
+						currentExitId = plazaId;
+						exitSelect.value = plazaId;
+					}
 				}
 				calculateToll();
+			};
+
+			// Handle plaza selection from schematic node or map marker
+			function handlePlazaClick(plazaId) {
+				window.setTollPlaza(plazaId, currentTollTargetMode);
 			}
 
 			// Populate Entry and Exit dropdowns for active expressway
@@ -940,7 +1023,7 @@ const TRIP_PRESETS = [
 				}
 			}
 
-			// Render the Schematic Highway Strip
+			// Render the Schematic Highway Strip with alternating non-overlapping cards
 			function renderSchematicStrip() {
 				const exp = getActiveExpressway();
 				const entryIdx = exp.plazas.findIndex(p => p.id === currentEntryId);
@@ -950,78 +1033,135 @@ const TRIP_PRESETS = [
 
 				schematicCanvas.innerHTML = '';
 
-				// Outer flex ribbon wrapper
+				// Outer flex strip container with generous scrollable width
 				const stripContainer = document.createElement('div');
-				stripContainer.className = 'flex items-center min-w-[700px] py-4 relative';
+				stripContainer.className = 'flex items-center min-w-max px-10 py-10 relative select-none';
 
-				// Main connecting track line
+				const nodeWidth = 125;
+				const totalWidth = exp.plazas.length * nodeWidth;
+				stripContainer.style.minWidth = `${totalWidth + 100}px`;
+
+				// Continuous Center Highway Track
 				const trackLine = document.createElement('div');
-				trackLine.className = 'absolute left-6 right-6 top-1/2 -translate-y-1/2 h-2.5 bg-stone-300 rounded-full z-0';
+				trackLine.className = 'absolute left-10 right-10 top-1/2 -translate-y-1/2 h-3 bg-stone-300 dark:bg-stone-700 rounded-full z-0';
 				stripContainer.appendChild(trackLine);
 
-				// Active highlight portion of the track line
+				// Active Highlight Track Segment spanning from entry node to exit node
 				if (entryIdx !== -1 && exitIdx !== -1 && minIdx !== maxIdx) {
-					const pctStart = (minIdx / (exp.plazas.length - 1)) * 100;
-					const pctEnd = (maxIdx / (exp.plazas.length - 1)) * 100;
+					const leftPx = 40 + (minIdx * nodeWidth) + (nodeWidth / 2);
+					const rightPx = 40 + (maxIdx * nodeWidth) + (nodeWidth / 2);
+					const widthPx = rightPx - leftPx;
+
 					const activeHighlight = document.createElement('div');
-					activeHighlight.className = 'absolute top-1/2 -translate-y-1/2 h-3.5 bg-emerald-500 rounded-full z-1 transition-all shadow-sm';
-					activeHighlight.style.left = `calc(${pctStart}% + 12px)`;
-					activeHighlight.style.width = `calc(${pctEnd - pctStart}% - 24px)`;
+					activeHighlight.className = 'absolute top-1/2 -translate-y-1/2 h-3.5 bg-emerald-500 rounded-full z-1 transition-all shadow-md';
+					activeHighlight.style.left = `${leftPx}px`;
+					activeHighlight.style.width = `${widthPx}px`;
 					stripContainer.appendChild(activeHighlight);
 				}
 
-				// Plazas nodes
+				// Plaza Nodes: Alternating Top and Bottom to completely eliminate label squishing
 				exp.plazas.forEach((plaza, idx) => {
 					const isEntry = plaza.id === currentEntryId;
 					const isExit = plaza.id === currentExitId;
-					const isIntermediate = idx > minIdx && idx < maxIdx;
+					const isIntermediate = idx >= minIdx && idx <= maxIdx;
+					const isTop = idx % 2 === 0;
 
-					const nodeWrapper = document.createElement('div');
-					nodeWrapper.className = 'flex-1 flex flex-col items-center relative z-10 cursor-pointer group';
-					nodeWrapper.title = `Click to set as ${currentTollTargetMode === 'entry' ? '🟢 ENTRY' : '🔴 EXIT'}: ${plaza.name}`;
+					const col = document.createElement('div');
+					col.className = 'w-[125px] shrink-0 flex flex-col items-center relative z-10';
 
-					// Pin icon circle
-					const pin = document.createElement('div');
+					// Plaza Card
+					const card = document.createElement('div');
+					card.className = `w-[115px] p-2.5 rounded-xl border text-center transition-all cursor-pointer shadow-2xs ${
+						isEntry ? 'bg-emerald-500/15 border-emerald-600 ring-2 ring-emerald-500/40 shadow-xs' :
+						isExit ? 'bg-rose-500/15 border-rose-600 ring-2 ring-rose-500/40 shadow-xs' :
+						isIntermediate ? 'bg-emerald-500/10 border-emerald-500/40' :
+						plaza.isBarrier ? 'bg-amber-500/10 border-amber-500/40 hover:border-amber-500' :
+						'bg-mapa-canvas border-mapa-contour/70 hover:border-mapa-green hover:shadow-xs'
+					}`;
+					card.title = `Click to set as ${currentTollTargetMode.toUpperCase()}: ${plaza.name}`;
+
+					let badgeHtml = '';
 					if (isEntry) {
-						pin.className = 'w-6 h-6 rounded-full bg-emerald-600 border-2 border-white shadow-md flex items-center justify-center text-white text-[10px] font-bold ring-4 ring-emerald-500/30';
-						pin.textContent = '🟢';
+						badgeHtml = '<span class="inline-block text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded-full bg-emerald-600 text-white shadow-2xs">🟢 ENTRY</span>';
 					} else if (isExit) {
-						pin.className = 'w-6 h-6 rounded-full bg-rose-600 border-2 border-white shadow-md flex items-center justify-center text-white text-[10px] font-bold ring-4 ring-rose-500/30';
-						pin.textContent = '🔴';
+						badgeHtml = '<span class="inline-block text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded-full bg-rose-600 text-white shadow-2xs">🔴 EXIT</span>';
 					} else if (plaza.isBarrier) {
-						pin.className = `w-4 h-4 rounded bg-amber-500 border border-white shadow-sm flex items-center justify-center text-[8px] text-white font-bold ${isIntermediate ? 'ring-2 ring-amber-400' : ''}`;
-						pin.textContent = 'T';
+						badgeHtml = '<span class="inline-block text-[8px] font-bold uppercase px-1.5 py-0.5 rounded-full bg-amber-500 text-white shadow-2xs">BARRIER</span>';
 					} else {
-						pin.className = `w-3.5 h-3.5 rounded-full border-2 border-white shadow-xs transition-all ${isIntermediate ? 'bg-emerald-400' : 'bg-stone-400 group-hover:scale-125'}`;
+						badgeHtml = `<span class="inline-block text-[9px] font-mono font-semibold text-mapa-clay">km ${plaza.km.toFixed(0)}</span>`;
 					}
 
-					// Label above/below
-					const label = document.createElement('div');
-					label.className = `mt-2 text-[10px] text-center max-w-[75px] truncate font-medium transition-colors ${isEntry ? 'font-bold text-emerald-800' : isExit ? 'font-bold text-rose-800' : 'text-stone-600 group-hover:text-mapa-green'}`;
-					label.textContent = plaza.name.split(' (')[0];
+					const cleanName = plaza.name.split(' (')[0];
+					card.innerHTML = `
+						<div class="mb-1">${badgeHtml}</div>
+						<div class="text-[11px] font-bold text-mapa-ink leading-snug line-clamp-2" title="${plaza.name}">${cleanName}</div>
+						<div class="flex items-center justify-center gap-1 mt-2 pt-1.5 border-t border-mapa-contour/40">
+							<button type="button" class="btn-quick-entry px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-600/15 hover:bg-emerald-600 text-emerald-800 hover:text-white transition-all cursor-pointer shadow-2xs" data-id="${plaza.id}">🟢 In</button>
+							<button type="button" class="btn-quick-exit px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-600/15 hover:bg-rose-600 text-rose-800 hover:text-white transition-all cursor-pointer shadow-2xs" data-id="${plaza.id}">🔴 Out</button>
+						</div>
+					`;
 
-					const kmLabel = document.createElement('div');
-					kmLabel.className = 'text-[9px] text-stone-600 font-mono';
-					kmLabel.textContent = `km ${plaza.km.toFixed(0)}`;
-
-					nodeWrapper.appendChild(pin);
-					nodeWrapper.appendChild(label);
-					nodeWrapper.appendChild(kmLabel);
-
-					// Click interaction on schematic node
-					nodeWrapper.addEventListener('click', () => {
-						handlePlazaClick(plaza.id);
+					card.addEventListener('click', (e) => {
+						const inBtn = e.target.closest('.btn-quick-entry');
+						const outBtn = e.target.closest('.btn-quick-exit');
+						if (inBtn) {
+							window.setTollPlaza(plaza.id, 'entry');
+						} else if (outBtn) {
+							window.setTollPlaza(plaza.id, 'exit');
+						} else {
+							window.setTollPlaza(plaza.id, currentTollTargetMode);
+						}
 					});
 
-					stripContainer.appendChild(nodeWrapper);
+					// Connector line between card and track pin
+					const connector = document.createElement('div');
+					connector.className = `w-0.5 h-6 transition-colors ${
+						isIntermediate ? 'bg-emerald-500' : 'bg-stone-300 dark:bg-stone-600'
+					}`;
+
+					// Pin dot on center highway track
+					const pin = document.createElement('div');
+					if (isEntry) {
+						pin.className = 'w-6 h-6 rounded-full bg-emerald-600 border-2 border-white shadow-md flex items-center justify-center text-white text-[9px] font-bold ring-4 ring-emerald-500/30 cursor-pointer animate-pulse';
+						pin.textContent = '🟢';
+					} else if (isExit) {
+						pin.className = 'w-6 h-6 rounded-full bg-rose-600 border-2 border-white shadow-md flex items-center justify-center text-white text-[9px] font-bold ring-4 ring-rose-500/30 cursor-pointer animate-pulse';
+						pin.textContent = '🔴';
+					} else if (isIntermediate) {
+						pin.className = 'w-4 h-4 rounded-full bg-emerald-500 border-2 border-white shadow-sm ring-2 ring-emerald-400/40 cursor-pointer';
+					} else if (plaza.isBarrier) {
+						pin.className = 'w-4 h-4 rounded bg-amber-500 border border-white shadow-sm flex items-center justify-center text-[7px] text-white font-bold cursor-pointer';
+						pin.textContent = 'T';
+					} else {
+						pin.className = 'w-3.5 h-3.5 rounded-full bg-stone-400 border-2 border-white shadow-2xs hover:scale-125 transition-transform cursor-pointer';
+					}
+					pin.addEventListener('click', () => window.setTollPlaza(plaza.id, currentTollTargetMode));
+
+					// Equalizing Spacer to balance height
+					const spacer = document.createElement('div');
+					spacer.className = 'h-[95px] w-full pointer-events-none';
+
+					if (isTop) {
+						col.appendChild(card);
+						col.appendChild(connector);
+						col.appendChild(pin);
+						col.appendChild(spacer);
+					} else {
+						col.appendChild(spacer);
+						col.appendChild(pin);
+						col.appendChild(connector);
+						col.appendChild(card);
+					}
+
+					stripContainer.appendChild(col);
 				});
 
 				schematicCanvas.appendChild(stripContainer);
 			}
 
-			// Render Geographic Leaflet Map
+			// Render Geographic Leaflet Map with Instant Route Polyline
 			function initOrUpdateGeoMap() {
-				if (!map) {
+				if (!map && typeof L !== 'undefined') {
 					map = L.map('toll-geo-map', {
 						center: [14.65, 121.0],
 						zoom: 10,
@@ -1035,47 +1175,93 @@ const TRIP_PRESETS = [
 					}).addTo(map);
 				}
 
+				if (!map) return;
+
 				const exp = getActiveExpressway();
 
-				// Clear existing markers & polyline
+				// Clear existing layers
 				if (activeGeoPolyline) {
 					map.removeLayer(activeGeoPolyline);
 					activeGeoPolyline = null;
 				}
+				if (activeRouteHighlightPolyline) {
+					map.removeLayer(activeRouteHighlightPolyline);
+					activeRouteHighlightPolyline = null;
+				}
 				activeGeoMarkers.forEach(m => map.removeLayer(m));
 				activeGeoMarkers = [];
 
-				const coords = exp.plazas.map(p => [p.lat, p.lon]);
-
-				activeGeoPolyline = L.polyline(coords, {
+				// Base highway curve polyline
+				const baseCoords = EXPRESSWAY_GEO_WAYPOINTS[exp.id] || exp.plazas.map(p => [p.lat, p.lon]);
+				activeGeoPolyline = L.polyline(baseCoords, {
 					color: exp.color,
 					weight: 5,
-					opacity: 0.85
+					opacity: 0.55
 				}).addTo(map);
 
+				// Active Journey Polyline (Entry to Exit)
+				const entryIdx = exp.plazas.findIndex(p => p.id === currentEntryId);
+				const exitIdx = exp.plazas.findIndex(p => p.id === currentExitId);
+				const minIdx = Math.min(entryIdx, exitIdx);
+				const maxIdx = Math.max(entryIdx, exitIdx);
+
+				if (minIdx !== -1 && maxIdx !== -1) {
+					const routePlazas = exp.plazas.slice(minIdx, maxIdx + 1);
+					const routeCoords = routePlazas.map(p => [p.lat, p.lon]);
+
+					if (routeCoords.length >= 2) {
+						activeRouteHighlightPolyline = L.polyline(routeCoords, {
+							color: '#F59E0B',
+							weight: 7,
+							opacity: 0.95,
+							dashArray: '8, 8'
+						}).addTo(map);
+					}
+				}
+
+				// Plaza Markers on Map
 				exp.plazas.forEach(p => {
 					const isEntry = p.id === currentEntryId;
 					const isExit = p.id === currentExitId;
+					const isIntermediate = minIdx !== -1 && maxIdx !== -1 && exp.plazas.indexOf(p) >= minIdx && exp.plazas.indexOf(p) <= maxIdx;
 
 					const m = L.circleMarker([p.lat, p.lon], {
-						radius: isEntry || isExit ? 7 : 4,
-						fillColor: isEntry ? '#059669' : isExit ? '#E11D48' : p.isBarrier ? '#F59E0B' : '#FFFFFF',
-						color: exp.color,
-						weight: 2,
+						radius: isEntry || isExit ? 8 : isIntermediate ? 6 : 4,
+						fillColor: isEntry ? '#059669' : isExit ? '#E11D48' : isIntermediate ? '#F59E0B' : p.isBarrier ? '#F59E0B' : '#FFFFFF',
+						color: isEntry || isExit ? '#FFFFFF' : exp.color,
+						weight: isEntry || isExit ? 3 : 2,
 						opacity: 1,
 						fillOpacity: 1
 					}).addTo(map);
 
-					m.bindTooltip(`<strong>${p.name}</strong><br><span style="font-size:10px;">km ${p.km.toFixed(1)} &bull; ${exp.name}</span><br><span style="font-size:9px;color:#059669;">Click to select as ${currentTollTargetMode.toUpperCase()}</span>`);
+					m.bindPopup(`
+						<div class="font-sans text-xs p-1">
+							<div class="font-bold text-sm text-gray-900">${p.name}</div>
+							<div class="text-[11px] text-gray-500 mb-2">${exp.name} &bull; KM ${p.km.toFixed(1)}</div>
+							<div class="flex gap-1.5">
+								<button type="button" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold shadow-xs cursor-pointer" onclick="window.setTollPlaza('${p.id}', 'entry')">
+									🟢 Set Entry
+								</button>
+								<button type="button" class="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-[11px] font-bold shadow-xs cursor-pointer" onclick="window.setTollPlaza('${p.id}', 'exit')">
+									🔴 Set Exit
+								</button>
+							</div>
+						</div>
+					`);
 
 					m.on('click', () => {
-						handlePlazaClick(p.id);
+						window.setTollPlaza(p.id, currentTollTargetMode);
 					});
 
 					activeGeoMarkers.push(m);
 				});
 
-				map.fitBounds(activeGeoPolyline.getBounds(), { padding: [30, 30] });
+				// Fit bounds to the active journey path immediately
+				if (activeRouteHighlightPolyline) {
+					map.fitBounds(activeRouteHighlightPolyline.getBounds(), { padding: [40, 40] });
+				} else if (activeGeoPolyline) {
+					map.fitBounds(activeGeoPolyline.getBounds(), { padding: [30, 30] });
+				}
 			}
 
 			// Render dynamic itinerary list of traversed plazas
@@ -1213,29 +1399,38 @@ const TRIP_PRESETS = [
 				}
 			}
 
-			// View Toggle (Schematic Strip vs Geo Map)
-			btnViewSchematic.addEventListener('click', () => {
-				currentView = 'schematic';
-				schematicView.classList.remove('hidden');
-				geoMapView.classList.add('hidden');
+			// View Toggle (Schematic Strip vs Geo Map) with Instant Path Fitting
+			function setTollView(view) {
+				currentView = view;
+				if (view === 'schematic') {
+					schematicView.classList.remove('hidden');
+					geoMapView.classList.add('hidden');
 
-				btnViewSchematic.className = 'px-2.5 py-1 rounded-md text-[11px] font-bold transition-all bg-mapa-canvas text-mapa-green shadow-xs';
-				btnViewGeo.className = 'px-2.5 py-1 rounded-md text-[11px] font-medium text-mapa-ink/60 hover:text-mapa-ink transition-all';
-			});
+					btnViewSchematic.className = 'px-2.5 py-1 rounded-md text-[11px] font-bold transition-all bg-mapa-canvas text-mapa-green shadow-xs';
+					btnViewGeo.className = 'px-2.5 py-1 rounded-md text-[11px] font-medium text-mapa-ink/60 hover:text-mapa-ink transition-all';
+					renderSchematicStrip();
+				} else {
+					schematicView.classList.add('hidden');
+					geoMapView.classList.remove('hidden');
 
-			btnViewGeo.addEventListener('click', () => {
-				currentView = 'geo';
-				schematicView.classList.add('hidden');
-				geoMapView.classList.remove('hidden');
+					btnViewGeo.className = 'px-2.5 py-1 rounded-md text-[11px] font-bold transition-all bg-mapa-canvas text-mapa-green shadow-xs';
+					btnViewSchematic.className = 'px-2.5 py-1 rounded-md text-[11px] font-medium text-mapa-ink/60 hover:text-mapa-ink transition-all';
 
-				btnViewGeo.className = 'px-2.5 py-1 rounded-md text-[11px] font-bold transition-all bg-mapa-canvas text-mapa-green shadow-xs';
-				btnViewSchematic.className = 'px-2.5 py-1 rounded-md text-[11px] font-medium text-mapa-ink/60 hover:text-mapa-ink transition-all';
-
-				setTimeout(() => {
 					initOrUpdateGeoMap();
-					map.invalidateSize();
-				}, 100);
-			});
+					if (map) {
+						map.invalidateSize();
+						if (activeRouteHighlightPolyline) {
+							map.fitBounds(activeRouteHighlightPolyline.getBounds(), { padding: [40, 40] });
+						}
+						setTimeout(() => {
+							map.invalidateSize();
+						}, 50);
+					}
+				}
+			}
+
+			btnViewSchematic.addEventListener('click', () => setTollView('schematic'));
+			btnViewGeo.addEventListener('click', () => setTollView('geo'));
 
 			// Swap Handler
 			function handleSwap() {
