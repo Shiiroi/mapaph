@@ -532,7 +532,7 @@ const TRANSFER_HUBS = [
 						<div class="overflow-auto max-h-[680px] p-4 flex justify-center bg-stone-100/60 dark:bg-stone-950/40">
 							<svg
 								id="rail-diagram-svg"
-								viewBox="0 0 1150 1280"
+								viewBox="0 0 1260 1280"
 								class="w-full h-auto min-w-[640px] max-w-[1000px]"
 								role="img"
 								aria-label="Stylised schematic diagram of the LRT-1, LRT-2 and MRT-3 network"
@@ -1194,6 +1194,7 @@ const TRANSFER_HUBS = [
 					destSelect.value = stationId;
 				}
 				calculateRoute();
+				if (leafletMap) leafletMap.closePopup();
 			};
 
 			// Leaflet Map state (100% Free OpenStreetMap - Zero API key)
@@ -1274,11 +1275,12 @@ const TRANSFER_HUBS = [
 				['lrt2_cubao', 'mrt3_cubao'],
 				['lrt1_edsa', 'mrt3_taft']
 			];
-			const LRT2_BELOW_LABELS = new Set(['lrt2_recto', 'lrt2_legarda', 'lrt2_pureza', 'lrt2_santolan', 'lrt2_marikina', 'lrt2_antipolo']);
+			const LRT2_BELOW_LABELS = new Set(['lrt2_recto', 'lrt2_legarda', 'lrt2_pureza']);
+			const LRT2_EAST_LABELS = new Set(['lrt2_santolan', 'lrt2_marikina', 'lrt2_antipolo']);
 
 			const DIAGRAM_LINE_COLORS = {
-				lrt1: '#EAB308', // Classic Yellow Line from user reference image
-				mrt3: '#2563EB', // Classic Blue Line
+				lrt1: '#EAB308', // Classic Yellow Line
+				mrt3: '#0055A5', // Iconic MRT-3 Royal Blue
 				lrt2: '#7E22CE'  // Classic Purple Line
 			};
 
@@ -1342,14 +1344,6 @@ const TRANSFER_HUBS = [
 				// Dedicated high-contrast crisp canvas background
 				diagramSvg.appendChild(svgEl('rect', { width: '100%', height: '100%', rx: '16', fill: '#F8FAFC', stroke: '#E2E8F0', 'stroke-width': '2' }));
 
-				// Subtle Manila Bay coastal wash on the west
-				diagramSvg.appendChild(svgEl('path', { d: 'M 0,0 L 160,0 L 160,820 Q 160,950 240,1050 L 240,1280 L 0,1280 Z', fill: '#E0F2FE', opacity: '0.65' }));
-				diagramSvg.appendChild(svgEl('text', { x: '70', y: '640', 'font-family': 'ui-sans-serif, system-ui, sans-serif', 'font-size': '16', 'font-weight': '800', fill: '#0284C7', opacity: '0.35', transform: 'rotate(-90 70 640)', 'letter-spacing': '4' }, 'MANILA BAY'));
-
-				// Subtle Pasig River crossing through Manila into Laguna Lake
-				diagramSvg.appendChild(svgEl('path', { d: 'M 1150,560 C 900,580 750,620 660,650 C 500,700 350,640 160,650 L 120,652', fill: 'none', stroke: '#BAE6FD', 'stroke-width': '14', 'stroke-linecap': 'round', opacity: '0.75' }));
-				diagramSvg.appendChild(svgEl('text', { x: '820', y: '575', 'font-family': 'ui-sans-serif, system-ui, sans-serif', 'font-size': '11', 'font-weight': '700', fill: '#0284C7', opacity: '0.55' }, 'Pasig River'));
-
 				const gLines = svgEl('g', { id: 'dg-lines' });
 				Object.keys(diagramPts).forEach(k => {
 					gLines.appendChild(svgEl('path', {
@@ -1406,6 +1400,8 @@ const TRANSFER_HUBS = [
 						}
 					} else if (st.lineKey === 'mrt3') {
 						gLabels.appendChild(svgEl('text', { x: pos.x + 16, y: pos.y + 5, 'text-anchor': 'start', 'data-line': st.lineKey }, name));
+					} else if (LRT2_EAST_LABELS.has(st.id)) {
+						gLabels.appendChild(svgEl('text', { x: pos.x + 18, y: pos.y + 5, 'text-anchor': 'start', 'data-line': st.lineKey }, name));
 					} else if (LRT2_BELOW_LABELS.has(st.id)) {
 						const x = pos.x + 8, y = pos.y + 18;
 						gLabels.appendChild(svgEl('text', { x, y, 'text-anchor': 'start', 'data-line': st.lineKey, transform: `rotate(50 ${x} ${y})` }, name));
@@ -1425,7 +1421,7 @@ const TRANSFER_HUBS = [
 				const gLines = diagramSvg.querySelector('#dg-lines');
 				if (!gRoute || !gLines) return;
 				gRoute.innerHTML = '';
-				gLines.setAttribute('opacity', route && route.legs.length ? '0.35' : '1');
+				gLines.setAttribute('opacity', route && route.legs.length ? '0.75' : '1');
 
 				(route?.legs || []).forEach(leg => {
 					if (leg.type === 'ride') {
@@ -1474,7 +1470,8 @@ const TRANSFER_HUBS = [
 						color: LINE_COLORS[lineKey],
 						weight: 5,
 						opacity: 0.85,
-						smoothFactor: 1
+						smoothFactor: 1,
+						interactive: false
 					}).addTo(leafletMap);
 
 					STATIONS_DATA[lineKey].forEach(st => {
@@ -2046,8 +2043,10 @@ const TRANSFER_HUBS = [
 						color: '#F59E0B',
 						weight: 6,
 						dashArray: '8, 8',
-						opacity: 0.95
+						opacity: 0.95,
+						interactive: false
 					}).addTo(leafletMap);
+					Object.values(stationMarkers).forEach(m => m.bringToFront());
 				}
 			}
 

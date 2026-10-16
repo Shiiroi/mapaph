@@ -1123,6 +1123,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 
 				inspectStop(stop);
 				calculateFare();
+				if (leafletMap) leafletMap.closePopup();
 			};
 
 			function calculateFare() {
@@ -1363,28 +1364,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				// 1. High-contrast crisp canvas background
 				buswayDiagramSvg.appendChild(svgEl('rect', { width: '100%', height: '100%', rx: '16', fill: '#F8FAFC', stroke: '#E2E8F0', 'stroke-width': '2' }));
 
-				// 2. Decorative Manila Bay wash
-				buswayDiagramSvg.appendChild(svgEl('path', {
-					d: 'M 0,0 L 140,0 L 140,840 Q 140,920 180,950 L 180,1240 L 0,1240 Z',
-					fill: '#E0F2FE', opacity: '0.65'
-				}));
-				buswayDiagramSvg.appendChild(svgEl('text', {
-					x: '60', y: '600', 'font-family': 'ui-sans-serif, system-ui, sans-serif',
-					'font-size': '16', 'font-weight': '800', fill: '#0284C7', opacity: '0.35',
-					transform: 'rotate(-90 60 600)', 'letter-spacing': '4'
-				}, 'MANILA BAY'));
-
-				// 3. Decorative Pasig River
-				buswayDiagramSvg.appendChild(svgEl('path', {
-					d: 'M 920,630 C 800,640 730,650 670,660 C 600,670 450,680 180,720 L 140,725',
-					fill: 'none', stroke: '#BAE6FD', 'stroke-width': '12', 'stroke-linecap': 'round', opacity: '0.75'
-				}));
-				buswayDiagramSvg.appendChild(svgEl('text', {
-					x: '780', y: '625', 'font-family': 'ui-sans-serif, system-ui, sans-serif',
-					'font-size': '11', 'font-weight': '700', fill: '#0284C7', opacity: '0.55'
-				}, 'Pasig River'));
-
-				// 4. Sector Labels
+				// 2. Sector Labels
 				const sectors = [
 					{ x: 360, y: 55, text: 'NORTH METRO (CALOOCAN & QC NORTH)' },
 					{ x: 740, y: 160, text: 'QUEZON CITY EDSA CORRIDOR' },
@@ -1549,7 +1529,8 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					color: '#059669',
 					weight: 5,
 					opacity: 0.85,
-					lineJoin: 'round'
+					lineJoin: 'round',
+					interactive: false
 				}).addTo(leafletMap);
 
 				// Add markers for all 21 stops
@@ -1601,8 +1582,10 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 						color: '#F59E0B',
 						weight: 7,
 						opacity: 0.95,
-						lineJoin: 'round'
+						lineJoin: 'round',
+						interactive: false
 					}).addTo(leafletMap);
+					mapMarkers.forEach(({ marker }) => marker.bringToFront());
 				}
 
 				mapMarkers.forEach(({ id, marker }) => {

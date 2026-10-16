@@ -13,7 +13,7 @@ const tools = [
 		status: "Active",
 		category: "Web Application",
 		url: "https://lens.mapaph.com",
-		description: "Interactive choropleth map and GeoJSON download tool for Philippine administrative boundaries (regions, provinces, cities, municipalities, and barangays). Overlays census, economic, and election statistics with side-by-side comparisons.",
+		description: "Interactive choropleth map and GeoJSON export for all 82 Philippine provinces and municipalities with census demographics.",
 		image: lensImg,
 		badge: "Choropleth Mapper"
 	},
@@ -22,7 +22,7 @@ const tools = [
 		status: "Active",
 		category: "Geographic Standards",
 		url: "/tools/psgc-lookup",
-		description: "Instant client-side search across 1,742 Philippine regions, 82 provinces, and 1,642 cities & municipalities (33 HUCs, 5 ICCs, 111 CCs). Inspect 9-digit and 10-digit PSGC codes with 2024 census demographics.",
+		description: "Fast search across 1,742 Philippine divisions. Decode 9-digit PSGC hierarchy with 2024 PSA census demographics.",
 		image: null,
 		badge: "1,742 Divisions"
 	},
@@ -31,7 +31,7 @@ const tools = [
 		status: "Active",
 		category: "Geodetic & GIS",
 		url: "/tools/coordinates",
-		description: "Bi-directional coordinate converter between GPS latitude/longitude (WGS84 decimal degrees) and official Philippine Reference System 1992 (PRS92 / UTM Zone 51N). Explains datum shifts and PTM Zones I through V.",
+		description: "Convert GPS coordinates (WGS84 decimal degrees) to Philippine Reference System 1992 (PRS92 / UTM Zone 51N).",
 		image: null,
 		badge: "Surveying Utility"
 	},
@@ -40,7 +40,7 @@ const tools = [
 		status: "Active",
 		category: "Postal Directory",
 		url: "/tools/zip-codes",
-		description: "Instant lookup across 2,139 Philippine postal codes (PHLPost) covering Metro Manila and all 82 provinces. 1-click copy with postal addressing rules.",
+		description: "Instant lookup across 2,139 Philippine postal codes covering Metro Manila and all 82 provinces with 1-click copy.",
 		image: null,
 		badge: "2,139 Codes"
 	},
@@ -49,7 +49,7 @@ const tools = [
 		status: "Active",
 		category: "Public Transit",
 		url: "/tools/fare-calculator",
-		description: "Official LTFRB distance-based fare calculator for Aircon Buses, Ordinary Buses, Modern Jeepneys, Traditional Jeepneys, and MRT/LRT with 20% discount rules.",
+		description: "Official LTFRB distance-based fare calculator for city and provincial buses, modern jeepneys, traditional jeepneys, and trains.",
 		image: null,
 		badge: "LTFRB Matrix"
 	},
@@ -58,7 +58,7 @@ const tools = [
 		status: "Active",
 		category: "Urban Mobility",
 		url: "/tools/walkability",
-		description: "Interactive pedestrian catchment calculator. Visualize 5-min (400m), 10-min (800m), and 15-min (1.2km) walking rings across Philippine neighborhoods with step counts and sidewalk regulations.",
+		description: "Pedestrian catchment calculator. Visualize 5, 10, and 15-minute walking radii across Philippine cities with step counts.",
 		image: null,
 		badge: "15-Min Catchment"
 	},
@@ -67,7 +67,7 @@ const tools = [
 		status: "Active",
 		category: "Rail Transit",
 		url: "/tools/rail-transit",
-		description: "Interactive station-to-station fare calculator and transfer guide for LRT-1, LRT-2, and MRT-3. Computes regular cash, beep™ savings, and 20% statutory discounts.",
+		description: "Interactive station-to-station fare calculator and schematic network guide for LRT-1, LRT-2, and MRT-3 with Beep™ rates.",
 		image: null,
 		badge: "51 Stations &bull; 3 Lines"
 	},
@@ -76,7 +76,7 @@ const tools = [
 		status: "Active",
 		category: "Expressways & Toll",
 		url: "/tools/toll-calculator",
-		description: "Official TRB entry-to-exit toll fee calculator for NLEX, SLEX, Skyway 1–3, SCTEX, TPLEX, CALAX, and CCLEX with schematic route strips and RFID guides.",
+		description: "Official TRB entry-to-exit toll fee calculator for NLEX, SLEX, Skyway, SCTEX, TPLEX, CALAX, and CCLEX with RFID tag guides.",
 		image: null,
 		badge: "TRB Tariffs &bull; Class 1–3"
 	},
@@ -85,7 +85,7 @@ const tools = [
 		status: "Active",
 		category: "Bus Rapid Transit",
 		url: "/tools/edsa-carousel",
-		description: "Interactive stop-by-stop fare calculator, schematic transit strip, and geographic route map for Metro Manila's 24/7 inner-lane busway connecting Monumento to PITX with 20% discount rules.",
+		description: "Stop-by-stop fare calculator, 2D schematic diagram, and route map for Metro Manila's 24/7 median busway from Monumento to PITX.",
 		image: null,
 		badge: "21 Stations &bull; 24/7 BRT"
 	},
@@ -94,7 +94,7 @@ const tools = [
 		status: "Active",
 		category: "Highway Infrastructure",
 		url: "/tools/kilometer-posts",
-		description: "Search and inspect DPWH physical concrete milestone posts along Marilaque Highway (Rizal), Manila East Road, MacArthur, Maharlika, Aguinaldo, and Kennon highways with 3D post visualizers.",
+		description: "Locate and inspect DPWH physical milestone posts and regional Kilometer Zero monuments across Luzon with verified coordinates.",
 		image: null,
 		badge: "DPWH Milestones"
 	}
@@ -171,11 +171,11 @@ const tools = [
 						</div>
 
 						<!-- Tool Name & Description -->
-						<h3 class="font-serif text-lg font-bold text-mapa-ink group-hover:text-mapa-green transition-colors">
+						<h3 class="font-serif text-base font-bold text-mapa-ink group-hover:text-mapa-green transition-colors min-h-[3rem] flex items-center leading-snug">
 							{tool.name}
 						</h3>
 						
-						<p class="text-xs text-mapa-ink/80 mt-2 leading-relaxed flex-grow line-clamp-3">
+						<p class="text-xs text-mapa-ink/80 mt-2.5 leading-relaxed flex-grow min-h-[3.75rem]">
 							{tool.description}
 						</p>
 
