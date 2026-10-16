@@ -354,14 +354,21 @@ const TRANSFER_HUBS = [
 									type="button"
 									class="px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer"
 								>
-									🚊 Schematic Track Graph
+									🚊 Station List
+								</button>
+								<button
+									id="rail-view-diagram"
+									type="button"
+									class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
+								>
+									🧭 Network Diagram
 								</button>
 								<button
 									id="rail-view-geo"
 									type="button"
 									class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
 								>
-									🗺️ Free Geo Map (OSM)
+									🗺️ Free Geo Map
 								</button>
 							</div>
 						</div>
@@ -512,7 +519,28 @@ const TRANSFER_HUBS = [
 						</div>
 					</div>
 
-					<!-- VIEW 2: OpenStreetMap Geo View Container (Hidden initially) -->
+					<!-- VIEW 2: Stylised network diagram (SVG, not to scale) -->
+					<div id="rail-diagram-container" class="hidden bg-mapa-canvas-dark">
+						<div class="px-4 pt-3 pb-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-mapa-ink/70 border-b border-mapa-contour/50">
+							<span>Tap any station dot to set it as your <strong id="diagram-target-label">Boarding</strong> point. Diagram is not to scale.</span>
+							<span class="inline-flex items-center gap-3">
+								<span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-emerald-500/30"></span>Board</span>
+								<span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 ring-2 ring-blue-500/30"></span>Alight</span>
+								<span class="inline-flex items-center gap-1"><span class="w-4 h-1 rounded-full bg-amber-500"></span>Your route</span>
+							</span>
+						</div>
+						<div class="overflow-auto max-h-[680px] p-2">
+							<svg
+								id="rail-diagram-svg"
+								viewBox="0 0 1120 1260"
+								class="w-full h-auto min-w-[640px]"
+								role="img"
+								aria-label="Stylised diagram of the LRT-1, LRT-2 and MRT-3 network"
+							></svg>
+						</div>
+					</div>
+
+					<!-- VIEW 3: OpenStreetMap Geo View Container (Hidden initially) -->
 					<div id="rail-geo-container" class="hidden">
 						<!-- Leaflet Map Canvas -->
 						<div
@@ -1097,6 +1125,9 @@ const TRANSFER_HUBS = [
 
 			function setTargetMode(mode) {
 				currentTargetMode = mode;
+				if (diagramTargetLabel) {
+					diagramTargetLabel.textContent = mode === 'origin' ? 'Boarding' : 'Destination';
+				}
 				if (mode === 'origin') {
 					targetOriginBtn.className = 'px-3 py-1.5 rounded-lg bg-emerald-600 text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer ring-2 ring-emerald-500/50';
 					targetDestBtn.className = 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer';
@@ -1166,6 +1197,226 @@ const TRANSFER_HUBS = [
 			let activeRoutePolyline = null;
 			let isMapInitialized = false;
 
+			// Intermediate waypoints between consecutive stations so the drawn geo line follows the
+			// real alignment (EDSA, Taft Ave, Aurora Blvd). Hand-traced from OpenStreetMap; expect
+			// tens of meters of error, not survey-grade.
+			const GEO_WAYPOINTS = {
+				'lrt1_fpj>lrt1_balintawak': [[14.6572, 121.0130]],
+				'lrt1_balintawak>lrt1_monumento': [[14.6565, 120.9945]],
+				'lrt1_central>lrt1_un_ave': [[14.5895, 120.9810], [14.5860, 120.9825]],
+				'mrt3_north>mrt3_q_ave': [[14.6478, 121.0352]],
+				'mrt3_q_ave>mrt3_kamuning': [[14.6385, 121.0412]],
+				'mrt3_kamuning>mrt3_cubao': [[14.6270, 121.0475]],
+				'mrt3_cubao>mrt3_santolan': [[14.6135, 121.0535]],
+				'mrt3_santolan>mrt3_ortigas': [[14.5995, 121.0580], [14.5935, 121.0580]],
+				'mrt3_guadalupe>mrt3_buendia': [[14.5622, 121.0420], [14.5582, 121.0382]],
+				'mrt3_magallanes>mrt3_taft': [[14.5405, 121.0145], [14.5385, 121.0060]],
+				'lrt2_katipunan>lrt2_santolan': [[14.6335, 121.0775], [14.6285, 121.0820]]
+			};
+
+			// Ordered vertices per line: { id | null, ll }
+			function geoVertices(lineKey) {
+				const out = [];
+				const list = STATIONS_DATA[lineKey];
+				list.forEach((st, i) => {
+					out.push({ id: st.id, ll: [st.lat, st.lon] });
+					const next = list[i + 1];
+					if (next) (GEO_WAYPOINTS[`${st.id}>${next.id}`] || []).forEach(ll => out.push({ id: null, ll }));
+				});
+				return out;
+			}
+
+			function geoLinePath(lineKey) {
+				return geoVertices(lineKey).map(v => v.ll);
+			}
+
+			function geoSlice(lineKey, idA, idB) {
+				const v = geoVertices(lineKey);
+				let a = v.findIndex(p => p.id === idA);
+				let b = v.findIndex(p => p.id === idB);
+				if (a === -1 || b === -1) return [];
+				if (a > b) [a, b] = [b, a];
+				return v.slice(a, b + 1).map(p => p.ll);
+			}
+
+			// ---------- Network diagram (SVG, not to scale) ----------
+			const DIAGRAM_LINES = {
+				lrt1: [
+					['lrt1_fpj', 460, 108], ['lrt1_balintawak', 347, 108], [null, 220, 108], ['lrt1_monumento', 220, 128],
+					['lrt1_5th_ave', 220, 200], ['lrt1_r_papa', 220, 260], ['lrt1_abad_santos', 220, 300], ['lrt1_blumentritt', 220, 358],
+					['lrt1_tayuman', 220, 398], ['lrt1_bambang', 220, 438], ['lrt1_doroteo_jose', 220, 480], ['lrt1_carriedo', 220, 524],
+					['lrt1_central', 220, 571], ['lrt1_un_ave', 232, 643], ['lrt1_pedro_gil', 255, 688], ['lrt1_quirino', 279, 733],
+					['lrt1_vito_cruz', 303, 779], ['lrt1_gil_puyat', 320, 847], ['lrt1_libertad', 332, 891], ['lrt1_edsa', 345, 954],
+					['lrt1_baclaran', 332, 992], ['lrt1_redemptorist', 326, 1037], ['lrt1_mia_road', 320, 1082],
+					['lrt1_asia_world', 314, 1127], ['lrt1_ninoy_aquino', 308, 1172], ['lrt1_dr_santos', 302, 1217]
+				],
+				mrt3: [
+					['mrt3_north', 548, 127], ['mrt3_q_ave', 604, 213], ['mrt3_kamuning', 636, 263], ['mrt3_cubao', 689, 374],
+					['mrt3_santolan', 727, 456], [null, 752, 515], ['mrt3_ortigas', 732, 603], ['mrt3_shaw', 710, 647],
+					['mrt3_boni', 679, 705], ['mrt3_guadalupe', 654, 751], [null, 640, 790], ['mrt3_buendia', 575, 845],
+					['mrt3_ayala', 533, 882], ['mrt3_magallanes', 475, 933], [null, 440, 952], ['mrt3_taft', 357, 964]
+				],
+				lrt2: [
+					['lrt2_recto', 227, 496], ['lrt2_legarda', 285, 516], ['lrt2_pureza', 373, 506], [null, 447, 497],
+					['lrt2_v_mapa', 457, 487], [null, 495, 451], ['lrt2_j_ruiz', 519, 438], ['lrt2_gilmore', 573, 414],
+					['lrt2_betty_go', 633, 387], ['lrt2_cubao', 703, 355], ['lrt2_anonas', 789, 317], ['lrt2_katipunan', 843, 293],
+					[null, 870, 280], ['lrt2_santolan', 934, 356], ['lrt2_marikina', 985, 420], ['lrt2_antipolo', 1035, 490]
+				]
+			};
+			const DIAGRAM_LINKS = [
+				['lrt1_doroteo_jose', 'lrt2_recto'],
+				['lrt2_cubao', 'mrt3_cubao'],
+				['lrt1_edsa', 'mrt3_taft']
+			];
+			const LRT2_BELOW_LABELS = new Set(['lrt2_recto', 'lrt2_legarda', 'lrt2_pureza', 'lrt2_santolan', 'lrt2_marikina', 'lrt2_antipolo']);
+
+			const SVG_NS = 'http://www.w3.org/2000/svg';
+			const diagramSvg = document.getElementById('rail-diagram-svg');
+			const diagramTargetLabel = document.getElementById('diagram-target-label');
+			const diagramPos = {};
+			const diagramPts = {};
+			Object.keys(DIAGRAM_LINES).forEach(k => {
+				diagramPts[k] = DIAGRAM_LINES[k].map(([id, x, y]) => ({ id, x, y, corner: !id }));
+				diagramPts[k].forEach(p => { if (p.id) diagramPos[p.id] = { x: p.x, y: p.y, lineKey: k }; });
+			});
+
+			function svgEl(name, attrs = {}, text) {
+				const el = document.createElementNS(SVG_NS, name);
+				Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+				if (text !== undefined) el.textContent = text;
+				return el;
+			}
+
+			function towards(from, to, dist) {
+				const dx = to.x - from.x;
+				const dy = to.y - from.y;
+				const len = Math.hypot(dx, dy) || 1;
+				const k = Math.min(dist, len / 2) / len;
+				return { x: from.x + dx * k, y: from.y + dy * k };
+			}
+
+			// Straight through stations, rounded only at the bend (corner) control points
+			function roundedPath(pts, radius = 26) {
+				let d = `M${pts[0].x},${pts[0].y}`;
+				for (let i = 1; i < pts.length; i++) {
+					const p = pts[i];
+					if (p.corner && i < pts.length - 1) {
+						const t1 = towards(p, pts[i - 1], radius);
+						const t2 = towards(p, pts[i + 1], radius);
+						d += ` L${t1.x},${t1.y} Q${p.x},${p.y} ${t2.x},${t2.y}`;
+					} else {
+						d += ` L${p.x},${p.y}`;
+					}
+				}
+				return d;
+			}
+
+			function diagramSlice(lineKey, idA, idB) {
+				const pts = diagramPts[lineKey];
+				let a = pts.findIndex(p => p.id === idA);
+				let b = pts.findIndex(p => p.id === idB);
+				if (a === -1 || b === -1) return [];
+				if (a > b) [a, b] = [b, a];
+				return pts.slice(a, b + 1);
+			}
+
+			function shortName(st) {
+				if (st.id === 'lrt1_asia_world') return 'Asia World / PITX';
+				return st.name.replace(/\s*\(.*\)/, '');
+			}
+
+			function renderDiagram() {
+				if (!diagramSvg) return;
+				diagramSvg.innerHTML = '';
+
+				const gLines = svgEl('g', { id: 'dg-lines' });
+				Object.keys(diagramPts).forEach(k => {
+					gLines.appendChild(svgEl('path', {
+						d: roundedPath(diagramPts[k]), fill: 'none', stroke: LINE_COLORS[k],
+						'stroke-width': 8, 'stroke-linecap': 'round', 'stroke-linejoin': 'round'
+					}));
+				});
+				diagramSvg.appendChild(gLines);
+
+				diagramSvg.appendChild(svgEl('g', { id: 'dg-route' }));
+
+				const gLinks = svgEl('g', { id: 'dg-links' });
+				DIAGRAM_LINKS.forEach(([a, b]) => {
+					const pa = diagramPos[a];
+					const pb = diagramPos[b];
+					gLinks.appendChild(svgEl('line', { x1: pa.x, y1: pa.y, x2: pb.x, y2: pb.y, stroke: '#1c1917', 'stroke-width': 5, 'stroke-linecap': 'round' }));
+				});
+				diagramSvg.appendChild(gLinks);
+
+				const gStations = svgEl('g', { id: 'dg-stations' });
+				const gLabels = svgEl('g', { id: 'dg-labels', 'font-family': 'ui-sans-serif, system-ui, sans-serif', 'font-size': 15, fill: '#1c1917', 'pointer-events': 'none' });
+				ALL_STATIONS.forEach(st => {
+					const pos = diagramPos[st.id];
+					if (!pos) return;
+					const g = svgEl('g', { 'data-station-id': st.id, tabindex: 0, role: 'button', 'aria-label': `${st.name}, ${st.lineName}`, style: 'cursor:pointer' });
+					g.appendChild(svgEl('circle', { class: 'dg-ring', cx: pos.x, cy: pos.y, r: 15, fill: 'none', stroke: 'transparent', 'stroke-width': 5 }));
+					g.appendChild(svgEl('circle', { cx: pos.x, cy: pos.y, r: st.isTransfer ? 9 : 7, fill: st.isTransfer ? '#ffffff' : LINE_COLORS[st.lineKey], stroke: st.isTransfer ? '#1c1917' : '#ffffff', 'stroke-width': st.isTransfer ? 3.5 : 2.5 }));
+					g.appendChild(svgEl('circle', { cx: pos.x, cy: pos.y, r: 18, fill: 'transparent' }));
+					g.appendChild(svgEl('title', {}, `${st.name} (${st.lineName})`));
+					g.addEventListener('click', () => window.setTransitStation(st.id, currentTargetMode));
+					g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.setTransitStation(st.id, currentTargetMode); } });
+					gStations.appendChild(g);
+
+					// Labels: LRT-1 reads on the left, MRT-3 on the right, LRT-2 along its diagonal
+					if (st.id === 'lrt2_cubao') return; // shares the Araneta Center-Cubao label with MRT-3
+					const name = shortName(st);
+					if (st.lineKey === 'lrt1') {
+						if (pos.y === 108) {
+							gLabels.appendChild(svgEl('text', { x: pos.x + 4, y: pos.y - 12, 'text-anchor': 'start', transform: `rotate(-50 ${pos.x + 4} ${pos.y - 12})` }, name));
+						} else {
+							gLabels.appendChild(svgEl('text', { x: pos.x - 16, y: pos.y + 5, 'text-anchor': 'end' }, name));
+						}
+					} else if (st.lineKey === 'mrt3') {
+						gLabels.appendChild(svgEl('text', { x: pos.x + 16, y: pos.y + 5, 'text-anchor': 'start' }, name));
+					} else if (LRT2_BELOW_LABELS.has(st.id)) {
+						const x = pos.x + 8, y = pos.y + 18;
+						gLabels.appendChild(svgEl('text', { x, y, 'text-anchor': 'start', transform: `rotate(50 ${x} ${y})` }, name));
+					} else {
+						const x = pos.x - 6, y = pos.y - 12;
+						gLabels.appendChild(svgEl('text', { x, y, 'text-anchor': 'end', transform: `rotate(50 ${x} ${y})` }, name));
+					}
+				});
+				diagramSvg.appendChild(gStations);
+				diagramSvg.appendChild(gLabels);
+			}
+
+			// Re-style the diagram for the current journey (called from calculateRoute)
+			function updateDiagram(route, originId, destId) {
+				if (!diagramSvg) return;
+				const gRoute = diagramSvg.querySelector('#dg-route');
+				const gLines = diagramSvg.querySelector('#dg-lines');
+				if (!gRoute || !gLines) return;
+				gRoute.innerHTML = '';
+				gLines.setAttribute('opacity', route && route.legs.length ? '0.3' : '1');
+
+				(route?.legs || []).forEach(leg => {
+					if (leg.type === 'ride') {
+						const slice = diagramSlice(leg.line, leg.from.id, leg.to.id);
+						if (slice.length < 2) return;
+						// Orient so the path always runs in line order; roundedPath handles bends
+						gRoute.appendChild(svgEl('path', { d: roundedPath(slice), fill: 'none', stroke: '#F59E0B', 'stroke-width': 13, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: 0.95 }));
+						gRoute.appendChild(svgEl('path', { d: roundedPath(slice), fill: 'none', stroke: LINE_COLORS[leg.line], 'stroke-width': 6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
+					} else {
+						const pa = diagramPos[leg.from.id];
+						const pb = diagramPos[leg.to.id];
+						if (pa && pb) gRoute.appendChild(svgEl('line', { x1: pa.x, y1: pa.y, x2: pb.x, y2: pb.y, stroke: '#F59E0B', 'stroke-width': 9, 'stroke-linecap': 'round' }));
+					}
+				});
+
+				diagramSvg.querySelectorAll('#dg-stations g[data-station-id]').forEach(g => {
+					const id = g.getAttribute('data-station-id');
+					const ring = g.querySelector('.dg-ring');
+					ring.setAttribute('stroke', id === originId ? '#10B981' : id === destId ? '#3B82F6' : 'transparent');
+				});
+			}
+
+			renderDiagram();
+
 			function initLeafletMap() {
 				if (isMapInitialized || typeof L === 'undefined') return;
 
@@ -1183,7 +1434,7 @@ const TRANSFER_HUBS = [
 				}).addTo(leafletMap);
 
 				Object.keys(STATIONS_DATA).forEach(lineKey => {
-					const coords = STATIONS_DATA[lineKey].map(s => [s.lat, s.lon]);
+					const coords = geoLinePath(lineKey);
 					linePolylines[lineKey] = L.polyline(coords, {
 						color: LINE_COLORS[lineKey],
 						weight: 5,
@@ -1228,30 +1479,37 @@ const TRANSFER_HUBS = [
 				isMapInitialized = true;
 			}
 
-			// View Switcher logic (Schematic Strip vs Free Geo Map)
-			btnViewSchematic.addEventListener('click', () => {
-				btnViewSchematic.className = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer';
-				btnViewGeo.className = 'px-3 py-1.5 text-xs font-medium rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
-				schematicContainer.classList.remove('hidden');
-				geoContainer.classList.add('hidden');
-			});
+			// View switcher: Station List / Network Diagram / Free Geo Map.
+			// All three render from the same selection state, so switching is instant and the
+			// current journey is always redrawn (the geo map used to show nothing until re-selected).
+			const VIEW_ON = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer';
+			const VIEW_OFF = 'px-3 py-1.5 text-xs font-medium rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
 
-			btnViewGeo.addEventListener('click', () => {
-				btnViewGeo.className = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer';
-				btnViewSchematic.className = 'px-3 py-1.5 text-xs font-medium rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
-				geoContainer.classList.remove('hidden');
-				schematicContainer.classList.add('hidden');
+			function setView(view) {
+				const views = {
+					schematic: [btnViewSchematic, schematicContainer],
+					diagram: [btnViewDiagram, diagramContainer],
+					geo: [btnViewGeo, geoContainer]
+				};
+				Object.entries(views).forEach(([key, [btn, el]]) => {
+					btn.className = key === view ? VIEW_ON : VIEW_OFF;
+					el.classList.toggle('hidden', key !== view);
+				});
 
-				initLeafletMap();
-				setTimeout(() => {
+				if (view === 'geo') {
+					initLeafletMap();
+					calculateRoute(); // draws the active route on the (possibly just created) map
 					if (leafletMap) {
 						leafletMap.invalidateSize();
-						if (activeRoutePolyline) {
-							leafletMap.fitBounds(activeRoutePolyline.getBounds(), { padding: [40, 40] });
-						}
+						if (activeRoutePolyline) leafletMap.fitBounds(activeRoutePolyline.getBounds(), { padding: [40, 40] });
+						setTimeout(() => leafletMap.invalidateSize(), 50);
 					}
-				}, 100);
-			});
+				}
+			}
+
+			btnViewSchematic.addEventListener('click', () => setView('schematic'));
+			btnViewDiagram.addEventListener('click', () => setView('diagram'));
+			btnViewGeo.addEventListener('click', () => setView('geo'));
 
 			// Line Filter Tabs
 			const lineTabs = document.querySelectorAll('.rail-line-tab');
@@ -1595,6 +1853,7 @@ const TRANSFER_HUBS = [
 					transferCalloutEl.classList.add('hidden');
 					routeStepsListEl.innerHTML = '<div class="text-mapa-clay italic p-2">Boarding and destination are the exact same station. Choose different stations to calculate fare.</div>';
 					updateSchematicHighlights(null, origin.id, dest.id);
+					updateDiagram(null, origin.id, dest.id);
 					return;
 				}
 
@@ -1604,6 +1863,7 @@ const TRANSFER_HUBS = [
 
 				// Update Schematic Visual Highlights and Track Segments
 				updateSchematicHighlights(route, origin.id, dest.id);
+				updateDiagram(route, origin.id, dest.id);
 
 				// Reset / update Geo Map markers if initialized
 				if (leafletMap) {

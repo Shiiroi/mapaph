@@ -202,7 +202,7 @@ const BUSWAY_STOPS = [
 		access: 'Pedestrian Overpass',
 		interchanges: ['Aurora Blvd / Tramo Local Jeeps'],
 		landmarks: 'Pasay General Hospital, Cabrera St, Tramo Commercial Hub',
-		lat: 14.5420,
+		lat: 14.5385,
 		lon: 121.0080,
 		isTerminus: false
 	},
@@ -1220,6 +1220,46 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				}
 			}
 
+			// Intermediate road-following waypoints between consecutive stops (EDSA median alignment).
+			// Hand-traced from OpenStreetMap; accurate to roughly tens of meters, not survey grade.
+			const PATH_WAYPOINTS = {
+				'monumento>bagong_barrio': [[14.6552, 120.9890], [14.6572, 120.9945]],
+				'bagong_barrio>balintawak': [[14.6577, 121.0005]],
+				'balintawak>kaingin': [[14.6572, 121.0095]],
+				'roosevelt>north_ave': [[14.6560, 121.0255], [14.6542, 121.0295]],
+				'north_ave>quezon_ave': [[14.6478, 121.0352]],
+				'quezon_ave>q_mart': [[14.6372, 121.0414]],
+				'q_mart>main_ave': [[14.6270, 121.0475]],
+				'main_ave>santolan': [[14.6135, 121.0535]],
+				'santolan>ortigas': [[14.5995, 121.0580], [14.5935, 121.0580]],
+				'ortigas>guadalupe': [[14.5813, 121.0535], [14.5740, 121.0482]],
+				'guadalupe>buendia': [[14.5622, 121.0420], [14.5582, 121.0382]],
+				'ayala>tramo': [[14.5420, 121.0194], [14.5402, 121.0140]],
+				'tramo>taft_ave': [[14.5378, 121.0040]],
+				'taft_ave>roxas_blvd': [[14.5368, 120.9965]],
+				'roxas_blvd>macapagal': [[14.5280, 120.9895]]
+			};
+
+			// Full ordered path: every vertex is { stopId | null, ll }
+			const FULL_PATH = [];
+			BUSWAY_STOPS.forEach((stop, i) => {
+				FULL_PATH.push({ stopId: stop.id, ll: [stop.lat, stop.lon] });
+				const next = BUSWAY_STOPS[i + 1];
+				if (next) {
+					(PATH_WAYPOINTS[`${stop.id}>${next.id}`] || []).forEach(ll => FULL_PATH.push({ stopId: null, ll }));
+				}
+			});
+
+			function pathBetween(idA, idB) {
+				let a = FULL_PATH.findIndex(v => v.stopId === idA);
+				let b = FULL_PATH.findIndex(v => v.stopId === idB);
+				if (a === -1 || b === -1) return [];
+				if (a > b) [a, b] = [b, a];
+				return FULL_PATH.slice(a, b + 1).map(v => v.ll);
+			}
+
+			let activeRoutePolyline = null;
+
 			function initLeafletMap() {
 				if (leafletMap || typeof L === 'undefined') return;
 
@@ -1235,8 +1275,8 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					maxZoom: 19
 				}).addTo(leafletMap);
 
-				// Route coordinates array
-				const latLngs = BUSWAY_STOPS.map(s => [s.lat, s.lon]);
+				// Route coordinates array (stops + road-following waypoints)
+				const latLngs = FULL_PATH.map(v => v.ll);
 
 				// Add background route line
 				routePolyline = L.polyline(latLngs, {
@@ -1285,6 +1325,19 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 
 			function updateMapHighlight(origin, dest) {
 				if (!leafletMap) return;
+
+				if (activeRoutePolyline) {
+					leafletMap.removeLayer(activeRoutePolyline);
+					activeRoutePolyline = null;
+				}
+				if (origin.id !== dest.id) {
+					activeRoutePolyline = L.polyline(pathBetween(origin.id, dest.id), {
+						color: '#F59E0B',
+						weight: 7,
+						opacity: 0.95,
+						lineJoin: 'round'
+					}).addTo(leafletMap);
+				}
 
 				mapMarkers.forEach(({ id, marker }) => {
 					if (id === origin.id) {
@@ -1346,28 +1399,33 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				});
 			});
 
-			// View Switcher logic
-			btnViewSchematic.addEventListener('click', () => {
-				btnViewSchematic.className = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer';
-				btnViewGeo.className = 'px-3 py-1.5 text-xs font-medium rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
-				schematicContainer.classList.remove('hidden');
-				geoContainer.classList.add('hidden');
-			});
+			// View Switcher logic. State (origin/destination) lives in the selects, so
+			// switching views just re-renders from it: no lost selection, route shows at once.
+			const ACTIVE_VIEW_CLASS = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer';
+			const IDLE_VIEW_CLASS = 'px-3 py-1.5 text-xs font-medium rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
 
-			btnViewGeo.addEventListener('click', () => {
-				btnViewGeo.className = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer';
-				btnViewSchematic.className = 'px-3 py-1.5 text-xs font-medium rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
-				geoContainer.classList.remove('hidden');
-				schematicContainer.classList.add('hidden');
+			function setView(view) {
+				const isGeo = view === 'geo';
+				btnViewGeo.className = isGeo ? ACTIVE_VIEW_CLASS : IDLE_VIEW_CLASS;
+				btnViewSchematic.className = isGeo ? IDLE_VIEW_CLASS : ACTIVE_VIEW_CLASS;
+				geoContainer.classList.toggle('hidden', !isGeo);
+				schematicContainer.classList.toggle('hidden', isGeo);
 
-				initLeafletMap();
-				setTimeout(() => {
-					if (leafletMap) {
-						leafletMap.invalidateSize();
-						if (routePolyline) leafletMap.fitBounds(routePolyline.getBounds(), { padding: [40, 40] });
+				if (isGeo) {
+					initLeafletMap();
+					calculateFare(); // redraws the active route on the freshly created map
+					leafletMap?.invalidateSize();
+					if (activeRoutePolyline) {
+						leafletMap.fitBounds(activeRoutePolyline.getBounds(), { padding: [40, 40] });
+					} else if (routePolyline) {
+						leafletMap.fitBounds(routePolyline.getBounds(), { padding: [40, 40] });
 					}
-				}, 100);
-			});
+					setTimeout(() => leafletMap?.invalidateSize(), 50);
+				}
+			}
+
+			btnViewSchematic.addEventListener('click', () => setView('schematic'));
+			btnViewGeo.addEventListener('click', () => setView('geo'));
 
 			// Initial calculation
 			calculateFare();
