@@ -16,9 +16,14 @@ import Footer from '../../components/Footer.astro';
 >
 	<Navbar />
 
-	<main class="max-w-7xl mx-auto px-6 lg:px-8 py-14 text-mapa-ink">
+	<main id="main-content" class="max-w-7xl mx-auto px-6 lg:px-8 py-14 text-mapa-ink">
 		<!-- Header -->
-		<div class="max-w-3xl mb-12">
+		<div class="max-w-3xl mb-8">
+			<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs font-sans text-mapa-muted mb-3">
+				<a href="/" class="hover:text-mapa-green transition-colors">Home</a>
+				<span>/</span>
+				<span class="text-mapa-ink font-semibold">Tools Directory</span>
+			</nav>
 			<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
 				Ecosystem Tools
 			</span>
@@ -30,371 +35,421 @@ import Footer from '../../components/Footer.astro';
 			</p>
 		</div>
 
+		<!-- Instant Search & Category Filter Bar -->
+		<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 sm:p-5 mb-8 font-sans shadow-2xs">
+			<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+				<div class="relative flex-1">
+					<label for="tools-directory-search" class="sr-only">Filter tools by keyword</label>
+					<input
+						type="search"
+						id="tools-directory-search"
+						placeholder="Search tools (e.g. PSGC, LRT, toll, ZIP code, PRS92, kilometer post)..."
+						class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-4 py-2.5 pl-10 text-sm text-mapa-ink placeholder-mapa-ink/45 focus:outline-none focus:ring-2 focus:ring-mapa-green/50"
+					/>
+					<svg class="absolute left-3.5 top-3 w-4 h-4 text-mapa-muted pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+					</svg>
+				</div>
+				<div class="flex flex-wrap items-center gap-1.5 text-xs" role="group" aria-label="Filter tools by category">
+					<button type="button" data-cat="all" class="tool-cat-btn px-3 py-1.5 rounded-lg font-semibold border transition-colors bg-mapa-green text-white border-mapa-green cursor-pointer">
+						All (10)
+					</button>
+					<button type="button" data-cat="transit" class="tool-cat-btn px-3 py-1.5 rounded-lg font-medium border transition-colors bg-mapa-canvas text-mapa-ink/80 border-mapa-contour hover:border-mapa-green/50 cursor-pointer">
+						Transit & Mobility (5)
+					</button>
+					<button type="button" data-cat="geodetic" class="tool-cat-btn px-3 py-1.5 rounded-lg font-medium border transition-colors bg-mapa-canvas text-mapa-ink/80 border-mapa-contour hover:border-mapa-green/50 cursor-pointer">
+						Geodetic & Highways (2)
+					</button>
+					<button type="button" data-cat="civic" class="tool-cat-btn px-3 py-1.5 rounded-lg font-medium border transition-colors bg-mapa-canvas text-mapa-ink/80 border-mapa-contour hover:border-mapa-green/50 cursor-pointer">
+						Civic, Census & Postal (3)
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- Empty State when no tools match -->
+		<div id="tools-empty-state" class="hidden bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-10 text-center font-sans mb-8">
+			<p class="text-base font-bold text-mapa-ink">No matching tools found</p>
+			<p class="text-xs text-mapa-muted mt-1">Try searching for another keyword or switching the category filter back to "All".</p>
+		</div>
+
 		<!-- Tools Grid -->
-		<div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
+		<div id="tools-directory-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
 			<!-- Tool 1: PSGC Lookup -->
-			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
+			<div data-tool-card data-cat="civic" class="relative bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
 				<div>
 					<div class="flex items-center justify-between gap-2 mb-3">
 						<span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-mapa-green/15 text-mapa-green border border-mapa-green/30">
 							Geographic Standards
 						</span>
-						<span class="text-xs text-mapa-clay font-medium">
+						<span class="text-xs text-mapa-muted font-medium">
 							1,742 Divisions Indexed
 						</span>
 					</div>
 					<h2 class="font-serif text-2xl font-bold text-mapa-ink group-hover:text-mapa-green transition-colors">
-						PSGC Lookup & Code Decoder
+						<a href="/tools/psgc-lookup" class="after:absolute after:inset-0">PSGC Lookup & Code Decoder</a>
 					</h2>
 					<p class="text-sm text-mapa-ink/80 leading-relaxed mt-2.5">
 						Search through 18 regions, 82 provinces, and 1,642 cities and municipalities (149 cities: 33 HUCs, 5 ICCs, 111 CCs; and 1,493 municipalities). Instantly decode the 9-digit and 10-digit PSGC hierarchy, inspect 2024 census figures, and jump straight to boundary maps.
 					</p>
-					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/70">
+					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/75">
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">PSA 2024 Census</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Zero-Latency Client Search</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Hierarchy Decoder</span>
 					</div>
 				</div>
 				<div class="mt-6 pt-5 border-t border-mapa-contour/50">
-					<a
-						href="/tools/psgc-lookup"
-						class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green hover:underline"
-					>
+					<span class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green group-hover:underline">
 						<span>Open PSGC Lookup</span>
 						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
 						</svg>
-					</a>
+					</span>
 				</div>
 			</div>
 
 			<!-- Tool 2: Coordinates Converter -->
-			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
+			<div data-tool-card data-cat="geodetic" class="relative bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
 				<div>
 					<div class="flex items-center justify-between gap-2 mb-3">
 						<span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-mapa-flag-blue/15 text-mapa-flag-blue border border-mapa-flag-blue/30">
 							Geodetic & GIS
 						</span>
-						<span class="text-xs text-mapa-clay font-medium">
+						<span class="text-xs text-mapa-muted font-medium">
 							Survey & GIS
 						</span>
 					</div>
 					<h2 class="font-serif text-2xl font-bold text-mapa-ink group-hover:text-mapa-green transition-colors">
-						Coordinate Converter: PRS92 ↔ WGS84
+						<a href="/tools/coordinates" class="after:absolute after:inset-0">Coordinate Converter: PRS92 ↔ WGS84</a>
 					</h2>
 					<p class="text-sm text-mapa-ink/80 leading-relaxed mt-2.5">
 						Convert between GPS latitude and longitude (WGS84 decimal degrees) and projected Philippine coordinates (PRS92 / UTM Zone 51N). Includes datum shift guides and PTM zone reference tables.
 					</p>
-					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/70">
+					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/75">
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">UTM Zone 51N</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">PTM Zones I–V</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Datum Shift Calculator</span>
 					</div>
 				</div>
 				<div class="mt-6 pt-5 border-t border-mapa-contour/50">
-					<a
-						href="/tools/coordinates"
-						class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green hover:underline"
-					>
+					<span class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green group-hover:underline">
 						<span>Open Coordinate Converter</span>
 						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
 						</svg>
-					</a>
+					</span>
 				</div>
 			</div>
 
 			<!-- Tool 3: ZIP Code Lookup -->
-			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
+			<div data-tool-card data-cat="civic" class="relative bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
 				<div>
 					<div class="flex items-center justify-between gap-2 mb-3">
 						<span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-mapa-green/15 text-mapa-green border border-mapa-green/30">
 							Postal Directory
 						</span>
-						<span class="text-xs text-mapa-clay font-medium">
+						<span class="text-xs text-mapa-muted font-medium">
 							2,139 Codes Indexed
 						</span>
 					</div>
 					<h2 class="font-serif text-2xl font-bold text-mapa-ink group-hover:text-mapa-green transition-colors">
-						Philippine ZIP Code Directory
+						<a href="/tools/zip-codes" class="after:absolute after:inset-0">Philippine ZIP Code Directory</a>
 					</h2>
 					<p class="text-sm text-mapa-ink/80 leading-relaxed mt-2.5">
 						Instant search for all 4-digit PHLPost postal codes across Metro Manila and all 82 provinces. 1-click copy for couriers, DFA passport forms, bank verifications, and e-commerce checkouts.
 					</p>
-					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/70">
+					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/75">
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">PHLPost Official</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">1-Click Copy</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Addressing Guide</span>
 					</div>
 				</div>
 				<div class="mt-6 pt-5 border-t border-mapa-contour/50">
-					<a
-						href="/tools/zip-codes"
-						class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green hover:underline"
-					>
+					<span class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green group-hover:underline">
 						<span>Open ZIP Code Lookup</span>
 						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
 						</svg>
-					</a>
+					</span>
 				</div>
 			</div>
 
 			<!-- Tool 4: Commute Fare Estimator -->
-			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
+			<div data-tool-card data-cat="transit" class="relative bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
 				<div>
 					<div class="flex items-center justify-between gap-2 mb-3">
 						<span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-700/15 text-emerald-800 border border-emerald-700/30">
 							Public Transit
 						</span>
-						<span class="text-xs text-mapa-clay font-medium">
+						<span class="text-xs text-mapa-muted font-medium">
 							LTFRB Regulated
 						</span>
 					</div>
 					<h2 class="font-serif text-2xl font-bold text-mapa-ink group-hover:text-mapa-green transition-colors">
-						Philippine Commute Fare Estimator
+						<a href="/tools/fare-calculator" class="after:absolute after:inset-0">Philippine Commute Fare Estimator</a>
 					</h2>
 					<p class="text-sm text-mapa-ink/80 leading-relaxed mt-2.5">
 						Official distance-based passenger fare calculator for Aircon Buses, Ordinary Buses, Modern E-Jeepneys, Traditional Jeepneys, and MRT/LRT. Includes 20% student, senior, and PWD statutory discount computations.
 					</p>
-					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/70">
+					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/75">
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">LTFRB 2026 Matrix</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">RA 11314 Student Rights</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Multi-Modal Compare</span>
 					</div>
 				</div>
 				<div class="mt-6 pt-5 border-t border-mapa-contour/50">
-					<a
-						href="/tools/fare-calculator"
-						class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green hover:underline"
-					>
+					<span class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green group-hover:underline">
 						<span>Open Fare Estimator</span>
 						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
 						</svg>
-					</a>
+					</span>
 				</div>
 			</div>
 
 			<!-- Tool 5: Walkability & 15-Minute City Map -->
-			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
+			<div data-tool-card data-cat="transit" class="relative bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
 				<div>
 					<div class="flex items-center justify-between gap-2 mb-3">
 						<span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-mapa-green/15 text-mapa-green border border-mapa-green/30">
 							Urban Mobility
 						</span>
-						<span class="text-xs text-mapa-clay font-medium">
+						<span class="text-xs text-mapa-muted font-medium">
 							Interactive Radius
 						</span>
 					</div>
 					<h2 class="font-serif text-2xl font-bold text-mapa-ink group-hover:text-mapa-green transition-colors">
-						Philippine Walkability & 15-Minute Radius Map
+						<a href="/tools/walkability" class="after:absolute after:inset-0">Philippine Walkability & 15-Minute Radius Map</a>
 					</h2>
 					<p class="text-sm text-mapa-ink/80 leading-relaxed mt-2.5">
 						Interactive pedestrian catchment calculator. Visualize 5-min (400m), 10-min (800m), and 15-min (1.2km) walking rings across Philippine neighborhoods with step counts and sidewalk regulations.
 					</p>
-					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/70">
+					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/75">
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Live Leaflet Map</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">15-Minute City</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">PD 1096 Sidewalks</span>
 					</div>
 				</div>
 				<div class="mt-6 pt-5 border-t border-mapa-contour/50">
-					<a
-						href="/tools/walkability"
-						class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green hover:underline"
-					>
+					<span class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green group-hover:underline">
 						<span>Open Walkability Map</span>
 						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
 						</svg>
-					</a>
+					</span>
 				</div>
 			</div>
 
 			<!-- Tool 6: Metro Manila Rail Transit Map & Fare Guide -->
-			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
+			<div data-tool-card data-cat="transit" class="relative bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
 				<div>
 					<div class="flex items-center justify-between gap-2 mb-3">
 						<span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-blue-700/15 text-blue-800 border border-blue-700/30">
 							Rail Transit
 						</span>
-						<span class="text-xs text-mapa-clay font-medium">
+						<span class="text-xs text-mapa-muted font-medium">
 							51 Stations &bull; 3 Lines
 						</span>
 					</div>
 					<h2 class="font-serif text-2xl font-bold text-mapa-ink group-hover:text-mapa-green transition-colors">
-						Metro Manila Rail Transit Map & Fare Guide
+						<a href="/tools/rail-transit" class="after:absolute after:inset-0">Metro Manila Rail Transit Map & Fare Guide</a>
 					</h2>
 					<p class="text-sm text-mapa-ink/80 leading-relaxed mt-2.5">
 						Interactive station-to-station fare calculator and visualizer for LRT-1, LRT-2, and MRT-3. Computes single ticket fares, beep™ card rates, 20% statutory discounts, travel times, and transfer footbridge instructions.
 					</p>
-					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/70">
+					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/75">
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">LRT-1 &bull; LRT-2 &bull; MRT-3</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">beep™ Savings</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Interchange Guide</span>
 					</div>
 				</div>
 				<div class="mt-6 pt-5 border-t border-mapa-contour/50">
-					<a
-						href="/tools/rail-transit"
-						class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green hover:underline"
-					>
+					<span class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green group-hover:underline">
 						<span>Open Rail Transit Guide</span>
 						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
 						</svg>
-					</a>
+					</span>
 				</div>
 			</div>
 
 			<!-- Tool 8: Philippine Expressway Toll Calculator -->
-			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
+			<div data-tool-card data-cat="transit" class="relative bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
 				<div>
 					<div class="flex items-center justify-between gap-2 mb-3">
 						<span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-600/15 text-emerald-800 border border-emerald-600/30">
 							Expressways & Toll
 						</span>
-						<span class="text-xs text-mapa-clay font-medium">
+						<span class="text-xs text-mapa-muted font-medium">
 							TRB Tariffs &bull; Class 1, 2, 3
 						</span>
 					</div>
 					<h2 class="font-serif text-2xl font-bold text-mapa-ink group-hover:text-mapa-green transition-colors">
-						Philippine Expressway Toll Calculator & Schematic Map
+						<a href="/tools/toll-calculator" class="after:absolute after:inset-0">Philippine Expressway Toll Calculator & Schematic Map</a>
 					</h2>
 					<p class="text-sm text-mapa-ink/80 leading-relaxed mt-2.5">
 						Official Toll Regulatory Board (TRB) entry-to-exit toll fee calculator for NLEX, SLEX, Skyway Stages 1–3, SCTEX, TPLEX, CALAX, and CCLEX with schematic route strips and RFID guides.
 					</p>
-					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/70">
+					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/75">
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Schematic Corridor Strip</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Autosweep vs. Easytrip</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Class 1, 2 & 3 Rates</span>
 					</div>
 				</div>
 				<div class="mt-6 pt-5 border-t border-mapa-contour/50">
-					<a
-						href="/tools/toll-calculator"
-						class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green hover:underline"
-					>
+					<span class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green group-hover:underline">
 						<span>Open Toll Calculator</span>
 						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
 						</svg>
-					</a>
+					</span>
 				</div>
 			</div>
 
 			<!-- Tool 9: EDSA Carousel Busway -->
-			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
+			<div data-tool-card data-cat="transit" class="relative bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
 				<div>
 					<div class="flex items-center justify-between gap-2 mb-3">
 						<span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-600/15 text-emerald-800 border border-emerald-600/30">
 							Bus Rapid Transit
 						</span>
-						<span class="text-xs text-mapa-clay font-medium">
+						<span class="text-xs text-mapa-muted font-medium">
 							21 Stops &bull; 24/7 Hours
 						</span>
 					</div>
 					<h2 class="font-serif text-2xl font-bold text-mapa-ink group-hover:text-mapa-green transition-colors">
-						EDSA Carousel Busway Fare & Route Map
+						<a href="/tools/edsa-carousel" class="after:absolute after:inset-0">EDSA Carousel Busway Fare & Route Map</a>
 					</h2>
 					<p class="text-sm text-mapa-ink/80 leading-relaxed mt-2.5">
 						Interactive stop-by-stop fare calculator, schematic transit strip, and geographic route map for Metro Manila's 24/7 inner-lane busway connecting Caloocan (Monumento) to Parañaque (PITX) with 20% discount rules and rail interchanges.
 					</p>
-					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/70">
+					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/75">
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Schematic Corridor Strip</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">LTFRB 2026 Fare Matrix</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">LRT-1 & MRT-3 Links</span>
 					</div>
 				</div>
 				<div class="mt-6 pt-5 border-t border-mapa-contour/50">
-					<a
-						href="/tools/edsa-carousel"
-						class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green hover:underline"
-					>
+					<span class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green group-hover:underline">
 						<span>Open EDSA Carousel Guide</span>
 						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
 						</svg>
-					</a>
+					</span>
 				</div>
 			</div>
 
 			<!-- Tool 10: Kilometer Posts & KM 0 Locator -->
-			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
+			<div data-tool-card data-cat="geodetic" class="relative bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
 				<div>
 					<div class="flex items-center justify-between gap-2 mb-3">
 						<span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-rose-600/15 text-rose-800 border border-rose-600/30">
 							Highway Infrastructure
 						</span>
-						<span class="text-xs text-mapa-clay font-medium">
+						<span class="text-xs text-mapa-muted font-medium">
 							DPWH Milestone Posts
 						</span>
 					</div>
 					<h2 class="font-serif text-2xl font-bold text-mapa-ink group-hover:text-mapa-green transition-colors">
-						Philippine Highway Kilometer Post & KM 0 Locator
+						<a href="/tools/kilometer-posts" class="after:absolute after:inset-0">Philippine Highway Kilometer Post & KM 0 Locator</a>
 					</h2>
 					<p class="text-sm text-mapa-ink/80 leading-relaxed mt-2.5">
 						Search and inspect physical DPWH concrete milestone posts across Marilaque Highway (Rizal), Manila East Road, MacArthur Highway, Maharlika Highway, Aguinaldo Highway, and Kennon Road with regional KM 0 benchmark origins.
 					</p>
-					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/70">
+					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/75">
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Marilaque & Rizal</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">KM 0 Luneta & Marawi</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">DPWH Concrete Markers</span>
 					</div>
 				</div>
 				<div class="mt-6 pt-5 border-t border-mapa-contour/50">
-					<a
-						href="/tools/kilometer-posts"
-						class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green hover:underline"
-					>
+					<span class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green group-hover:underline">
 						<span>Open KM Post Locator</span>
 						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
 						</svg>
-					</a>
+					</span>
 				</div>
 			</div>
 
 			<!-- Flagship Application: Lens -->
-			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
+			<div data-tool-card data-cat="civic" class="relative bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
 				<div>
 					<div class="flex items-center justify-between gap-2 mb-3">
 						<span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-mapa-rust/15 text-mapa-rust border border-mapa-rust/30">
 							Web Application
 						</span>
-						<span class="text-xs text-mapa-clay font-medium">
+						<span class="text-xs text-mapa-muted font-medium">
 							Interactive Map
 						</span>
 					</div>
 					<h2 class="font-serif text-2xl font-bold text-mapa-ink group-hover:text-mapa-green transition-colors">
-						Lens
+						<a href="https://lens.mapaph.com" target="_blank" rel="noopener noreferrer" class="after:absolute after:inset-0">Lens</a>
 					</h2>
 					<p class="text-sm text-mapa-ink/80 leading-relaxed mt-2.5">
 						Interactive visualizer and choropleth mapper that overlays Philippine census, economic, and election statistics onto region, province, and municipal boundaries with GeoJSON exports.
 					</p>
-					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/70">
+					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/75">
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Choropleth Maps</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Side-by-side Compare</span>
 						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">GeoJSON Downloads</span>
 					</div>
 				</div>
 				<div class="mt-6 pt-5 border-t border-mapa-contour/50">
-					<a
-						href="https://lens.mapaph.com"
-						target="_blank"
-						rel="noopener noreferrer"
-						class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green hover:underline"
-					>
+					<span class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green group-hover:underline">
 						<span>Launch Lens Application</span>
 						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
 						</svg>
-					</a>
+					</span>
 				</div>
 			</div>
 		</div>
 	</main>
 
 	<Footer />
+
+	<script is:inline>
+		(function () {
+			const searchInput = document.getElementById('tools-directory-search');
+			const catBtns = document.querySelectorAll('.tool-cat-btn');
+			const cards = document.querySelectorAll('[data-tool-card]');
+			const emptyState = document.getElementById('tools-empty-state');
+			let activeCat = 'all';
+
+			function filterTools() {
+				const q = (searchInput?.value || '').trim().toLowerCase();
+				let visibleCount = 0;
+
+				cards.forEach((card) => {
+					const cat = card.getAttribute('data-cat');
+					const text = (card.textContent || '').toLowerCase();
+					const matchCat = activeCat === 'all' || cat === activeCat;
+					const matchQuery = !q || text.includes(q);
+					const show = matchCat && matchQuery;
+					card.classList.toggle('hidden', !show);
+					if (show) visibleCount++;
+				});
+
+				if (emptyState) {
+					emptyState.classList.toggle('hidden', visibleCount > 0);
+				}
+			}
+
+			searchInput?.addEventListener('input', filterTools);
+
+			catBtns.forEach((btn) => {
+				btn.addEventListener('click', () => {
+					activeCat = btn.getAttribute('data-cat') || 'all';
+					catBtns.forEach((b) => {
+						b.className =
+							'tool-cat-btn px-3 py-1.5 rounded-lg font-medium border transition-colors bg-mapa-canvas text-mapa-ink/80 border-mapa-contour hover:border-mapa-green/50 cursor-pointer';
+					});
+					btn.className =
+						'tool-cat-btn px-3 py-1.5 rounded-lg font-semibold border transition-colors bg-mapa-green text-white border-mapa-green cursor-pointer';
+					filterTools();
+				});
+			});
+		})();
+	</script>
 </BaseLayout>

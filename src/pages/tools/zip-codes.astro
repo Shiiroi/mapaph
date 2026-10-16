@@ -82,14 +82,21 @@ const uniqueRegions = Array.from(new Set(entries.map((e) => e.region))).sort();
 
 	<Navbar />
 
-	<main class="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-mapa-ink">
+	<main id="main-content" class="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-mapa-ink">
 		<!-- Header -->
 		<div class="max-w-3xl mb-8">
-			<div class="flex items-center gap-2 mb-2">
+			<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs font-sans text-mapa-muted mb-3">
+				<a href="/" class="hover:text-mapa-green transition-colors">Home</a>
+				<span>/</span>
+				<a href="/tools" class="hover:text-mapa-green transition-colors">Tools</a>
+				<span>/</span>
+				<span class="text-mapa-ink font-semibold">ZIP Code Directory</span>
+			</nav>
+			<div class="flex flex-wrap items-center gap-2 mb-2">
 				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
 					Postal Directory & Geocoding
 				</span>
-				<span class="font-sans text-xs text-mapa-clay">
+				<span class="font-sans text-xs text-mapa-muted">
 					Official PHLPost 4-Digit Directory &bull; RA 7354
 				</span>
 			</div>
