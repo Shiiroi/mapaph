@@ -10,6 +10,7 @@
   --color-mapa-canvas: #f7f3e9;
   --color-mapa-canvas-dark: #ece7db;
   --color-mapa-ink: #211d16;
+  --color-mapa-muted: #5c5343;
   --color-mapa-green: #3d5a45;
   --color-mapa-clay: #c4ac7c;
   --color-mapa-contour: #e5d9c3;
@@ -19,3 +20,57 @@
   --color-mapa-flag-red: #ce1126;
   --color-mapa-flag-gold: #fcd116;
 }
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Accessible keyboard focus ring across all interactive elements */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  summary:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 2px solid var(--color-mapa-green);
+    outline-offset: 2px;
+  }
+}
+
+/* Custom subtle scrollbars for interactive station/results lists */
+.custom-scrollbar::-webkit-scrollbar,
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track,
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: var(--color-mapa-canvas-dark);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb,
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--color-mapa-clay);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover,
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: var(--color-mapa-green);
+}
+
+/* Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+

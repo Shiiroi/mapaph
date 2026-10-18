@@ -134,7 +134,13 @@ const resolvedOgImage = new URL(ogImage || '/default-og.png', Astro.site || Astr
 
 		<slot name="schema" />
 	</head>
-	<body class="bg-mapa-canvas text-mapa-ink min-h-screen">
+	<body class="bg-mapa-canvas text-mapa-ink min-h-screen antialiased selection:bg-mapa-green/20 selection:text-mapa-ink">
+		<a
+			href="#main-content"
+			class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2.5 focus:rounded-xl focus:bg-mapa-green focus:text-mapa-canvas focus:font-sans focus:text-sm focus:font-bold focus:shadow-lg"
+		>
+			Skip to main content
+		</a>
 		<slot />
 		<Analytics />
 	</body>
