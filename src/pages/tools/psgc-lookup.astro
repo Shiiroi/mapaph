@@ -209,17 +209,92 @@ const directoryItems = [
 
 			<!-- Active Inspector Card (Highlighted Selection) -->
 			<div id="inspector-card" class="bg-mapa-canvas border border-mapa-contour/80 rounded-xl p-6 shadow-sm mb-6 transition-all duration-200">
-				<!-- Dynamically populated by client JS -->
+				<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-mapa-contour/50 pb-5 mb-5">
+					<div>
+						<div class="flex items-center gap-2 mb-1.5">
+							<span class="font-sans text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border bg-mapa-clay/20 text-mapa-ink border-mapa-clay/40">
+								Municipality
+							</span>
+							<span class="font-sans text-xs text-mapa-clay">Ilocos Norte, Region I (Ilocos Region)</span>
+						</div>
+						<div class="flex flex-wrap items-center gap-3">
+							<h3 class="font-serif text-2xl sm:text-3xl font-extrabold text-mapa-green tracking-tight">
+								Adams
+							</h3>
+							<button
+								type="button"
+								class="copy-psgc-btn inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-mapa-canvas-dark border border-mapa-contour text-xs font-mono font-medium text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green hover:bg-mapa-green/5 transition-all cursor-pointer group shadow-2xs"
+								data-copy="0102801000"
+								title="Click to copy full 10-digit PSGC code"
+							>
+								<span class="font-sans text-[10px] font-bold uppercase tracking-wider text-mapa-clay group-hover:text-mapa-green">PSGC:</span>
+								<span class="font-bold text-sm tracking-wide font-mono text-mapa-green">0102801000</span>
+							</button>
+						</div>
+					</div>
+					<div class="flex items-center gap-3">
+						<a
+							href="https://lens.mapaph.com/?psgc=0102801000"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-mapa-green text-white font-sans text-xs sm:text-sm font-medium hover:bg-mapa-green/90 transition-all shadow-sm"
+						>
+							<span>Explore on Lens Map</span>
+						</a>
+					</div>
+				</div>
+				<div class="mb-5">
+					<span class="font-sans text-xs font-semibold uppercase tracking-wider text-mapa-clay block mb-2">
+						PSGC Code Breakdown (10 Digits)
+					</span>
+					<div class="grid grid-cols-4 gap-2 font-mono text-center">
+						<div class="bg-mapa-canvas-dark border border-mapa-contour p-2.5 rounded-lg">
+							<span class="text-base sm:text-xl font-bold text-mapa-green block">01</span>
+							<span class="text-[10px] sm:text-xs text-mapa-ink/70 uppercase block font-sans truncate">Region</span>
+						</div>
+						<div class="bg-mapa-canvas-dark border border-mapa-contour p-2.5 rounded-lg">
+							<span class="text-base sm:text-xl font-bold text-mapa-rust block">028</span>
+							<span class="text-[10px] sm:text-xs text-mapa-ink/70 uppercase block font-sans truncate">Province</span>
+						</div>
+						<div class="bg-mapa-canvas-dark border border-mapa-contour p-2.5 rounded-lg">
+							<span class="text-base sm:text-xl font-bold text-mapa-ink block">01</span>
+							<span class="text-[10px] sm:text-xs text-mapa-ink/70 uppercase block font-sans truncate">City/Mun</span>
+						</div>
+						<div class="bg-mapa-canvas-dark border border-mapa-contour p-2.5 rounded-lg">
+							<span class="text-base sm:text-xl font-bold text-mapa-clay block">000</span>
+							<span class="text-[10px] sm:text-xs text-mapa-ink/70 uppercase block font-sans truncate">Barangay</span>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<!-- Search Results Grid -->
 			<div>
 				<div class="flex items-center justify-between font-sans text-xs text-mapa-ink/60 mb-3">
-					<span id="results-count">Showing results</span>
+					<span id="results-count">Showing first 30 of {directoryItems.length} administrative units</span>
 					<span>Click any row to decode & inspect</span>
 				</div>
 				<div id="results-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[440px] overflow-y-auto pr-1">
-					<!-- Dynamically rendered rows -->
+					{directoryItems.slice(0, 30).map((item) => (
+						<button
+							type="button"
+							data-psgc={item.p}
+							class="result-item text-left p-3.5 rounded-xl border transition-all duration-150 bg-mapa-canvas border-mapa-contour hover:border-mapa-green/50 hover:bg-mapa-canvas/80"
+						>
+							<div class="flex items-center justify-between gap-2 mb-1">
+								<span class="font-serif font-bold text-sm text-mapa-ink truncate">
+									{item.n}
+								</span>
+								<span class="font-sans text-[10px] font-semibold px-2 py-0.5 rounded-md bg-mapa-canvas-dark border border-mapa-contour/50 text-mapa-ink/70 uppercase shrink-0">
+									{item.l}
+								</span>
+							</div>
+							<div class="flex items-center justify-between text-xs text-mapa-clay font-sans">
+								<span class="truncate max-w-[65%]">{item.prov || item.reg}</span>
+								<span class="font-mono font-medium text-mapa-ink/80">{item.p}</span>
+							</div>
+						</button>
+					))}
 				</div>
 			</div>
 		</div>

@@ -297,7 +297,36 @@ const uniqueRegions = Array.from(new Set(entries.map((e) => e.region))).sort();
 								</tr>
 							</thead>
 							<tbody id="results-tbody" class="divide-y divide-mapa-contour/50 font-sans">
-								<!-- Dynamically populated via JS -->
+								{entries.slice(0, 25).map((item) => (
+									<tr class="hover:bg-mapa-green/5 transition-colors cursor-pointer group" data-id={item.id}>
+										<td class="py-3 px-4 font-mono font-bold text-mapa-green text-sm">
+											<span class="inline-flex items-center gap-1.5">
+												{item.zip}
+											</span>
+										</td>
+										<td class="py-3 px-4 font-medium text-mapa-ink group-hover:text-mapa-green transition-colors">
+											{item.name}
+										</td>
+										<td class="py-3 px-4 text-mapa-ink/80">
+											{item.location}
+										</td>
+										<td class="py-3 px-4">
+											<span class="font-sans text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-canvas-dark border border-mapa-contour/80 text-mapa-ink/75">
+												{item.region}
+											</span>
+										</td>
+										<td class="py-3 px-4 text-right">
+											<button
+												type="button"
+												class="copy-btn px-2 py-1 rounded bg-mapa-canvas-dark border border-mapa-contour text-[11px] font-medium text-mapa-ink/80 hover:text-mapa-green hover:border-mapa-green transition-colors"
+												data-copy={item.zip}
+												title="Copy ZIP Code"
+											>
+												Copy
+											</button>
+										</td>
+									</tr>
+								))}
 							</tbody>
 						</table>
 					</div>
@@ -483,7 +512,7 @@ const uniqueRegions = Array.from(new Set(entries.map((e) => e.region))).sort();
 			<section class="mb-6 font-sans border-t border-mapa-contour/40 pt-6 text-xs text-mapa-ink/70">
 				<div class="flex flex-wrap items-center justify-between gap-2">
 					<span>Maintained by the <strong>mapaPH Civic Cartography Initiative</strong>.</span>
-					<span>Last Dataset Audit: April 2026 &bull; Verified against PHLPost National Postal Directory.</span>
+					<span>Last Dataset Audit: October 2026 &bull; Verified against PHLPost National Postal Directory.</span>
 				</div>
 			</section>
 		</article>

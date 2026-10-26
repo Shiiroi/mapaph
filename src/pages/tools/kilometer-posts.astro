@@ -616,7 +616,35 @@ const HIGHWAY_CORRIDORS = [
 
 					<!-- Milestone Chain Nodes -->
 					<div id="milestone-chain-list" class="space-y-3 max-h-[620px] overflow-y-auto pr-2 custom-scrollbar">
-						<!-- Injected via JavaScript based on selected Highway -->
+						{HIGHWAY_CORRIDORS[0].markers.map((marker) => (
+							<div
+								class="chain-node p-3 rounded-xl border border-mapa-contour/60 hover:border-mapa-green/40 hover:bg-mapa-canvas flex items-center justify-between cursor-pointer transition-all"
+								data-km={marker.km}
+							>
+								<div class="flex items-center gap-3 min-w-0 pr-2">
+									<div class="w-11 h-11 rounded-lg bg-mapa-canvas border-2 border-mapa-contour flex flex-col items-center justify-center font-mono flex-shrink-0 shadow-2xs">
+										<span class="text-[8px] font-bold text-mapa-muted">KM</span>
+										<span class="text-xs font-extrabold text-mapa-ink leading-none">{marker.km}</span>
+									</div>
+									<div class="min-w-0">
+										<div class="font-serif font-bold text-sm text-mapa-ink flex items-center gap-1.5 truncate">
+											<span>{marker.town}</span>
+											{marker.isTourist && (
+												<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-mapa-rust/10 text-mapa-rust border border-mapa-rust/30">
+													Landmark
+												</span>
+											)}
+										</div>
+										<div class="text-[11px] text-mapa-clay truncate">{marker.prov} &bull; {marker.landmark}</div>
+									</div>
+								</div>
+								<div class="flex items-center gap-2 shrink-0">
+									<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour text-mapa-clay">
+										{marker.destTop}
+									</span>
+								</div>
+							</div>
+						))}
 					</div>
 				</div>
 
