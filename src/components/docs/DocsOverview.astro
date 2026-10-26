@@ -482,3 +482,92 @@ async function fetchBoundaryData() {
   }
 }`}</pre>
 </div>
+
+<!-- SECTION 5: Philippine Spatial & Statistical Standards Summary Matrix -->
+<div class="mt-12 border-t border-mapa-contour/60 pt-8 font-sans">
+	<h2
+		class="text-2xl font-bold text-mapa-ink font-serif mb-4 border-b border-mapa-contour/40 pb-2"
+	>
+		Philippine Spatial &amp; Statistical Standards Reference Matrix
+	</h2>
+	<p class="text-sm text-mapa-ink/90 leading-relaxed mb-6">
+		Building reliable civic software in the Philippines requires reconciling multiple government coding systems and geodetic specifications. The reference table below summarizes the core technical standards documented across this portal:
+	</p>
+
+	<div class="overflow-x-auto border border-mapa-contour rounded-xl bg-mapa-canvas-dark mb-6">
+		<table class="w-full text-left text-xs border-collapse">
+			<thead class="bg-mapa-canvas border-b border-mapa-contour text-mapa-ink uppercase text-[11px] font-bold">
+				<tr>
+					<th class="p-3">Standard / Specification</th>
+					<th class="p-3">Custodian Agency</th>
+					<th class="p-3">Identifier Format</th>
+					<th class="p-3">Companion Guide</th>
+				</tr>
+			</thead>
+			<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85">
+				<tr>
+					<td class="p-3 font-semibold text-mapa-green">PSGC (10-Digit Standard)</td>
+					<td class="p-3">Philippine Statistics Authority (PSA)</td>
+					<td class="p-3 font-mono">RR-PPP-MM-BBB (e.g. 1380600000)</td>
+					<td class="p-3"><a href="/docs/psgc" class="text-mapa-green font-semibold hover:underline">PSGC Reference &rarr;</a></td>
+				</tr>
+				<tr>
+					<td class="p-3 font-semibold text-mapa-green">PRS92 / PTM Zones I-V</td>
+					<td class="p-3">NAMRIA &amp; DENR-LMB (EO No. 45)</td>
+					<td class="p-3 font-mono">EPSG:4683 / EPSG:3121-3125</td>
+					<td class="p-3"><a href="/docs/prs92-wgs84-guide" class="text-mapa-green font-semibold hover:underline">PRS92 vs WGS84 &rarr;</a></td>
+				</tr>
+				<tr>
+					<td class="p-3 font-semibold text-mapa-green">IETF GeoJSON (WGS84)</td>
+					<td class="p-3">IETF RFC 7946 Working Group</td>
+					<td class="p-3 font-mono">EPSG:4326 [lon, lat]</td>
+					<td class="p-3"><a href="/docs/geojson-guide" class="text-mapa-green font-semibold hover:underline">GeoJSON Guide &rarr;</a></td>
+				</tr>
+				<tr>
+					<td class="p-3 font-semibold text-mapa-green">PHLPost Postal Hierarchy</td>
+					<td class="p-3">Philippine Postal Corp. (RA 7354)</td>
+					<td class="p-3 font-mono">4-Digit Numeric (0400-9811)</td>
+					<td class="p-3"><a href="/tools/zip-codes" class="text-mapa-green font-semibold hover:underline">ZIP Directory &rarr;</a></td>
+				</tr>
+				<tr>
+					<td class="p-3 font-semibold text-mapa-green">Humanitarian COD-AB / GIS</td>
+					<td class="p-3">NAMRIA, Geoportal PH &amp; UN OCHA</td>
+					<td class="p-3 font-mono">Shapefile / GeoPackage / WMS</td>
+					<td class="p-3"><a href="/docs/philippine-gis-sources" class="text-mapa-green font-semibold hover:underline">Free GIS Sources &rarr;</a></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<!-- SECTION 6: Academic Citation & Attribution Guidelines -->
+<div class="mt-12 border-t border-mapa-contour/60 pt-8 font-sans">
+	<h2
+		class="text-2xl font-bold text-mapa-ink font-serif mb-4 border-b border-mapa-contour/40 pb-2"
+	>
+		Academic Citation &amp; Attribution Guidelines
+	</h2>
+	<p class="text-sm text-mapa-ink/90 leading-relaxed mb-4">
+		Researchers, university students, and policy analysts using mapaPH tools, compiled PSGC/ZIP lookup directories, or Lens choropleth exports in academic papers, theses, or technical reports may cite the platform using the following standard formats while crediting the originating Philippine government agency (such as PSA, NAMRIA, LTFRB, or TRB):
+	</p>
+
+	<div class="space-y-4 text-xs">
+		<div>
+			<div class="font-bold text-mapa-ink mb-1.5">APA 7th Edition Format:</div>
+			<div class="p-4 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/80 font-mono text-mapa-ink/90 leading-relaxed">
+				mapaPH Civic Cartography Initiative. (2026). <em>mapaPH: Open-source geographic utilities, PSGC boundary indexes, and transit reference tools for the Philippines</em> [Computer software]. https://www.mapaph.com
+			</div>
+		</div>
+
+		<div>
+			<div class="font-bold text-mapa-ink mb-1.5">BibTeX Entry for LaTeX Manuscripts:</div>
+			<pre class="p-4 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/80 font-mono text-mapa-ink/90 leading-relaxed overflow-x-auto">{`@software{mapaph2026,
+  author       = {{mapaPH Civic Cartography Initiative}},
+  title        = {{mapaPH: Open-Source Geographic Utilities and Spatial Reference Tools for the Philippines}},
+  year         = {2026},
+  url          = {https://www.mapaph.com},
+  note         = {MIT License. Primary statistical and geodetic datasets sourced from PSA, NAMRIA, LTFRB, TRB, and PHLPost.}
+}`}</pre>
+		</div>
+	</div>
+</div>

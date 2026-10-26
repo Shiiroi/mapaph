@@ -49,9 +49,79 @@ const pages = [
 const currentIndex = pages.findIndex(p => p.slug === activeSlug);
 const prevPage = currentIndex > 0 ? pages[currentIndex - 1] : null;
 const nextPage = currentIndex < pages.length - 1 ? pages[currentIndex + 1] : null;
+const currentPage = pages[currentIndex] || pages[0];
+const canonicalDocUrl = `https://www.mapaph.com${currentPage.url}`;
+
+const docsSchema = {
+	"@context": "https://schema.org",
+	"@graph": [
+		{
+			"@type": activeSlug === 'index' ? "CollectionPage" : "TechArticle",
+			"headline": title,
+			"name": title,
+			"description": description,
+			"url": canonicalDocUrl,
+			"inLanguage": "en-PH",
+			"author": {
+				"@type": "Organization",
+				"name": "mapaPH",
+				"url": "https://www.mapaph.com"
+			},
+			"publisher": {
+				"@type": "Organization",
+				"name": "mapaPH",
+				"url": "https://www.mapaph.com"
+			}
+		},
+		{
+			"@type": "BreadcrumbList",
+			"itemListElement": activeSlug === 'index'
+				? [
+						{
+							"@type": "ListItem",
+							"position": 1,
+							"name": "Home",
+							"item": "https://www.mapaph.com"
+						},
+						{
+							"@type": "ListItem",
+							"position": 2,
+							"name": "Documentation",
+							"item": "https://www.mapaph.com/docs"
+						}
+					]
+				: [
+						{
+							"@type": "ListItem",
+							"position": 1,
+							"name": "Home",
+							"item": "https://www.mapaph.com"
+						},
+						{
+							"@type": "ListItem",
+							"position": 2,
+							"name": "Documentation",
+							"item": "https://www.mapaph.com/docs"
+						},
+						{
+							"@type": "ListItem",
+							"position": 3,
+							"name": currentPage.name,
+							"item": canonicalDocUrl
+						}
+					]
+		}
+	]
+};
 ---
 
 <BaseLayout title={title} description={description} keywords={keywords} noindex={noindex}>
+	<script
+		type="application/ld+json"
+		slot="schema"
+		is:inline
+		set:html={JSON.stringify(docsSchema)}
+	/>
 	<Navbar />
 
 	<!-- Outer wrapper: border under navbar -->

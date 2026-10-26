@@ -183,12 +183,58 @@ print(f"Longitude: {wgs84_lon:.6f}° E, Latitude: {wgs84_lat:.6f}° N")
 # Output: Longitude: 121.019912° E, Latitude: 14.581240° N`}</pre>
 
 		<h3 class="font-serif font-bold text-lg text-mapa-ink mb-2">Step-by-Step Reprojection in QGIS</h3>
-		<ol class="font-sans text-xs sm:text-sm text-mapa-ink/90 list-decimal pl-5 space-y-2 leading-relaxed">
+		<ol class="font-sans text-xs sm:text-sm text-mapa-ink/90 list-decimal pl-5 space-y-2 leading-relaxed mb-8">
 			<li>Open QGIS (version 3.20 or newer, which includes the updated PROJ datum grid transformations).</li>
 			<li>Load your cadastral or land zoning Shapefile. Check that the Project CRS matches the native PTM zone (for example, <code>EPSG:3123</code> for Central Luzon).</li>
 			<li>Open the processing toolbox and search for <strong>Reproject Layer</strong>.</li>
 			<li>Set the <em>Target CRS</em> to <code>EPSG:4326 - WGS 84</code>.</li>
 			<li>Export the result to GeoJSON. The output features will now align accurately with OpenStreetMap base layers and GPS field tracks.</li>
 		</ol>
+
+		<h3 class="font-serif font-bold text-lg text-mapa-ink mb-2">5. Worked Verification Benchmarks across Philippine Regions</h3>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
+			When validating custom PROJ pipelines, PostGIS spatial queries, or CAD survey templates, engineers can test their transformation functions against known reference monuments across the archipelago. The table below lists benchmark coordinates in WGS84 decimal degrees alongside their corresponding PTM Zone and UTM Zone 51N projected coordinates:
+		</p>
+		<div class="overflow-x-auto my-4 border border-mapa-contour rounded-xl bg-mapa-canvas-dark font-sans">
+			<table class="w-full text-left text-xs border-collapse">
+				<thead class="bg-mapa-canvas border-b border-mapa-contour text-mapa-ink uppercase text-[11px] font-bold">
+					<tr>
+						<th class="p-3">Reference Benchmark</th>
+						<th class="p-3">WGS84 (Lat, Lon)</th>
+						<th class="p-3">Applicable PTM Zone</th>
+						<th class="p-3">UTM Zone 51N (Easting, Northing)</th>
+					</tr>
+				</thead>
+				<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85 font-mono">
+					<tr>
+						<td class="p-3 font-sans font-semibold text-mapa-green">KM 0 Obelisk, Luneta (Manila)</td>
+						<td class="p-3">14.5826° N, 120.9787° E</td>
+						<td class="p-3 font-sans">Zone III (EPSG:3123, 121°E)</td>
+						<td class="p-3">282,143.12 m E, 1,613,294.45 m N</td>
+					</tr>
+					<tr>
+						<td class="p-3 font-sans font-semibold text-mapa-green">Station Balanacan (Marinduque)</td>
+						<td class="p-3">13.5614° N, 121.8675° E</td>
+						<td class="p-3 font-sans">Zone III (EPSG:3123, 121°E)</td>
+						<td class="p-3">377,424.18 m E, 1,499,518.60 m N</td>
+					</tr>
+					<tr>
+						<td class="p-3 font-sans font-semibold text-mapa-green">Cebu Provincial Capitol (Cebu)</td>
+						<td class="p-3">10.3157° N, 123.8917° E</td>
+						<td class="p-3 font-sans">Zone IV (EPSG:3124, 123°E)</td>
+						<td class="p-3">597,659.84 m E, 1,140,468.21 m N</td>
+					</tr>
+					<tr>
+						<td class="p-3 font-sans font-semibold text-mapa-green">Davao City Hall (Davao del Sur)</td>
+						<td class="p-3">7.0644° N, 125.6092° E</td>
+						<td class="p-3 font-sans">Zone V (EPSG:3125, 125°E)</td>
+						<td class="p-3">788,245.10 m E, 781,612.90 m N</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<p class="font-sans text-xs text-mapa-ink/75 leading-relaxed">
+			To test interactive conversions directly in your browser, open the <a href="/tools/coordinates" class="text-mapa-green font-semibold hover:underline">Philippine Coordinate Converter (PRS92 &leftrightarrow; WGS84)</a> or explore administrative polygons in the <a href="/docs/geojson-guide" class="text-mapa-green font-semibold hover:underline">Philippine GeoJSON Developer Guide</a>.
+		</p>
 	</section>
 </article>

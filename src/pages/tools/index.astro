@@ -11,9 +11,40 @@ import Footer from '../../components/Footer.astro';
 
 <BaseLayout
 	title="Free Philippine Mapping Tools & Utilities | mapaPH"
-	description="Explore free open-source mapping utilities for the Philippines: PSGC Code Lookup, PRS92 coordinate converter, Lens civic visualizer, and transit tools."
+	description="Explore free open-source mapping utilities for the Philippines: PSGC Code Lookup, PRS92 coordinate converter, PHLPost ZIP code directory, LTFRB/TRB transit calculators, and Lens civic visualizer."
 	keywords="Philippine mapping tools, free GIS tools Philippines, PSGC lookup online, PRS92 converter, Philippine cartography, open source mapping Philippines, Lens mapaPH"
 >
+	<script type="application/ld+json" slot="schema" is:inline>
+		{
+			"@context": "https://schema.org",
+			"@graph": [
+				{
+					"@type": "CollectionPage",
+					"name": "Philippine Mapping Tools & Utilities Directory | mapaPH",
+					"url": "https://www.mapaph.com/tools",
+					"description": "Directory of free, browser-native mapping utilities, geodetic calculators, administrative decoders, and public transit fare guides for the Philippines."
+				},
+				{
+					"@type": "BreadcrumbList",
+					"itemListElement": [
+						{
+							"@type": "ListItem",
+							"position": 1,
+							"name": "Home",
+							"item": "https://www.mapaph.com"
+						},
+						{
+							"@type": "ListItem",
+							"position": 2,
+							"name": "Tools Directory",
+							"item": "https://www.mapaph.com/tools"
+						}
+					]
+				}
+			]
+		}
+	</script>
+
 	<Navbar />
 
 	<main id="main-content" class="max-w-7xl mx-auto px-6 lg:px-8 py-14 text-mapa-ink">
@@ -405,6 +436,191 @@ import Footer from '../../components/Footer.astro';
 				</div>
 			</div>
 		</div>
+
+		<!-- Technical Architecture & Reference Guide -->
+		<article class="mt-16 pt-12 border-t border-mapa-contour/60 max-w-5xl mx-auto font-sans space-y-12">
+			<!-- Section 1: Technical Comparison Matrix -->
+			<section>
+				<span class="text-xs font-bold uppercase tracking-wider text-mapa-green">
+					Technical Specifications
+				</span>
+				<h2 class="text-2xl sm:text-3xl font-extrabold text-mapa-ink font-serif tracking-tight mt-1.5 mb-4">
+					Comparative Reference Matrix of All 10 mapaPH Utilities
+				</h2>
+				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed mb-6">
+					Every utility in the mapaPH directory is built around an authoritative Philippine statutory standard, geodetic datum, or public regulatory tariff schedule. The table below outlines the governing agency, underlying dataset scope, and primary output of each tool:
+				</p>
+
+				<div class="overflow-x-auto border border-mapa-contour rounded-xl bg-mapa-canvas-dark shadow-2xs">
+					<table class="w-full text-left text-xs border-collapse">
+						<thead class="bg-mapa-canvas border-b border-mapa-contour text-mapa-ink uppercase text-[11px] font-bold">
+							<tr>
+								<th class="p-3.5">Utility Name</th>
+								<th class="p-3.5">Primary Authority / Statute</th>
+								<th class="p-3.5">Indexed Scope</th>
+								<th class="p-3.5">Primary Output &amp; Use Case</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85">
+							<tr>
+								<td class="p-3.5 font-semibold text-mapa-green"><a href="/tools/psgc-lookup" class="hover:underline">PSGC Lookup &amp; Decoder</a></td>
+								<td class="p-3.5">PSA (RA 10625)</td>
+								<td class="p-3.5">1,742 Administrative Divisions</td>
+								<td class="p-3.5">10-digit &amp; 9-digit PSGC hierarchy decoding, 2024 POPCEN demographics, LGU class tags.</td>
+							</tr>
+							<tr>
+								<td class="p-3.5 font-semibold text-mapa-green"><a href="/tools/coordinates" class="hover:underline">PRS92 &leftrightarrow; WGS84 Converter</a></td>
+								<td class="p-3.5">NAMRIA / DENR (EO No. 45, DAO 2007-29)</td>
+								<td class="p-3.5">PTM Zones I-V &amp; UTM Zone 51N</td>
+								<td class="p-3.5">Bi-directional GPS decimal degree and Easting/Northing meter conversion with datum shift vectors.</td>
+							</tr>
+							<tr>
+								<td class="p-3.5 font-semibold text-mapa-green"><a href="/tools/zip-codes" class="hover:underline">PHLPost ZIP Directory</a></td>
+								<td class="p-3.5">PHLPost (RA 7354)</td>
+								<td class="p-3.5">2,139 Postal Delivery Zones</td>
+								<td class="p-3.5">4-digit postal code lookup, island routing zone breakdown, UPU address formatting.</td>
+							</tr>
+							<tr>
+								<td class="p-3.5 font-semibold text-mapa-green"><a href="/tools/fare-calculator" class="hover:underline">Commute Fare Estimator</a></td>
+								<td class="p-3.5">LTFRB &amp; DOTr (CA 146, RA 11314)</td>
+								<td class="p-3.5">5 Regulated Public Transit Modes</td>
+								<td class="p-3.5">Piecewise linear distance fare calculation for PUB, MPUJ, TPUJ, and Rail with 20% statutory discounts.</td>
+							</tr>
+							<tr>
+								<td class="p-3.5 font-semibold text-mapa-green"><a href="/tools/walkability" class="hover:underline">Walkability &amp; 15-Min Radius</a></td>
+								<td class="p-3.5">DPWH &amp; NBCP (PD 1096, BP 344)</td>
+								<td class="p-3.5">9 Urban Presets + Any PH Pin</td>
+								<td class="p-3.5">400m / 800m / 1.2km geodesic walking rings, tropical pace calibration, step &amp; calorie metrics.</td>
+							</tr>
+							<tr>
+								<td class="p-3.5 font-semibold text-mapa-green"><a href="/tools/rail-transit" class="hover:underline">Metro Manila Rail Guide</a></td>
+								<td class="p-3.5">DOTr, LRTA &amp; LRMC</td>
+								<td class="p-3.5">51 Stations Across LRT-1, LRT-2, MRT-3</td>
+								<td class="p-3.5">Station-to-station Single Journey vs beep card fare tables, travel time, and footbridge transfer guides.</td>
+							</tr>
+							<tr>
+								<td class="p-3.5 font-semibold text-mapa-green"><a href="/tools/toll-calculator" class="hover:underline">Expressway Toll Calculator</a></td>
+								<td class="p-3.5">Toll Regulatory Board (PD 1112, JAO 2024-001)</td>
+								<td class="p-3.5">7 Major Tollways (Class 1, 2, 3)</td>
+								<td class="p-3.5">Entry-to-exit TRB toll fee computation, schematic plaza strip, Autosweep vs Easytrip RFID assignment.</td>
+							</tr>
+							<tr>
+								<td class="p-3.5 font-semibold text-mapa-green"><a href="/tools/edsa-carousel" class="hover:underline">EDSA Carousel Busway</a></td>
+								<td class="p-3.5">LTFRB Route E &amp; MMDA</td>
+								<td class="p-3.5">21 Median BRT Stations (28.1 km)</td>
+								<td class="p-3.5">Stop-by-stop Monumento to PITX fare schedule, schematic ribbon, and rail concourse links.</td>
+							</tr>
+							<tr>
+								<td class="p-3.5 font-semibold text-mapa-green"><a href="/tools/kilometer-posts" class="hover:underline">Kilometer Post &amp; KM 0 Locator</a></td>
+								<td class="p-3.5">DPWH DGCS Vol. 4 &amp; NHCP</td>
+								<td class="p-3.5">5 Regional KM 0 Origins &amp; 7 Trunk Roads</td>
+								<td class="p-3.5">Concrete DPWH marker anatomy decoder, corridor chain inspector, and Bataan Death March mileposts.</td>
+							</tr>
+							<tr>
+								<td class="p-3.5 font-semibold text-mapa-green"><a href="https://lens.mapaph.com" target="_blank" rel="noopener noreferrer" class="hover:underline">Lens Web Application</a></td>
+								<td class="p-3.5">PSA, COMELEC &amp; COA Open Data</td>
+								<td class="p-3.5">42,000+ Barangays &amp; 1,642 LGUs</td>
+								<td class="p-3.5">Interactive choropleth visualizer, side-by-side LGU comparison, and RFC 7946 GeoJSON boundary export.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</section>
+
+			<!-- Section 2: Multi-Tool Workflows -->
+			<section class="border-t border-mapa-contour/40 pt-10">
+				<h2 class="text-2xl sm:text-3xl font-extrabold text-mapa-ink font-serif tracking-tight mb-4">
+					Chaining Utilities: Practical Workflows for Researchers and Commuters
+				</h2>
+				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed mb-6">
+					While each tool operates as a standalone calculator, they are designed to interoperate using shared geographic identifiers and coordinate standards:
+				</p>
+
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+					<div class="p-6 rounded-2xl bg-mapa-canvas-dark border border-mapa-contour/80">
+						<span class="text-[11px] font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
+							Workflow 1 &bull; GIS &amp; Academic Research
+						</span>
+						<h3 class="font-serif text-xl font-bold text-mapa-ink mt-3 mb-2">
+							Building a Standardized LGU Spatial Dataset
+						</h3>
+						<ol class="text-xs sm:text-sm text-mapa-ink/85 space-y-2.5 list-decimal pl-5 leading-relaxed">
+							<li>
+								<strong>Normalize Administrative Keys:</strong> Query target municipalities in the <a href="/tools/psgc-lookup" class="text-mapa-green font-semibold hover:underline">PSGC Lookup</a> to retrieve their canonical 10-digit PSA code and 2024 census population baseline, avoiding spelling conflicts (such as <em>Parañaque</em> vs <em>Paranaque</em>).
+							</li>
+							<li>
+								<strong>Cross-Reference Postal Logistics:</strong> Click through to the <a href="/tools/zip-codes" class="text-mapa-green font-semibold hover:underline">PHLPost ZIP Directory</a> to map municipal boundaries to their 4-digit postal routing zones for household survey or logistics sampling.
+							</li>
+							<li>
+								<strong>Reproject Field Survey Tie Points:</strong> Use the <a href="/tools/coordinates" class="text-mapa-green font-semibold hover:underline">Coordinate Converter</a> to transform legacy DENR cadastral coordinates (PRS92 / Clarke 1866) into WGS84 decimal degrees.
+							</li>
+							<li>
+								<strong>Export Vector Polygons:</strong> Launch <a href="https://lens.mapaph.com" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">Lens</a> or consult the <a href="/docs/geojson-guide" class="text-mapa-green font-semibold hover:underline">GeoJSON Developer Guide</a> to join your PSGC-keyed table with RFC 7946 boundary polygons.
+							</li>
+						</ol>
+					</div>
+
+					<div class="p-6 rounded-2xl bg-mapa-canvas-dark border border-mapa-contour/80">
+						<span class="text-[11px] font-bold uppercase tracking-wider text-mapa-navy bg-mapa-navy/10 px-2.5 py-0.5 rounded-full">
+							Workflow 2 &bull; Urban Mobility &amp; Trip Budgeting
+						</span>
+						<h3 class="font-serif text-xl font-bold text-mapa-ink mt-3 mb-2">
+							Auditing Multimodal Metro Manila Transit Costs
+						</h3>
+						<ol class="text-xs sm:text-sm text-mapa-ink/85 space-y-2.5 list-decimal pl-5 leading-relaxed">
+							<li>
+								<strong>Measure First-Mile Catchment:</strong> Pin your residential origin or office destination on the <a href="/tools/walkability" class="text-mapa-green font-semibold hover:underline">Walkability &amp; 15-Minute Radius Map</a> to identify which rail stations or busway terminals fall within a 400m to 800m shaded walk.
+							</li>
+							<li>
+								<strong>Compare Trunkline Rail vs. BRT:</strong> Check station-to-station stored-value beep fares and footbridge transfer times on the <a href="/tools/rail-transit" class="text-mapa-green font-semibold hover:underline">Metro Manila Rail Transit Guide</a> alongside 24/7 median busway rates on the <a href="/tools/edsa-carousel" class="text-mapa-green font-semibold hover:underline">EDSA Carousel Calculator</a>.
+							</li>
+							<li>
+								<strong>Verify Last-Mile Feeder Tariffs:</strong> Enter the remaining distance into the <a href="/tools/fare-calculator" class="text-mapa-green font-semibold hover:underline">Commute Fare Estimator</a> to compute exact LTFRB legal fares for Traditional or Modern Jeepneys, including mandatory 20% student (RA 11314), senior (RA 9994), and PWD (RA 10754) discounts.
+							</li>
+							<li>
+								<strong>Evaluate Private Vehicle Toll Alternatives:</strong> For inter-provincial trips across Luzon or Cebu, compare public transit costs against Class 1 expressway tariffs and RFID wallet requirements in the <a href="/tools/toll-calculator" class="text-mapa-green font-semibold hover:underline">Expressway Toll Calculator</a>.
+							</li>
+						</ol>
+					</div>
+				</div>
+			</section>
+
+			<!-- Section 3: Client-Side Architecture & Data Integrity -->
+			<section class="border-t border-mapa-contour/40 pt-10">
+				<h2 class="text-2xl sm:text-3xl font-extrabold text-mapa-ink font-serif tracking-tight mb-4">
+					Browser-Native Architecture & Open-Data Integrity
+				</h2>
+				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed mb-4">
+					Unlike conventional web directories that rely on slow database round-trips or rate-limited third-party APIs, every calculator in the mapaPH suite compiles its reference datasets directly into static client-side bundles during the Astro build process. This architecture delivers three concrete advantages for Filipino users:
+				</p>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-5 text-xs sm:text-sm">
+					<div class="p-5 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70">
+						<h3 class="font-serif font-bold text-base text-mapa-green mb-1.5">
+							Zero-Latency Mobile Search
+						</h3>
+						<p class="text-mapa-ink/80 leading-relaxed text-xs">
+							Once a tool page loads on a mobile connection, filtering across 1,742 PSGC divisions or 2,139 PHLPost ZIP codes executes in under 5 milliseconds inside browser memory, remaining responsive even on intermittent provincial cellular data.
+						</p>
+					</div>
+					<div class="p-5 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70">
+						<h3 class="font-serif font-bold text-base text-mapa-green mb-1.5">
+							Verifiable Statutory Formulas
+						</h3>
+						<p class="text-mapa-ink/80 leading-relaxed text-xs">
+							Every mathematical formula, whether a piecewise LTFRB per-kilometer tariff or a 7-parameter Helmert datum transformation, is written in readable, unminified open-source code accompanied by its exact Republic Act or Department Order citation.
+						</p>
+					</div>
+					<div class="p-5 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70">
+						<h3 class="font-serif font-bold text-base text-mapa-green mb-1.5">
+							Privacy by Design
+						</h3>
+						<p class="text-mapa-ink/80 leading-relaxed text-xs">
+							Because coordinate conversions, radius pins, and route selections are computed locally on your device, your location queries and travel itineraries are never logged to a backend server. Read our <a href="/docs" class="text-mapa-green font-semibold hover:underline">Technical Documentation</a> to learn more.
+						</p>
+					</div>
+				</div>
+			</section>
+		</article>
 	</main>
 
 	<Footer />
