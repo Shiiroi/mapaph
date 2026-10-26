@@ -10,12 +10,43 @@ import Footer from '../components/Footer.astro';
 ---
 
 <BaseLayout 
-	title="Contact Us | Reach the mapaPH Team" 
-	description="Get in touch with the mapaPH mapping collective to suggest new tools, report cartographic errors, or collaborate on Philippine geographic datasets."
+	title="Contact Us & Submit Data Corrections | mapaPH" 
+	description="Get in touch with the mapaPH mapping collective to suggest new tools, report cartographic or transit fare errors, request academic citations, or collaborate on Philippine geographic datasets."
 >
+	<script type="application/ld+json" slot="schema" is:inline>
+		{
+			"@context": "https://schema.org",
+			"@graph": [
+				{
+					"@type": "ContactPage",
+					"name": "Contact mapaPH | Data Corrections & Research Inquiries",
+					"url": "https://www.mapaph.com/contact",
+					"description": "Contact channels, cartographic correction protocols, and licensing FAQs for the mapaPH open-source mapping collective."
+				},
+				{
+					"@type": "BreadcrumbList",
+					"itemListElement": [
+						{
+							"@type": "ListItem",
+							"position": 1,
+							"name": "Home",
+							"item": "https://www.mapaph.com"
+						},
+						{
+							"@type": "ListItem",
+							"position": 2,
+							"name": "Contact",
+							"item": "https://www.mapaph.com/contact"
+						}
+					]
+				}
+			]
+		}
+	</script>
+
 	<Navbar />
 
-	<main class="max-w-4xl mx-auto px-6 py-16 font-serif leading-relaxed text-mapa-ink">
+	<main id="main-content" class="max-w-4xl mx-auto px-6 py-16 font-serif leading-relaxed text-mapa-ink">
 		<article class="prose prose-stone max-w-none">
 			<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
 				Communications & Support
@@ -115,6 +146,50 @@ import Footer from '../components/Footer.astro';
 					<p class="text-xs text-mapa-ink/75 leading-relaxed">
 						Please provide detailed steps to reproduce the issue and avoid exploiting vulnerabilities beyond the minimum necessary for verification. We acknowledge receipt within 24 hours and commit to prompt remediation before any public disclosure.
 					</p>
+				</section>
+
+				<!-- Frequently Asked Questions Before Contacting -->
+				<section class="border-t border-mapa-contour/40 pt-8 font-sans">
+					<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+						Common Questions Before Reaching Out
+					</h2>
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs leading-relaxed">
+						<div class="p-5 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70">
+							<h3 class="font-serif font-bold text-base text-mapa-green mb-1.5">
+								Do I need written permission to use mapaPH data in my thesis or app?
+							</h3>
+							<p class="text-mapa-ink/85">
+								No formal written permission is required. All source code and compiled JSON/GeoJSON directories in our repository are published under the permissive <strong>MIT License</strong>, and underlying Philippine government statistics are in the public domain under <strong>Republic Act No. 8293 Section 176</strong>. Standard academic attribution to mapaPH and the originating agency (PSA, NAMRIA, LTFRB, TRB, or PHLPost) is sufficient.
+							</p>
+						</div>
+
+						<div class="p-5 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70">
+							<h3 class="font-serif font-bold text-base text-mapa-green mb-1.5">
+								Where can I download the raw JSON or GeoJSON files in bulk?
+							</h3>
+							<p class="text-mapa-ink/85">
+								You can download the complete pre-indexed datasets (including <code>psgc-directory.json</code> and <code>philippine-zip-codes.json</code>) directly from the <code>src/data/</code> folder of our <a href="https://github.com/Shiiroi/mapaph" target="_blank" rel="noopener noreferrer" class="text-mapa-green hover:underline font-semibold">GitHub repository</a>, or export administrative boundary polygons interactively through <a href="https://lens.mapaph.com" target="_blank" rel="noopener noreferrer" class="text-mapa-green hover:underline font-semibold">Lens</a>.
+							</p>
+						</div>
+
+						<div class="p-5 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70">
+							<h3 class="font-serif font-bold text-base text-mapa-green mb-1.5">
+								Can mapaPH issue official land survey certifications or resolve overcharging complaints?
+							</h3>
+							<p class="text-mapa-ink/85">
+								No. mapaPH is an independent open-source software project, not a government regulatory body. For official cadastral relocation surveys, consult a licensed Geodetic Engineer or the DENR Land Management Bureau. To report public transit overcharging or discount refusals, contact the <strong>LTFRB 24/7 Hotline at 1342</strong> or email <code>complaints@ltfrb.gov.ph</code>.
+							</p>
+						</div>
+
+						<div class="p-5 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70">
+							<h3 class="font-serif font-bold text-base text-mapa-green mb-1.5">
+								How can I contribute a new Philippine mapping utility?
+							</h3>
+							<p class="text-mapa-ink/85">
+								Fork our repository on GitHub, review the architectural guidelines in our <a href="/docs" class="text-mapa-green hover:underline font-semibold">Documentation Portal</a>, and open a discussion ticket or pull request proposing the new tool, its authoritative data source, and its verification methodology.
+							</p>
+						</div>
+					</div>
 				</section>
 			</div>
 		</article>

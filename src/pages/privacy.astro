@@ -10,118 +10,198 @@ import Footer from '../components/Footer.astro';
 ---
 
 <BaseLayout 
-	title="Privacy Policy: mapaPH" 
-	description="Read the complete privacy policy for mapaPH. Learn how we handle logs, cookies, and crowdsourced tool data."
+	title="Privacy Policy & Data Protection | mapaPH" 
+	description="Read the complete privacy policy for mapaPH. Learn how we handle server logs, Google AdSense partner disclosures, client-side browser storage, and your rights under the Philippine Data Privacy Act of 2012 (RA 10173)."
 >
+	<script type="application/ld+json" slot="schema" is:inline>
+		{
+			"@context": "https://schema.org",
+			"@graph": [
+				{
+					"@type": "WebPage",
+					"name": "Privacy Policy | mapaPH",
+					"url": "https://www.mapaph.com/privacy",
+					"description": "Privacy Policy, Google AdSense cookie disclosures, client-side storage architecture, and RA 10173 compliance for mapaPH."
+				},
+				{
+					"@type": "BreadcrumbList",
+					"itemListElement": [
+						{
+							"@type": "ListItem",
+							"position": 1,
+							"name": "Home",
+							"item": "https://www.mapaph.com"
+						},
+						{
+							"@type": "ListItem",
+							"position": 2,
+							"name": "Privacy Policy",
+							"item": "https://www.mapaph.com/privacy"
+						}
+					]
+				}
+			]
+		}
+	</script>
+
 	<Navbar />
 
 	<main id="main-content" class="max-w-3xl mx-auto px-6 py-16 text-mapa-ink">
 		<article>
 			<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
-				Legal
+				Legal & Data Protection
 			</span>
 			<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl font-serif mt-2">
 				Privacy Policy
 			</h1>
 			
 			<p class="font-sans text-xs text-mapa-muted mt-2">
-				Last updated: July 15, 2026
+				Last updated: April 2026
 			</p>
 
 			<div class="mt-10 border-t border-mapa-contour/60 pt-8">
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					At mapaPH, we believe in building tools that respect user privacy. This policy explains what information is processed when you visit our central hub (mapaph.com) and how we handle data across our open-source tools.
+					At mapaPH (<a href="https://www.mapaph.com" class="text-mapa-green hover:underline">www.mapaph.com</a>), we build open-source geographic tools that respect user privacy. This policy explains what technical information is processed when you visit our central hub, how our client-side calculators operate, our mandatory Google AdSense partner disclosures, and your statutory rights under Philippine law.
 				</p>
 
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					1. Information we collect and process
+					1. Information We Collect and Client-Side Architecture
 				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
-					Because this hub website is fully static, we do not require account registration, email sign-ups, or form submissions. We process only the following basic technical data:
+					Because this hub website is compiled as a static Astro application, we do not operate user registration systems, authentication databases, or server-side form processors. You can search Philippine Standard Geographic Codes (PSGC), convert PRS92 coordinates, calculate LTFRB and TRB transit tariffs, and inspect boundary maps without creating an account or submitting personally identifiable information (PII).
 				</p>
 				<ul class="font-sans text-sm text-mapa-ink/90 list-disc pl-5 mb-6 space-y-2">
 					<li>
-						<strong>Server Logs:</strong> Our hosting provider, Vercel, automatically collects standard logging parameters when you make requests to our site. This includes anonymized IP addresses, request timestamps, browser types, and referral pages to monitor network stability and security.
+						<strong>Zero Query Logging:</strong> All interactive calculators on this site execute locally inside your browser using JavaScript against pre-compiled JSON datasets already downloaded to your device. When you search for a municipality, barangay, or postal code, or drag a walkability radius pin on a map, those queries and coordinates are never transmitted to a mapaPH backend database.
 					</li>
 					<li>
-						<strong>Vercel Web Analytics:</strong> We use Vercel Web Analytics to track general traffic trends (such as page views and browser stats). This tool is completely cookie-free and does not collect or store any personally identifiable information.
+						<strong>Server Logs:</strong> Our hosting provider, Vercel, automatically records standard HTTP request parameters when delivering static assets. This includes anonymized IP addresses, request timestamps, browser user-agent strings, and referral URLs to monitor network stability and mitigate denial-of-service traffic.
 					</li>
 					<li>
-						<strong>Google Search Console:</strong> We use Google Search Console to monitor search ranking metrics and index quality. This tool does not track individual user identity on our website.
+						<strong>Vercel Web Analytics & Google Search Console:</strong> We use Vercel Web Analytics to measure aggregate traffic trends (such as page views and viewport sizes) without setting tracking cookies or fingerprinting individual visitors, and Google Search Console to monitor search index health.
 					</li>
 					<li>
-						<strong>Correspondence:</strong> If you contact us directly via email (vrsmagwili@gmail.com) or by opening a public issue on GitHub, we process your contact information solely to reply to your questions.
+						<strong>Direct Voluntary Correspondence:</strong> If you contact us directly via email (<code>vrsmagwili@gmail.com</code>) or open a public issue or pull request on GitHub, we process the contact details you provide solely to respond to your inquiry or review your code contribution.
 					</li>
 				</ul>
 
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					2. Cookies and Advertising (Google AdSense)
+					2. Browser Local Storage, Clipboard Access, and Cookies Inventory
 				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
-					We partner with third-party advertising networks, including <strong>Google AdSense</strong>, to display advertisements on mapaPH and its subdomains. To support these services, third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to this website or other websites across the Internet:
+					To provide a responsive interface while funding our open-source hosting infrastructure, mapaPH uses limited client-side browser APIs alongside third-party advertising cookies. Below is a complete inventory of storage mechanisms active on this domain:
+				</p>
+
+				<div class="overflow-x-auto my-6 border border-mapa-contour rounded-xl bg-mapa-canvas-dark font-sans">
+					<table class="w-full text-left text-xs border-collapse">
+						<thead class="border-b border-mapa-contour bg-mapa-canvas text-mapa-ink uppercase text-[11px] font-bold">
+							<tr>
+								<th class="p-3">Mechanism / Key</th>
+								<th class="p-3">Category</th>
+								<th class="p-3">Purpose & Retention</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85">
+							<tr>
+								<td class="p-3 font-mono font-bold text-mapa-green">localStorage: "theme"</td>
+								<td class="p-3">First-Party Preference</td>
+								<td class="p-3">Persists your selected Light Mode or Dark Mode cartographic theme across page loads. Stored locally in your browser; never transmitted over the network.</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-mono font-bold text-mapa-green">navigator.clipboard</td>
+								<td class="p-3">Browser API Action</td>
+								<td class="p-3">Triggered only when you explicitly click a "Copy" button on a PSGC code, ZIP code, GPS coordinate, or fare calculation card. Writes plain text to your system clipboard.</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-mono font-bold text-mapa-navy">__gads, __gpi, IDE</td>
+								<td class="p-3">Third-Party Advertising (Google AdSense)</td>
+								<td class="p-3">Set by Google LLC (<code>googlesyndication.com</code> / <code>doubleclick.net</code>) to measure ad impressions, prevent invalid click activity, cap ad frequency, and serve contextual or personalized ads.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					3. Google AdSense & Mandatory Partner Disclosures
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
+					We partner with third-party advertising networks, including <strong>Google AdSense</strong>, to display advertisements on mapaPH and its subdomains. In compliance with Google Publisher Policies, we provide the following disclosures:
 				</p>
 				<ul class="font-sans text-sm text-mapa-ink/90 list-disc pl-5 mb-4 space-y-2">
 					<li>
-						Google's use of advertising cookies (such as the DoubleClick DART cookie) enables it and its partners to serve ads to our visitors based on their visits to mapaPH and/or other sites on the Internet.
+						Third-party vendors, including Google, use cookies, web beacons, and similar browser storage technologies to serve ads based on a user's prior visits to this website or other websites across the Internet.
 					</li>
 					<li>
-						Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" class="text-mapa-green underline font-medium">Google Ad Settings</a>.
+						Google's use of advertising cookies (such as the DoubleClick DART cookie) enables Google and its partners to serve ads to our visitors based on their visits to <code>mapaph.com</code> and/or other sites on the Internet.
 					</li>
 					<li>
-						Alternatively, users may opt out of third-party vendor cookies for personalized advertising by visiting <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" class="text-mapa-green underline font-medium">www.aboutads.info/choices/</a>.
+						Users may opt out of personalized advertising by visiting <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer" class="text-mapa-green underline font-medium">Google Ads Settings (My Ad Center)</a>.
+					</li>
+					<li>
+						Alternatively, users may opt out of third-party vendor cookies for personalized advertising by visiting <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" class="text-mapa-green underline font-medium">www.aboutads.info/choices/</a> or <a href="https://www.youronlinechoices.eu/" target="_blank" rel="noopener noreferrer" class="text-mapa-green underline font-medium">Your Online Choices</a>.
+					</li>
+					<li>
+						To understand how Google collects, shares, and processes data when you visit websites or apps that integrate Google services, please review Google's official partner disclosure page: <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer" class="text-mapa-green underline font-medium">How Google uses information from sites or apps that use our services</a>.
 					</li>
 				</ul>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					You can also manage or disable cookies directly within your web browser settings. Please note that disabling advertising cookies will not remove advertisements; it will only cause the ads displayed to be non-personalized.
+					You can also manage or block third-party cookies directly within your web browser settings. Blocking advertising cookies will not restrict your access to any calculator, lookup table, or GeoJSON export on mapaPH; it will only cause displayed advertisements to be non-personalized.
 				</p>
 
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					3. Third-party services
+					4. External Map Tile Providers & Third-Party Infrastructure
 				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					We rely on Vercel to host this hub site. Vercel processes request data to deliver site assets. You can review the Vercel Privacy Policy on their official website to understand how they secure their cloud infrastructure.
+					We rely on Vercel to host this static hub site. In addition, interactive map utilities on mapaPH (including the Walkability & 15-Minute Radius Map, Rail Transit Map, EDSA Carousel Route Map, Expressway Toll Calculator, and Kilometer Post Locator) load the open-source <strong>Leaflet</strong> library from <code>unpkg.com</code> and fetch raster basemap tiles from the <strong>OpenStreetMap Foundation</strong> (<code>tile.openstreetmap.org</code>). When your browser requests map tiles from OpenStreetMap, your IP address and tile coordinates are transmitted to their tile servers under the <a href="https://osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener noreferrer" class="text-mapa-green underline font-medium">OpenStreetMap Foundation Privacy Policy</a>.
 				</p>
 
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					4. Your rights under the Philippine Data Privacy Act
+					5. Your Rights Under the Philippine Data Privacy Act (RA 10173)
 				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
+					We align our data handling practices with the <strong>Philippine Data Privacy Act of 2012 (Republic Act No. 10173)</strong> and the regulations of the <strong>National Privacy Commission (NPC)</strong>. Under Section 16 of RA 10173, data subjects are entitled to the following statutory rights:
+				</p>
+				<ul class="font-sans text-sm text-mapa-ink/90 list-disc pl-5 mb-4 space-y-2">
+					<li>
+						<strong>Right to be Informed:</strong> To be notified whether personal data pertaining to you is being processed, including third-party advertising cookie disclosures.
+					</li>
+					<li>
+						<strong>Right to Object:</strong> To opt out of personalized advertising profiling via browser controls or Google Ads Settings.
+					</li>
+					<li>
+						<strong>Right to Access, Rectification, and Erasure:</strong> To inspect, update, or request the permanent deletion of any email correspondence or GitHub inquiries you have submitted to our maintainers. Because we do not maintain a user database or store personal profiles, we hold no personal data files beyond voluntary correspondence.
+					</li>
+				</ul>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					Because we are focused on the Philippines, we align our privacy guidelines with the Philippine Data Privacy Act of 2012 (Republic Act No. 10173). You have the right to access, update, correct, or request the deletion of any personal email correspondence or GitHub inquiries you have submitted to us. Since we do not maintain a user database or store profiles, we do not have personal data files to export or modify.
+					All demographic, electoral, and municipal financial datasets published on mapaPH and Lens consist exclusively of aggregated public-domain government statistics released under Executive Order No. 2, Series of 2016 (Freedom of Information) and exempted under Section 4(e) of RA 10173 for public statistical and historical research functions.
 				</p>
 
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					5. Data retention and security
+					6. Data Retention and Security
 				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					Anonymized server log entries are automatically deleted or rotated by Vercel according to their standard network retention policies (typically under 90 days). Email correspondence is kept only as long as necessary to address your feedback.
+					Anonymized edge server log entries are automatically rotated and purged by Vercel according to their standard infrastructure retention schedules. Direct email correspondence is retained only as long as necessary to resolve your technical inquiry or data correction report. All traffic to and from <code>mapaph.com</code> is encrypted in transit using HTTPS / TLS 1.3.
 				</p>
 
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					6. Children's privacy
+					7. Children's Privacy
 				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					Our tools are not directed at minors, and we do not knowingly collect or request personal details from children under the age of 13.
+					While our educational geography and transit reference guides are safe for students of all ages, we do not knowingly solicit or collect personal information from children under the age of 13.
 				</p>
 
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					7. Individual subdomains and crowdsourced tools
+					8. Subdomains and Linked Open-Source Applications
 				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					This policy applies only to mapaph.com. Individual applications linked from this directory run on their own subdomains (such as lens.mapaph.com). Some of these tools may store custom settings locally in your browser or accept crowdsourced public contributions. Each subdomain is governed by its own minimal data policy which you can read on the respective subdomain site.
+					This policy governs <code>www.mapaph.com</code> and its built-in `/tools` and `/docs` directories. Standalone applications linked from our directory run on dedicated subdomains (such as <a href="https://lens.mapaph.com" class="text-mapa-green underline font-medium">lens.mapaph.com</a>) or external government portals (such as <code>psa.gov.ph</code> and <code>namria.gov.ph</code>). When following external links to government portals, please consult the privacy notices of those respective agencies.
 				</p>
 
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					8. Changes to this policy
+					9. Changes to This Policy & Contact Information
 				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					We may update this policy occasionally to reflect changes in our tools or hosting setup. All revisions will be posted on this page with an updated date listed at the top.
-				</p>
-
-				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					9. Contact information
-				</h2>
-				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					If you have questions about this policy, you can contact us at vrsmagwili@gmail.com or file an issue in our public GitHub repository.
+					We may update this Privacy Policy periodically to reflect new tools or regulatory requirements, with the revision date updated at the top of this page. If you have questions about this policy or your rights under RA 10173, please contact us at <a href="mailto:vrsmagwili@gmail.com" class="text-mapa-green underline font-medium">vrsmagwili@gmail.com</a>, visit our <a href="/contact" class="text-mapa-green underline font-medium">Contact Page</a>, or file an issue in our <a href="https://github.com/Shiiroi/mapaph" target="_blank" rel="noopener noreferrer" class="text-mapa-green underline font-medium">public GitHub repository</a>.
 				</p>
 			</div>
 		</article>
