@@ -328,7 +328,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 ---
 
 <BaseLayout
-	title="EDSA Carousel Busway Stop-by-Stop Fare & Route Map — mapaPH Tools"
+	title="EDSA Carousel Busway Stop-by-Stop Fare & Route Map | mapaPH Tools"
 	description="Interactive EDSA Carousel Busway (Route E) stop-by-stop fare calculator, schematic transit ribbon, and geographic route map. Computes official LTFRB distance-based fares, 20% statutory discounts, travel times, and rail interchanges between Monumento and PITX."
 	keywords="EDSA Carousel fare calculator, EDSA Busway stops, Monumento to PITX fare, EDSA Carousel map, LTFRB bus fare matrix, One Ayala busway, MRT 3 to EDSA Carousel transfer, 24/7 bus EDSA, PITX busway stops, Ayala Malls Manila Bay bus stop"
 >
@@ -480,7 +480,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 								>
 									{BUSWAY_STOPS.map((stop, index) => (
 										<option value={stop.id} selected={index === 0}>
-											{index + 1}. {stop.name} ({stop.city}) — KM {stop.km.toFixed(1)}
+											{index + 1}. {stop.name} ({stop.city}) · KM {stop.km.toFixed(1)}
 										</option>
 									))}
 								</select>
@@ -500,7 +500,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 								>
 									{BUSWAY_STOPS.map((stop, index) => (
 										<option value={stop.id} selected={index === BUSWAY_STOPS.length - 1}>
-											{index + 1}. {stop.name} ({stop.city}) — KM {stop.km.toFixed(1)}
+											{index + 1}. {stop.name} ({stop.city}) · KM {stop.km.toFixed(1)}
 										</option>
 									))}
 								</select>
@@ -919,7 +919,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 												))}
 											</div>
 										) : (
-											<span class="text-mapa-muted">—</span>
+											<span class="text-mapa-muted">-</span>
 										)}
 									</td>
 									<td class="py-3 px-4 text-right font-bold text-mapa-green">₱{stop.regFare.toFixed(2)}</td>
@@ -956,7 +956,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5">
 					<h3 class="font-bold text-mapa-ink mb-2">Who is entitled to the 20% statutory fare discount?</h3>
 					<p class="text-mapa-ink/80 leading-relaxed text-xs">
-						Under Philippine statutes—Republic Act No. 11314 (Student Fare Discount Act), Republic Act No. 9994 (Expanded Senior Citizens Act), and Republic Act No. 10754 (Persons with Disability Act)—bona fide students, senior citizens, and PWDs are entitled to a mandatory 20% fare discount upon presenting valid IDs.
+						Under Philippine statutes including Republic Act No. 11314 (Student Fare Discount Act), Republic Act No. 9994 (Expanded Senior Citizens Act), and Republic Act No. 10754 (Persons with Disability Act), bona fide students, senior citizens, and PWDs are entitled to a mandatory 20% fare discount upon presenting valid IDs.
 					</p>
 				</div>
 

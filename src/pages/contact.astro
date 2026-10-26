@@ -10,34 +10,112 @@ import Footer from '../components/Footer.astro';
 ---
 
 <BaseLayout 
-	title="Contact Us — Reach the mapaPH Team" 
-	description="Get in touch with the mapaPH mapping collective to suggest new tools, report bugs, or collaborate on Philippine geographic datasets."
+	title="Contact Us | Reach the mapaPH Team" 
+	description="Get in touch with the mapaPH mapping collective to suggest new tools, report cartographic errors, or collaborate on Philippine geographic datasets."
 >
 	<Navbar />
 
-	<main class="max-w-3xl mx-auto px-6 py-16 font-serif leading-relaxed">
-		<article class="prose prose-stone">
-			<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl">
-				Contact Us
+	<main class="max-w-4xl mx-auto px-6 py-16 font-serif leading-relaxed text-mapa-ink">
+		<article class="prose prose-stone max-w-none">
+			<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
+				Communications & Support
+			</span>
+			<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl font-serif mt-2">
+				Contact mapaPH
 			</h1>
 			
-			<p class="mt-6 text-xl text-mapa-ink/80 font-medium">
-				Have a suggestion, mapping request, or data contribution? We'd love to hear from you.
+			<p class="mt-4 text-xl text-mapa-ink/80 leading-relaxed font-serif">
+				Have a suggestion, transit route update, mapping bug report, or data contribution? Reach out directly to the project maintainers.
 			</p>
 
-			<div class="mt-10 border-t border-mapa-contour/40 pt-8 max-w-xl">
-				<div class="p-8 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/60">
-					<h2 class="text-xl font-bold text-mapa-ink font-serif mb-2">Email Inquiries</h2>
-					<p class="font-sans text-sm text-mapa-ink/80 leading-relaxed mb-6">
-						For data corrections, mapping suggestions, API inquiries, or collaboration opportunities, contact the maintainers directly via email.
-					</p>
-					<a 
-						href="mailto:vrsmagwili@gmail.com" 
-						class="inline-flex items-center justify-center gap-2 w-full py-3 px-6 bg-mapa-green text-white font-sans text-center text-sm font-semibold rounded-lg hover:bg-mapa-green/90 transition-all shadow-sm"
-					>
-						<span>vrsmagwili@gmail.com</span>
-					</a>
+			<div class="mt-10 border-t border-mapa-contour/60 pt-8 space-y-10">
+				<!-- Inquiries Grid -->
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
+					<div class="p-6 rounded-2xl bg-mapa-canvas-dark border border-mapa-contour/70 flex flex-col justify-between">
+						<div>
+							<h2 class="text-lg font-bold text-mapa-green font-serif mb-2">Direct Email Inquiries</h2>
+							<p class="text-xs text-mapa-ink/85 leading-relaxed mb-4">
+								For press inquiries, academic research partnerships, technical questions, or general feedback about our mapping tools:
+							</p>
+						</div>
+						<a 
+							href="mailto:vrsmagwili@gmail.com" 
+							class="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-mapa-green text-white text-xs font-semibold rounded-lg hover:bg-mapa-green/90 transition-all shadow-xs"
+						>
+							<span>vrsmagwili@gmail.com</span>
+						</a>
+					</div>
+
+					<div class="p-6 rounded-2xl bg-mapa-canvas-dark border border-mapa-contour/70 flex flex-col justify-between">
+						<div>
+							<h2 class="text-lg font-bold text-mapa-green font-serif mb-2">Public Issue Tracker</h2>
+							<p class="text-xs text-mapa-ink/85 leading-relaxed mb-4">
+								Found a bug in a calculator or want to inspect the source code? Open a public issue or pull request on GitHub:
+							</p>
+						</div>
+						<a 
+							href="https://github.com/Shiiroi/mapaph" 
+							target="_blank" 
+							rel="noopener noreferrer" 
+							class="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 border border-mapa-contour bg-mapa-canvas text-mapa-ink text-xs font-semibold rounded-lg hover:border-mapa-green transition-all shadow-xs"
+						>
+							<span>github.com/Shiiroi/mapaph &rarr;</span>
+						</a>
+					</div>
 				</div>
+
+				<!-- Data Correction Guidelines -->
+				<section class="border-t border-mapa-contour/40 pt-8 font-sans">
+					<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+						Submitting Cartographic & Transit Corrections
+					</h2>
+					<p class="text-sm text-mapa-ink/90 leading-relaxed mb-4">
+						Because Philippine administrative boundaries, public transit fare matrices, and expressway toll schedules undergo periodic statutory revisions, we actively maintain a rapid data correction workflow. To help us verify and correct geographic inaccuracies quickly, please include the following references when submitting a ticket:
+					</p>
+					<ul class="text-xs text-mapa-ink/85 space-y-2 list-disc pl-5 leading-relaxed mb-6">
+						<li>
+							<strong>Administrative Boundary Issues:</strong> Cite the specific 9-digit or 10-digit Philippine Standard Geographic Code (PSGC) and the relevant statutory charter (such as a Republic Act, plebiscite proclamation, or provincial board ordinance).
+						</li>
+						<li>
+							<strong>Transit Fare Discrepancies:</strong> Cite the specific Land Transportation Franchising and Regulatory Board (LTFRB) Memorandum Circular or rail operator tariff notice, including the effective date and route franchise endpoints.
+						</li>
+						<li>
+							<strong>Expressway Toll Rate Changes:</strong> Reference the published Toll Regulatory Board (TRB) tariff matrix notice, concessionaire advisory (e.g. NLEX Corporation, SMC SLEX Inc., or MPTC), and the specific toll plaza interchange.
+						</li>
+						<li>
+							<strong>Kilometer Post Coordinates:</strong> Include GPS coordinates in WGS84 decimal degrees (or PRS92 grid coordinates) and a photographic reference if verifying a newly relocated or physically restored milestone marker along national highways.
+						</li>
+					</ul>
+					<p class="text-xs text-mapa-ink/75 leading-relaxed mb-6">
+						Our maintainers operate on Philippine Standard Time (PST / UTC+8). We review submitted error reports, verify primary source documents against official gazettes, and respond within 2 to 3 business days. Verified corrections are committed directly to our public Git tree and deployed to production in our next static build.
+					</p>
+				</section>
+
+				<!-- Academic Research & Civic Partnerships -->
+				<section class="border-t border-mapa-contour/40 pt-8 font-sans">
+					<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+						Academic Research & Civic Tech Inquiries
+					</h2>
+					<p class="text-sm text-mapa-ink/90 leading-relaxed mb-4">
+						We frequently collaborate with university geography departments, urban planning researchers, transport advocacy coalitions, and civic developers across the Philippines. If you are conducting academic research that requires bulk historical GIS boundaries, specialized GeoJSON extracts, or customized demographic join tables, feel free to reach out via email. All underlying cartographic software and scripts remain free and open-source under the MIT license.
+					</p>
+					<p class="text-xs text-mapa-ink/75 leading-relaxed">
+						When citing mapaPH in academic papers or policy briefs, please refer to our citation guidelines outlined in the Documentation index, including the publication date and Git commit hash of the analyzed dataset.
+					</p>
+				</section>
+
+				<!-- Responsible Security & Vulnerability Disclosure -->
+				<section class="border-t border-mapa-contour/40 pt-8 font-sans">
+					<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+						Responsible Vulnerability Disclosure
+					</h2>
+					<p class="text-sm text-mapa-ink/90 leading-relaxed mb-4">
+						We take the integrity and security of our web delivery pipeline seriously. If you identify a potential security vulnerability, client-side script flaw, or dependency issue in mapaPH, please report it privately by sending an email with subject line "[SECURITY REPORT]" to <strong>vrsmagwili@gmail.com</strong>.
+					</p>
+					<p class="text-xs text-mapa-ink/75 leading-relaxed">
+						Please provide detailed steps to reproduce the issue and avoid exploiting vulnerabilities beyond the minimum necessary for verification. We acknowledge receipt within 24 hours and commit to prompt remediation before any public disclosure.
+					</p>
+				</section>
 			</div>
 		</article>
 	</main>
