@@ -202,7 +202,7 @@ const BUSWAY_STOPS = [
 		access: 'Pedestrian Overpass',
 		interchanges: ['Aurora Blvd / Tramo Local Jeeps'],
 		landmarks: 'Pasay General Hospital, Cabrera St, Tramo Commercial Hub',
-		lat: 14.5420,
+		lat: 14.5385,
 		lon: 121.0080,
 		isTerminus: false
 	},
@@ -328,7 +328,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 ---
 
 <BaseLayout
-	title="EDSA Carousel Busway Stop-by-Stop Fare & Route Map — mapaPH Tools"
+	title="EDSA Carousel Busway Stop-by-Stop Fare & Route Map | mapaPH Tools"
 	description="Interactive EDSA Carousel Busway (Route E) stop-by-stop fare calculator, schematic transit ribbon, and geographic route map. Computes official LTFRB distance-based fares, 20% statutory discounts, travel times, and rail interchanges between Monumento and PITX."
 	keywords="EDSA Carousel fare calculator, EDSA Busway stops, Monumento to PITX fare, EDSA Carousel map, LTFRB bus fare matrix, One Ayala busway, MRT 3 to EDSA Carousel transfer, 24/7 bus EDSA, PITX busway stops, Ayala Malls Manila Bay bus stop"
 >
@@ -348,14 +348,14 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				{
 					"@type": "WebApplication",
 					"name": "EDSA Carousel Busway Stop-by-Stop Fare & Route Map",
-					"url": "https://mapaph.com/tools/edsa-carousel",
+					"url": "https://www.mapaph.com/tools/edsa-carousel",
 					"applicationCategory": "Public Transit & Commuter Utility",
 					"operatingSystem": "All",
 					"description": "Interactive fare calculator and dual schematic/geographic route map for the EDSA Carousel Busway (Route E) from Monumento to PITX with official LTFRB distance tariffs.",
 					"provider": {
 						"@type": "Organization",
 						"name": "mapaPH",
-						"url": "https://mapaph.com"
+						"url": "https://www.mapaph.com"
 					}
 				},
 				{
@@ -365,19 +365,19 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 							"@type": "ListItem",
 							"position": 1,
 							"name": "Home",
-							"item": "https://mapaph.com"
+							"item": "https://www.mapaph.com"
 						},
 						{
 							"@type": "ListItem",
 							"position": 2,
 							"name": "Tools",
-							"item": "https://mapaph.com/tools"
+							"item": "https://www.mapaph.com/tools"
 						},
 						{
 							"@type": "ListItem",
 							"position": 3,
 							"name": "EDSA Carousel Busway Guide",
-							"item": "https://mapaph.com/tools/edsa-carousel"
+							"item": "https://www.mapaph.com/tools/edsa-carousel"
 						}
 					]
 				}
@@ -387,10 +387,10 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 
 	<Navbar />
 
-	<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 text-mapa-ink">
+	<main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 text-mapa-ink">
 		<!-- Header Breadcrumb & Tag -->
 		<div class="mb-8">
-			<nav class="flex items-center gap-2 text-xs font-sans text-mapa-clay mb-3">
+			<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs font-sans text-mapa-muted mb-3">
 				<a href="/" class="hover:text-mapa-green transition-colors">Home</a>
 				<span>/</span>
 				<a href="/tools" class="hover:text-mapa-green transition-colors">Tools</a>
@@ -399,13 +399,13 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 			</nav>
 
 			<div class="flex flex-wrap items-center gap-2.5">
-				<span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-600/15 text-emerald-800 border border-emerald-600/30">
+				<span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-mapa-green/10 text-mapa-green border border-mapa-green/25">
 					Route E &bull; Median Bus Rapid Transit (BRT)
 				</span>
 				<span class="text-xs font-medium px-2.5 py-1 rounded-full bg-mapa-canvas-dark border border-mapa-contour text-mapa-ink/75">
 					21 Stations &bull; 28.1 Kilometers
 				</span>
-				<span class="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-800 border border-blue-500/20">
+				<span class="text-xs font-medium px-2.5 py-1 rounded-full bg-mapa-navy/10 text-mapa-navy border border-mapa-navy/20">
 					24/7 Operating Hours
 				</span>
 			</div>
@@ -421,24 +421,24 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 		<!-- Top Summary Stat Badges -->
 		<div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-4 mb-8 font-sans">
 			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-4 shadow-2xs">
-				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-clay">Base Fare</div>
+				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted">Base Fare</div>
 				<div class="text-2xl font-extrabold text-mapa-ink mt-1">₱15.00</div>
-				<div class="text-[11px] text-mapa-ink/65 mt-0.5">First 4.0 km (Aircon BRT)</div>
+				<div class="text-[11px] text-mapa-muted mt-0.5">First 4.0 km (Aircon BRT)</div>
 			</div>
 			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-4 shadow-2xs">
-				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-clay">Per KM Tariff</div>
-				<div class="text-2xl font-extrabold text-mapa-ink mt-1">₱2.65 <span class="text-xs font-normal text-mapa-ink/60">/ km</span></div>
-				<div class="text-[11px] text-mapa-ink/65 mt-0.5">Every succeeding kilometer</div>
+				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted">Per KM Tariff</div>
+				<div class="text-2xl font-extrabold text-mapa-ink mt-1">₱2.65 <span class="text-xs font-normal text-mapa-muted">/ km</span></div>
+				<div class="text-[11px] text-mapa-muted mt-0.5">Every succeeding kilometer</div>
 			</div>
 			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-4 shadow-2xs">
-				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-clay">Maximum Fare</div>
-				<div class="text-2xl font-extrabold text-emerald-800 mt-1">₱75.50</div>
-				<div class="text-[11px] text-mapa-ink/65 mt-0.5">End-to-End (Monumento ↔ PITX)</div>
+				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted">Maximum Fare</div>
+				<div class="text-2xl font-extrabold text-mapa-green mt-1">₱75.50</div>
+				<div class="text-[11px] text-mapa-muted mt-0.5">End-to-End (Monumento ↔ PITX)</div>
 			</div>
 			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-4 shadow-2xs">
-				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-clay">Statutory Discount</div>
-				<div class="text-2xl font-extrabold text-blue-700 mt-1">20% OFF</div>
-				<div class="text-[11px] text-mapa-ink/65 mt-0.5">Students, Seniors, PWDs (₱60.50 max)</div>
+				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted">Statutory Discount</div>
+				<div class="text-2xl font-extrabold text-mapa-navy mt-1">20% OFF</div>
+				<div class="text-[11px] text-mapa-muted mt-0.5">Students, Seniors, PWDs (₱60.50 max)</div>
 			</div>
 		</div>
 
@@ -469,17 +469,18 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					<div class="space-y-4">
 						<!-- Origin Stop -->
 						<div>
-							<label for="origin-select" class="block text-xs font-bold uppercase tracking-wider text-mapa-clay mb-1.5">
-								Boarding Stop (Origin)
+							<label for="origin-select" class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-mapa-green mb-1.5">
+								<span class="w-2 h-2 rounded-full bg-mapa-green"></span>
+								<span>Boarding Stop (Origin / Start)</span>
 							</label>
 							<div class="relative">
 								<select
 									id="origin-select"
-									class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/40 cursor-pointer"
+									class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green cursor-pointer"
 								>
 									{BUSWAY_STOPS.map((stop, index) => (
 										<option value={stop.id} selected={index === 0}>
-											{index + 1}. {stop.name} ({stop.city}) — KM {stop.km.toFixed(1)}
+											{index + 1}. {stop.name} ({stop.city}) · KM {stop.km.toFixed(1)}
 										</option>
 									))}
 								</select>
@@ -488,17 +489,18 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 
 						<!-- Destination Stop -->
 						<div>
-							<label for="dest-select" class="block text-xs font-bold uppercase tracking-wider text-mapa-clay mb-1.5">
-								Alighting Stop (Destination)
+							<label for="dest-select" class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-mapa-navy mb-1.5">
+								<span class="w-2 h-2 rounded-full bg-mapa-navy"></span>
+								<span>Alighting Stop (Destination / Exit)</span>
 							</label>
 							<div class="relative">
 								<select
 									id="dest-select"
-									class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/40 cursor-pointer"
+									class="w-full bg-mapa-canvas border border-mapa-contour rounded-xl px-3.5 py-2.5 text-sm font-medium text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-navy cursor-pointer"
 								>
 									{BUSWAY_STOPS.map((stop, index) => (
 										<option value={stop.id} selected={index === BUSWAY_STOPS.length - 1}>
-											{index + 1}. {stop.name} ({stop.city}) — KM {stop.km.toFixed(1)}
+											{index + 1}. {stop.name} ({stop.city}) · KM {stop.km.toFixed(1)}
 										</option>
 									))}
 								</select>
@@ -510,7 +512,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 							<label class="flex items-center justify-between p-3 rounded-xl bg-mapa-canvas border border-mapa-contour/70 cursor-pointer hover:border-mapa-green/50 transition-colors">
 								<div class="flex flex-col">
 									<span class="text-xs font-bold text-mapa-ink">20% Statutory Discount</span>
-									<span class="text-[11px] text-mapa-clay">Student (RA 11314), Senior Citizen (RA 9994), PWD (RA 10754)</span>
+									<span class="text-[11px] text-mapa-muted">Student (RA 11314), Senior Citizen (RA 9994), PWD (RA 10754)</span>
 								</div>
 								<input
 									type="checkbox"
@@ -522,28 +524,28 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					</div>
 
 					<!-- Calculation Result Card -->
-					<div class="mt-6 p-5 rounded-xl bg-emerald-600/10 border border-emerald-600/30">
+					<div class="mt-6 p-5 rounded-xl bg-mapa-canvas border border-mapa-contour">
 						<div class="flex items-center justify-between mb-2">
-							<span class="text-xs font-bold uppercase tracking-wider text-emerald-900">Estimated Busway Fare</span>
-							<span id="fare-rate-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white">Regular</span>
+							<span class="text-xs font-bold uppercase tracking-wider text-mapa-muted">Estimated Busway Fare</span>
+							<span id="fare-rate-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-mapa-green text-white">Regular</span>
 						</div>
 
 						<div class="flex items-baseline gap-2">
-							<span id="computed-fare" class="text-4xl font-extrabold text-emerald-950 font-serif">₱75.50</span>
-							<span id="discounted-fare-strikethrough" class="text-sm line-through text-mapa-clay hidden">₱75.50</span>
+							<span id="computed-fare" class="text-4xl font-extrabold text-mapa-green font-serif">₱75.50</span>
+							<span id="discounted-fare-strikethrough" class="text-sm line-through text-mapa-muted hidden">₱75.50</span>
 						</div>
 
-						<div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-emerald-600/20 text-center text-xs">
+						<div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-mapa-contour/60 text-center text-xs">
 							<div>
-								<div class="text-[10px] text-mapa-clay uppercase font-bold">Corridor Distance</div>
+								<div class="text-[10px] text-mapa-muted uppercase font-bold">Corridor Distance</div>
 								<div id="stat-distance" class="font-bold text-mapa-ink mt-0.5">28.1 km</div>
 							</div>
 							<div>
-								<div class="text-[10px] text-mapa-clay uppercase font-bold">Stops Traversed</div>
+								<div class="text-[10px] text-mapa-muted uppercase font-bold">Stops Traversed</div>
 								<div id="stat-stops" class="font-bold text-mapa-ink mt-0.5">20 stops</div>
 							</div>
 							<div>
-								<div class="text-[10px] text-mapa-clay uppercase font-bold">Est. Travel Time</div>
+								<div class="text-[10px] text-mapa-muted uppercase font-bold">Est. Travel Time</div>
 								<div id="stat-time" class="font-bold text-mapa-ink mt-0.5">~55–70 mins</div>
 							</div>
 						</div>
@@ -561,7 +563,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				<div id="active-stop-card" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-xs">
 					<div class="flex items-center justify-between border-b border-mapa-contour/50 pb-3 mb-4">
 						<div>
-							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay">Selected Station Details</span>
+							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted">Selected Station Details</span>
 							<h3 id="card-stop-name" class="font-serif text-xl font-bold text-mapa-ink">Monumento</h3>
 						</div>
 						<span id="card-stop-city" class="text-xs font-semibold px-2.5 py-1 rounded bg-mapa-canvas border border-mapa-contour text-mapa-green">
@@ -571,22 +573,22 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 
 					<div class="space-y-3 text-xs">
 						<div>
-							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay">Platform Configuration</div>
+							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted">Platform Configuration</div>
 							<p id="card-stop-platform" class="text-mapa-ink/90 font-medium mt-0.5">Median Island with Barrier</p>
 						</div>
 						<div>
-							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay">Pedestrian Access & Entry</div>
+							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted">Pedestrian Access & Entry</div>
 							<p id="card-stop-access" class="text-mapa-ink/90 font-medium mt-0.5">Pedestrian Footbridge & Street Crosswalk</p>
 						</div>
 						<div>
-							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay">Connecting Interchanges</div>
+							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted">Connecting Interchanges</div>
 							<div id="card-stop-interchanges" class="flex flex-wrap gap-1.5 mt-1">
-								<span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-800 border border-emerald-500/20">LRT-1 Monumento</span>
+								<span class="px-2 py-0.5 rounded bg-mapa-green/10 text-mapa-green border border-mapa-green/25">LRT-1 Monumento</span>
 								<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour">Caloocan Jeepney Hub</span>
 							</div>
 						</div>
 						<div>
-							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay">Nearby Landmarks</div>
+							<div class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted">Nearby Landmarks</div>
 							<p id="card-stop-landmarks" class="text-mapa-ink/80 mt-0.5">Bonifacio Monument Circle, SM Center Sangandaan, Victory Central Mall</p>
 						</div>
 					</div>
@@ -595,40 +597,118 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 
 			<!-- Right Column: Dual Visualizer (Schematic Busway Ribbon vs. Geographic Map) (7 cols) -->
 			<div class="lg:col-span-7 flex flex-col gap-4 font-sans">
+				<!-- Station Click Target Selector & Journey Status Bar -->
+				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 shadow-xs flex flex-col gap-3">
+					<div class="flex flex-wrap items-center justify-between gap-3">
+						<div class="flex items-center gap-2 flex-wrap">
+							<span class="text-xs font-bold uppercase tracking-wider text-mapa-muted">
+								Click Stop Sets:
+							</span>
+							<div class="inline-flex rounded-xl bg-mapa-canvas p-1 border border-mapa-contour text-xs font-bold">
+								<button
+									id="busway-target-origin"
+									type="button"
+									class="px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
+									title="Clicking any stop will set it as your Boarding point"
+								>
+									<span class="w-2 h-2 rounded-full bg-white"></span>
+									<span>Boarding (Start)</span>
+								</button>
+								<button
+									id="busway-target-dest"
+									type="button"
+									class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer"
+									title="Clicking any stop will set it as your Destination"
+								>
+									<span class="w-2 h-2 rounded-full bg-mapa-navy"></span>
+									<span>Destination (Alight)</span>
+								</button>
+							</div>
+						</div>
+
+						<button
+							id="busway-quick-swap-btn"
+							type="button"
+							class="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green text-mapa-ink flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+							title="Swap Boarding and Destination stops"
+						>
+							<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+							</svg>
+							<span>Swap Stops</span>
+						</button>
+					</div>
+
+					<!-- Visual Hint for User -->
+					<div id="busway-click-hint" class="text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium">
+						<span class="w-1.5 h-1.5 rounded-full bg-mapa-green shrink-0"></span>
+						<span>Click any stop row or use <strong>Board</strong> / <strong>Alight</strong> to select your route.</span>
+					</div>
+
+					<!-- Active Route Summary Ribbon -->
+					<div class="bg-mapa-canvas border border-mapa-contour rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+						<div class="flex items-center gap-2 flex-wrap">
+							<span class="font-bold text-mapa-green flex items-center gap-1.5 bg-mapa-green/10 px-2.5 py-1 rounded-md border border-mapa-green/25">
+								<span class="w-2 h-2 rounded-full bg-mapa-green"></span>
+								<span class="uppercase tracking-wider text-[10px] text-mapa-muted">Board:</span>
+								<span id="busway-summary-origin" class="text-mapa-ink">Monumento</span>
+							</span>
+							<span class="text-mapa-muted font-bold">&rarr;</span>
+							<span class="font-bold text-mapa-navy flex items-center gap-1.5 bg-mapa-navy/10 px-2.5 py-1 rounded-md border border-mapa-navy/25">
+								<span class="w-2 h-2 rounded-full bg-mapa-navy"></span>
+								<span class="uppercase tracking-wider text-[10px] text-mapa-muted">Alight:</span>
+								<span id="busway-summary-dest" class="text-mapa-ink">PITX</span>
+							</span>
+						</div>
+						<div class="flex items-center gap-1.5">
+							<span id="busway-summary-metric" class="text-[11px] font-bold px-2.5 py-1 rounded-md bg-mapa-green text-white shadow-2xs">
+								20 stops &bull; ₱75.50
+							</span>
+						</div>
+					</div>
+				</div>
+
 				<!-- Visualizer Controls: View Mode Switcher -->
 				<div class="flex items-center justify-between bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-3.5 shadow-2xs">
 					<div class="flex items-center gap-2">
-						<span class="text-xs font-bold uppercase tracking-wider text-mapa-clay pl-2">Display View:</span>
-						<div class="inline-flex rounded-xl bg-mapa-canvas p-1 border border-mapa-contour">
+						<span class="text-xs font-bold uppercase tracking-wider text-mapa-muted pl-2">Display View:</span>
+						<div class="inline-flex rounded-xl bg-mapa-canvas p-1 border border-mapa-contour text-xs font-bold">
+							<button
+								id="btn-view-list"
+								type="button"
+								class="px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer"
+							>
+								Station List
+							</button>
 							<button
 								id="btn-view-schematic"
 								type="button"
-								class="px-3 py-1.5 text-xs font-bold rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer"
+								class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
 							>
-								Schematic Strip
+								Schematic Map
 							</button>
 							<button
 								id="btn-view-geo"
 								type="button"
-								class="px-3 py-1.5 text-xs font-medium rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
+								class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
 							>
 								Geographic Map
 							</button>
 						</div>
 					</div>
 
-					<div class="text-xs text-mapa-clay hidden sm:block">
-						<span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-600 mr-1 align-middle"></span>
+					<div class="text-xs text-mapa-muted hidden sm:block">
+						<span class="inline-block w-2.5 h-2.5 rounded-full bg-mapa-green mr-1 align-middle"></span>
 						Inner Median Busway
 					</div>
 				</div>
 
-				<!-- VIEW 1: Schematic Busway Strip Container -->
-				<div id="schematic-view-container" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-xs overflow-hidden">
+				<!-- VIEW 1: Station List View Container -->
+				<div id="list-view-container" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-xs overflow-hidden">
 					<div class="flex items-center justify-between pb-3 mb-4 border-b border-mapa-contour/50">
 						<div>
-							<h3 class="font-serif text-lg font-bold text-mapa-ink">EDSA Carousel Corridor Strip</h3>
-							<p class="text-xs text-mapa-clay">Sequential median island stations from North (Monumento) to South (PITX)</p>
+							<h3 class="font-serif text-lg font-bold text-mapa-ink">EDSA Carousel Station List</h3>
+							<p class="text-xs text-mapa-muted">Sequential median island stations from North (Monumento) to South (PITX)</p>
 						</div>
 						<span class="text-[11px] font-mono px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour text-mapa-green">
 							Route E Strip
@@ -637,70 +717,115 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 
 					<!-- Vertical Schematic Ribbon with Platform Nodes -->
 					<div class="relative pl-8 pr-2 py-4 max-h-[640px] overflow-y-auto space-y-3 custom-scrollbar">
-						<!-- Central Vertical Backbone Line -->
-						<div class="absolute left-[22px] top-6 bottom-6 w-1.5 bg-emerald-600/30 rounded-full"></div>
+						<!-- Dynamic Stops Rendering with Continuous Timeline Segments -->
+						{BUSWAY_STOPS.map((stop, index) => {
+							const isFirst = index === 0;
+							const isLast = index === BUSWAY_STOPS.length - 1;
+							return (
+								<div
+									id={`schematic-node-${stop.id}`}
+									data-stop-id={stop.id}
+									data-km={stop.km}
+									class="schematic-node relative flex items-center justify-between p-3 rounded-xl border border-transparent hover:border-mapa-green/40 hover:bg-mapa-canvas transition-all cursor-pointer group"
+								>
+									{/* Top Track Segment */}
+									{!isFirst && (
+										<div class="busway-track-top absolute left-[-15px] top-[-14px] bottom-1/2 w-1.5 bg-mapa-contour transition-colors z-0"></div>
+									)}
+									{/* Bottom Track Segment */}
+									{!isLast && (
+										<div class="busway-track-bottom absolute left-[-15px] top-1/2 bottom-[-14px] w-1.5 bg-mapa-contour transition-colors z-0"></div>
+									)}
 
-						<!-- Dynamic Stops Rendering -->
-						{BUSWAY_STOPS.map((stop, index) => (
-							<div
-								id={`schematic-node-${stop.id}`}
-								data-stop-id={stop.id}
-								data-km={stop.km}
-								class="schematic-node relative flex items-center justify-between p-3 rounded-xl border border-transparent hover:border-mapa-green/40 hover:bg-mapa-canvas transition-all cursor-pointer group"
-							>
-								<!-- Circle Node Indicator -->
-								<div class="absolute left-[-24px] w-6 h-6 rounded-full bg-mapa-canvas-dark border-2 border-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform z-10">
-									<div class="w-2 h-2 rounded-full bg-emerald-600"></div>
-								</div>
+									<!-- Circle Node Indicator -->
+									<div class="absolute left-[-24px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-mapa-canvas-dark border-2 border-mapa-green flex items-center justify-center group-hover:scale-110 transition-transform z-10 shadow-2xs">
+										<div class="w-2 h-2 rounded-full bg-mapa-green"></div>
+									</div>
 
-								<div class="flex flex-col ml-3">
-									<div class="flex items-center gap-2">
-										<span class="font-serif font-bold text-sm text-mapa-ink group-hover:text-mapa-green transition-colors">
-											{index + 1}. {stop.name}
-										</span>
-										{stop.isTerminus && (
-											<span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-600 text-white">
-												Terminus
+									<div class="flex flex-col ml-3 pr-2 min-w-0">
+										<div class="flex items-center gap-2 flex-wrap">
+											<span class="font-serif font-bold text-sm text-mapa-ink group-hover:text-mapa-green transition-colors">
+												{index + 1}. {stop.name}
 											</span>
+											{stop.isTerminus && (
+												<span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-mapa-green text-white shadow-2xs">
+													Terminus
+												</span>
+											)}
+											<!-- Active Selection Badge Container -->
+											<span id={`busway-badge-${stop.id}`} class="busway-status-badge hidden text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-2xs"></span>
+										</div>
+										<span class="text-[11px] text-mapa-muted mt-0.5">
+											{stop.city} &bull; KM {stop.km.toFixed(1)} &bull; {stop.platform}
+										</span>
+										{stop.interchanges && stop.interchanges.length > 0 && (
+											<div class="flex flex-wrap gap-1 mt-1.5">
+												{stop.interchanges.map((ic) => (
+													<span class="text-[10px] px-1.5 py-0.5 rounded bg-mapa-canvas border border-mapa-contour text-mapa-ink/75">
+														{ic}
+													</span>
+												))}
+											</div>
 										)}
 									</div>
-									<span class="text-[11px] text-mapa-clay mt-0.5">
-										{stop.city} &bull; KM {stop.km.toFixed(1)} &bull; {stop.platform}
-									</span>
-									{stop.interchanges && stop.interchanges.length > 0 && (
-										<div class="flex flex-wrap gap-1 mt-1.5">
-											{stop.interchanges.map((ic) => (
-												<span class="text-[10px] px-1.5 py-0.5 rounded bg-mapa-canvas border border-mapa-contour text-mapa-ink/75">
-													{ic}
-												</span>
-											))}
-										</div>
-									)}
-								</div>
 
-								<div class="text-right flex-shrink-0 ml-4">
-									<button
-										type="button"
-										class="node-select-btn text-xs font-semibold text-mapa-green opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 rounded bg-mapa-green/10"
-									>
-										Inspect
-									</button>
+									<!-- 1-Click Action Buttons -->
+									<div class="flex items-center gap-1.5 shrink-0 ml-2">
+										<button
+											type="button"
+											class="btn-busway-board px-2.5 py-1 text-[11px] font-bold rounded-md bg-mapa-canvas hover:bg-mapa-green text-mapa-green hover:text-white transition-all border border-mapa-contour hover:border-mapa-green cursor-pointer"
+											data-stop-id={stop.id}
+											title={`Set ${stop.name} as Boarding (Start)`}
+										>
+											Board
+										</button>
+										<button
+											type="button"
+											class="btn-busway-alight px-2.5 py-1 text-[11px] font-bold rounded-md bg-mapa-canvas hover:bg-mapa-navy text-mapa-navy hover:text-white transition-all border border-mapa-contour hover:border-mapa-navy cursor-pointer"
+											data-stop-id={stop.id}
+											title={`Set ${stop.name} as Destination (Exit)`}
+										>
+											Alight
+										</button>
+									</div>
 								</div>
-							</div>
-						))}
+							);
+						})}
 					</div>
 				</div>
 
-				<!-- VIEW 2: Geographic Leaflet Map Container -->
+				<!-- VIEW 2: 2D Schematic Network Diagram (SVG) -->
+				<div id="schematic-view-container" class="hidden bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs">
+					<div class="px-4 pt-3 pb-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-mapa-ink/70 border-b border-mapa-contour/50 bg-mapa-canvas">
+						<span>Tap any busway stop dot to set it as your <strong id="busway-diagram-target-label">Boarding</strong> point. Click stops to calculate trip.</span>
+						<span class="inline-flex items-center gap-3">
+							<span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-mapa-green"></span>Board</span>
+							<span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-mapa-navy"></span>Alight</span>
+							<span class="inline-flex items-center gap-1"><span class="w-4 h-1 rounded-full bg-mapa-rust"></span>Active route</span>
+						</span>
+					</div>
+					<div class="overflow-auto max-h-[680px] p-4 flex justify-center bg-mapa-canvas/60">
+						<svg
+							id="busway-diagram-svg"
+							viewBox="0 0 920 1240"
+							class="w-full h-auto min-w-[600px] max-w-[900px]"
+							role="img"
+							aria-label="Stylised schematic diagram of the EDSA Carousel Busway Route E corridor"
+						></svg>
+					</div>
+				</div>
+
+				<!-- VIEW 3: Geographic Leaflet Map Container -->
 				<div id="geo-view-container" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 shadow-xs hidden">
-					<div class="flex items-center justify-between pb-3 mb-2 border-b border-mapa-contour/50">
+					<div class="flex items-center justify-between pb-3 mb-2 border-b border-mapa-contour/50 text-xs">
 						<div>
 							<h3 class="font-serif text-lg font-bold text-mapa-ink">Geographic Corridor Map</h3>
-							<p class="text-xs text-mapa-clay">CartoDB Voyager map of Epifanio de los Santos Ave & Macapagal Blvd</p>
+							<p class="text-xs text-mapa-muted">Epifanio de los Santos Ave & Macapagal Blvd Transit Corridor</p>
 						</div>
-						<div class="text-xs text-mapa-clay flex items-center gap-2">
-							<span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
-							<span>Busway Route</span>
+						<div class="text-mapa-muted flex items-center gap-2">
+							<span class="text-[11px] font-medium text-mapa-green bg-mapa-green/10 px-2 py-0.5 rounded">
+								100% Free OpenStreetMap &bull; Zero API Key
+							</span>
 						</div>
 					</div>
 
@@ -716,7 +841,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				<h2 class="text-2xl font-serif font-bold text-mapa-ink">
 					Major Multimodal Transfer Terminals
 				</h2>
-				<p class="text-sm text-mapa-clay mt-1">
+				<p class="text-sm text-mapa-muted mt-1">
 					Key interchange concourses connecting the EDSA Carousel to rail networks, provincial buses, and business districts.
 				</p>
 			</div>
@@ -726,7 +851,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5 flex flex-col justify-between hover:border-mapa-green/50 transition-colors shadow-2xs">
 						<div>
 							<div class="flex items-center justify-between gap-2 mb-2">
-								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-600/15 text-emerald-800 border border-emerald-600/30">
+								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-green/10 text-mapa-green border border-mapa-green/25">
 									{hub.badge}
 								</span>
 								<span class="text-xs font-semibold text-mapa-green">
@@ -752,11 +877,11 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					<h2 class="text-2xl font-serif font-bold text-mapa-ink">
 						Complete 21-Station Reference Directory
 					</h2>
-					<p class="text-sm text-mapa-clay mt-1">
+					<p class="text-sm text-mapa-muted mt-1">
 						Distance from Monumento, platform access type, and regular passenger fare schedule.
 					</p>
 				</div>
-				<span class="text-xs text-mapa-clay font-medium">
+				<span class="text-xs text-mapa-muted font-medium">
 					LTFRB Fare Matrix 2026
 				</span>
 			</div>
@@ -764,7 +889,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs">
 				<div class="overflow-x-auto">
 					<table class="w-full text-left text-xs text-mapa-ink">
-						<thead class="bg-mapa-canvas border-b border-mapa-contour text-mapa-clay uppercase text-[10px] font-bold tracking-wider">
+						<thead class="bg-mapa-canvas border-b border-mapa-contour text-mapa-muted uppercase text-[10px] font-bold tracking-wider">
 							<tr>
 								<th class="py-3 px-4">#</th>
 								<th class="py-3 px-4">Station Name</th>
@@ -779,10 +904,10 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 						<tbody class="divide-y divide-mapa-contour/40">
 							{BUSWAY_STOPS_WITH_FARES.map((stop, idx) => (
 								<tr class="hover:bg-mapa-canvas/60 transition-colors">
-									<td class="py-3 px-4 font-mono font-bold text-mapa-clay">{idx + 1}</td>
+									<td class="py-3 px-4 font-mono font-bold text-mapa-muted">{idx + 1}</td>
 									<td class="py-3 px-4 font-bold text-mapa-ink">{stop.name}</td>
 									<td class="py-3 px-4 text-mapa-ink/75">{stop.city}</td>
-									<td class="py-3 px-4 font-mono text-mapa-clay">KM {stop.km.toFixed(1)}</td>
+									<td class="py-3 px-4 font-mono text-mapa-muted">KM {stop.km.toFixed(1)}</td>
 									<td class="py-3 px-4 text-mapa-ink/80">{stop.platform}</td>
 									<td class="py-3 px-4">
 										{stop.interchanges && stop.interchanges.length > 0 ? (
@@ -794,11 +919,11 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 												))}
 											</div>
 										) : (
-											<span class="text-mapa-clay">—</span>
+											<span class="text-mapa-muted">-</span>
 										)}
 									</td>
-									<td class="py-3 px-4 text-right font-bold text-emerald-800">₱{stop.regFare.toFixed(2)}</td>
-									<td class="py-3 px-4 text-right font-bold text-blue-700">₱{stop.discFare.toFixed(2)}</td>
+									<td class="py-3 px-4 text-right font-bold text-mapa-green">₱{stop.regFare.toFixed(2)}</td>
+									<td class="py-3 px-4 text-right font-bold text-mapa-navy">₱{stop.discFare.toFixed(2)}</td>
 								</tr>
 							))}
 						</tbody>
@@ -831,7 +956,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5">
 					<h3 class="font-bold text-mapa-ink mb-2">Who is entitled to the 20% statutory fare discount?</h3>
 					<p class="text-mapa-ink/80 leading-relaxed text-xs">
-						Under Philippine statutes—Republic Act No. 11314 (Student Fare Discount Act), Republic Act No. 9994 (Expanded Senior Citizens Act), and Republic Act No. 10754 (Persons with Disability Act)—bona fide students, senior citizens, and PWDs are entitled to a mandatory 20% fare discount upon presenting valid IDs.
+						Under Philippine statutes including Republic Act No. 11314 (Student Fare Discount Act), Republic Act No. 9994 (Expanded Senior Citizens Act), and Republic Act No. 10754 (Persons with Disability Act), bona fide students, senior citizens, and PWDs are entitled to a mandatory 20% fare discount upon presenting valid IDs.
 					</p>
 				</div>
 
@@ -840,6 +965,60 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					<p class="text-mapa-ink/80 leading-relaxed text-xs">
 						EDSA Carousel links directly with LRT-1 at Monumento, Balintawak, and Roosevelt (FPJ). It shares direct footbridge walkways with MRT-3 at North Avenue, Quezon Avenue, Santolan, Ortigas, Guadalupe, Buendia, and Ayala. At Taft Avenue, it connects to both MRT-3 and LRT-1 EDSA station.
 					</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- Official Statutory Citations & Reference Sources -->
+		<section class="border-t border-mapa-contour/50 pt-10 font-sans">
+			<h2 class="text-2xl font-serif font-bold text-mapa-ink mb-6">
+				Official Statutory Citations & Regulatory Reference Sources
+			</h2>
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+				<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4 flex flex-col justify-between">
+					<div>
+						<div class="flex items-center gap-2 mb-1.5">
+							<span class="w-2.5 h-2.5 rounded-full bg-mapa-green"></span>
+							<h3 class="font-bold text-mapa-ink text-sm">Land Transportation Franchising and Regulatory Board (LTFRB)</h3>
+						</div>
+						<p class="text-mapa-ink/75 leading-relaxed">
+							Authorized under <strong>LTFRB Route E (EDSA Carousel Busway)</strong> Fare Matrix Orders. Base commuter fare is ₱15.00 for the initial 4.0 km with a succeeding distance rate of ₱2.65/km, regulated across all consortium bus operators.
+						</p>
+					</div>
+					<div class="mt-3 pt-2.5 border-t border-mapa-contour/50">
+						<a
+							href="https://ltfrb.gov.ph"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1"
+						>
+							<span>LTFRB Official Portal</span>
+							<span>&rarr;</span>
+						</a>
+					</div>
+				</div>
+
+				<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4 flex flex-col justify-between">
+					<div>
+						<div class="flex items-center gap-2 mb-1.5">
+							<span class="w-2.5 h-2.5 rounded-full bg-mapa-green"></span>
+							<h3 class="font-bold text-mapa-ink text-sm">DOTr & MMDA Busway Project Management Office</h3>
+						</div>
+						<p class="text-mapa-ink/75 leading-relaxed">
+							Jointly administered by the Department of Transportation (DOTr) Road Transport Sector and Metropolitan Manila Development Authority (MMDA) for dedicated median corridor traffic enforcement, footbridge concourses, and PITX terminal operations.
+						</p>
+					</div>
+					<div class="mt-3 pt-2.5 border-t border-mapa-contour/50">
+						<a
+							href="https://dotr.gov.ph"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1"
+						>
+							<span>DOTr Official Portal</span>
+							<span>&rarr;</span>
+						</a>
+					</div>
 				</div>
 			</div>
 		</section>
@@ -862,6 +1041,15 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 			const destSelect = document.getElementById('dest-select');
 			const discountToggle = document.getElementById('discount-toggle');
 			const swapBtn = document.getElementById('swap-stops-btn');
+			const quickSwapBtn = document.getElementById('busway-quick-swap-btn');
+
+			const targetOriginBtn = document.getElementById('busway-target-origin');
+			const targetDestBtn = document.getElementById('busway-target-dest');
+			const clickHintEl = document.getElementById('busway-click-hint');
+
+			const summaryOriginEl = document.getElementById('busway-summary-origin');
+			const summaryDestEl = document.getElementById('busway-summary-dest');
+			const summaryMetricEl = document.getElementById('busway-summary-metric');
 
 			const computedFareEl = document.getElementById('computed-fare');
 			const strikeFareEl = document.getElementById('discounted-fare-strikethrough');
@@ -878,10 +1066,14 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 			const cardStopInterchanges = document.getElementById('card-stop-interchanges');
 			const cardStopLandmarks = document.getElementById('card-stop-landmarks');
 
+			const btnViewList = document.getElementById('btn-view-list');
 			const btnViewSchematic = document.getElementById('btn-view-schematic');
 			const btnViewGeo = document.getElementById('btn-view-geo');
+			const listContainer = document.getElementById('list-view-container');
 			const schematicContainer = document.getElementById('schematic-view-container');
 			const geoContainer = document.getElementById('geo-view-container');
+			const buswayDiagramSvg = document.getElementById('busway-diagram-svg');
+			const buswayDiagramTargetLabel = document.getElementById('busway-diagram-target-label');
 
 			let leafletMap = null;
 			let mapMarkers = [];
@@ -892,6 +1084,49 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 			BUSWAY_STOPS.forEach((stop, idx) => {
 				stopsMap.set(stop.id, { ...stop, index: idx });
 			});
+
+			// Current active click target mode: 'origin' or 'dest'
+			let currentTargetMode = 'origin';
+
+			function setTargetMode(mode) {
+				currentTargetMode = mode;
+				if (buswayDiagramTargetLabel) {
+					buswayDiagramTargetLabel.textContent = mode === 'origin' ? 'Boarding' : 'Destination';
+				}
+				if (mode === 'origin') {
+					targetOriginBtn.className = 'px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer';
+					targetDestBtn.className = 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer';
+					clickHintEl.className = 'text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium';
+					clickHintEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-mapa-green shrink-0"></span><span>Click any stop row or select <strong>Board</strong> to set your origin stop.</span>';
+				} else {
+					targetDestBtn.className = 'px-3 py-1.5 rounded-lg bg-mapa-navy text-white shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer';
+					targetOriginBtn.className = 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer';
+					clickHintEl.className = 'text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium';
+					clickHintEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-mapa-navy shrink-0"></span><span>Click any stop row or select <strong>Alight</strong> to set your destination stop.</span>';
+				}
+			}
+
+			targetOriginBtn?.addEventListener('click', () => setTargetMode('origin'));
+			targetDestBtn?.addEventListener('click', () => setTargetMode('dest'));
+
+			// Global method to set stop
+			window.setBuswayStop = function (stopId, type) {
+				const stop = stopsMap.get(stopId);
+				if (!stop) return;
+
+				if (type === 'origin') {
+					originSelect.value = stopId;
+					// Automatically advance to destination mode
+					setTargetMode('dest');
+					clickHintEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-mapa-navy shrink-0"></span><span>Boarding set to <strong>${stop.name}</strong>. Now select your <strong>Destination</strong> stop.</span>`;
+				} else {
+					destSelect.value = stopId;
+				}
+
+				inspectStop(stop);
+				calculateFare();
+				if (leafletMap) leafletMap.closePopup();
+			};
 
 			function calculateFare() {
 				const originId = originSelect.value;
@@ -906,6 +1141,10 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				const distance = Math.abs(dest.km - origin.km);
 				const stopsTraversed = Math.abs(dest.index - origin.index);
 
+				// Update Summary Ribbon
+				if (summaryOriginEl) summaryOriginEl.textContent = origin.name;
+				if (summaryDestEl) summaryDestEl.textContent = dest.name;
+
 				// LTFRB EDSA Carousel tariff:
 				// First 4.0 km = ₱15.00
 				// Succeeding = ₱2.65 / km
@@ -913,7 +1152,6 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				if (distance > 4.0) {
 					regFare += (distance - 4.0) * 2.65;
 				}
-				// Cap to official max fare ₱75.50
 				regFare = Math.min(75.5, Math.max(15.0, Math.round(regFare * 2) / 2));
 				const discFare = Math.round(regFare * 0.8 * 2) / 2;
 
@@ -922,24 +1160,26 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					strikeFareEl.textContent = `₱${regFare.toFixed(2)}`;
 					strikeFareEl.classList.remove('hidden');
 					fareRateBadge.textContent = '20% Discount';
-					fareRateBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-600 text-white';
+					fareRateBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-mapa-navy text-white';
+					if (summaryMetricEl) summaryMetricEl.textContent = `${stopsTraversed} stops • ₱${discFare.toFixed(2)}`;
 				} else {
 					computedFareEl.textContent = `₱${regFare.toFixed(2)}`;
 					strikeFareEl.classList.add('hidden');
 					fareRateBadge.textContent = 'Regular';
-					fareRateBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white';
+					fareRateBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-mapa-green text-white';
+					if (summaryMetricEl) summaryMetricEl.textContent = `${stopsTraversed} stops • ₱${regFare.toFixed(2)}`;
 				}
 
 				statDistanceEl.textContent = `${distance.toFixed(1)} km`;
 				statStopsEl.textContent = `${stopsTraversed} ${stopsTraversed === 1 ? 'stop' : 'stops'}`;
 
-				// Travel time estimate: ~2.2 - 2.8 mins per stop including dwell time
 				const estMin = Math.max(5, Math.round(stopsTraversed * 2.2));
 				const estMax = Math.max(8, Math.round(stopsTraversed * 3.1));
 				statTimeEl.textContent = stopsTraversed === 0 ? '0 mins' : `~${estMin}–${estMax} mins`;
 
 				updateSchematicHighlight(origin.index, dest.index);
 				updateMapHighlight(origin, dest);
+				updateBuswayDiagram(origin.id, dest.id);
 			}
 
 			function updateSchematicHighlight(idx1, idx2) {
@@ -948,16 +1188,48 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 
 				BUSWAY_STOPS.forEach((stop, index) => {
 					const nodeEl = document.getElementById(`schematic-node-${stop.id}`);
+					const badgeEl = document.getElementById(`busway-badge-${stop.id}`);
 					if (!nodeEl) return;
 
+					const trackTop = nodeEl.querySelector('.busway-track-top');
+					const trackBottom = nodeEl.querySelector('.busway-track-bottom');
+
+					// Reset track segments
+					if (trackTop) {
+						trackTop.className = 'busway-track-top absolute left-[-15px] top-[-14px] bottom-1/2 w-1.5 bg-mapa-contour transition-colors z-0';
+					}
+					if (trackBottom) {
+						trackBottom.className = 'busway-track-bottom absolute left-[-15px] top-1/2 bottom-[-14px] w-1.5 bg-mapa-contour transition-colors z-0';
+					}
+
 					if (index === idx1) {
-						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-emerald-600 bg-emerald-500/15 transition-all cursor-pointer';
+						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-mapa-green bg-mapa-green/10 transition-all cursor-pointer';
+						if (badgeEl) {
+							badgeEl.textContent = 'Boarding';
+							badgeEl.className = 'busway-status-badge inline-block text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-mapa-green text-white';
+						}
 					} else if (index === idx2) {
-						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-blue-600 bg-blue-500/15 transition-all cursor-pointer';
+						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-mapa-navy bg-mapa-navy/10 transition-all cursor-pointer';
+						if (badgeEl) {
+							badgeEl.textContent = 'Alighting';
+							badgeEl.className = 'busway-status-badge inline-block text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-mapa-navy text-white';
+						}
 					} else if (index > minIdx && index < maxIdx) {
-						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 transition-all cursor-pointer';
+						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-mapa-green/35 bg-mapa-canvas transition-all cursor-pointer';
+						if (badgeEl) badgeEl.className = 'busway-status-badge hidden';
 					} else {
 						nodeEl.className = 'schematic-node relative flex items-center justify-between p-3 rounded-xl border border-transparent hover:border-mapa-green/40 hover:bg-mapa-canvas transition-all cursor-pointer group';
+						if (badgeEl) badgeEl.className = 'busway-status-badge hidden';
+					}
+
+					// Light up track segments along the active busway journey path
+					if (idx1 !== idx2) {
+						if (index > minIdx && index <= maxIdx && trackTop) {
+							trackTop.className = 'busway-track-top absolute left-[-15px] top-[-14px] bottom-1/2 w-1.5 bg-mapa-green transition-colors z-0';
+						}
+						if (index >= minIdx && index < maxIdx && trackBottom) {
+							trackBottom.className = 'busway-track-bottom absolute left-[-15px] top-1/2 bottom-[-14px] w-1.5 bg-mapa-green transition-colors z-0';
+						}
 					}
 				});
 			}
@@ -975,16 +1247,265 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				if (stop.interchanges && stop.interchanges.length > 0) {
 					stop.interchanges.forEach(ic => {
 						const span = document.createElement('span');
-						span.className = 'px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-800 border border-emerald-500/20';
+						span.className = 'px-2 py-0.5 rounded bg-mapa-green/10 text-mapa-green border border-mapa-green/25';
 						span.textContent = ic;
 						cardStopInterchanges.appendChild(span);
 					});
 				} else {
 					const span = document.createElement('span');
-					span.className = 'text-mapa-clay';
+					span.className = 'text-mapa-muted';
 					span.textContent = 'None / Local street connections';
 					cardStopInterchanges.appendChild(span);
 				}
+			}
+
+			// Intermediate road-following waypoints between consecutive stops (EDSA median alignment).
+			// Hand-traced from OpenStreetMap; accurate to roughly tens of meters, not survey grade.
+			const PATH_WAYPOINTS = {
+				'monumento>bagong_barrio': [[14.6552, 120.9890], [14.6572, 120.9945]],
+				'bagong_barrio>balintawak': [[14.6577, 121.0005]],
+				'balintawak>kaingin': [[14.6572, 121.0095]],
+				'roosevelt>north_ave': [[14.6560, 121.0255], [14.6542, 121.0295]],
+				'north_ave>quezon_ave': [[14.6478, 121.0352]],
+				'quezon_ave>q_mart': [[14.6372, 121.0414]],
+				'q_mart>main_ave': [[14.6270, 121.0475]],
+				'main_ave>santolan': [[14.6135, 121.0535]],
+				'santolan>ortigas': [[14.5995, 121.0580], [14.5935, 121.0580]],
+				'ortigas>guadalupe': [[14.5813, 121.0535], [14.5740, 121.0482]],
+				'guadalupe>buendia': [[14.5622, 121.0420], [14.5582, 121.0382]],
+				'ayala>tramo': [[14.5420, 121.0194], [14.5402, 121.0140]],
+				'tramo>taft_ave': [[14.5378, 121.0040]],
+				'taft_ave>roxas_blvd': [[14.5368, 120.9965]],
+				'roxas_blvd>macapagal': [[14.5280, 120.9895]]
+			};
+
+			// Full ordered path: every vertex is { stopId | null, ll }
+			const FULL_PATH = [];
+			BUSWAY_STOPS.forEach((stop, i) => {
+				FULL_PATH.push({ stopId: stop.id, ll: [stop.lat, stop.lon] });
+				const next = BUSWAY_STOPS[i + 1];
+				if (next) {
+					(PATH_WAYPOINTS[`${stop.id}>${next.id}`] || []).forEach(ll => FULL_PATH.push({ stopId: null, ll }));
+				}
+			});
+
+			function pathBetween(idA, idB) {
+				let a = FULL_PATH.findIndex(v => v.stopId === idA);
+				let b = FULL_PATH.findIndex(v => v.stopId === idB);
+				if (a === -1 || b === -1) return [];
+				if (a > b) [a, b] = [b, a];
+				return FULL_PATH.slice(a, b + 1).map(v => v.ll);
+			}
+
+			let activeRoutePolyline = null;
+
+			const SVG_NS = 'http://www.w3.org/2000/svg';
+			function svgEl(name, attrs = {}, text) {
+				const el = document.createElementNS(SVG_NS, name);
+				Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+				if (text !== undefined) el.textContent = text;
+				return el;
+			}
+
+			// Station coordinates on the schematic diagram
+			const BUSWAY_DIAGRAM_STATIONS = [
+				{ id: 'monumento', name: 'Monumento', x: 180, y: 130, align: 'top', hub: 'LRT-1' },
+				{ id: 'bagong_barrio', name: 'Bagong Barrio', x: 270, y: 130, align: 'top' },
+				{ id: 'balintawak', name: 'Balintawak', x: 360, y: 130, align: 'top', hub: 'LRT-1' },
+				{ id: 'kaingin', name: 'Kaingin Road', x: 450, y: 130, align: 'top' },
+				{ id: 'roosevelt', name: 'Roosevelt / FPJ', x: 540, y: 130, align: 'top', hub: 'LRT-1' },
+				{ id: 'north_ave', name: 'North Avenue', x: 670, y: 220, align: 'right', hub: 'MRT-3' },
+				{ id: 'quezon_ave', name: 'Quezon Avenue', x: 700, y: 295, align: 'right', hub: 'MRT-3' },
+				{ id: 'q_mart', name: 'Q-Mart', x: 720, y: 370, align: 'right' },
+				{ id: 'main_ave', name: 'Main Avenue (Cubao)', x: 730, y: 445, align: 'right', hub: 'LRT-2 / MRT-3' },
+				{ id: 'santolan', name: 'Santolan-Annapolis', x: 730, y: 520, align: 'right', hub: 'MRT-3' },
+				{ id: 'ortigas', name: 'Ortigas', x: 720, y: 595, align: 'right', hub: 'MRT-3' },
+				{ id: 'guadalupe', name: 'Guadalupe', x: 690, y: 670, align: 'right', hub: 'MRT-3' },
+				{ id: 'buendia', name: 'Buendia', x: 640, y: 745, align: 'right', hub: 'MRT-3' },
+				{ id: 'ayala', name: 'Ayala (One Ayala)', x: 580, y: 815, align: 'right', hub: 'One Ayala' },
+				{ id: 'tramo', name: 'Tramo', x: 500, y: 875, align: 'bottom' },
+				{ id: 'taft_ave', name: 'Taft Avenue', x: 410, y: 910, align: 'bottom', hub: 'LRT-1 / MRT-3' },
+				{ id: 'roxas_blvd', name: 'Roxas Boulevard', x: 320, y: 920, align: 'bottom' },
+				{ id: 'macapagal', name: 'Macapagal Blvd', x: 250, y: 980, align: 'right' },
+				{ id: 'dfa_aseana', name: 'DFA Aseana', x: 250, y: 1045, align: 'right' },
+				{ id: 'ayala_manila_bay', name: 'Ayala Malls Manila Bay', x: 250, y: 1110, align: 'right' },
+				{ id: 'pitx', name: 'PITX Grand Terminal', x: 250, y: 1175, align: 'right', hub: 'PITX' }
+			];
+
+			const buswayPosMap = {};
+			BUSWAY_DIAGRAM_STATIONS.forEach((s, idx) => {
+				buswayPosMap[s.id] = { ...s, index: idx };
+			});
+
+			// Generate continuous SVG corridor path
+			function getBuswayCorridorPath(fromIdx = 0, toIdx = BUSWAY_DIAGRAM_STATIONS.length - 1) {
+				const min = Math.min(fromIdx, toIdx);
+				const max = Math.max(fromIdx, toIdx);
+				const pts = BUSWAY_DIAGRAM_STATIONS.slice(min, max + 1);
+				if (pts.length < 2) return '';
+
+				let d = `M ${pts[0].x},${pts[0].y}`;
+				for (let i = 0; i < pts.length - 1; i++) {
+					const curr = pts[i];
+					const next = pts[i + 1];
+					if (curr.id === 'roosevelt' && next.id === 'north_ave') {
+						d += ` L 620,130 Q 670,130 670,180 L ${next.x},${next.y}`;
+					} else if (curr.id === 'roxas_blvd' && next.id === 'macapagal') {
+						d += ` L 280,920 Q 250,920 250,950 L ${next.x},${next.y}`;
+					} else {
+						d += ` L ${next.x},${next.y}`;
+					}
+				}
+				return d;
+			}
+
+			function renderBuswayDiagram() {
+				if (!buswayDiagramSvg) return;
+				buswayDiagramSvg.innerHTML = '';
+
+				// 1. High-contrast crisp canvas background
+				buswayDiagramSvg.appendChild(svgEl('rect', { width: '100%', height: '100%', rx: '16', fill: '#F7F3E9', stroke: '#E5D9C3', 'stroke-width': '2' }));
+
+				// 2. Sector Labels
+				const sectors = [
+					{ x: 360, y: 55, text: 'NORTH METRO (CALOOCAN & QC NORTH)' },
+					{ x: 740, y: 160, text: 'QUEZON CITY EDSA CORRIDOR' },
+					{ x: 720, y: 790, text: 'MAKATI CBD & INTERCHANGE' },
+					{ x: 410, y: 865, text: 'PASAY ROTONDA' },
+					{ x: 250, y: 1220, text: 'BAY AREA & PITX TERMINUS' }
+				];
+				sectors.forEach(sec => {
+					buswayDiagramSvg.appendChild(svgEl('text', {
+						x: sec.x, y: sec.y, 'text-anchor': 'middle',
+						'font-family': 'ui-sans-serif, system-ui, sans-serif',
+						'font-size': '10', 'font-weight': '800', fill: '#5C5343', 'letter-spacing': '2'
+					}, sec.text));
+				});
+
+				// 5. Full Busway Corridor Base Line
+				const fullD = getBuswayCorridorPath(0, BUSWAY_DIAGRAM_STATIONS.length - 1);
+				const gBaseLine = svgEl('g', { id: 'busway-base-line' });
+				gBaseLine.appendChild(svgEl('path', {
+					d: fullD, fill: 'none', stroke: '#3D5A45', 'stroke-width': '10',
+					'stroke-linecap': 'round', 'stroke-linejoin': 'round'
+				}));
+				buswayDiagramSvg.appendChild(gBaseLine);
+
+				// 6. Active Route Container
+				buswayDiagramSvg.appendChild(svgEl('g', { id: 'busway-route-highlight' }));
+
+				// 7. Stations Group & Labels Group
+				const gStations = svgEl('g', { id: 'busway-stations' });
+				const gLabels = svgEl('g', {
+					id: 'busway-labels',
+					'font-family': 'ui-sans-serif, system-ui, -apple-system, sans-serif',
+					'font-size': '13',
+					'font-weight': '700',
+					fill: '#211D16',
+					'paint-order': 'stroke fill',
+					stroke: '#F7F3E9',
+					'stroke-width': '4px',
+					'stroke-linejoin': 'round',
+					'pointer-events': 'none'
+				});
+
+				BUSWAY_DIAGRAM_STATIONS.forEach(st => {
+					const isHub = !!st.hub;
+
+					const g = svgEl('g', {
+						'data-stop-id': st.id, tabindex: 0, role: 'button',
+						'aria-label': `${st.name} Busway Stop`, style: 'cursor:pointer'
+					});
+
+					// Selection ring
+					g.appendChild(svgEl('circle', {
+						class: 'busway-ring', cx: st.x, cy: st.y, r: 16,
+						fill: 'none', stroke: 'transparent', 'stroke-width': 4
+					}));
+
+					// Station circle
+					g.appendChild(svgEl('circle', {
+						class: 'busway-dot', cx: st.x, cy: st.y,
+						r: isHub ? 9.5 : 7,
+						fill: isHub ? '#FFFFFF' : '#3D5A45',
+						stroke: isHub ? '#3D5A45' : '#FFFFFF',
+						'stroke-width': isHub ? 3.5 : 2.5
+					}));
+
+					// Touch target
+					g.appendChild(svgEl('circle', { cx: st.x, cy: st.y, r: 22, fill: 'transparent' }));
+					g.appendChild(svgEl('title', {}, `${st.name} (KM ${stopsMap.get(st.id)?.km.toFixed(1) || 0})`));
+
+					g.addEventListener('click', () => window.setBuswayStop(st.id, currentTargetMode));
+					g.addEventListener('keydown', e => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							e.preventDefault();
+							window.setBuswayStop(st.id, currentTargetMode);
+						}
+					});
+					gStations.appendChild(g);
+
+					// Label with halo and offset
+					let textAttrs = {};
+					if (st.align === 'top') {
+						textAttrs = { x: st.x, y: st.y - 18, 'text-anchor': 'middle' };
+					} else if (st.align === 'bottom') {
+						textAttrs = { x: st.x, y: st.y + 24, 'text-anchor': 'middle' };
+					} else {
+						textAttrs = { x: st.x + 18, y: st.y + 5, 'text-anchor': 'start' };
+					}
+
+					const textEl = svgEl('text', textAttrs, st.name);
+					if (st.hub) {
+						const tspan = svgEl('tspan', {
+							dx: 5, 'font-size': '10', 'font-weight': '800',
+							fill: '#3D5A45', stroke: '#F7F3E9', 'stroke-width': '2px', 'paint-order': 'stroke fill'
+						}, `[${st.hub}]`);
+						textEl.appendChild(tspan);
+					}
+					gLabels.appendChild(textEl);
+				});
+
+				buswayDiagramSvg.appendChild(gStations);
+				buswayDiagramSvg.appendChild(gLabels);
+			}
+
+			function updateBuswayDiagram(originId, destId) {
+				if (!buswayDiagramSvg) return;
+				const gRoute = buswayDiagramSvg.querySelector('#busway-route-highlight');
+				const gBaseLine = buswayDiagramSvg.querySelector('#busway-base-line');
+				if (!gRoute || !gBaseLine) return;
+
+				gRoute.innerHTML = '';
+
+				const oStop = buswayPosMap[originId];
+				const dStop = buswayPosMap[destId];
+
+				if (oStop && dStop && oStop.index !== dStop.index) {
+					gBaseLine.setAttribute('opacity', '0.35');
+					const subD = getBuswayCorridorPath(oStop.index, dStop.index);
+					if (subD) {
+						gRoute.appendChild(svgEl('path', {
+							d: subD, fill: 'none', stroke: '#9E391A', 'stroke-width': 16,
+							'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: 0.95
+						}));
+						gRoute.appendChild(svgEl('path', {
+							d: subD, fill: 'none', stroke: '#3D5A45', 'stroke-width': 8,
+							'stroke-linecap': 'round', 'stroke-linejoin': 'round'
+						}));
+					}
+				} else {
+					gBaseLine.setAttribute('opacity', '1');
+				}
+
+				// Update station rings
+				buswayDiagramSvg.querySelectorAll('#busway-stations g[data-stop-id]').forEach(g => {
+					const id = g.getAttribute('data-stop-id');
+					const ring = g.querySelector('.busway-ring');
+					if (ring) {
+						ring.setAttribute('stroke', id === originId ? '#3D5A45' : id === destId ? '#1B2A4A' : 'transparent');
+					}
+				});
 			}
 
 			function initLeafletMap() {
@@ -996,27 +1517,29 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					scrollWheelZoom: true
 				});
 
-				L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-					attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+				// 100% Free OpenStreetMap raster tiles (Zero API key required)
+				L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+					attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 					maxZoom: 19
 				}).addTo(leafletMap);
 
-				// Route coordinates array
-				const latLngs = BUSWAY_STOPS.map(s => [s.lat, s.lon]);
+				// Route coordinates array (stops + road-following waypoints)
+				const latLngs = FULL_PATH.map(v => v.ll);
 
 				// Add background route line
 				routePolyline = L.polyline(latLngs, {
-					color: '#059669',
+					color: '#3D5A45',
 					weight: 5,
 					opacity: 0.85,
-					lineJoin: 'round'
+					lineJoin: 'round',
+					interactive: false
 				}).addTo(leafletMap);
 
 				// Add markers for all 21 stops
 				BUSWAY_STOPS.forEach((stop, index) => {
 					const marker = L.circleMarker([stop.lat, stop.lon], {
 						radius: stop.isTerminus ? 8 : 6,
-						fillColor: stop.isTerminus ? '#047857' : '#10B981',
+						fillColor: stop.isTerminus ? '#211D16' : '#3D5A45',
 						color: '#ffffff',
 						weight: 2,
 						opacity: 1,
@@ -1024,15 +1547,23 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 					}).addTo(leafletMap);
 
 					marker.bindPopup(`
-						<div class="font-sans text-xs">
-							<strong class="text-sm font-serif">${index + 1}. ${stop.name}</strong><br/>
-							<span class="text-gray-600">${stop.city} &bull; KM ${stop.km.toFixed(1)}</span><br/>
-							<span class="text-emerald-700 font-semibold">${stop.platform}</span>
+						<div class="font-sans text-xs p-1">
+							<strong class="text-sm font-serif block text-mapa-ink">${index + 1}. ${stop.name}</strong>
+							<span class="text-mapa-muted block text-[11px]">${stop.city} &bull; KM ${stop.km.toFixed(1)}</span>
+							<span class="text-mapa-green font-semibold block text-[11px] mb-2">${stop.platform}</span>
+							<div class="flex gap-1.5 mt-2">
+								<button type="button" class="px-2.5 py-1 bg-mapa-green text-white rounded text-[11px] font-bold shadow-xs cursor-pointer" onclick="window.setBuswayStop('${stop.id}', 'origin')">
+									Board Here
+								</button>
+								<button type="button" class="px-2.5 py-1 bg-mapa-navy text-white rounded text-[11px] font-bold shadow-xs cursor-pointer" onclick="window.setBuswayStop('${stop.id}', 'dest')">
+									Alight Here
+								</button>
+							</div>
 						</div>
 					`);
 
 					marker.on('click', () => {
-						inspectStop(stop);
+						window.setBuswayStop(stop.id, currentTargetMode);
 					});
 
 					mapMarkers.push({ id: stop.id, marker });
@@ -1044,14 +1575,29 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 			function updateMapHighlight(origin, dest) {
 				if (!leafletMap) return;
 
+				if (activeRoutePolyline) {
+					leafletMap.removeLayer(activeRoutePolyline);
+					activeRoutePolyline = null;
+				}
+				if (origin.id !== dest.id) {
+					activeRoutePolyline = L.polyline(pathBetween(origin.id, dest.id), {
+						color: '#9E391A',
+						weight: 7,
+						opacity: 0.95,
+						lineJoin: 'round',
+						interactive: false
+					}).addTo(leafletMap);
+					mapMarkers.forEach(({ marker }) => marker.bringToFront());
+				}
+
 				mapMarkers.forEach(({ id, marker }) => {
 					if (id === origin.id) {
-						marker.setStyle({ fillColor: '#059669', radius: 10, weight: 3 });
+						marker.setStyle({ fillColor: '#3D5A45', radius: 10, weight: 3 });
 					} else if (id === dest.id) {
-						marker.setStyle({ fillColor: '#2563EB', radius: 10, weight: 3 });
+						marker.setStyle({ fillColor: '#1B2A4A', radius: 10, weight: 3 });
 					} else {
 						const isTerm = id === 'monumento' || id === 'pitx';
-						marker.setStyle({ fillColor: isTerm ? '#047857' : '#10B981', radius: isTerm ? 8 : 6, weight: 2 });
+						marker.setStyle({ fillColor: isTerm ? '#211D16' : '#3D5A45', radius: isTerm ? 8 : 6, weight: 2 });
 					}
 				});
 			}
@@ -1071,48 +1617,80 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 
 			discountToggle.addEventListener('change', calculateFare);
 
-			swapBtn.addEventListener('click', () => {
+			function swapBuswayStops() {
 				const temp = originSelect.value;
 				originSelect.value = destSelect.value;
 				destSelect.value = temp;
 				calculateFare();
-			});
+			}
 
-			// Schematic node click delegation
+			swapBtn.addEventListener('click', swapBuswayStops);
+			quickSwapBtn?.addEventListener('click', swapBuswayStops);
+
+			// Schematic node click delegation & quick buttons
 			document.querySelectorAll('.schematic-node').forEach(node => {
-				node.addEventListener('click', () => {
-					const stopId = node.getAttribute('data-stop-id');
-					const stop = stopsMap.get(stopId);
-					if (stop) {
-						inspectStop(stop);
-					}
+				const stopId = node.getAttribute('data-stop-id');
+
+				// Clicking entire row sets according to active currentTargetMode
+				node.addEventListener('click', (e) => {
+					if (e.target.closest('.btn-busway-board') || e.target.closest('.btn-busway-alight')) return;
+					window.setBuswayStop(stopId, currentTargetMode);
+				});
+
+				const boardBtn = node.querySelector('.btn-busway-board');
+				boardBtn?.addEventListener('click', (e) => {
+					e.stopPropagation();
+					window.setBuswayStop(stopId, 'origin');
+				});
+
+				const alightBtn = node.querySelector('.btn-busway-alight');
+				alightBtn?.addEventListener('click', (e) => {
+					e.stopPropagation();
+					window.setBuswayStop(stopId, 'dest');
 				});
 			});
 
-			// View Switcher logic
-			btnViewSchematic.addEventListener('click', () => {
-				btnViewSchematic.className = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer';
-				btnViewGeo.className = 'px-3 py-1.5 text-xs font-medium rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
-				schematicContainer.classList.remove('hidden');
-				geoContainer.classList.add('hidden');
-			});
+			// View Switcher logic (List / Schematic / Geo).
+			// State lives in originSelect/destSelect so switching is instant and preserves the route.
+			const VIEW_ON = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer';
+			const VIEW_OFF = 'px-3 py-1.5 text-xs font-medium rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
 
-			btnViewGeo.addEventListener('click', () => {
-				btnViewGeo.className = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer';
-				btnViewSchematic.className = 'px-3 py-1.5 text-xs font-medium rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
-				geoContainer.classList.remove('hidden');
-				schematicContainer.classList.add('hidden');
+			function setView(view) {
+				const views = {
+					list: [btnViewList, listContainer],
+					schematic: [btnViewSchematic, schematicContainer],
+					geo: [btnViewGeo, geoContainer]
+				};
 
-				initLeafletMap();
-				setTimeout(() => {
-					if (leafletMap) {
-						leafletMap.invalidateSize();
-						if (routePolyline) leafletMap.fitBounds(routePolyline.getBounds(), { padding: [40, 40] });
+				Object.entries(views).forEach(([key, [btn, el]]) => {
+					if (btn) btn.className = key === view ? VIEW_ON : VIEW_OFF;
+					if (el) el.classList.toggle('hidden', key !== view);
+				});
+
+				if (view === 'geo') {
+					initLeafletMap();
+					calculateFare(); // redraws the active route on the map
+					leafletMap?.invalidateSize();
+					if (activeRoutePolyline) {
+						leafletMap.fitBounds(activeRoutePolyline.getBounds(), { padding: [40, 40] });
+					} else if (routePolyline) {
+						leafletMap.fitBounds(routePolyline.getBounds(), { padding: [40, 40] });
 					}
-				}, 100);
-			});
+					setTimeout(() => leafletMap?.invalidateSize(), 60);
+				} else if (view === 'schematic') {
+					renderBuswayDiagram();
+					calculateFare();
+				} else {
+					calculateFare();
+				}
+			}
 
-			// Initial calculation
+			btnViewList?.addEventListener('click', () => setView('list'));
+			btnViewSchematic?.addEventListener('click', () => setView('schematic'));
+			btnViewGeo?.addEventListener('click', () => setView('geo'));
+
+			// Initial calculation and diagram rendering
+			renderBuswayDiagram();
 			calculateFare();
 			inspectStop(BUSWAY_STOPS[0]);
 		});

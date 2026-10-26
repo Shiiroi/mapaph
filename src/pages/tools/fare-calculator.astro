@@ -14,7 +14,6 @@ const FARE_RATES = {
 	airconBus: {
 		name: 'Airconditioned City Bus',
 		type: 'City Bus',
-		icon: '🚍',
 		baseFare: 15.0,
 		baseKm: 5,
 		perKm: 2.65,
@@ -27,20 +26,18 @@ const FARE_RATES = {
 	ordinaryBus: {
 		name: 'Ordinary (Non-Aircon) Bus',
 		type: 'City Bus',
-		icon: '🚌',
 		baseFare: 13.0,
 		baseKm: 5,
 		perKm: 2.25,
 		discountBase: 10.4,
 		discountPerKm: 1.8,
-		color: 'text-mapa-flag-blue',
-		bgLight: 'bg-mapa-flag-blue/10',
-		borderColor: 'border-mapa-flag-blue/30'
+		color: 'text-mapa-navy',
+		bgLight: 'bg-mapa-navy/10',
+		borderColor: 'border-mapa-navy/30'
 	},
 	modernJeep: {
 		name: 'Modern E-Jeepney (MPUJ)',
 		type: 'Public Utility Jeepney',
-		icon: '🚐',
 		baseFare: 15.0,
 		baseKm: 4,
 		perKm: 2.2,
@@ -53,34 +50,32 @@ const FARE_RATES = {
 	tradJeep: {
 		name: 'Traditional Jeepney (TPUJ)',
 		type: 'Public Utility Jeepney',
-		icon: '🚙',
 		baseFare: 13.0,
 		baseKm: 4,
 		perKm: 1.8,
 		discountBase: 10.4,
 		discountPerKm: 1.44,
-		color: 'text-amber-700',
-		bgLight: 'bg-amber-700/10',
-		borderColor: 'border-amber-700/30'
+		color: 'text-mapa-green',
+		bgLight: 'bg-mapa-green/10',
+		borderColor: 'border-mapa-green/30'
 	},
 	railTransit: {
 		name: 'Metro Manila Rail (LRT/MRT)',
 		type: 'Mass Rapid Transit',
-		icon: '🚆',
 		baseFare: 13.29,
 		baseKm: 1,
 		perKm: 1.21,
 		discountBase: 10.63,
 		discountPerKm: 0.97,
-		color: 'text-emerald-700',
-		bgLight: 'bg-emerald-700/10',
-		borderColor: 'border-emerald-700/30'
+		color: 'text-mapa-navy',
+		bgLight: 'bg-mapa-navy/10',
+		borderColor: 'border-mapa-navy/30'
 	}
 };
 ---
 
 <BaseLayout
-	title="Philippine Commute Fare Calculator: Bus, Jeepney & Train — mapaPH Tools"
+	title="Philippine Commute Fare Calculator: Bus, Jeepney & Train | mapaPH Tools"
 	description="Official LTFRB Philippine transit fare estimator. Calculate exact legal fares for Aircon Buses, Ordinary Buses, Modern Jeepneys, Traditional Jeepneys, and MRT/LRT with 20% student, senior, and PWD discount calculations."
 	keywords="Philippine fare calculator, jeepney fare calculator, bus fare calculator Metro Manila, LTFRB fare matrix 2026, modern jeepney fare, student fare discount Philippines, senior citizen fare discount, MRT LRT fare calculator, EDSA bus carousel fare"
 >
@@ -91,15 +86,38 @@ const FARE_RATES = {
 				{
 					"@type": "WebApplication",
 					"name": "Philippine Public Transit Fare Estimator",
-					"url": "https://mapaph.com/tools/fare-calculator",
+					"url": "https://www.mapaph.com/tools/fare-calculator",
 					"applicationCategory": "Commuting & Transit Utility",
 					"operatingSystem": "All",
 					"description": "Interactive fare calculator for Philippine public utility vehicles based on official LTFRB and DOTr distance matrices.",
 					"provider": {
 						"@type": "Organization",
 						"name": "mapaPH",
-						"url": "https://mapaph.com"
+						"url": "https://www.mapaph.com"
 					}
+				},
+				{
+					"@type": "BreadcrumbList",
+					"itemListElement": [
+						{
+							"@type": "ListItem",
+							"position": 1,
+							"name": "Home",
+							"item": "https://www.mapaph.com"
+						},
+						{
+							"@type": "ListItem",
+							"position": 2,
+							"name": "Tools",
+							"item": "https://www.mapaph.com/tools"
+						},
+						{
+							"@type": "ListItem",
+							"position": 3,
+							"name": "Commute Fare Estimator",
+							"item": "https://www.mapaph.com/tools/fare-calculator"
+						}
+					]
 				},
 				{
 					"@type": "FAQPage",
@@ -144,14 +162,21 @@ const FARE_RATES = {
 
 	<Navbar />
 
-	<main class="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-mapa-ink">
+	<main id="main-content" class="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-mapa-ink">
 		<!-- Header -->
 		<div class="max-w-3xl mb-8">
-			<div class="flex items-center gap-2 mb-2">
+			<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs font-sans text-mapa-muted mb-3">
+				<a href="/" class="hover:text-mapa-green transition-colors">Home</a>
+				<span>/</span>
+				<a href="/tools" class="hover:text-mapa-green transition-colors">Tools</a>
+				<span>/</span>
+				<span class="text-mapa-ink font-semibold">Commute Fare Estimator</span>
+			</nav>
+			<div class="flex flex-wrap items-center gap-2 mb-2">
 				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
 					Commuting Utility
 				</span>
-				<span class="font-sans text-xs text-mapa-clay">
+				<span class="font-sans text-xs text-mapa-muted">
 					Official LTFRB & DOTr Regulated Rates
 				</span>
 			</div>
@@ -169,25 +194,25 @@ const FARE_RATES = {
 			<div class="mb-6 font-sans text-xs">
 				<span class="text-mapa-ink/60 font-medium mr-2">Popular Commuter Corridors:</span>
 				<div class="inline-flex flex-wrap gap-2 mt-2 sm:mt-0">
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-km="8">
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="8">
 						Cebu Colon ↔ Mandaue (8 km)
 					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-km="9.5">
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="9.5">
 						Cubao ↔ Makati / Buendia (9.5 km)
 					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-km="14">
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="14">
 						Fairview ↔ Cubao (14 km)
 					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-km="16">
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="16">
 						Commonwealth ↔ Quiapo (16 km)
 					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-km="22">
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="22">
 						Alabang ↔ Lawton Manila (22 km)
 					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-km="24">
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="24">
 						Monumento ↔ Baclaran (24 km)
 					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-km="28">
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="28">
 						PITX ↔ Monumento EDSA (28 km)
 					</button>
 				</div>
@@ -243,14 +268,14 @@ const FARE_RATES = {
 							<button
 								type="button"
 								id="btn-regular-fare"
-								class="fare-toggle-btn active py-2.5 px-3 rounded-lg text-center transition-all bg-mapa-green text-white font-semibold shadow-xs"
+								class="fare-toggle-btn active py-2.5 px-3 rounded-lg text-center transition-all bg-mapa-green text-white font-semibold shadow-xs cursor-pointer"
 							>
 								Regular Adult Fare
 							</button>
 							<button
 								type="button"
 								id="btn-discount-fare"
-								class="fare-toggle-btn py-2.5 px-3 rounded-lg text-center transition-all text-mapa-ink/80 hover:text-mapa-green hover:bg-mapa-contour/30"
+								class="fare-toggle-btn py-2.5 px-3 rounded-lg text-center transition-all text-mapa-ink/80 hover:text-mapa-green hover:bg-mapa-contour/30 cursor-pointer"
 							>
 								20% Statutory Discount
 							</button>
@@ -282,7 +307,6 @@ const FARE_RATES = {
 					<div class="fare-card p-5 rounded-xl bg-mapa-canvas border border-mapa-contour/90 hover:border-mapa-green/60 transition-all flex flex-col justify-between group shadow-2xs cursor-pointer" data-mode="airconBus">
 						<div>
 							<div class="flex items-center justify-between gap-2 mb-2">
-								<span class="text-2xl">🚍</span>
 								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-green/10 text-mapa-green border border-mapa-green/20">
 									City Bus
 								</span>
@@ -304,8 +328,7 @@ const FARE_RATES = {
 					<div class="fare-card p-5 rounded-xl bg-mapa-canvas border border-mapa-contour/90 hover:border-mapa-green/60 transition-all flex flex-col justify-between group shadow-2xs cursor-pointer" data-mode="ordinaryBus">
 						<div>
 							<div class="flex items-center justify-between gap-2 mb-2">
-								<span class="text-2xl">🚌</span>
-								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-flag-blue/10 text-mapa-flag-blue border border-mapa-flag-blue/20">
+								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-navy/10 text-mapa-navy border border-mapa-navy/20">
 									Ordinary Bus
 								</span>
 							</div>
@@ -317,7 +340,7 @@ const FARE_RATES = {
 
 						<div class="mt-5 pt-3 border-t border-mapa-contour/50">
 							<div class="text-[10px] uppercase font-bold text-mapa-clay">Legal Fare</div>
-							<div id="fare-ordinaryBus" class="text-2xl sm:text-3xl font-bold font-mono text-mapa-flag-blue mt-0.5">₱24.25</div>
+							<div id="fare-ordinaryBus" class="text-2xl sm:text-3xl font-bold font-mono text-mapa-navy mt-0.5">₱24.25</div>
 							<div id="math-ordinaryBus" class="text-[10px] text-mapa-clay font-mono mt-1">₱13.00 + 5.0 km × ₱2.25</div>
 						</div>
 					</div>
@@ -326,7 +349,6 @@ const FARE_RATES = {
 					<div class="fare-card p-5 rounded-xl bg-mapa-canvas border border-mapa-contour/90 hover:border-mapa-green/60 transition-all flex flex-col justify-between group shadow-2xs cursor-pointer" data-mode="modernJeep">
 						<div>
 							<div class="flex items-center justify-between gap-2 mb-2">
-								<span class="text-2xl">🚐</span>
 								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-rust/10 text-mapa-rust border border-mapa-rust/20">
 									Modern PUJ
 								</span>
@@ -348,8 +370,7 @@ const FARE_RATES = {
 					<div class="fare-card p-5 rounded-xl bg-mapa-canvas border border-mapa-contour/90 hover:border-mapa-green/60 transition-all flex flex-col justify-between group shadow-2xs cursor-pointer" data-mode="tradJeep">
 						<div>
 							<div class="flex items-center justify-between gap-2 mb-2">
-								<span class="text-2xl">🚙</span>
-								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-700/10 text-amber-700 border border-amber-700/20">
+								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-green/10 text-mapa-green border border-mapa-green/20">
 									Traditional PUJ
 								</span>
 							</div>
@@ -361,7 +382,7 @@ const FARE_RATES = {
 
 						<div class="mt-5 pt-3 border-t border-mapa-contour/50">
 							<div class="text-[10px] uppercase font-bold text-mapa-clay">Legal Fare</div>
-							<div id="fare-tradJeep" class="text-2xl sm:text-3xl font-bold font-mono text-amber-800 mt-0.5">₱23.80</div>
+							<div id="fare-tradJeep" class="text-2xl sm:text-3xl font-bold font-mono text-mapa-green mt-0.5">₱23.80</div>
 							<div id="math-tradJeep" class="text-[10px] text-mapa-clay font-mono mt-1">₱13.00 + 6.0 km × ₱1.80</div>
 						</div>
 					</div>
@@ -370,8 +391,7 @@ const FARE_RATES = {
 					<div class="fare-card p-5 rounded-xl bg-mapa-canvas border border-mapa-contour/90 hover:border-mapa-green/60 transition-all flex flex-col justify-between group shadow-2xs cursor-pointer" data-mode="railTransit">
 						<div>
 							<div class="flex items-center justify-between gap-2 mb-2">
-								<span class="text-2xl">🚆</span>
-								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-700/10 text-emerald-700 border border-emerald-700/20">
+								<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-navy/10 text-mapa-navy border border-mapa-navy/20">
 									MRT / LRT
 								</span>
 							</div>
@@ -383,7 +403,7 @@ const FARE_RATES = {
 
 						<div class="mt-5 pt-3 border-t border-mapa-contour/50">
 							<div class="text-[10px] uppercase font-bold text-mapa-clay">Estimated Fare</div>
-							<div id="fare-railTransit" class="text-2xl sm:text-3xl font-bold font-mono text-emerald-800 mt-0.5">₱25.00</div>
+							<div id="fare-railTransit" class="text-2xl sm:text-3xl font-bold font-mono text-mapa-navy mt-0.5">₱25.00</div>
 							<div id="math-railTransit" class="text-[10px] text-mapa-clay font-mono mt-1">Single Journey / Stored Value</div>
 						</div>
 					</div>
@@ -438,14 +458,14 @@ const FARE_RATES = {
 				</div>
 
 				<p class="text-sm sm:text-base text-mapa-ink/90 leading-relaxed">
-					For example, if you board a Traditional Jeepney for a <strong>10-kilometer</strong> commute, the first 4 kilometers cost <strong>₱13.00</strong>. The remaining 6 kilometers are charged at <strong>₱1.80 per kilometer</strong> (6 × ₱1.80 = ₱10.80). The total legal fare is <strong>₱23.80</strong>.
+					For example, if you board a Traditional Jeepney for a <strong>10-kilometer</strong> commute, the first 4 kilometers cost <strong>PHP 13.00</strong>. The remaining 6 kilometers are charged at <strong>PHP 1.80 per kilometer</strong> (6 &times; PHP 1.80 = PHP 10.80). The total legal fare is <strong>PHP 23.80</strong>.
 				</p>
 			</section>
 
 			<!-- Section 2: Traditional vs Modern Jeepneys -->
 			<section class="mb-10 font-sans border-t border-mapa-contour/40 pt-8">
 				<h3 class="font-serif text-2xl font-bold text-mapa-ink mb-4">
-					2. Traditional Jeepneys vs. Modern E-Jeepneys: Why the Price Difference?
+					2. Traditional Jeepneys vs Modern E-Jeepneys: Why the Price Difference?
 				</h3>
 				<p class="text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
 					Under the DOTr Public Utility Vehicle Modernization Program (PUVMP) and Department Order No. 2017-011, Modern Public Utility Jeepneys (MPUJs) are classified as a higher-tier service category than traditional iconic jeepneys.
@@ -454,17 +474,17 @@ const FARE_RATES = {
 					<div class="p-5 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/80">
 						<h4 class="font-serif font-bold text-base text-mapa-rust mb-2">Modern PUJs (Class 2 & Class 3)</h4>
 						<ul class="text-xs text-mapa-ink/80 space-y-1.5 leading-relaxed list-disc pl-4">
-							<li>Base Fare: <strong>₱15.00</strong> (first 4 km) + <strong>₱2.20/km</strong>.</li>
-							<li>Air-conditioned cabins, Euro-4 or electric engines.</li>
-							<li>Equipped with CCTV, GPS tracking, and automatic fare collection (AFCS) Beep readers.</li>
-							<li>Higher capital expenditure and fleet cooperative financing justification.</li>
+							<li>Base Fare: <strong>PHP 15.00</strong> (first 4 km) + <strong>PHP 2.20/km</strong>.</li>
+							<li>Air-conditioned cabins, Euro-4 compliant or electric motors.</li>
+							<li>Equipped with CCTV cameras, GPS tracking units, and automatic fare collection (AFCS) Beep readers.</li>
+							<li>Higher capital acquisition cost (PHP 2.4M to PHP 2.8M per minibus) amortized by transport cooperatives.</li>
 						</ul>
 					</div>
 
 					<div class="p-5 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/80">
-						<h4 class="font-serif font-bold text-base text-amber-800 mb-2">Traditional PUJs</h4>
+						<h4 class="font-serif font-bold text-base text-mapa-green mb-2">Traditional PUJs</h4>
 						<ul class="text-xs text-mapa-ink/80 space-y-1.5 leading-relaxed list-disc pl-4">
-							<li>Base Fare: <strong>₱13.00</strong> (first 4 km) + <strong>₱1.80/km</strong>.</li>
+							<li>Base Fare: <strong>PHP 13.00</strong> (first 4 km) + <strong>PHP 1.80/km</strong>.</li>
 							<li>Open-air non-airconditioned chassis with parallel bench seating.</li>
 							<li>Operated by individual single-unit operators or local transport associations.</li>
 							<li>Lower operational baseline reflecting historical tariff benchmarks.</li>
@@ -473,13 +493,43 @@ const FARE_RATES = {
 				</div>
 			</section>
 
-			<!-- Section 3: Student & Senior Rights -->
+			<!-- Section 3: Rail Transit Tariff Mechanics -->
 			<section class="mb-10 font-sans border-t border-mapa-contour/40 pt-8">
 				<h3 class="font-serif text-2xl font-bold text-mapa-ink mb-4">
-					3. Your 20% Discount Rights Under Philippine Republic Acts
+					3. Rail Transit Tariff Structures: LRT-1, LRT-2, and MRT-3
 				</h3>
 				<p class="text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
-					The 20% passenger fare discount is not an optional courtesy granted by drivers—it is a <strong>mandatory statutory right</strong> enacted by Congress through multiple national laws:
+					Metro Manila's rapid transit network uses a hybrid distance tariff regulated by the Rail Regulatory Unit of the Department of Transportation:
+				</p>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+					<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70">
+						<div class="font-bold text-sm text-mapa-green mb-1">LRT Line 1 (Green Line)</div>
+						<p class="text-mapa-ink/80 leading-relaxed">
+							Operated by Light Rail Manila Corporation (LRMC). Boarding fee: PHP 13.29 + PHP 1.21 per kilometer under DOTr D.O. No. 2023-010. End-to-end trip from Fernando Poe Jr. (Roosevelt) to Baclaran (20 stations, 19.7 km) costs PHP 35 on Stored Value Cards.
+						</p>
+					</div>
+					<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70">
+						<div class="font-bold text-sm text-mapa-navy mb-1">LRT Line 2 (Blue Line)</div>
+						<p class="text-mapa-ink/80 leading-relaxed">
+							Operated by Light Rail Transit Authority (LRTA). Boarding fee: PHP 13.29 + PHP 1.21 per kilometer. Full transit from Recto in Manila to Antipolo in Rizal (13 stations, 17.6 km) costs PHP 33 on Stored Value Cards.
+						</p>
+					</div>
+					<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70">
+						<div class="font-bold text-sm text-mapa-rust mb-1">MRT Line 3 (Yellow Line)</div>
+						<p class="text-mapa-ink/80 leading-relaxed">
+							Operated by DOTr MRT-3 Project Management Office. Base boarding fee: PHP 11.00 + PHP 1.00 per kilometer. Complete end-to-end trip from North Avenue to Taft Avenue (13 stations, 16.9 km) is capped at PHP 28.
+						</p>
+					</div>
+				</div>
+			</section>
+
+			<!-- Section 4: Student & Senior Rights -->
+			<section class="mb-10 font-sans border-t border-mapa-contour/40 pt-8">
+				<h3 class="font-serif text-2xl font-bold text-mapa-ink mb-4">
+					4. Your 20% Discount Rights Under Philippine Republic Acts
+				</h3>
+				<p class="text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+					The 20% passenger fare discount is not an optional courtesy granted by drivers. It is a <strong>mandatory statutory right</strong> enacted by Congress through multiple national laws:
 				</p>
 
 				<div class="space-y-4 my-6">
@@ -488,7 +538,7 @@ const FARE_RATES = {
 							Republic Act No. 11314 (Student Fare Discount Act)
 						</h4>
 						<p class="text-xs sm:text-sm text-mapa-ink/85 leading-relaxed">
-							Covers all Filipino students from elementary through college, technical-vocational, and post-secondary institutions. <strong>Crucially, RA 11314 grants the discount 365 days a year—including weekends, summer breaks, semestral vacations, and holidays.</strong> Drivers who refuse the discount on a Sunday or holiday are directly violating national law.
+							Covers all Filipino students from elementary through college, technical-vocational, and post-secondary institutions. <strong>Crucially, RA 11314 grants the discount 365 days a year: including weekends, summer breaks, semestral vacations, and national holidays.</strong> Drivers who refuse the discount on a Sunday or holiday are directly violating national law.
 						</p>
 					</div>
 
@@ -497,7 +547,7 @@ const FARE_RATES = {
 							Republic Act No. 9994 (Expanded Senior Citizens Act)
 						</h4>
 						<p class="text-xs sm:text-sm text-mapa-ink/85 leading-relaxed">
-							Grants Filipino resident citizens aged 60 and above a 20% discount on all public land transit (jeepneys, buses, trains, and taxis) upon presentation of an OSCA ID, senior citizen card, or valid government passport/driver's license showing date of birth.
+							Grants Filipino resident citizens aged 60 and above a 20% discount on all public land transit (jeepneys, buses, trains, and taxis) upon presentation of an OSCA ID, senior citizen card, or valid government passport or driver's license showing date of birth.
 						</p>
 					</div>
 
@@ -512,17 +562,25 @@ const FARE_RATES = {
 				</div>
 			</section>
 
-			<!-- Section 4: What to Do If Overcharged -->
+			<!-- Section 5: What to Do If Overcharged -->
 			<section class="mb-10 font-sans border-t border-mapa-contour/40 pt-8">
 				<h3 class="font-serif text-2xl font-bold text-mapa-ink mb-4">
-					4. What to Do If You Are Overcharged or Denied a Discount
+					5. What to Do If You Are Overcharged or Denied a Discount
 				</h3>
 				<p class="text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
 					Every franchised PUV driver is legally required to post an official laminated copy of the <strong>LTFRB Fare Matrix (*Talaan ng Pamasahe*)</strong> inside the vehicle. If a driver cannot produce or display the matrix, they are barred from collecting rate increases under LTFRB Memorandum Circular No. 2019-035.
 				</p>
+				<p class="text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+					Under Joint Administrative Order (JAO) No. 2014-01, public utility drivers who overcharge passengers or refuse legally mandated discounts face heavy statutory penalties:
+				</p>
+				<ul class="text-xs sm:text-sm text-mapa-ink/85 space-y-1.5 list-disc pl-5 mb-4">
+					<li><strong>First Offense:</strong> PHP 5,000 fine</li>
+					<li><strong>Second Offense:</strong> PHP 10,000 fine and vehicle impoundment for 30 days</li>
+					<li><strong>Third & Subsequent Offenses:</strong> PHP 15,000 fine and cancellation of Certificate of Public Convenience (CPC)</li>
+				</ul>
 				<div class="p-6 rounded-xl bg-mapa-canvas-dark border border-mapa-contour space-y-3 text-xs sm:text-sm">
 					<div class="font-bold text-mapa-green font-serif text-base mb-1">Step-by-Step Overcharging Complaint Procedure:</div>
-					<div>1. <strong>Take note of critical identifiers:</strong> The vehicle's license plate number (e.g. ABC 1234), body number, franchise company name, and exact route name.</div>
+					<div>1. <strong>Take note of critical identifiers:</strong> The vehicle's license plate number (e.g. ABC 1234), body number, franchise cooperative name, and exact route name.</div>
 					<div>2. <strong>Record transaction details:</strong> Note the date, exact time, boarding location, and alighting destination.</div>
 					<div>3. <strong>File an official report:</strong>
 						<ul class="list-disc pl-5 mt-1.5 space-y-1 text-mapa-ink/80">
@@ -534,17 +592,20 @@ const FARE_RATES = {
 				</div>
 			</section>
 
-			<!-- Section 5: Official Citations -->
+			<!-- Section 6: Official Citations -->
 			<section class="mb-10 font-sans border-t border-mapa-contour/40 pt-8">
 				<h3 class="font-serif text-2xl font-bold text-mapa-ink mb-4">
-					5. Official Citations & Legal Framework
+					6. Official Citations & Legal Framework
 				</h3>
 				<ul class="list-disc pl-5 space-y-2 text-xs sm:text-sm text-mapa-ink/80 leading-relaxed">
 					<li>
 						<strong>LTFRB Board Resolution No. 044, Series of 2023:</strong> Approving calibrated fare adjustments for public utility buses and public utility jeepneys.
 					</li>
 					<li>
-						<strong>Republic Act No. 11314:</strong> An Act Institutionalizing the Grant of Student Fare Discount from Elementary to Post-Secondary Institutions (<a href="https://lawphil.net/statutes/repacts/ra2019/ra_11314_2019.html" target="_blank" rel="noopener noreferrer" class="text-mapa-green hover:underline">Lawphil text</a>).
+						<strong>DOTr-LTO-LTFRB Joint Administrative Order No. 2014-01:</strong> Revised Schedule of Fines and Penalties for Violations of Laws, Rules and Regulations Governing Land Transportation.
+					</li>
+					<li>
+						<strong>Republic Act No. 11314:</strong> An Act Institutionalizing the Grant of Student Fare Discount from Elementary to Post-Secondary Institutions.
 					</li>
 					<li>
 						<strong>Republic Act No. 9994:</strong> The Expanded Senior Citizens Act of 2010.
@@ -558,10 +619,29 @@ const FARE_RATES = {
 				</ul>
 			</section>
 
-			<!-- Section 6: Editorial Notice -->
-			<section class="mb-6 font-sans border-t border-mapa-contour/40 pt-6 text-xs text-mapa-clay">
+			<!-- Section 7: Editorial Notice -->
+			<section class="mb-6 font-sans border-t border-mapa-contour/40 pt-6 text-xs text-mapa-clay not-prose">
+				<div class="p-5 rounded-2xl bg-mapa-canvas-dark border border-mapa-contour mb-6">
+					<h3 class="font-serif text-base font-bold text-mapa-ink mb-3">
+						Related Philippine Transit &amp; Mobility Calculators
+					</h3>
+					<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+						<a href="/tools/rail-transit" class="p-3 rounded-xl bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-colors block">
+							<span class="font-bold text-mapa-green block mb-0.5">Metro Manila Rail Guide &rarr;</span>
+							<span class="text-mapa-ink/75">Exact station-to-station LRT-1, LRT-2, and MRT-3 fares and transfer walkways.</span>
+						</a>
+						<a href="/tools/edsa-carousel" class="p-3 rounded-xl bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-colors block">
+							<span class="font-bold text-mapa-green block mb-0.5">EDSA Carousel Busway &rarr;</span>
+							<span class="text-mapa-ink/75">24/7 median busway stop-by-stop fare matrix from Monumento to PITX.</span>
+						</a>
+						<a href="/tools/toll-calculator" class="p-3 rounded-xl bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-colors block">
+							<span class="font-bold text-mapa-green block mb-0.5">Expressway Toll Calculator &rarr;</span>
+							<span class="text-mapa-ink/75">TRB Class 1, 2, and 3 toll tariffs across NLEX, SLEX, Skyway, SCTEX, and TPLEX.</span>
+						</a>
+					</div>
+				</div>
 				<div class="flex flex-wrap items-center justify-between gap-2">
-					<span>Maintained by the <strong>mapaPH Civic Cartography & Transit Initiative</strong>.</span>
+					<span>Maintained by the <strong>mapaPH Civic Cartography &amp; Transit Initiative</strong>.</span>
 					<span>Baseline Rates: LTFRB Official Nationwide Circulars.</span>
 				</div>
 			</section>

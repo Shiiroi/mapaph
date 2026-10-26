@@ -14,27 +14,27 @@
 			Free Philippine GIS & GeoJSON Data Directory
 		</h1>
 		<p class="font-sans text-sm sm:text-base text-mapa-ink/70 mt-2">
-			A comprehensive technical guide to finding, evaluating, and downloading free administrative boundaries, topographic layers, and demographic spatial data in the Philippines.
+			A technical directory for finding, processing, and standardizing free administrative boundaries, natural hazard layers, and demographic spatial data in the Philippines.
 		</p>
 	</div>
 
 	<!-- Section 1: Overview of Philippine Spatial Data Landscape -->
 	<section class="mb-10">
 		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
-			1. The State of Open Spatial Data in the Philippines
+			1. The Open Spatial Data Landscape in the Philippines
 		</h2>
 		<p class="font-sans text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
-			For data scientists, urban planners, cartographers, and journalists, acquiring accurate Philippine geographic boundaries has historically been an exercise in frustration. While executive mandates such as <strong>Executive Order No. 2, s. 2016 (Freedom of Information)</strong> and the <strong>Philippine Geomatics Act</strong> encourage open civic data, actual distribution remains fragmented across disconnected government portals, non-profit repositories, and academic archives.
+			Data scientists, urban planners, cartographers, and journalists frequently encounter fragmented boundaries when working on Philippine projects. While public disclosure mandates such as Executive Order No. 2, series of 2016 (Freedom of Information) and the Philippine Geomatics Act require open public data, actual distribution remains distributed across separate agency websites, academic clearinghouses, and international humanitarian repositories.
 		</p>
 		<p class="font-sans text-sm sm:text-base text-mapa-ink/90 leading-relaxed">
-			This directory categorizes the most reliable open spatial data sources for the Philippines, assessing each for boundary precision, update cadence, coordinate projection, and licensing terms.
+			This directory catalogs primary open spatial data sources in the Philippines, evaluating each for boundary precision, update frequency, coordinate projections, and practical workflows for QGIS and web application development.
 		</p>
 	</section>
 
 	<!-- Section 2: Authoritative Government Sources -->
 	<section class="mb-10 border-t border-mapa-contour/40 pt-8">
 		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
-			2. Official Government Repositories
+			2. Official Government Portals and Repositories
 		</h2>
 
 		<div class="space-y-6 font-sans">
@@ -52,12 +52,12 @@
 					Portal: <a href="https://geoportal.gov.ph" target="_blank" rel="noopener" class="underline hover:text-mapa-green">geoportal.gov.ph (Philippine Geoportal)</a>
 				</p>
 				<p class="text-sm text-mapa-ink/90 leading-relaxed mb-3">
-					NAMRIA is the central mapping agency of the Philippine government under the Department of Environment and Natural Resources (DENR). The Philippine Geoportal distributes base topographic maps, nautical charts, administrative boundary datasets, and satellite imagery layers.
+					NAMRIA is the central mapping agency under the Department of Environment and Natural Resources (DENR). The Philippine Geoportal hosts base topographic maps, nautical bathymetric charts, national road networks, administrative boundaries, and active fault line overlays.
 				</p>
 				<div class="text-xs text-mapa-ink/80 space-y-1 bg-mapa-canvas p-3 rounded-lg border border-mapa-contour/50">
-					<div><strong>Available Formats:</strong> WMS/WFS endpoints, Shapefiles (zipped), KML</div>
-					<div><strong>Coordinate System:</strong> PRS92 (PTM Zones I–V) and WGS84</div>
-					<div><strong>Caveats:</strong> Download links occasionally experience downtime; higher-resolution contour layers require formal FOI data requests.</div>
+					<div><strong>Available Formats:</strong> WMS/WFS map services, ESRI Shapefiles (.shp.zip), KML</div>
+					<div><strong>Coordinate Reference Systems:</strong> PRS92 (PTM Zones I to V) and WGS84 (EPSG:4326)</div>
+					<div><strong>Licensing & Access:</strong> Public government data; raw high-density 1:10,000 elevation contours require an eFOI data request.</div>
 				</div>
 			</div>
 
@@ -72,15 +72,38 @@
 					</span>
 				</div>
 				<p class="text-xs text-mapa-clay mb-3">
-					Portal: <a href="https://psa.gov.ph" target="_blank" rel="noopener" class="underline hover:text-mapa-green">psa.gov.ph</a> & <a href="https://openstat.psa.gov.ph" target="_blank" rel="noopener" class="underline hover:text-mapa-green">openstat.psa.gov.ph</a>
+					Portals: <a href="https://psa.gov.ph" target="_blank" rel="noopener" class="underline hover:text-mapa-green">psa.gov.ph</a> and <a href="https://openstat.psa.gov.ph" target="_blank" rel="noopener" class="underline hover:text-mapa-green">openstat.psa.gov.ph</a>
 				</p>
 				<p class="text-sm text-mapa-ink/90 leading-relaxed mb-3">
-					The PSA maintains the definitive masterlist of the Philippine Standard Geographic Code (PSGC). Through the OpenSTAT portal and census releases (POPCEN 2015, 2020, 2024), the PSA publishes official population counts, household demographics, and poverty incidence metrics that map directly to PSGC join keys.
+					The PSA maintains the Philippine Standard Geographic Code masterlist and publishes official population figures from the 2015, 2020, and 2024 census cycles. OpenSTAT provides tabular time-series indicators for municipal agriculture, local consumer price indexes, labor participation, and poverty thresholds.
 				</p>
 				<div class="text-xs text-mapa-ink/80 space-y-1 bg-mapa-canvas p-3 rounded-lg border border-mapa-contour/50">
-					<div><strong>Available Formats:</strong> Excel spreadsheets (.xlsx), CSV tables, PDF summaries</div>
-					<div><strong>Coordinate System:</strong> Non-spatial tabular data (joined via PSGC code)</div>
-					<div><strong>Best For:</strong> Sourcing official demographic, economic, and agricultural census baselines.</div>
+					<div><strong>Available Formats:</strong> Tabular Excel (.xlsx), CSV, and PDF analytical bulletins</div>
+					<div><strong>Coordinate Reference Systems:</strong> Non-spatial tables joined via 9-digit and 10-digit PSGC codes</div>
+					<div><strong>Best Use:</strong> Joining population headcounts and economic indicators to spatial boundary shapefiles.</div>
+				</div>
+			</div>
+
+			<!-- Source C: GeoRiskPH & PHIVOLCS -->
+			<div class="p-6 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70">
+				<div class="flex items-center justify-between gap-2 mb-2">
+					<h3 class="font-serif text-xl font-bold text-mapa-green">
+						DOST-PHIVOLCS & GeoRiskPH (HazardHunterPH)
+					</h3>
+					<span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-mapa-clay/30 text-mapa-ink">
+						Geological Hazards
+					</span>
+				</div>
+				<p class="text-xs text-mapa-clay mb-3">
+					Portal: <a href="https://hazardhunter.georisk.gov.ph" target="_blank" rel="noopener" class="underline hover:text-mapa-green">hazardhunter.georisk.gov.ph</a>
+				</p>
+				<p class="text-sm text-mapa-ink/90 leading-relaxed mb-3">
+					Developed by DOST-PHIVOLCS, GeoRiskPH serves multi-hazard spatial data. The platform provides spatial layers for active fault lines (Valley Fault System, Philippine Fault Zone), earthquake-induced liquefaction susceptibility, volcanic pyroclastic density current zones, and tsunami inundation models.
+				</p>
+				<div class="text-xs text-mapa-ink/80 space-y-1 bg-mapa-canvas p-3 rounded-lg border border-mapa-contour/50">
+					<div><strong>Available Formats:</strong> REST endpoints, GeoJSON reports, and WMS tile layers</div>
+					<div><strong>Coordinate Reference Systems:</strong> WGS84 Web Mercator (EPSG:3857) and WGS84 (EPSG:4326)</div>
+					<div><strong>Best Use:</strong> Site suitability analysis, building structural resilience audits, and environmental risk assessment.</div>
 				</div>
 			</div>
 		</div>
@@ -89,11 +112,11 @@
 	<!-- Section 3: Open Community & Global GIS Archives -->
 	<section class="mb-10 border-t border-mapa-contour/40 pt-8">
 		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
-			3. Community & Global Open-Data Archives
+			3. Community and Global Open-Data Archives
 		</h2>
 
 		<div class="space-y-6 font-sans">
-			<!-- Source C: OpenStreetMap Philippines -->
+			<!-- Source D: OpenStreetMap Philippines -->
 			<div class="p-6 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70">
 				<div class="flex items-center justify-between gap-2 mb-2">
 					<h3 class="font-serif text-xl font-bold text-mapa-green">
@@ -107,39 +130,39 @@
 					Portal: <a href="https://download.geofabrik.de/asia/philippines.html" target="_blank" rel="noopener" class="underline hover:text-mapa-green">download.geofabrik.de/asia/philippines.html</a>
 				</p>
 				<p class="text-sm text-mapa-ink/90 leading-relaxed mb-3">
-					The local OpenStreetMap (OSM) community in the Philippines is among the most active mapping groups in Southeast Asia. Geofabrik provides daily updated spatial extracts of the entire Philippine road network, waterways, points of interest, building footprints, and transit infrastructure.
+					Geofabrik compiles daily spatial extracts of the entire Philippine OpenStreetMap database. The dataset includes road networks, waterways, health facilities, transit stations, and building footprints contributed by local volunteer cartographers.
 				</p>
 				<div class="text-xs text-mapa-ink/80 space-y-1 bg-mapa-canvas p-3 rounded-lg border border-mapa-contour/50">
-					<div><strong>Available Formats:</strong> .osm.pbf, Shapefile archives (.shp.zip)</div>
-					<div><strong>Coordinate System:</strong> WGS84 (EPSG:4326)</div>
-					<div><strong>Best For:</strong> Routing algorithms, transit terminals, and infrastructure mapping.</div>
+					<div><strong>Available Formats:</strong> .osm.pbf vector archives, ESRI Shapefile collections (.shp.zip)</div>
+					<div><strong>Coordinate Reference Systems:</strong> WGS84 (EPSG:4326)</div>
+					<div><strong>Best Use:</strong> Routing networks, transit terminal locators, and amenity density maps.</div>
 				</div>
 			</div>
 
-			<!-- Source D: HDX (Humanitarian Data Exchange) -->
+			<!-- Source E: HDX COD-AB -->
 			<div class="p-6 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70">
 				<div class="flex items-center justify-between gap-2 mb-2">
 					<h3 class="font-serif text-xl font-bold text-mapa-green">
-						Humanitarian Data Exchange (HDX / UN OCHA)
+						UN OCHA Humanitarian Data Exchange (HDX COD-AB)
 					</h3>
 					<span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-mapa-clay/30 text-mapa-ink">
-						COD-AB Standard
+						Disaster Response
 					</span>
 				</div>
 				<p class="text-xs text-mapa-clay mb-3">
-					Portal: <a href="https://data.humdata.org/dataset/cod-ab-phl" target="_blank" rel="noopener" class="underline hover:text-mapa-green">data.humdata.org (Philippines Common Operational Datasets)</a>
+					Portal: <a href="https://data.humdata.org/dataset/cod-ab-phl" target="_blank" rel="noopener" class="underline hover:text-mapa-green">data.humdata.org (Philippines Administrative Boundaries)</a>
 				</p>
 				<p class="text-sm text-mapa-ink/90 leading-relaxed mb-3">
-					The United Nations Office for the Coordination of Humanitarian Affairs (UN OCHA) maintains the Common Operational Datasets for Administrative Boundaries (COD-AB) for disaster response. This repository contains clean, simplified administrative boundaries down to Barangay Level (Admin 4).
+					The United Nations Office for the Coordination of Humanitarian Affairs (UN OCHA) maintains the Common Operational Datasets for Administrative Boundaries (COD-AB). The dataset contains vetted national, regional, provincial, municipal, and barangay polygons standardized with P-codes and PSGC cross-references.
 				</p>
 				<div class="text-xs text-mapa-ink/80 space-y-1 bg-mapa-canvas p-3 rounded-lg border border-mapa-contour/50">
-					<div><strong>Available Formats:</strong> GeoJSON, ESRI Shapefile, GeoPackage, TopoJSON</div>
-					<div><strong>Coordinate System:</strong> WGS84 (EPSG:4326)</div>
-					<div><strong>Best For:</strong> Disaster risk modeling, relief distribution planning, and choropleth analysis.</div>
+					<div><strong>Available Formats:</strong> GeoJSON, GeoPackage (.gpkg), ESRI Shapefile, TopoJSON</div>
+					<div><strong>Coordinate Reference Systems:</strong> WGS84 (EPSG:4326)</div>
+					<div><strong>Best Use:</strong> Disaster risk modeling, relief supply logistics, and regional demographic visualizations.</div>
 				</div>
 			</div>
 
-			<!-- Source E: PhilGIS -->
+			<!-- Source F: PhilGIS -->
 			<div class="p-6 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70">
 				<div class="flex items-center justify-between gap-2 mb-2">
 					<h3 class="font-serif text-xl font-bold text-mapa-green">
@@ -153,12 +176,12 @@
 					Portal: <a href="https://philgis.org" target="_blank" rel="noopener" class="underline hover:text-mapa-green">philgis.org</a>
 				</p>
 				<p class="text-sm text-mapa-ink/90 leading-relaxed mb-3">
-					A longstanding community portal offering free downloads of regional, provincial, and municipal boundaries, climate classification zones, protected areas, and watershed limits. While some files date back to earlier census rounds, they provide excellent baseline reference geometries.
+					A community repository providing administrative limits, watershed extents, soil classifications, and climate types across the Philippine archipelago.
 				</p>
 				<div class="text-xs text-mapa-ink/80 space-y-1 bg-mapa-canvas p-3 rounded-lg border border-mapa-contour/50">
 					<div><strong>Available Formats:</strong> ESRI Shapefiles (.zip)</div>
-					<div><strong>Coordinate System:</strong> Mixed (WGS84 and PRS92)</div>
-					<div><strong>Caveats:</strong> Verify attribute tables for recent LGU splits (e.g. Maguindanao del Norte/Sur).</div>
+					<div><strong>Coordinate Reference Systems:</strong> Mixed (PRS92 and WGS84)</div>
+					<div><strong>Caveat:</strong> Check metadata before analysis. Boundary files may reflect pre-2022 provincial structures before the split of Maguindanao or the creation of the Negros Island Region.</div>
 				</div>
 			</div>
 		</div>
@@ -167,24 +190,60 @@
 	<!-- Section 4: Data Quality & Evaluation Checklist -->
 	<section class="mb-10 border-t border-mapa-contour/40 pt-8">
 		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
-			4. Checklist: Evaluating Philippine GIS Files
+			4. Checklist for Evaluating Philippine GIS Boundary Files
 		</h2>
 		<p class="font-sans text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
-			Before using any downloaded GIS boundary layer in production applications or academic publications, verify these four criteria:
+			Before deploying downloaded spatial files to production web services or publication maps, verify the following four structural requirements:
 		</p>
 		<ol class="font-sans text-sm sm:text-base text-mapa-ink/90 list-decimal pl-5 space-y-3">
 			<li>
-				<strong>Boundary Dispute Handling:</strong> Many Philippine LGUs have unresolved territorial boundaries (e.g., Makati vs. Taguig over the Enlisted Men's Barrios / Fort Bonifacio; boundary disputes in Pasig/Cainta). Verify whether your dataset reflects the Supreme Court of the Philippines ruling (G.R. No. 235316).
+				<strong>Territorial Jurisdictions & Supreme Court Rulings:</strong> Verify whether boundaries reflect current legal determinations, particularly the Supreme Court ruling in Taguig vs Makati (G.R. No. 235316), the split of Maguindanao into del Norte and del Sur under RA 11550, and the creation of the 8 SGA municipalities in BARMM under BAA Nos. 41 to 48.
 			</li>
 			<li>
-				<strong>Coastline Simplification & Island Completeness:</strong> Because the Philippines consists of over 7,641 islands, uncompressed high-resolution shapefiles can exceed 200MB. For web display, use Douglas-Peucker simplification (via Mapshaper or Turf.js) while ensuring tiny island barangays are not completely removed.
+				<strong>Island Topology & Geometry Repair:</strong> The Philippine archipelago includes over 7,641 islands. Shapefiles digitized from low-resolution scans often contain self-intersecting polygon rings, unclosed line strings, or micro-islands that trigger rendering errors in MapLibre and Leaflet.
 			</li>
 			<li>
-				<strong>Coordinate System Consistency:</strong> Ensure all layers share the same Spatial Reference System. If overlaying GPS data, transform projected PRS92 layers into unprojected WGS84 decimal degrees (EPSG:4326).
+				<strong>Coordinate System Transformations:</strong> Ensure layers are explicitly converted to WGS84 (EPSG:4326) for GeoJSON export or Web Mercator (EPSG:3857) for tile caches. Leaving a shapefile in PRS92 (EPSG:3123) will displace coordinates hundreds of meters southwest on global basemaps.
 			</li>
 			<li>
-				<strong>Standardized PSGC Join Keys:</strong> Avoid joining census data on LGU names alone. Names have variant spellings (e.g., <em>"City of Isabela"</em> vs <em>"Isabela City"</em>). Always use 9-digit or 10-digit PSGC codes as join keys.
+				<strong>Join Key Integrity:</strong> Join demographic statistics exclusively using 9-digit or 10-digit PSGC numeric keys. Text joins on municipality names fail due to spelling variations (for example, "Poblacion 1" versus "Poblacion I", or "City of San Fernando, La Union" versus "City of San Fernando, Pampanga").
 			</li>
 		</ol>
 	</section>
+
+	<!-- Section 5: Processing Pipelines with GDAL and Mapshaper -->
+	<section class="mb-10 border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			5. CLI Data Pipeline: Converting and Optimizing Philippine Shapefiles
+		</h2>
+		<p class="font-sans text-sm sm:text-base text-mapa-ink/90 leading-relaxed mb-4">
+			Most raw shapefiles downloaded from NAMRIA or PhilGIS arrive in projected PRS92 coordinates and contain heavy vertex counts. The pipeline below demonstrates how to convert, repair, and compress spatial files using GDAL and Mapshaper:
+		</p>
+
+		<div class="space-y-4 font-sans text-xs">
+			<div>
+				<div class="font-bold text-mapa-ink mb-1">Step 1: Reproject from PRS92 Zone III to WGS84 RFC 7946 GeoJSON</div>
+				<pre class="bg-mapa-canvas-dark border border-mapa-contour/80 rounded p-4 text-xs font-mono overflow-x-auto text-mapa-ink leading-relaxed">{`ogr2ogr -f GeoJSON \\
+  -s_srs EPSG:3123 \\
+  -t_srs EPSG:4326 \\
+  -lco RFC7946=YES \\
+  -lco COORDINATE_PRECISION=6 \\
+  ph_municipalities_wgs84.geojson \\
+  namria_prs92_raw.shp`}</pre>
+			</div>
+
+			<div>
+				<div class="font-bold text-mapa-ink mb-1">Step 2: Clean Topology, Repair Gaps, and Quantize to TopoJSON</div>
+				<pre class="bg-mapa-canvas-dark border border-mapa-contour/80 rounded p-4 text-xs font-mono overflow-x-auto text-mapa-ink leading-relaxed">{`# Fix invalid polygon geometries, simplify coastal vertices, and build shared arcs
+mapshaper ph_municipalities_wgs84.geojson \\
+  -clean \\
+  -filter-islands min-area=50000m2 \\
+  -simplify dp 12% keep-shapes \\
+  -o format=topojson \\
+  quantization=10000 \\
+  ph_municipalities_web.topojson`}</pre>
+			</div>
+		</div>
+	</section>
 </article>
+

@@ -64,6 +64,7 @@ const resolvedOgImage = new URL(ogImage || '/default-og.png', Astro.site || Astr
 		)}
 
 		<!-- Google AdSense / Site Verification -->
+		<meta name="google-adsense-account" content="ca-pub-7494033520495523" />
 		<script is:inline async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7494033520495523" crossorigin="anonymous"></script>
 
 		<!-- Primary Meta Tags -->
@@ -110,8 +111,16 @@ const resolvedOgImage = new URL(ogImage || '/default-og.png', Astro.site || Astr
 						"url": "https://www.mapaph.com",
 						"logo": "https://www.mapaph.com/ph.svg",
 						"sameAs": [
-							"https://lens.mapaph.com"
+							"https://lens.mapaph.com",
+							"https://github.com/Shiiroi/mapaph"
 						],
+						"publishingPrinciples": "https://www.mapaph.com/about",
+						"contactPoint": {
+							"@type": "ContactPoint",
+							"email": "vrsmagwili@gmail.com",
+							"contactType": "customer support",
+							"url": "https://www.mapaph.com/contact"
+						},
 						"description": "Independent civic initiative providing open-source geospatial tools, Philippine Standard Geographic Code (PSGC) lookups, and mapping data for the Philippines."
 					},
 					{
@@ -134,7 +143,13 @@ const resolvedOgImage = new URL(ogImage || '/default-og.png', Astro.site || Astr
 
 		<slot name="schema" />
 	</head>
-	<body class="bg-mapa-canvas text-mapa-ink min-h-screen">
+	<body class="bg-mapa-canvas text-mapa-ink min-h-screen antialiased selection:bg-mapa-green/20 selection:text-mapa-ink">
+		<a
+			href="#main-content"
+			class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2.5 focus:rounded-xl focus:bg-mapa-green focus:text-mapa-canvas focus:font-sans focus:text-sm focus:font-bold focus:shadow-lg"
+		>
+			Skip to main content
+		</a>
 		<slot />
 		<Analytics />
 	</body>

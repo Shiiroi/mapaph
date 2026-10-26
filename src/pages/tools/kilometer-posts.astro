@@ -9,7 +9,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 
-// Regional KM 0 Origin Benchmarks
+// Regional KM 0 Origin Benchmarks with Authentic Official Registries
 const KM_ZERO_ORIGINS = [
 	{
 		id: 'luzon',
@@ -19,6 +19,9 @@ const KM_ZERO_ORIGINS = [
 		elevation: '3 meters ASL',
 		lat: 14.5826,
 		lon: 120.9787,
+		markerBadge: 'National White Obelisk & Bronze Plaque',
+		refUrl: 'https://nhcp.gov.ph',
+		refName: 'NHCP National Historic Landmark Registry',
 		corridors: ['MacArthur Highway (N2/N1)', 'Maharlika Highway (AH26/N1)', 'Manila South Road', 'Marilaque Highway (N68)', 'Manila East Road (N601)', 'Aguinaldo Highway (N419)', 'Kennon Road (N208)'],
 		history: 'Established in 1913 during the American Commonwealth under the Bureau of Public Works (now DPWH). Positioned directly across the José Rizal Monument as the singular geodetic reference point for all road distances across Luzon.'
 	},
@@ -30,6 +33,9 @@ const KM_ZERO_ORIGINS = [
 		elevation: '700 meters ASL',
 		lat: 8.0019,
 		lon: 124.2858,
+		markerBadge: 'Lake Lanao Shore Survey Monument',
+		refUrl: 'https://mpw.bangsamoro.gov.ph',
+		refName: 'BARMM Ministry of Public Works Geodetic Baseline',
 		corridors: ['Marawi–Iligan Road', 'Sayre Highway (N10)', 'Davao–Cotabato Road', 'Surigao–Davao Coastal'],
 		history: 'Designated by early public works engineers as the primary surveying benchmark for the trans-Mindanao road network originating along the northern shore of Lake Lanao.'
 	},
@@ -41,6 +47,9 @@ const KM_ZERO_ORIGINS = [
 		elevation: '12 meters ASL',
 		lat: 10.3167,
 		lon: 123.8907,
+		markerBadge: 'Provincial Capitol Milestone',
+		refUrl: 'https://nhcp.gov.ph',
+		refName: 'NHCP Historical Landmark (Res. No. 2, s. 2008)',
 		corridors: ['Cebu North Coastal Road (N8)', 'Cebu South Road (N8)', 'Trans-Central Highway (N815)'],
 		history: 'Erected in front of the neoclassical Cebu Provincial Capitol building, serving as the benchmark for radial distances spanning from Daanbantayan in the north to Santander in the south.'
 	},
@@ -52,6 +61,9 @@ const KM_ZERO_ORIGINS = [
 		elevation: '5 meters ASL',
 		lat: 10.6969,
 		lon: 122.5644,
+		markerBadge: 'Casa Real de Iloilo Survey Pillar',
+		refUrl: 'https://nhcp.gov.ph',
+		refName: 'NHCP Historic Site Declaration (Casa Real de Iloilo)',
 		corridors: ['Iloilo–Capiz Road (N5)', 'Iloilo–Antique Road (N501)', 'Panay East Coast Highway'],
 		history: 'Positioned at the Casa Real de Iloilo (Old Provincial Capitol) as the surveying reference point for all national secondary and primary arterial routes across the four provinces of Panay.'
 	},
@@ -63,6 +75,9 @@ const KM_ZERO_ORIGINS = [
 		elevation: '15 meters ASL',
 		lat: 14.4333,
 		lon: 120.4833,
+		markerBadge: 'Historic WWII Memorial Obelisk',
+		refUrl: 'https://filipino-americanmemorials.org/bataan-death-march-markers/',
+		refName: 'FAME Bataan Death March Memorial Registry',
 		corridors: ['Roman Superhighway (N301)', 'Governor J.J. Linao Road', 'Old Bataan National Road'],
 		history: '138 white obelisk concrete markers erected by the Battling Bastards of Bataan and Filipino-American Memorial Foundation marking each kilometer marched by ~75,000 POWs from Mariveles/Bagac to San Fernando and Camp O’Donnell.'
 	}
@@ -78,15 +93,15 @@ const HIGHWAY_CORRIDORS = [
 		termini: 'Manila ↔ Laoag City (Ilocos Norte)',
 		totalKm: 488.0,
 		description: 'The historic northern trunk road traversing Metro Manila, Bulacan, Pampanga, Tarlac, Pangasinan, La Union, Ilocos Sur, and Ilocos Norte.',
-		color: '#059669',
+		color: '#3D5A45',
 		markers: [
-			{ km: 0, town: 'Luneta, City of Manila', prov: 'NCR', landmark: 'José Rizal Monument, Kilometer Zero Obelisk', destTop: 'MONUMENTO 9', lat: 14.5826, lon: 120.9787 },
-			{ km: 9, town: 'Monumento, Caloocan', prov: 'NCR', landmark: 'Bonifacio Monument Circle, LRT-1 North Terminus', destTop: 'MALOLOS 33', lat: 14.6575, lon: 120.9836 },
+			{ km: 0, town: 'Luneta, City of Manila', prov: 'NCR', landmark: 'José Rizal Monument, Kilometer Zero Obelisk', destTop: 'MONUMENTO 9', lat: 14.5826, lon: 120.9787, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Kilometer+Zero+Rizal+Park+Manila' },
+			{ km: 9, town: 'Monumento, Caloocan', prov: 'NCR', landmark: 'Bonifacio Monument Circle, LRT-1 North Terminus', destTop: 'MALOLOS 33', lat: 14.6575, lon: 120.9836, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Bonifacio+Monument+Caloocan' },
 			{ km: 14, town: 'Malanday, Valenzuela City', prov: 'NCR', landmark: 'Valenzuela City Hall, People’s Park', destTop: 'MALOLOS 28', lat: 14.7000, lon: 120.9650 },
 			{ km: 19, town: 'Meycauayan', prov: 'Bulacan', landmark: 'Meycauayan River Bridge, St. Francis of Assisi Parish', destTop: 'MALOLOS 23', lat: 14.7350, lon: 120.9600 },
 			{ km: 27, town: 'Marilao', prov: 'Bulacan', landmark: 'SM City Marilao, Prenza Junction', destTop: 'MALOLOS 15', lat: 14.7650, lon: 120.9500 },
 			{ km: 34, town: 'Bocaue / Guiguinto', prov: 'Bulacan', landmark: 'Bocaue River Bridge, Philippine Arena Overpass link', destTop: 'MALOLOS 8', lat: 14.8100, lon: 120.9200 },
-			{ km: 42, town: 'Malolos City', prov: 'Bulacan', landmark: 'Barasoain Church, Bulacan Provincial Capitol Grounds', destTop: 'SAN FDO 24', lat: 14.8550, lon: 120.8150 },
+			{ km: 42, town: 'Malolos City', prov: 'Bulacan', landmark: 'Barasoain Church, Bulacan Provincial Capitol Grounds', destTop: 'SAN FDO 24', lat: 14.8550, lon: 120.8150, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Barasoain+Church+Malolos+Bulacan' },
 			{ km: 52, town: 'Calumpit', prov: 'Bulacan', landmark: 'Calumpit River Historic Bridge, Pampanga Provincial Border', destTop: 'SAN FDO 14', lat: 14.9150, lon: 120.7650 },
 			{ km: 66, town: 'San Fernando City', prov: 'Pampanga', landmark: 'Pampanga Provincial Capitol, San Fernando Train Station', destTop: 'ANGELES 17', lat: 15.0300, lon: 120.6900 },
 			{ km: 83, town: 'Angeles City', prov: 'Pampanga', landmark: 'Holy Rosary Parish Church, Heritage District', destTop: 'TARLAC 42', lat: 15.1450, lon: 120.5900 },
@@ -98,8 +113,8 @@ const HIGHWAY_CORRIDORS = [
 			{ km: 212, town: 'Binalonan / Pozorrubio', prov: 'Pangasinan', landmark: 'Binalonan Airfield, Northern foothills transition', destTop: 'LA UNION 57', lat: 16.0500, lon: 120.5900 },
 			{ km: 230, town: 'Rosario', prov: 'La Union', landmark: 'Rosario Junction (Kennon Road & Marcos Highway Gateway to Baguio)', destTop: 'SAN FDO 39', lat: 16.2300, lon: 120.4850 },
 			{ km: 269, town: 'San Fernando City', prov: 'La Union', landmark: 'La Union Provincial Capitol, Poro Point Freeport', destTop: 'VIGAN 136', lat: 16.6150, lon: 120.3180 },
-			{ km: 405, town: 'Vigan City', prov: 'Ilocos Sur', landmark: 'Calle Crisologo, Plaza Salcedo, Ilocos Sur Provincial Capitol', destTop: 'LAOAG 83', lat: 17.5750, lon: 120.3880 },
-			{ km: 488, town: 'Laoag City', prov: 'Ilocos Norte', landmark: 'Sinking Bell Tower, Ilocos Norte Provincial Capitol Plaza', destTop: 'PAGUDPUD 72', lat: 18.1980, lon: 120.5950 }
+			{ km: 405, town: 'Vigan City', prov: 'Ilocos Sur', landmark: 'Calle Crisologo, Plaza Salcedo, Ilocos Sur Provincial Capitol', destTop: 'LAOAG 83', lat: 17.5750, lon: 120.3880, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Calle+Crisologo+Vigan+Ilocos+Sur' },
+			{ km: 488, town: 'Laoag City', prov: 'Ilocos Norte', landmark: 'Sinking Bell Tower, Ilocos Norte Provincial Capitol Plaza', destTop: 'PAGUDPUD 72', lat: 18.1980, lon: 120.5950, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Sinking+Bell+Tower+Laoag+City' }
 		]
 	},
 	{
@@ -110,15 +125,15 @@ const HIGHWAY_CORRIDORS = [
 		termini: 'Manila ↔ Matnog (Sorsogon Ferry Terminal)',
 		totalKm: 645.0,
 		description: 'The southern trunk of the Pan-Philippine Highway connecting Laguna, Batangas, Quezon, and the entire Bicol Peninsula to the Visayas RoRo ferry.',
-		color: '#2563EB',
+		color: '#1B2A4A',
 		markers: [
-			{ km: 0, town: 'Luneta, City of Manila', prov: 'NCR', landmark: 'José Rizal Monument, Kilometer Zero Obelisk', destTop: 'ALABANG 22', lat: 14.5826, lon: 120.9787 },
+			{ km: 0, town: 'Luneta, City of Manila', prov: 'NCR', landmark: 'José Rizal Monument, Kilometer Zero Obelisk', destTop: 'ALABANG 22', lat: 14.5826, lon: 120.9787, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Kilometer+Zero+Rizal+Park+Manila' },
 			{ km: 14, town: 'Parañaque / Sucat', prov: 'NCR', landmark: 'Ninoy Aquino Ave Junction, Dr. A. Santos Ave', destTop: 'ALABANG 8', lat: 14.4850, lon: 121.0450 },
 			{ km: 22, town: 'Alabang, Muntinlupa City', prov: 'NCR', landmark: 'Alabang Rotonda, Filinvest Corporate City', destTop: 'CALAMBA 32', lat: 14.4150, lon: 121.0420 },
 			{ km: 31, town: 'San Pedro City', prov: 'Laguna', landmark: 'Laguna Provincial Welcome Boundary Arch', destTop: 'CALAMBA 23', lat: 14.3600, lon: 121.0500 },
 			{ km: 35, town: 'Biñan City', prov: 'Laguna', landmark: 'Biñan Historic Town Plaza, Plaza Rizal', destTop: 'CALAMBA 19', lat: 14.3350, lon: 121.0850 },
 			{ km: 40, town: 'Santa Rosa City', prov: 'Laguna', landmark: 'Balibago Commercial Complex, Enchanted Kingdom Gateway', destTop: 'CALAMBA 14', lat: 14.2950, lon: 121.1100 },
-			{ km: 54, town: 'Calamba City', prov: 'Laguna', landmark: 'Calamba Crossing, José Rizal Ancestral Shrine', destTop: 'LUCENA 79', lat: 14.2100, lon: 121.1650 },
+			{ km: 54, town: 'Calamba City', prov: 'Laguna', landmark: 'Calamba Crossing, José Rizal Ancestral Shrine', destTop: 'LUCENA 79', lat: 14.2100, lon: 121.1650, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Rizal+Shrine+Calamba+Laguna' },
 			{ km: 63, town: 'Los Baños', prov: 'Laguna', landmark: 'UPLB College Junction, Mount Makiling foothill', destTop: 'SAN PABLO 23', lat: 14.1750, lon: 121.2400 },
 			{ km: 86, town: 'San Pablo City', prov: 'Laguna', landmark: 'City of Seven Lakes, Cathedral of Saint Paul the First Hermit', destTop: 'LUCENA 47', lat: 14.0700, lon: 121.3250 },
 			{ km: 96, town: 'Tiaong', prov: 'Quezon', landmark: 'Quezon Provincial Welcome Arch, Villa Escudero link', destTop: 'LUCENA 37', lat: 13.9600, lon: 121.3700 },
@@ -129,8 +144,8 @@ const HIGHWAY_CORRIDORS = [
 			{ km: 280, town: 'Gumaca / Lopez', prov: 'Quezon', landmark: 'Lopez Municipal Hall, Alabat Island Ferry Link', destTop: 'DAET 70', lat: 13.8800, lon: 122.2600 },
 			{ km: 350, town: 'Daet', prov: 'Camarines Norte', landmark: 'First Rizal Monument in the World, Provincial Capitol', destTop: 'NAGA 95', lat: 14.1150, lon: 122.9550 },
 			{ km: 445, town: 'Naga City', prov: 'Camarines Sur', landmark: 'Our Lady of Peñafrancia Shrine, Bicol Central Station', destTop: 'LEGAZPI 90', lat: 13.6200, lon: 123.1900 },
-			{ km: 535, town: 'Legazpi City', prov: 'Albay', landmark: 'Mayon Volcano Vista, Cagsawa Ruins, Albay Capitol', destTop: 'MATNOG 110', lat: 13.1400, lon: 123.7450 },
-			{ km: 645, town: 'Matnog Port', prov: 'Sorsogon', landmark: 'Matnog RoRo Ferry Terminal (Gateway to Samar / Leyte)', destTop: 'SAMAR RORO', lat: 12.5850, lon: 124.0850 }
+			{ km: 535, town: 'Legazpi City', prov: 'Albay', landmark: 'Mayon Volcano Vista, Cagsawa Ruins, Albay Capitol', destTop: 'MATNOG 110', lat: 13.1400, lon: 123.7450, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Cagsawa+Ruins+Albay' },
+			{ km: 645, town: 'Matnog Port', prov: 'Sorsogon', landmark: 'Matnog RoRo Ferry Terminal (Gateway to Samar / Leyte)', destTop: 'SAMAR RORO', lat: 12.5850, lon: 124.0850, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Matnog+Ferry+Terminal+Sorsogon' }
 		]
 	},
 	{
@@ -141,14 +156,14 @@ const HIGHWAY_CORRIDORS = [
 		termini: 'Manila ↔ Tagaytay City Ridge',
 		totalKm: 55.0,
 		description: 'The primary arterial route connecting southern Metro Manila to historical Cavite towns and the Tagaytay Taal Volcano scenic ridge.',
-		color: '#D97706',
+		color: '#9E391A',
 		markers: [
-			{ km: 0, town: 'Luneta, City of Manila', prov: 'NCR', landmark: 'José Rizal Monument, Kilometer Zero Obelisk', destTop: 'BACOOR 15', lat: 14.5826, lon: 120.9787 },
+			{ km: 0, town: 'Luneta, City of Manila', prov: 'NCR', landmark: 'José Rizal Monument, Kilometer Zero Obelisk', destTop: 'BACOOR 15', lat: 14.5826, lon: 120.9787, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Kilometer+Zero+Rizal+Park+Manila' },
 			{ km: 15, town: 'Zapote, Bacoor City', prov: 'Cavite', landmark: 'Historic Zapote Bridge, Bacoor Welcome Landmark', destTop: 'IMUS 5', lat: 14.4650, lon: 120.9700 },
 			{ km: 20, town: 'Imus City', prov: 'Cavite', landmark: 'Imus City Cathedral, Battle of Alapan Flag Heritage', destTop: 'DASMARIÑAS 10', lat: 14.4300, lon: 120.9400 },
 			{ km: 30, town: 'Dasmariñas City', prov: 'Cavite', landmark: 'Dasmariñas City Hall, NCST Complex, Governor’s Drive', destTop: 'SILANG 14', lat: 14.3250, lon: 120.9350 },
 			{ km: 44, town: 'Silang', prov: 'Cavite', landmark: 'Silang Town Plaza, Nuestra Señora de Candelaria Church', destTop: 'TAGAYTAY 11', lat: 14.2300, lon: 120.9750 },
-			{ km: 55, town: 'Tagaytay City', prov: 'Cavite', landmark: 'Tagaytay Rotonda, Taal Lake & Volcano Overlook Ridge', destTop: 'BATANGAS 35', lat: 14.1150, lon: 120.9600 }
+			{ km: 55, town: 'Tagaytay City', prov: 'Cavite', landmark: 'Tagaytay Rotonda, Taal Lake & Volcano Overlook Ridge', destTop: 'BATANGAS 35', lat: 14.1150, lon: 120.9600, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Tagaytay+Rotonda+Tagaytay+Cavite' }
 		]
 	},
 	{
@@ -159,13 +174,13 @@ const HIGHWAY_CORRIDORS = [
 		termini: 'Rosario (La Union) ↔ Baguio City Session Road',
 		totalKm: 246.0,
 		description: 'The iconic 33.7-kilometer mountain zig-zag pass climbing through the Bued River gorge to the Summer Capital of the Philippines.',
-		color: '#4F46E5',
+		color: '#1B2A4A',
 		markers: [
-			{ km: 0, town: 'Luneta, City of Manila', prov: 'NCR', landmark: 'José Rizal Monument, Kilometer Zero Obelisk', destTop: 'BAGUIO 246', lat: 14.5826, lon: 120.9787 },
+			{ km: 0, town: 'Luneta, City of Manila', prov: 'NCR', landmark: 'José Rizal Monument, Kilometer Zero Obelisk', destTop: 'BAGUIO 246', lat: 14.5826, lon: 120.9787, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Kilometer+Zero+Rizal+Park+Manila' },
 			{ km: 215, town: 'Rosario Junction', prov: 'La Union', landmark: 'Kennon Road Tollgate Arch, Bued River Bridge Entry', destTop: 'BAGUIO 31', lat: 16.2300, lon: 120.4850 },
 			{ km: 225, town: 'Camp 1 / Pugo Border', prov: 'La Union / Benguet', landmark: 'First Mountain Sentry Gate, Bued Hydroelectric Flume', destTop: 'BAGUIO 21', lat: 16.2800, lon: 120.5300 },
-			{ km: 235, town: 'Camp 4 (Lion’s Head)', prov: 'Benguet', landmark: 'Iconic 40-foot Concrete Lion’s Head Monument', destTop: 'BAGUIO 11', lat: 16.3400, lon: 120.5850 },
-			{ km: 246, town: 'Baguio City Center', prov: 'Benguet', landmark: 'Session Road, Burnham Park, Baguio City Hall Grounds', destTop: 'HALSEMA 0', lat: 16.4120, lon: 120.5950 }
+			{ km: 235, town: 'Camp 4 (Lion’s Head)', prov: 'Benguet', landmark: 'Iconic 40-foot Concrete Lion’s Head Monument', destTop: 'BAGUIO 11', lat: 16.3400, lon: 120.5850, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Lion%27s+Head+Kennon+Road+Tuba+Benguet' },
+			{ km: 246, town: 'Baguio City Center', prov: 'Benguet', landmark: 'Session Road, Burnham Park, Baguio City Hall Grounds', destTop: 'HALSEMA 0', lat: 16.4120, lon: 120.5950, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Burnham+Park+Baguio+City' }
 		]
 	},
 	{
@@ -176,14 +191,15 @@ const HIGHWAY_CORRIDORS = [
 		termini: 'Mariveles / Bagac ↔ San Fernando (KM 102) & Capas, Tarlac',
 		totalKm: 102.0,
 		description: '138 preserved white obelisk milestone monuments tracing the fateful April 1942 trek of 75,000 Filipino and American defenders.',
-		color: '#DC2626',
+		color: '#9E391A',
 		markers: [
-			{ km: 0, town: 'Mariveles KM 00', prov: 'Bataan', landmark: 'Death March Kilometer Zero Memorial Park, Mariveles Bay', destTop: 'LIMAY 20', lat: 14.4333, lon: 120.4833 },
+			{ km: 0, town: 'Mariveles KM 00', prov: 'Bataan', landmark: 'Death March Kilometer Zero Memorial Park, Mariveles Bay', destTop: 'LIMAY 20', lat: 14.4333, lon: 120.4833, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Bataan+Death+March+KM+00+Mariveles' },
 			{ km: 20, town: 'Limay', prov: 'Bataan', landmark: 'Limay Catholic Church, Coastal Bataan Highway Marker', destTop: 'BALANGA 28', lat: 14.5600, lon: 120.5950 },
 			{ km: 48, town: 'Balanga City', prov: 'Bataan', landmark: 'Balanga City World War II Museum, St. Joseph Cathedral', destTop: 'HERMOSA 24', lat: 14.6800, lon: 120.5400 },
 			{ km: 72, town: 'Hermosa', prov: 'Bataan', landmark: 'Hermosa Town Plaza, Roosevelt Protected Landscape gate', destTop: 'LUBAO 16', lat: 14.8300, lon: 120.5050 },
 			{ km: 88, town: 'Lubao', prov: 'Pampanga', landmark: 'Historic San Agustin Parish Church (Oldest in Pampanga)', destTop: 'SAN FDO 14', lat: 14.9400, lon: 120.6000 },
-			{ km: 102, town: 'San Fernando Station', prov: 'Pampanga', landmark: 'Historic San Fernando Railway Station (Transfer to Boxcars)', destTop: 'CAPAS DEATH', lat: 15.0300, lon: 120.6900 }
+			{ km: 90, town: 'Guagua / Lubao Border', prov: 'Pampanga', landmark: 'WWII Bataan Death March KM 90 Concrete Obelisk Monument', destTop: 'SAN FDO 12', lat: 14.9560, lon: 120.6120, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Death+March+Marker+Lubao+Pampanga' },
+			{ km: 102, town: 'San Fernando Station', prov: 'Pampanga', landmark: 'Historic San Fernando Railway Station (Transfer to Boxcars)', destTop: 'CAPAS DEATH', lat: 15.0300, lon: 120.6900, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=San+Fernando+Train+Station+Pampanga' }
 		]
 	},
 	{
@@ -194,17 +210,18 @@ const HIGHWAY_CORRIDORS = [
 		termini: 'Manila / Marikina ↔ Infanta (Quezon Pacific Port)',
 		totalKm: 118.0,
 		description: 'The iconic trans-Sierra Madre mountain highway cutting through Antipolo, Tanay, and the Rizal highlands before descending into the Pacific coast at Infanta.',
-		color: '#059669',
+		color: '#3D5A45',
 		markers: [
-			{ km: 0, town: 'Luneta, City of Manila', prov: 'NCR', landmark: 'José Rizal Monument, Kilometer Zero Obelisk', destTop: 'MARIKINA 15', lat: 14.5826, lon: 120.9787 },
+			{ km: 0, town: 'Luneta, City of Manila', prov: 'NCR', landmark: 'José Rizal Monument, Kilometer Zero Obelisk', destTop: 'MARIKINA 15', lat: 14.5826, lon: 120.9787, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Kilometer+Zero+Rizal+Park+Manila' },
 			{ km: 15, town: 'Marikina City / Marcos Hwy', prov: 'NCR', landmark: 'Marikina Riverbanks, SM City Marikina, N59 Junction', destTop: 'MASINAG 4', lat: 14.6285, lon: 121.0850 },
 			{ km: 19, town: 'Masinag, Antipolo City', prov: 'Rizal', landmark: 'LRT-2 Antipolo Station, Masinag Junction / Sumulong link', destTop: 'COGEO 6', lat: 14.6235, lon: 121.1215 },
 			{ km: 25, town: 'Cogeo, Antipolo City', prov: 'Rizal', landmark: 'Cogeo Gate 2 Market, Transition to Sierra Madre foothills', destTop: 'BOSO-BOSO 5', lat: 14.6190, lon: 121.1710 },
 			{ km: 30, town: 'Boso-Boso, Antipolo City', prov: 'Rizal', landmark: 'Nuestra Señora de la Annunciata Parish (Oldest church ruins in Upper Antipolo)', destTop: 'BARAS 12', lat: 14.6280, lon: 121.2160 },
 			{ km: 42, town: 'Pinugay / Baras Junction', prov: 'Rizal', landmark: 'Teresa–Baras cutoff road, Teresa bypass junction', destTop: 'CUYAMBAY 11', lat: 14.6050, lon: 121.3020 },
-			{ km: 53, town: 'Cuyambay, Tanay', prov: 'Rizal', landmark: 'Masungi Georeserve area, Cloud 9 ridge vista, Treasure Mountain gateway', destTop: 'SAMPALOC 15', lat: 14.6020, lon: 121.3650 },
+			{ km: 53, town: 'Cuyambay, Tanay', prov: 'Rizal', landmark: 'Masungi Georeserve area, Cloud 9 ridge vista, Treasure Mountain gateway', destTop: 'SAMPALOC 15', lat: 14.6020, lon: 121.3650, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Masungi+Georeserve+Tanay+Rizal' },
 			{ km: 68, town: 'Sampaloc, Tanay', prov: 'Rizal', landmark: 'Sampaloc Junction (Tanay Proper, Daranak Falls, Regina RICA link)', destTop: 'REAL 38', lat: 14.5880, lon: 121.3980 },
 			{ km: 82, town: 'Sierra Madre Overlook, Tanay', prov: 'Rizal', landmark: 'Jariel’s Peak, Mt. Daraitan junction, highest road elevation in Rizal', destTop: 'INFANTA 36', lat: 14.6250, lon: 121.4650 },
+			{ km: 90, town: 'Sitio Magsaysay / Sierra Madre Pass', prov: 'Rizal / Quezon Border', landmark: 'Famous Marilaque KM 90 Tourist Stop & Sierra Madre Mountain Ridge Vista', destTop: 'INFANTA 28', lat: 14.6436, lon: 121.5204, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=KM+90+Marilaque+Highway+Tanay+Rizal' },
 			{ km: 98, town: 'Magsaysay / Real Border', prov: 'Quezon', landmark: 'Binuangan River Bridge, Pacific mountain descent', destTop: 'INFANTA 20', lat: 14.6650, lon: 121.5750 },
 			{ km: 118, town: 'Infanta Port, Infanta', prov: 'Quezon', landmark: 'Pacific Ocean Coastline, Dinahican Port to Polillo Island', destTop: 'POLILLO FERRY', lat: 14.7450, lon: 121.6500 }
 		]
@@ -217,19 +234,19 @@ const HIGHWAY_CORRIDORS = [
 		termini: 'Manila / Pasig ↔ Pililla & Famy (Laguna Border)',
 		totalKm: 68.0,
 		description: 'The historic circumferential eastern artery traversing Cainta, Taytay, Angono, Binangonan, Cardona, Morong, Baras, Tanay, and Pililla along the northern rim of Laguna de Bay.',
-		color: '#2563EB',
+		color: '#1B2A4A',
 		markers: [
-			{ km: 0, town: 'Luneta, City of Manila', prov: 'NCR', landmark: 'José Rizal Monument, Kilometer Zero Obelisk', destTop: 'CAINTA 16', lat: 14.5826, lon: 120.9787 },
+			{ km: 0, town: 'Luneta, City of Manila', prov: 'NCR', landmark: 'José Rizal Monument, Kilometer Zero Obelisk', destTop: 'CAINTA 16', lat: 14.5826, lon: 120.9787, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Kilometer+Zero+Rizal+Park+Manila' },
 			{ km: 14, town: 'Pasig City / Rosario', prov: 'NCR', landmark: 'Rosario Bridge, Ortigas Ave Extension junction', destTop: 'CAINTA 2', lat: 14.5850, lon: 121.0850 },
 			{ km: 16, town: 'Cainta Junction', prov: 'Rizal', landmark: 'Our Lady of Light Parish, Valley Golf, Felix Avenue junction', destTop: 'TAYTAY 3', lat: 14.5780, lon: 121.1210 },
 			{ km: 19, town: 'Taytay Town Proper', prov: 'Rizal', landmark: 'St. John the Baptist Parish, Taytay Tiangge Garments Capital', destTop: 'ANGONO 7', lat: 14.5480, lon: 121.1320 },
-			{ km: 26, town: 'Angono (Art Capital)', prov: 'Rizal', landmark: 'Blanco Family Museum, Higantes Festival grounds, Petroglyphs gateway', destTop: 'BINANGONAN 6', lat: 14.5240, lon: 121.1550 },
+			{ km: 26, town: 'Angono (Art Capital)', prov: 'Rizal', landmark: 'Blanco Family Museum, Higantes Festival grounds, Petroglyphs gateway', destTop: 'BINANGONAN 6', lat: 14.5240, lon: 121.1550, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Blanco+Family+Museum+Angono+Rizal' },
 			{ km: 32, town: 'Binangonan Poblacion', prov: 'Rizal', landmark: 'Santa Ursula Parish, Binangonan Wharf to Talim Island', destTop: 'CARDONA 7', lat: 14.4650, lon: 121.1920 },
 			{ km: 39, town: 'Cardona', prov: 'Rizal', landmark: 'Cardona Coastal Strip, Laguna de Bay freshwater fish farming hubs', destTop: 'MORONG 6', lat: 14.4850, lon: 121.2280 },
 			{ km: 45, town: 'Morong Historic Town', prov: 'Rizal', landmark: 'St. Jerome Parish Church (Spanish Baroque Belltower), URS Morong', destTop: 'BARAS 4', lat: 14.5120, lon: 121.2380 },
 			{ km: 49, town: 'Baras Poblacion', prov: 'Rizal', landmark: 'St. Joseph Parish Church, Baras River Bridge', destTop: 'TANAY 5', lat: 14.5200, lon: 121.2650 },
 			{ km: 54, town: 'Tanay Town Center', prov: 'Rizal', landmark: 'San Ildefonso de Toledo Church, Tanay Town Park, Daranak Falls route', destTop: 'PILILLA 6', lat: 14.4980, lon: 121.2850 },
-			{ km: 60, town: 'Pililla Wind Farm Ridge', prov: 'Rizal', landmark: 'Pililla Windmill Viewpoint, Rizal–Laguna mountain crossover', destTop: 'FAMY 8', lat: 14.4750, lon: 121.3250 },
+			{ km: 60, town: 'Pililla Wind Farm Ridge', prov: 'Rizal', landmark: 'Pililla Windmill Viewpoint, Rizal–Laguna mountain crossover', destTop: 'FAMY 8', lat: 14.4750, lon: 121.3250, isTourist: true, gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=Pililla+Windmills+Rizal' },
 			{ km: 68, town: 'Mabitac / Famy Junction', prov: 'Laguna', landmark: 'Rizal–Laguna Boundary, Gateway to Siniloan & Real', destTop: 'SINILOAN 4', lat: 14.4350, lon: 121.4350 }
 		]
 	}
@@ -237,7 +254,7 @@ const HIGHWAY_CORRIDORS = [
 ---
 
 <BaseLayout
-	title="Philippine Highway Kilometer Post & KM 0 Marker Locator — mapaPH Tools"
+	title="Philippine Highway Kilometer Post & KM 0 Marker Locator | mapaPH Tools"
 	description="Interactive locator and visualizer for Philippine Department of Public Works and Highways (DPWH) concrete kilometer posts and official Kilometer Zero monuments. Search milestone markers along MacArthur Highway, Maharlika Highway, Marilaque Highway (Rizal), Manila East Road, Aguinaldo Highway, Kennon Road, and the Bataan Death March."
 	keywords="Philippine kilometer post finder, KM 0 Manila Luneta, Philippine highway markers, DPWH kilometer posts, Marilaque highway km posts, Manila East Road Rizal, MacArthur Highway km posts, Maharlika Highway km markers, Bataan Death March km markers, distance from Luneta KM 0, how to read Philippine KM posts"
 >
@@ -257,14 +274,14 @@ const HIGHWAY_CORRIDORS = [
 				{
 					"@type": "WebApplication",
 					"name": "Philippine Highway Kilometer Post & KM 0 Marker Locator",
-					"url": "https://mapaph.com/tools/kilometer-posts",
+					"url": "https://www.mapaph.com/tools/kilometer-posts",
 					"applicationCategory": "Geographic Reference & Highway Utility",
 					"operatingSystem": "All",
 					"description": "Interactive search and visualization utility for DPWH highway milestone posts and regional Kilometer Zero geodetic benchmarks across the Philippines.",
 					"provider": {
 						"@type": "Organization",
 						"name": "mapaPH",
-						"url": "https://mapaph.com"
+						"url": "https://www.mapaph.com"
 					}
 				},
 				{
@@ -274,19 +291,19 @@ const HIGHWAY_CORRIDORS = [
 							"@type": "ListItem",
 							"position": 1,
 							"name": "Home",
-							"item": "https://mapaph.com"
+							"item": "https://www.mapaph.com"
 						},
 						{
 							"@type": "ListItem",
 							"position": 2,
 							"name": "Tools",
-							"item": "https://mapaph.com/tools"
+							"item": "https://www.mapaph.com/tools"
 						},
 						{
 							"@type": "ListItem",
 							"position": 3,
 							"name": "Kilometer Post Locator",
-							"item": "https://mapaph.com/tools/kilometer-posts"
+							"item": "https://www.mapaph.com/tools/kilometer-posts"
 						}
 					]
 				}
@@ -296,10 +313,10 @@ const HIGHWAY_CORRIDORS = [
 
 	<Navbar />
 
-	<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 text-mapa-ink">
+	<main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 text-mapa-ink">
 		<!-- Header Breadcrumb & Tag -->
 		<div class="mb-8">
-			<nav class="flex items-center gap-2 text-xs font-sans text-mapa-clay mb-3">
+			<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs font-sans text-mapa-muted mb-3">
 				<a href="/" class="hover:text-mapa-green transition-colors">Home</a>
 				<span>/</span>
 				<a href="/tools" class="hover:text-mapa-green transition-colors">Tools</a>
@@ -314,7 +331,7 @@ const HIGHWAY_CORRIDORS = [
 				<span class="text-xs font-medium px-2.5 py-1 rounded-full bg-mapa-canvas-dark border border-mapa-contour text-mapa-ink/75">
 					Kilometer Zero Geodetic Benchmarks
 				</span>
-				<span class="text-xs font-medium px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-800 border border-amber-500/20">
+				<span class="text-xs font-medium px-2.5 py-1 rounded-full bg-mapa-rust/10 text-mapa-rust border border-mapa-rust/20">
 					Civilian & Survey Reference
 				</span>
 			</div>
@@ -392,12 +409,30 @@ const HIGHWAY_CORRIDORS = [
 							<span class="text-[10px] text-mapa-clay uppercase font-bold block">Elevation</span>
 							<span id="origin-banner-elevation" class="font-mono font-bold text-mapa-ink">3 m ASL</span>
 						</div>
+						<a
+							id="origin-banner-ref-link"
+							href={KM_ZERO_ORIGINS[0].refUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="px-3 py-2 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green text-mapa-ink font-semibold text-xs transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
+							title="View official registry record confirming this marker"
+						>
+							<span id="origin-banner-ref-label">{KM_ZERO_ORIGINS[0].refName}</span>
+							<svg class="w-3.5 h-3.5 text-mapa-clay" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+							</svg>
+						</a>
 					</div>
 				</div>
 
-				<p id="origin-banner-history" class="text-xs text-mapa-ink/80 leading-relaxed">
-					{KM_ZERO_ORIGINS[0].history}
-				</p>
+				<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2">
+					<p id="origin-banner-history" class="text-xs text-mapa-ink/80 leading-relaxed flex-1">
+						{KM_ZERO_ORIGINS[0].history}
+					</p>
+					<span id="origin-banner-badge" class="px-2.5 py-1 rounded bg-mapa-canvas border border-mapa-contour text-[11px] font-bold text-mapa-green shrink-0">
+						{KM_ZERO_ORIGINS[0].markerBadge}
+					</span>
+				</div>
 			</div>
 		</section>
 
@@ -473,24 +508,24 @@ const HIGHWAY_CORRIDORS = [
 						</span>
 
 						<!-- Concrete Post Graphic Container -->
-						<div class="relative w-44 bg-slate-100 rounded-t-3xl border-4 border-slate-300 shadow-md flex flex-col items-center overflow-hidden">
+						<div class="relative w-44 bg-mapa-canvas rounded-t-3xl border-4 border-mapa-contour shadow-md flex flex-col items-center overflow-hidden">
 							<!-- Rounded Top Arch Cap -->
-							<div class="w-full bg-slate-200/80 py-2 border-b-2 border-slate-300 text-center">
-								<div id="post-dest-name" class="font-sans font-extrabold text-slate-800 text-xs tracking-wider">
+							<div class="w-full bg-mapa-canvas-dark py-2 border-b-2 border-mapa-contour text-center">
+								<div id="post-dest-name" class="font-sans font-extrabold text-mapa-ink text-xs tracking-wider">
 									ANGELES 17
 								</div>
 							</div>
 
 							<!-- Center Post Body with Kilometer Text -->
 							<div class="py-6 px-4 text-center">
-								<div class="text-[11px] font-extrabold tracking-widest text-slate-500">KM</div>
-								<div id="post-km-number" class="text-4xl font-extrabold text-slate-900 font-mono tracking-tight">
+								<div class="text-[11px] font-extrabold tracking-widest text-mapa-muted">KM</div>
+								<div id="post-km-number" class="text-4xl font-extrabold text-mapa-ink font-mono tracking-tight">
 									66
 								</div>
 							</div>
 
 							<!-- Red DPWH Concrete Base Band -->
-							<div class="w-full bg-rose-700 text-white text-center py-1.5 font-mono text-[10px] font-bold border-t-2 border-rose-900">
+							<div class="w-full bg-mapa-rust text-white text-center py-1.5 font-mono text-[10px] font-bold border-t-2 border-mapa-rust">
 								<span id="post-road-code">N2 &bull; DPWH REGION III</span>
 							</div>
 						</div>
@@ -501,7 +536,7 @@ const HIGHWAY_CORRIDORS = [
 					</div>
 
 					<!-- Computed Marker Location Details -->
-					<div id="active-marker-card" class="mt-5 p-4 rounded-xl bg-mapa-canvas border border-mapa-contour text-xs space-y-2">
+					<div id="active-marker-card" class="mt-5 p-4 rounded-xl bg-mapa-canvas border border-mapa-contour text-xs space-y-2.5">
 						<div class="flex items-center justify-between border-b border-mapa-contour/50 pb-2">
 							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay">Location Status</span>
 							<span id="marker-town-badge" class="font-bold text-mapa-green">San Fernando City, Pampanga</span>
@@ -510,9 +545,24 @@ const HIGHWAY_CORRIDORS = [
 							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-clay block">Prominent Landmark</span>
 							<p id="marker-landmark" class="text-mapa-ink/85 mt-0.5">Pampanga Provincial Capitol, San Fernando Train Station</p>
 						</div>
-						<div class="flex justify-between items-center pt-1 text-[11px] text-mapa-clay">
+						<div class="flex flex-wrap justify-between items-center pt-1 text-[11px] text-mapa-clay gap-2">
 							<span>Highway Code: <strong id="marker-route-code" class="text-mapa-ink">N2 / MacArthur Hwy</strong></span>
 							<span>Approx. Coords: <strong id="marker-coords" class="font-mono text-mapa-ink">15.0300° N, 120.6900° E</strong></span>
+						</div>
+						<div id="marker-gmaps-container" class="pt-2 border-t border-mapa-contour/40">
+							<a
+								id="marker-gmaps-link"
+								href="https://www.google.com/maps/search/?api=1&query=Kilometer+Zero+Rizal+Park+Manila"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="w-full py-2 px-3 rounded-lg bg-mapa-green/10 hover:bg-mapa-green text-mapa-green hover:text-white font-semibold text-xs border border-mapa-green/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+								title="Open verified milestone location in Google Maps"
+							>
+								<span>Open Real-Life Location in Google Maps</span>
+								<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+								</svg>
+							</a>
 						</div>
 					</div>
 				</div>
@@ -543,7 +593,7 @@ const HIGHWAY_CORRIDORS = [
 					</div>
 
 					<div class="text-xs text-mapa-clay hidden sm:block">
-						<span class="inline-block w-2.5 h-2.5 rounded-full bg-rose-600 mr-1 align-middle"></span>
+						<span class="inline-block w-2.5 h-2.5 rounded-full bg-mapa-rust mr-1 align-middle"></span>
 						Physical Kilometer Posts
 					</div>
 				</div>
@@ -566,7 +616,35 @@ const HIGHWAY_CORRIDORS = [
 
 					<!-- Milestone Chain Nodes -->
 					<div id="milestone-chain-list" class="space-y-3 max-h-[620px] overflow-y-auto pr-2 custom-scrollbar">
-						<!-- Injected via JavaScript based on selected Highway -->
+						{HIGHWAY_CORRIDORS[0].markers.map((marker) => (
+							<div
+								class="chain-node p-3 rounded-xl border border-mapa-contour/60 hover:border-mapa-green/40 hover:bg-mapa-canvas flex items-center justify-between cursor-pointer transition-all"
+								data-km={marker.km}
+							>
+								<div class="flex items-center gap-3 min-w-0 pr-2">
+									<div class="w-11 h-11 rounded-lg bg-mapa-canvas border-2 border-mapa-contour flex flex-col items-center justify-center font-mono flex-shrink-0 shadow-2xs">
+										<span class="text-[8px] font-bold text-mapa-muted">KM</span>
+										<span class="text-xs font-extrabold text-mapa-ink leading-none">{marker.km}</span>
+									</div>
+									<div class="min-w-0">
+										<div class="font-serif font-bold text-sm text-mapa-ink flex items-center gap-1.5 truncate">
+											<span>{marker.town}</span>
+											{marker.isTourist && (
+												<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-mapa-rust/10 text-mapa-rust border border-mapa-rust/30">
+													Landmark
+												</span>
+											)}
+										</div>
+										<div class="text-[11px] text-mapa-clay truncate">{marker.prov} &bull; {marker.landmark}</div>
+									</div>
+								</div>
+								<div class="flex items-center gap-2 shrink-0">
+									<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour text-mapa-clay">
+										{marker.destTop}
+									</span>
+								</div>
+							</div>
+						))}
 					</div>
 				</div>
 
@@ -578,7 +656,7 @@ const HIGHWAY_CORRIDORS = [
 							<p class="text-xs text-mapa-clay">CartoDB Voyager map showing exact milestone coordinates</p>
 						</div>
 						<div class="text-xs text-mapa-clay flex items-center gap-2">
-							<span class="inline-block w-2.5 h-2.5 rounded-full bg-rose-600"></span>
+							<span class="inline-block w-2.5 h-2.5 rounded-full bg-mapa-rust"></span>
 							<span>Milestone Posts</span>
 						</div>
 					</div>
@@ -596,45 +674,112 @@ const HIGHWAY_CORRIDORS = [
 					How to Read a Philippine Highway Kilometer Post
 				</h2>
 				<p class="text-sm text-mapa-clay mt-1">
-					Standard anatomy and official DPWH Highway Design Guidelines (Design Guidelines, Criteria and Standards - DGCS).
+					Standard anatomy and official DPWH Highway Design Guidelines (Design Guidelines, Criteria and Standards, Volume 4: Highway Design).
 				</p>
 			</div>
 
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm mb-8">
 				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-2xs">
-					<div class="w-8 h-8 rounded-lg bg-emerald-600/15 text-emerald-800 flex items-center justify-center font-bold text-sm mb-3">
+					<div class="w-8 h-8 rounded-lg bg-mapa-green/15 text-mapa-green flex items-center justify-center font-bold text-sm mb-3">
 						1
 					</div>
 					<h3 class="font-serif font-bold text-base text-mapa-ink mb-1.5">
 						The Top Cap (Destination & Target Distance)
 					</h3>
 					<p class="text-xs text-mapa-ink/80 leading-relaxed">
-						The upper semicircular or trapezoidal section indicates the <strong>name of the next major city or town</strong> followed by the distance in kilometers to its municipal hall or provincial plaza (e.g. <code>ANGELES 17</code> means Angeles City center is 17 km ahead).
+						The upper semicircular or trapezoidal head displays the <strong>abbreviated name of the next major municipal center</strong> and the remaining road distance in kilometers (e.g. <code>ANGELES 17</code> indicates the town center of Angeles City is 17.0 kilometers ahead along this corridor).
 					</p>
 				</div>
 
 				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-2xs">
-					<div class="w-8 h-8 rounded-lg bg-blue-600/15 text-blue-800 flex items-center justify-center font-bold text-sm mb-3">
+					<div class="w-8 h-8 rounded-lg bg-mapa-navy/15 text-mapa-navy flex items-center justify-center font-bold text-sm mb-3">
 						2
 					</div>
 					<h3 class="font-serif font-bold text-base text-mapa-ink mb-1.5">
 						The Center Body (Distance from KM 0)
 					</h3>
 					<p class="text-xs text-mapa-ink/80 leading-relaxed">
-						The large, prominent numeral preceded by <code>KM</code> displays your <strong>exact physical distance from Kilometer Zero</strong> (e.g. <code>KM 66</code> indicates you are precisely 66.0 kilometers away from the Rizal Monument at Luneta Park in Manila).
+						The large center numeral preceded by <code>KM</code> displays your <strong>exact cumulative distance from Kilometer Zero</strong> (e.g. <code>KM 66</code> indicates you are precisely 66.0 kilometers away from the Rizal Monument at Luneta Park in Manila or your regional origin benchmark).
 					</p>
 				</div>
 
 				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-2xs">
-					<div class="w-8 h-8 rounded-lg bg-rose-600/15 text-rose-800 flex items-center justify-center font-bold text-sm mb-3">
+					<div class="w-8 h-8 rounded-lg bg-mapa-rust/15 text-mapa-rust flex items-center justify-center font-bold text-sm mb-3">
 						3
 					</div>
 					<h3 class="font-serif font-bold text-base text-mapa-ink mb-1.5">
-						The Base Band (DPWH District & Route)
+						The Base Band (DPWH Engineering District)
 					</h3>
 					<p class="text-xs text-mapa-ink/80 leading-relaxed">
-						The red painted base (or yellow for provincial roads) often bears embossed lettering denoting the <strong>DPWH Engineering District Office</strong> and national highway classification code (e.g. <code>N2</code> for primary roads or <code>DEO-PAMPANGA</code>).
+						The color-coded lower band denotes administrative responsibility: <strong>Red base</strong> signifies a primary national arterial road (e.g. N1, N2), while a <strong>Yellow base</strong> signifies a secondary or provincial road. The text identifies the maintaining DPWH District Engineering Office (e.g. <code>DEO-PAMPANGA</code>).
 					</p>
+				</div>
+			</div>
+
+			<!-- Technical Engineering Specifications -->
+			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-2xs space-y-4 text-xs font-sans text-mapa-ink/85">
+				<h3 class="font-serif font-bold text-base text-mapa-ink">
+					DPWH Standard Engineering Specifications (DGCS Volume 4)
+				</h3>
+				<p class="leading-relaxed">
+					Under Department Order No. 73, Series of 2016, DPWH standard kilometer posts must be precast reinforced concrete with a minimum 28-day compressive strength of 20.7 MPa (3,000 psi). The post stands 600 millimeters above the roadway shoulder with an embedded foundation depth of at least 400 millimeters to resist vehicular side-impact and soil erosion.
+				</p>
+				<p class="leading-relaxed">
+					All markings are painted using reflective highway-grade traffic paint. Lettering uses the FHWA Highway Gothic Series D typeface with a minimum stroke width of 15 millimeters, ensuring readability from moving vehicles at 60 km/h under low-beam headlight illumination.
+				</p>
+			</div>
+
+			<!-- Regional KM 0 Benchmark Reference Table -->
+			<div class="mt-8 bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-2xs text-xs font-sans">
+				<h3 class="font-serif font-bold text-base text-mapa-ink mb-2">
+					Summary Table of Philippine Kilometer Zero (KM 0) Geodetic Origins
+				</h3>
+				<p class="text-mapa-ink/80 leading-relaxed mb-4">
+					Because the Philippine highway network spans disconnected island groups, the Bureau of Public Works (now DPWH) established separate island origin monuments so that provincial engineers could survey radial road chains without crossing open seas. Below is the complete coordinate and corridor specification for the five primary benchmarks:
+				</p>
+				<div class="overflow-x-auto border border-mapa-contour rounded-xl bg-mapa-canvas">
+					<table class="w-full text-left text-xs border-collapse">
+						<thead class="bg-mapa-canvas-dark border-b border-mapa-contour text-mapa-ink uppercase text-[10px] font-bold">
+							<tr>
+								<th class="p-3">Regional Benchmark</th>
+								<th class="p-3">Exact Monument Site</th>
+								<th class="p-3">WGS84 Coordinates</th>
+								<th class="p-3">Primary Originating Highways</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85">
+							<tr>
+								<td class="p-3 font-semibold text-mapa-green">Luzon KM 0</td>
+								<td class="p-3">Rizal Park (Luneta), Ermita, Manila</td>
+								<td class="p-3 font-mono">14.5826° N, 120.9787° E</td>
+								<td class="p-3">MacArthur Hwy (N2), Maharlika Hwy (AH26), Manila East Rd (N601), Marilaque (N68), Aguinaldo Hwy (N419)</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-semibold text-mapa-green">Mindanao KM 0</td>
+								<td class="p-3">Banggolo Bridge / Lake Lanao, Marawi City</td>
+								<td class="p-3 font-mono">8.0019° N, 124.2858° E</td>
+								<td class="p-3">Marawi-Iligan Rd, Sayre Hwy (N10), Davao-Cotabato Rd, Surigao-Davao Coastal Rd</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-semibold text-mapa-green">Cebu Island KM 0</td>
+								<td class="p-3">Cebu Provincial Capitol, Cebu City</td>
+								<td class="p-3 font-mono">10.3167° N, 123.8907° E</td>
+								<td class="p-3">Cebu North Rd (N8), Cebu South Coastal Rd (N8), Trans-Central Hwy (N815)</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-semibold text-mapa-green">Panay Island KM 0</td>
+								<td class="p-3">Casa Real de Iloilo, Iloilo City</td>
+								<td class="p-3 font-mono">10.6969° N, 122.5644° E</td>
+								<td class="p-3">Iloilo-Capiz Rd (N5), Iloilo-Antique Rd (N501), Panay East Coast Hwy</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-semibold text-mapa-rust">Bataan Death March KM 00</td>
+								<td class="p-3">Mariveles &amp; Bagac Plazas, Bataan</td>
+								<td class="p-3 font-mono">14.4333° N, 120.4833° E</td>
+								<td class="p-3">138 WWII Memorial Obelisks along Old Bataan National Rd to San Fernando (KM 102) &amp; Capas</td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 			</div>
 		</section>
@@ -649,29 +794,90 @@ const HIGHWAY_CORRIDORS = [
 				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5">
 					<h3 class="font-bold text-mapa-ink mb-2">Where is the primary Kilometer Zero (KM 0) in the Philippines?</h3>
 					<p class="text-mapa-ink/80 leading-relaxed text-xs">
-						The primary and official geodetic Kilometer Zero for the entire island of Luzon is located across from the <strong>José Rizal Monument in Luneta Park (Rizal Park), City of Manila</strong>. Distance measurements for all major highways—including MacArthur Highway, Maharlika Highway, Manila South Road, and Aguinaldo Highway—originate from this spot.
+						The primary geodetic Kilometer Zero for the island of Luzon sits across from the <strong>José Rizal Monument in Luneta Park (Rizal Park), City of Manila</strong>. Distance measurements for all major radial highways, including MacArthur Highway (N2), Maharlika Highway (AH26), Manila South Road, and Aguinaldo Highway, originate from this monument.
 					</p>
 				</div>
 
 				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5">
 					<h3 class="font-bold text-mapa-ink mb-2">Does Mindanao have its own Kilometer Zero?</h3>
 					<p class="text-mapa-ink/80 leading-relaxed text-xs">
-						Yes. Mindanao’s historical Kilometer Zero is located in <strong>Marawi City, Lanao del Sur</strong>, along the shoreline of Lake Lanao near Banggolo Bridge. It served as the original survey baseline when the trans-Mindanao highway network was surveyed and constructed.
+						Yes. Mindanao has an independent historical Kilometer Zero situated in <strong>Marawi City, Lanao del Sur</strong>, along the shoreline of Lake Lanao near Banggolo Bridge. It served as the survey baseline when the Bureau of Public Works constructed the initial trans-Mindanao road network connecting Iligan, Cotabato, and Davao.
 					</p>
 				</div>
 
 				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5">
-					<h3 class="font-bold text-mapa-ink mb-2">Why are kilometer markers important for cyclists and emergency responders?</h3>
+					<h3 class="font-bold text-mapa-ink mb-2">Why do major islands have independent KM 0 monuments?</h3>
 					<p class="text-mapa-ink/80 leading-relaxed text-xs">
-						In rural stretches where cellular GPS data may experience dead zones, physical kilometer posts provide an unambiguous, universally recognized location stamp. Philippine National Police (PNP), DPWH, and ambulance dispatchers (911) frequently use KM posts to pinpoint road accident locations.
+						Because the Philippines is an archipelago, measuring road distance continuously from Manila across open water bodies is geographically impractical for local highway maintenance. Island provinces such as Cebu (Cebu Provincial Capitol), Panay (Casa Real de Iloilo), Bohol (Tagbilaran), and Leyte (Tacloban) each maintain their own KM 0 benchmarks to calculate radial provincial road chains.
 					</p>
 				</div>
 
 				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5">
 					<h3 class="font-bold text-mapa-ink mb-2">What are the Bataan Death March Kilometer Markers?</h3>
 					<p class="text-mapa-ink/80 leading-relaxed text-xs">
-						These are 138 specially designed white obelisk memorial markers erected to honor Filipino and American soldiers forced into the 1942 Bataan Death March during World War II. They start at KM 00 in Mariveles and KM 00 in Bagac, continuing through Pampanga up to San Fernando (KM 102) and Capas, Tarlac.
+						These are 138 specialized white obelisk concrete monuments maintained by the Filipino-American Memorial Endowment (FAME). They trace the exact route marched by approximately 75,000 Filipino and American prisoners of war in April 1942, starting from KM 00 in Mariveles and KM 00 in Bagac, through San Fernando, Pampanga (KM 102), and ending at Camp O'Donnell in Capas, Tarlac.
 					</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- Official References & Statutory Sources -->
+		<section class="border-t border-mapa-contour/50 pt-10 font-sans mt-10">
+			<h2 class="text-2xl font-serif font-bold text-mapa-ink mb-4">
+				Official References & Data Sources
+			</h2>
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-mapa-ink/80 leading-relaxed">
+				<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5 flex flex-col justify-between">
+					<div>
+						<div class="font-bold text-sm text-mapa-ink">Department of Public Works and Highways (DPWH)</div>
+						<p>Design Guidelines, Criteria and Standards (DGCS) Volume 4: Highway Design (Standard Kilometer Post Geometry, Color Codes, and Lettering Dimensions).</p>
+						<p class="text-[11px] text-mapa-clay">Official Road and Bridge Information Application (RBIA) and Highway Planning Division.</p>
+					</div>
+					<div class="pt-2 border-t border-mapa-contour/40">
+						<a href="https://www.dpwh.gov.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1">
+							<span>DPWH Official Infrastructure Portal</span>
+							<span>&rarr;</span>
+						</a>
+					</div>
+				</div>
+				<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5 flex flex-col justify-between">
+					<div>
+						<div class="font-bold text-sm text-mapa-ink">National Historical Commission of the Philippines (NHCP)</div>
+						<p>Historical Marker Register for Kilometer Zero Luneta (Manila), Banggolo Bridge (Marawi City), and Casa Real de Iloilo.</p>
+						<p class="text-[11px] text-mapa-clay">Executive Order No. 45 and Bureau of Public Works Historical Archives (1913).</p>
+					</div>
+					<div class="pt-2 border-t border-mapa-contour/40">
+						<a href="https://nhcp.gov.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1">
+							<span>NHCP National Historical Landmark Registry</span>
+							<span>&rarr;</span>
+						</a>
+					</div>
+				</div>
+				<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5 flex flex-col justify-between">
+					<div>
+						<div class="font-bold text-sm text-mapa-ink">Filipino-American Memorial Endowment (FAME)</div>
+						<p>Official Survey Registry of the 138 Bataan Death March Memorial Markers from KM 00 Mariveles/Bagac to Camp O'Donnell, Capas, Tarlac.</p>
+						<p class="text-[11px] text-mapa-clay">Battling Bastards of Bataan Foundation Historical Milepost Directory.</p>
+					</div>
+					<div class="pt-2 border-t border-mapa-contour/40">
+						<a href="https://filipino-americanmemorials.org/bataan-death-march-markers/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1">
+							<span>FAME Bataan Memorial Markers Registry</span>
+							<span>&rarr;</span>
+						</a>
+					</div>
+				</div>
+				<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5 flex flex-col justify-between">
+					<div>
+						<div class="font-bold text-sm text-mapa-ink">National Mapping and Resource Information Authority (NAMRIA)</div>
+						<p>Topographic basemaps, geodetic leveling benchmarks, and road network coordinates.</p>
+						<p class="text-[11px] text-mapa-clay">Philippine Reference System 1992 (PRS92) Geodetic Control Network.</p>
+					</div>
+					<div class="pt-2 border-t border-mapa-contour/40">
+						<a href="https://www.namria.gov.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1">
+							<span>NAMRIA Geodetic Network Portal</span>
+							<span>&rarr;</span>
+						</a>
+					</div>
 				</div>
 			</div>
 		</section>
@@ -790,11 +996,22 @@ const HIGHWAY_CORRIDORS = [
 				markerRouteCode.textContent = corridor.name.split('(')[0].trim();
 				markerCoords.textContent = `${marker.lat.toFixed(4)}° N, ${marker.lon.toFixed(4)}° E`;
 
+				const gmapsContainer = document.getElementById('marker-gmaps-container');
+				const gmapsLink = document.getElementById('marker-gmaps-link');
+				if (gmapsContainer && gmapsLink) {
+					if (marker.gmapsUrl) {
+						gmapsLink.href = marker.gmapsUrl;
+						gmapsContainer.classList.remove('hidden');
+					} else {
+						gmapsContainer.classList.add('hidden');
+					}
+				}
+
 				// Highlight active schematic node
 				document.querySelectorAll('.chain-node').forEach(node => {
 					const nodeKm = parseInt(node.getAttribute('data-km'), 10);
 					if (nodeKm === marker.km) {
-						node.className = 'chain-node p-3 rounded-xl border border-rose-600 bg-rose-500/15 flex items-center justify-between cursor-pointer transition-all';
+						node.className = 'chain-node p-3 rounded-xl border border-mapa-rust bg-mapa-rust/10 flex items-center justify-between cursor-pointer transition-all';
 					} else {
 						node.className = 'chain-node p-3 rounded-xl border border-mapa-contour/60 hover:border-mapa-green/40 hover:bg-mapa-canvas flex items-center justify-between cursor-pointer transition-all';
 					}
@@ -804,10 +1021,10 @@ const HIGHWAY_CORRIDORS = [
 				if (leafletMap) {
 					mapMarkers.forEach(({ km, markerObj }) => {
 						if (km === marker.km) {
-							markerObj.setStyle({ fillColor: '#E11D48', radius: 10, weight: 3 });
+							markerObj.setStyle({ fillColor: '#9E391A', radius: 10, weight: 3 });
 							markerObj.openPopup();
 						} else {
-							markerObj.setStyle({ fillColor: '#059669', radius: 6, weight: 2 });
+							markerObj.setStyle({ fillColor: '#3D5A45', radius: 6, weight: 2 });
 						}
 					});
 				}
@@ -822,20 +1039,37 @@ const HIGHWAY_CORRIDORS = [
 					item.setAttribute('data-km', marker.km.toString());
 
 					item.innerHTML = `
-						<div class="flex items-center gap-3">
-							<div class="w-11 h-11 rounded-lg bg-slate-100 border-2 border-slate-300 flex flex-col items-center justify-center font-mono flex-shrink-0">
-								<span class="text-[8px] font-bold text-slate-500">KM</span>
-								<span class="text-xs font-extrabold text-slate-800 leading-none">${marker.km}</span>
+						<div class="flex items-center gap-3 min-w-0 pr-2">
+							<div class="w-11 h-11 rounded-lg bg-mapa-canvas border-2 border-mapa-contour flex flex-col items-center justify-center font-mono flex-shrink-0 shadow-2xs">
+								<span class="text-[8px] font-bold text-mapa-muted">KM</span>
+								<span class="text-xs font-extrabold text-mapa-ink leading-none">${marker.km}</span>
 							</div>
-							<div>
-								<div class="font-serif font-bold text-sm text-mapa-ink">${marker.town}</div>
-								<div class="text-[11px] text-mapa-clay">${marker.prov} &bull; ${marker.landmark}</div>
+							<div class="min-w-0">
+								<div class="font-serif font-bold text-sm text-mapa-ink flex items-center gap-1.5 truncate">
+									<span>${marker.town}</span>
+									${marker.isTourist ? '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-mapa-rust/10 text-mapa-rust border border-mapa-rust/30">Landmark</span>' : ''}
+								</div>
+								<div class="text-[11px] text-mapa-clay truncate">${marker.prov} &bull; ${marker.landmark}</div>
 							</div>
 						</div>
-						<div class="text-right">
+						<div class="flex items-center gap-2 shrink-0">
 							<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour text-mapa-clay">
 								${marker.destTop}
 							</span>
+							${marker.gmapsUrl ? `
+								<a
+									href="${marker.gmapsUrl}"
+									target="_blank"
+									rel="noopener noreferrer"
+									class="p-1.5 rounded-lg bg-mapa-green/10 border border-mapa-green/30 hover:bg-mapa-green hover:text-white text-mapa-green transition-all shadow-2xs"
+									title="View real-life location in Google Maps"
+									onclick="event.stopPropagation()"
+								>
+									<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+									</svg>
+								</a>
+							` : ''}
 						</div>
 					`;
 
@@ -860,17 +1094,18 @@ const HIGHWAY_CORRIDORS = [
 				const latLngs = corridor.markers.map(m => [m.lat, m.lon]);
 
 				corridorPolyline = L.polyline(latLngs, {
-					color: corridor.color || '#059669',
+					color: corridor.color || '#3D5A45',
 					weight: 4,
 					opacity: 0.85,
-					lineJoin: 'round'
+					lineJoin: 'round',
+					interactive: false
 				}).addTo(leafletMap);
 
 				corridor.markers.forEach((marker) => {
 					const markerObj = L.circleMarker([marker.lat, marker.lon], {
 						radius: 6,
-						fillColor: '#059669',
-						color: '#ffffff',
+						fillColor: '#3D5A45',
+						color: '#F7F3E9',
 						weight: 2,
 						opacity: 1,
 						fillOpacity: 0.95
@@ -878,10 +1113,14 @@ const HIGHWAY_CORRIDORS = [
 
 					markerObj.bindPopup(`
 						<div class="font-sans text-xs">
-							<strong class="font-serif text-sm">KM ${marker.km} — ${marker.town}</strong><br/>
-							<span class="text-gray-600">${marker.prov}</span><br/>
-							<span class="text-rose-700 font-semibold">${marker.landmark}</span><br/>
-							<span class="text-[10px] text-gray-500 mt-1 block">Sign: ${marker.destTop}</span>
+							<div class="flex items-center gap-1.5 mb-0.5">
+								<strong class="font-serif text-sm">KM ${marker.km}: ${marker.town}</strong>
+								${marker.isTourist ? '<span class="text-[9px] font-bold px-1 py-0.2 rounded bg-mapa-rust/10 text-mapa-rust border border-mapa-rust/30">Landmark</span>' : ''}
+							</div>
+							<span class="text-mapa-muted">${marker.prov}</span><br/>
+							<span class="text-mapa-rust font-semibold">${marker.landmark}</span><br/>
+							<span class="text-[10px] text-mapa-muted mt-1 block">Sign: ${marker.destTop}</span>
+							${marker.gmapsUrl ? `<a href="${marker.gmapsUrl}" target="_blank" rel="noopener noreferrer" class="mt-2 inline-flex items-center gap-1 text-[11px] font-bold text-mapa-green hover:underline">View on Google Maps &rarr;</a>` : ''}
 						</div>
 					`);
 
@@ -906,8 +1145,8 @@ const HIGHWAY_CORRIDORS = [
 					scrollWheelZoom: true
 				});
 
-				L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-					attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+				L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+					attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 					maxZoom: 19
 				}).addTo(leafletMap);
 
@@ -930,7 +1169,21 @@ const HIGHWAY_CORRIDORS = [
 					originBannerLocation.textContent = origin.location;
 					originBannerCoords.textContent = `${origin.lat.toFixed(4)}° N, ${origin.lon.toFixed(4)}° E`;
 					originBannerElevation.textContent = origin.elevation;
-					originBannerHistory.textContent = origin.history;
+					if (originBannerHistory) {
+						originBannerHistory.textContent = origin.history;
+					}
+					const originRefLink = document.getElementById('origin-banner-ref-link');
+					const originRefLabel = document.getElementById('origin-banner-ref-label');
+					if (originRefLink && origin.refUrl) {
+						originRefLink.href = origin.refUrl;
+					}
+					if (originRefLabel && origin.refName) {
+						originRefLabel.textContent = origin.refName;
+					}
+					const originBadge = document.getElementById('origin-banner-badge');
+					if (originBadge && origin.markerBadge) {
+						originBadge.textContent = origin.markerBadge;
+					}
 				});
 			});
 

@@ -10,13 +10,44 @@ import Footer from '../components/Footer.astro';
 ---
 
 <BaseLayout 
-	title="About & Technical Methodology — mapaPH Open Geographic Tools" 
-	description="Learn how mapaPH processes Philippine Statistics Authority (PSA) census data, PSGC codes, COMELEC election tallies under RA 8293, RA 10173, and Executive Order No. 2."
+	title="About & Technical Methodology | mapaPH Open Geographic Tools" 
+	description="Learn how mapaPH processes Philippine Statistics Authority (PSA) census data, PSGC codes, NAMRIA PRS92 datums, and LTFRB/TRB transit matrices under RA 8293, RA 10173, and Executive Order No. 2."
 	keywords="about mapaPH, Philippine open source mapping, Philippine civic data, PSA census methodology, Philippine GIS standards, NAMRIA datum, civic tech Philippines"
 >
+	<script type="application/ld+json" slot="schema" is:inline>
+		{
+			"@context": "https://schema.org",
+			"@graph": [
+				{
+					"@type": "AboutPage",
+					"name": "About & Technical Methodology | mapaPH",
+					"url": "https://www.mapaph.com/about",
+					"description": "Technical methodology, data sourcing standards, statutory legal frameworks, and open-source principles for mapaPH."
+				},
+				{
+					"@type": "BreadcrumbList",
+					"itemListElement": [
+						{
+							"@type": "ListItem",
+							"position": 1,
+							"name": "Home",
+							"item": "https://www.mapaph.com"
+						},
+						{
+							"@type": "ListItem",
+							"position": 2,
+							"name": "About",
+							"item": "https://www.mapaph.com/about"
+						}
+					]
+				}
+			]
+		}
+	</script>
+
 	<Navbar />
 
-	<main class="max-w-4xl mx-auto px-6 py-16 text-mapa-ink font-serif">
+	<main id="main-content" class="max-w-4xl mx-auto px-6 py-16 text-mapa-ink font-serif">
 		<article class="prose prose-stone max-w-none">
 			<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
 				About & Technical Methodology
@@ -36,13 +67,13 @@ import Footer from '../components/Footer.astro';
 						Why mapaPH Exists
 					</h2>
 					<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
-						Accessing Philippine geographic and spatial data is far harder than it should be. Crucial public information—census numbers, administrative boundaries, transit routes, and coordinates—is often locked inside static PDFs, scattered across government portals, or trapped in complex desktop GIS formats. Commuters struggle with unmapped transport routes, and developers waste hours simply cleaning up inconsistent place names.
+						Accessing Philippine geographic and spatial data is far harder than it should be. Crucial public information: census numbers, administrative boundaries, transit routes, and coordinates, is often locked inside static PDFs, scattered across government portals, or trapped in complex desktop GIS formats. Commuters struggle with unmapped transport routes, and developers waste hours simply cleaning up inconsistent place names.
 					</p>
 					<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
 						We founded <strong>mapaPH</strong> with a straightforward mission: <strong>make Philippine geographic data effortless to access, and build open-source tools for anything related to or powered by Philippine maps.</strong>
 					</p>
 					<p class="font-sans text-base text-mapa-ink/90 leading-relaxed">
-						Whether it involves commuting, public transit networks, local geography, demographic visualizers, or coordinate converters—if it uses a map of the Philippines, we want to build free, open tools for it. No paywalls, no proprietary software required. Just fast, useful mapping software built for everyone.
+						Whether it involves commuting, public transit networks, local geography, demographic visualizers, or coordinate converters: if it uses a map of the Philippines, we want to build free, open tools for it. No paywalls, no proprietary software required. Just fast, useful mapping software built for everyone.
 					</p>
 				</section>
 
@@ -85,7 +116,98 @@ import Footer from '../components/Footer.astro';
 								Electoral records presented in visual tools like Lens are sourced from public election tallies published by the <strong>Commission on Elections (COMELEC)</strong>. Municipal asset valuations and financial statements originate from public Annual Audit Reports issued by the <strong>Commission on Audit (COA)</strong>.
 							</p>
 						</div>
+
+						<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/40">
+							<h3 class="font-serif text-xl font-bold text-mapa-green mb-2">
+								4. Geodetic Datum Transformations & Linear Highway Referencing
+							</h3>
+							<p class="text-sm text-mapa-ink/90 leading-relaxed">
+								Our surveying and highway utilities reconcile legacy local projections with modern satellite navigation. The PRS92 to WGS84 Coordinate Converter implements Transverse Mercator forward and inverse formulas alongside the 7-parameter Bursa-Wolf datum shift defined by the <strong>National Mapping and Resource Information Authority (NAMRIA)</strong> under Executive Order No. 45. Similarly, our Kilometer Post Locator maps physical concrete markers along national primary corridors using the linear referencing baselines of the <strong>Department of Public Works and Highways (DPWH)</strong> Road and Bridge Information Application (RBIA).
+							</p>
+						</div>
 					</div>
+				</section>
+
+				<!-- SECTION 2B: Dataset Baseline & Update Schedule -->
+				<section class="border-t border-mapa-contour/40 pt-8">
+					<h2 class="text-2xl sm:text-3xl font-bold text-mapa-ink font-serif mb-4">
+						Dataset Baseline Registry & Verification Cadence
+					</h2>
+					<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
+						Every reference directory and calculator on mapaPH is compiled from verifiable primary government gazettes. The table below documents the authoritative agency, baseline release, and audit schedule for each core dataset in our repository:
+					</p>
+
+					<div class="overflow-x-auto my-6 border border-mapa-contour rounded-xl bg-mapa-canvas-dark font-sans">
+						<table class="w-full text-left text-xs border-collapse">
+							<thead class="border-b border-mapa-contour bg-mapa-canvas text-mapa-ink uppercase text-[11px] font-bold">
+								<tr>
+									<th class="p-3">Dataset / Module</th>
+									<th class="p-3">Primary Authority</th>
+									<th class="p-3">Coverage Scope</th>
+									<th class="p-3">Verification Cycle</th>
+								</tr>
+							</thead>
+							<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85">
+								<tr>
+									<td class="p-3 font-semibold text-mapa-green">PSGC Administrative Directory</td>
+									<td class="p-3">Philippine Statistics Authority (PSA)</td>
+									<td class="p-3">18 Regions, 82 Provinces, 149 Cities, 1,493 Municipalities</td>
+									<td class="p-3">Quarterly PSGC Publication Audit</td>
+								</tr>
+								<tr>
+									<td class="p-3 font-semibold text-mapa-green">Census Population &amp; Density</td>
+									<td class="p-3">PSA Census of Population (POPCEN)</td>
+									<td class="p-3">1,742 LGU &amp; Regional Demographic Profiles (2024 POPCEN)</td>
+									<td class="p-3">Per Official Presidential Proclamation</td>
+								</tr>
+								<tr>
+									<td class="p-3 font-semibold text-mapa-green">PHLPost Postal Code Index</td>
+									<td class="p-3">Philippine Postal Corporation (RA 7354)</td>
+									<td class="p-3">2,139 4-Digit Delivery Zones Across NCR &amp; 82 Provinces</td>
+									<td class="p-3">Semi-Annual Postmaster Directory Check</td>
+								</tr>
+								<tr>
+									<td class="p-3 font-semibold text-mapa-navy">Public Transit Fare Matrices</td>
+									<td class="p-3">LTFRB, DOTr &amp; LRTA Board Resolutions</td>
+									<td class="p-3">PUB, PUJ (MPUJ/TPUJ), LRT-1, LRT-2, MRT-3, EDSA Busway</td>
+									<td class="p-3">Upon Issuance of LTFRB/DOTr Circulars</td>
+								</tr>
+								<tr>
+									<td class="p-3 font-semibold text-mapa-navy">Expressway Toll Schedules</td>
+									<td class="p-3">Toll Regulatory Board (TRB / PD 1112)</td>
+									<td class="p-3">NLEX, SLEX, Skyway 1-3, SCTEX, TPLEX, CALAX, CCLEX</td>
+									<td class="p-3">Upon TRB Approved Tariff Notices</td>
+								</tr>
+								<tr>
+									<td class="p-3 font-semibold text-mapa-rust">Highway Milestone Benchmarks</td>
+									<td class="p-3">DPWH RBIA &amp; NHCP Landmark Registry</td>
+									<td class="p-3">5 Regional KM 0 Origins &amp; 7 National Arterial Corridors</td>
+									<td class="p-3">Annual DPWH Atlas Cross-Check</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</section>
+
+				<!-- SECTION 2C: Accuracy Tolerances & Engineering Limitations -->
+				<section class="border-t border-mapa-contour/40 pt-8">
+					<h2 class="text-2xl sm:text-3xl font-bold text-mapa-ink font-serif mb-4">
+						Cartographic Accuracy Tolerances & Engineering Scope
+					</h2>
+					<p class="font-sans text-base text-mapa-ink/90 leading-relaxed mb-4">
+						Responsible spatial engineering requires stating the mathematical tolerances of web-based tools clearly:
+					</p>
+					<ul class="font-sans text-sm text-mapa-ink/90 list-disc pl-5 space-y-2.5 leading-relaxed">
+						<li>
+							<strong>Web Polygon Simplification vs. Cadastral Monuments:</strong> Administrative boundary GeoJSON files served in Lens use Douglas-Peucker topological simplification (`0.0001` degrees, roughly 11 meters at the equator) so that all 1,642 cities and municipalities render smoothly at 60 FPS on mobile browsers. These boundaries are designed for thematic choropleth mapping and regional planning, not parcel-level cadastral adjudication.
+						</li>
+						<li>
+							<strong>7-Parameter Datum Transformation Residuals:</strong> Nationwide Bursa-Wolf transformation parameters between Clarke 1866 (PRS92) and WGS84 achieve horizontal residuals of 1 to 5 meters for GIS overlay alignment. Sub-centimeter engineering surveys require local GNSS occupation of NAMRIA First-Order Geodetic Control Points by a licensed Geodetic Engineer under Republic Act No. 8560.
+						</li>
+						<li>
+							<strong>Euclidean Catchment Rings vs. Street-Network Isochrones:</strong> The Walkability &amp; 15-Minute Radius Tool renders concentric geodesic buffers (400m, 800m, 1,200m) calibrated to tropical walking paces (3.6 to 6.0 km/h) and documents how physical barriers such as gated subdivision perimeter walls and elevated highway footbridges reduce effective street-network reach.
+						</li>
+					</ul>
 				</section>
 
 				<!-- SECTION 3: Statutory Legal Framework -->

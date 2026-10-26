@@ -13,7 +13,7 @@
 </h1>
 
 <p class="mt-4 text-lg text-mapa-ink/80 italic leading-relaxed font-serif">
-	A comprehensive guide to the official coding system used to classify Philippine administrative divisions, census data, and GIS boundaries.
+	The standard coding system used to classify Philippine administrative divisions, census records, and GIS boundaries.
 </p>
 
 <div class="mt-10 border-t border-mapa-contour/60 pt-8 space-y-10 font-serif">
@@ -23,37 +23,37 @@
 			What is the PSGC?
 		</h2>
 		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
-			The <strong>Philippine Standard Geographic Code (PSGC)</strong> is a systematic coding system created and maintained by the <strong>Philippine Statistics Authority (PSA)</strong>. It serves as the official national standard for classifying all geographic administrative units in the Philippines—from macro-regions down to individual barangays.
+			The <strong>Philippine Standard Geographic Code (PSGC)</strong> is a systematic classification maintained by the <strong>Philippine Statistics Authority (PSA)</strong> under Republic Act No. 10625. It provides a unique numeric identifier for every administrative division in the country, from top-level administrative regions down to individual barangays.
 		</p>
 		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed">
-			For developers, researchers, and spatial data analysts, the PSGC is the essential join key that connects tabular data (such as census demographics, health statistics, or electoral results) directly to cartographic shapefiles and GeoJSON vector maps.
+			In geospatial engineering and public policy analysis, the PSGC serves as the canonical join key connecting tabular datasets, such as Census of Population and Housing (CPH) demographics, health records from the Department of Health, and tax revenues, directly to vector geometries published by NAMRIA and local government units.
 		</p>
 	</section>
 
 	<!-- SECTION 2: Code Structure & Hierarchy -->
 	<section class="border-t border-mapa-contour/40 pt-8">
 		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
-			PSGC Code Structure & Digit Breakdown
+			PSGC Code Structure: 9-Digit Legacy vs 10-Digit Standard
 		</h2>
 		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-			Standard PSGC identifiers exist in 9-digit (legacy) and 10-digit (modern expanded) numeric formats. The digits represent a strict hierarchical nesting:
+			Spatial datasets in the Philippines currently use two primary numeric lengths. The PSA introduced the 10-digit standard in 2018 to resolve digit exhaustion in rapidly subdividing municipalities. Developers must support both structures when ingesting spatial archives.
 		</p>
 
 		<!-- Visual Code Breakdown Box -->
 		<div class="bg-mapa-canvas-dark border border-mapa-contour/80 rounded-lg p-6 font-sans mb-8">
-			<div class="text-xs uppercase tracking-wider font-bold text-mapa-clay mb-2">Example: PSGC 04 56 18 000 (Subic, Zambales)</div>
+			<div class="text-xs uppercase tracking-wider font-bold text-mapa-clay mb-2">Structure Breakdown: Subic, Zambales (Region III)</div>
 			<div class="grid grid-cols-4 gap-2 text-center font-mono font-bold text-sm sm:text-base">
 				<div class="bg-mapa-green/10 border border-mapa-green/30 text-mapa-green p-3 rounded">
-					<span class="block text-lg">04</span>
-					<span class="block text-[10px] font-sans font-normal uppercase text-mapa-ink/75 mt-1">Region (CALABARZON / Central Luzon)</span>
+					<span class="block text-lg">03</span>
+					<span class="block text-[10px] font-sans font-normal uppercase text-mapa-ink/75 mt-1">Region (Central Luzon)</span>
 				</div>
 				<div class="bg-mapa-clay/10 border border-mapa-clay/30 text-mapa-clay p-3 rounded">
-					<span class="block text-lg">56</span>
+					<span class="block text-lg">71</span>
 					<span class="block text-[10px] font-sans font-normal uppercase text-mapa-ink/75 mt-1">Province (Zambales)</span>
 				</div>
 				<div class="bg-mapa-green/10 border border-mapa-green/30 text-mapa-green p-3 rounded">
-					<span class="block text-lg">18</span>
-					<span class="block text-[10px] font-sans font-normal uppercase text-mapa-ink/75 mt-1">City / Muni (Subic)</span>
+					<span class="block text-lg">14</span>
+					<span class="block text-[10px] font-sans font-normal uppercase text-mapa-ink/75 mt-1">Municipality (Subic)</span>
 				</div>
 				<div class="bg-mapa-clay/10 border border-mapa-clay/30 text-mapa-clay p-3 rounded">
 					<span class="block text-lg">000</span>
@@ -64,16 +64,16 @@
 
 		<div class="space-y-4 font-sans text-sm text-mapa-ink/90">
 			<div class="border-l-2 border-mapa-green pl-4">
-				<strong class="text-mapa-green">Digits 1–2 (Region):</strong> Identifies the administrative region (e.g., <code>13</code> for NCR, <code>03</code> for Central Luzon, <code>07</code> for Central Visayas).
+				<strong class="text-mapa-green">Digits 1 to 2 (Region):</strong> Identifies the administrative region. For example, <code>13</code> denotes the National Capital Region (NCR), <code>03</code> denotes Central Luzon, <code>04</code> denotes CALABARZON, and <code>19</code> denotes BARMM.
 			</div>
 			<div class="border-l-2 border-mapa-clay pl-4">
-				<strong class="text-mapa-clay">Digits 3–4 (Province / District / HUC):</strong> Identifies the province within the region. For independent cities or NCR, these digits designate administrative districts or independent city units.
+				<strong class="text-mapa-clay">Digits 3 to 4 (Province or Special Unit):</strong> In 9-digit codes, these two digits designate the province or independent district. In 10-digit codes, the province field expands to 3 digits (digits 3 to 5), allowing up to 999 provincial and metropolitan divisions.
 			</div>
 			<div class="border-l-2 border-mapa-green pl-4">
-				<strong class="text-mapa-green">Digits 5–6 (City / Municipality):</strong> Identifies the specific municipality or city within the province.
+				<strong class="text-mapa-green">Digits 5 to 6 in 9-digit / Digits 6 to 7 in 10-digit (City or Municipality):</strong> Identifies the city or municipality within that province or district.
 			</div>
 			<div class="border-l-2 border-mapa-clay pl-4">
-				<strong class="text-mapa-clay">Digits 7–9 (Barangay):</strong> Identifies the specific barangay. A suffix of <code>000</code> indicates the code represents the city or municipality as a whole.
+				<strong class="text-mapa-clay">Final 3 Digits (Barangay):</strong> Identifies the specific barangay. A suffix of <code>000</code> or <code>0000</code> indicates the record represents the entire city or municipality rather than a specific sub-unit.
 			</div>
 		</div>
 	</section>
@@ -81,38 +81,38 @@
 	<!-- SECTION 3: Administrative Hierarchy Levels -->
 	<section class="border-t border-mapa-contour/40 pt-8">
 		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
-			Philippine Administrative Levels Summary
+			Philippine Administrative Levels Under Republic Act No. 7160
 		</h2>
 		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-			The Philippine political architecture is organized into distinct tiers governed by the Local Government Code (Republic Act No. 7160):
+			The local governance hierarchy follows the Local Government Code of 1991 (Republic Act No. 7160). Each level holds defined political powers, taxation authorities, and statutory responsibilities:
 		</p>
 
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
 			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
-				<h3 class="font-serif font-bold text-lg text-mapa-green">1. Region (Rehiyon)</h3>
+				<h3 class="font-serif font-bold text-lg text-mapa-green">1. Administrative Regions (18 Units)</h3>
 				<p class="text-xs text-mapa-ink/80 mt-2 leading-relaxed">
-					Administrative groupings of provinces established for regional planning (e.g., Region III, CALABARZON). The Philippines contains 18 regions, including NCR, CAR, the newly established Negros Island Region (NIR), and BARMM.
+					Regional councils coordinate socioeconomic planning and national agency regional offices. The Philippines has 18 administrative regions: 16 administrative groupings, the Bangsamoro Autonomous Region in Muslim Mindanao (BARMM, governed by RA 11054), and the newly reconstituted Negros Island Region (NIR, established by RA 12000).
 				</p>
 			</div>
 
 			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
-				<h3 class="font-serif font-bold text-lg text-mapa-green">2. Province (Probinsya)</h3>
+				<h3 class="font-serif font-bold text-lg text-mapa-green">2. Provinces (82 Units)</h3>
 				<p class="text-xs text-mapa-ink/80 mt-2 leading-relaxed">
-					There are strictly <strong>82 statutory provinces</strong> across the Philippines. (Metro Manila and the Special Geographic Area in BARMM are regional and special administrative units, not statutory provinces). In Philippine statutory law and PSA standards, provinces are <em>never numbered</em>—they are classified strictly by name, region, and unique PSGC codes.
+					There are 82 statutory provinces. Provinces consist of component cities and municipalities. Provincial governments oversee health facilities, provincial road networks, and inter-municipal zoning. Provinces do not hold statutory jurisdiction over Highly Urbanized Cities located inside their geographic boundaries.
 				</p>
 			</div>
 
 			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
-				<h3 class="font-serif font-bold text-lg text-mapa-green">3. Cities & Municipalities</h3>
+				<h3 class="font-serif font-bold text-lg text-mapa-green">3. Cities and Municipalities (1,634 Units)</h3>
 				<p class="text-xs text-mapa-ink/80 mt-2 leading-relaxed">
-					The country comprises <strong>149 chartered cities</strong> and <strong>1,493 municipalities</strong> (1,642 total LGUs). Cities are strictly categorized into <strong>33 Highly Urbanized Cities (HUCs)</strong>, <strong>5 Independent Component Cities (ICCs)</strong>, and <strong>111 Component Cities (CCs)</strong>.
+					Cities and municipalities serve as primary tax collection and business permitting units. Cities are grouped into 3 legal classes: 33 Highly Urbanized Cities (HUCs) with minimum populations of 200,000 and annual income of 50 million pesos (1991 base); 5 Independent Component Cities (ICCs) whose charters forbid voting for provincial officials; and 111 Component Cities under provincial supervision.
 				</p>
 			</div>
 
 			<div class="p-5 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
-				<h3 class="font-serif font-bold text-lg text-mapa-green">4. Barangay</h3>
+				<h3 class="font-serif font-bold text-lg text-mapa-green">4. Barangays (42,000+ Units)</h3>
 				<p class="text-xs text-mapa-ink/80 mt-2 leading-relaxed">
-					The fundamental political unit of Philippine society. Over 42,000 barangays serve as the primary grassroots planning and administrative body.
+					The grassroots political unit. Barangays manage community disputes through the Katarungang Pambarangay system under RA 7160 Sections 399 to 422, collect local clearance fees, and maintain primary neighborhood roads and drainage conduits.
 				</p>
 			</div>
 		</div>
@@ -121,67 +121,149 @@
 	<!-- SECTION 4: Special Administrative Edge Cases -->
 	<section class="border-t border-mapa-contour/40 pt-8">
 		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
-			Special Administrative & Boundary Edge Cases
+			Critical Boundary Cases: NIR, BARMM SGA, and Supreme Court Rulings
 		</h2>
 		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-			When working with PSGC datasets, developers must account for several unique administrative structures in the Philippines:
+			GIS pipelines frequently break when using outdated reference tables. Developers must account for three significant administrative boundary updates:
 		</p>
 
-		<ul class="font-sans text-sm text-mapa-ink/90 list-disc pl-5 space-y-3 leading-relaxed">
-			<li>
-				<strong>Strictly 82 Provinces (The "+2" Pseudo-Province Exception):</strong> Some GIS shapefiles incorrectly designate 84 "provinces" by clustering Metro Manila (NCR, PSGC <code>1300000000</code>) and the Special Geographic Area (SGA in BARMM, PSGC <code>1909900000</code>) at the provincial tier. Neither is a statutory province: NCR is a metropolitan region with 16 cities and 1 municipality, and SGA is a cluster of 8 newly constituted BARMM municipalities.
-			</li>
-			<li>
-				<strong>The 5 Independent Component Cities (ICCs):</strong> Unlike component cities, ICC charters forbid voters from participating in provincial elections. The 5 ICCs of the Philippines are: <em>Dagupan City</em>, <em>City of Santiago</em>, <em>Naga City</em>, <em>Ormoc City</em>, and <em>Cotabato City</em>.
-			</li>
-			<li>
-				<strong>The 33 Highly Urbanized Cities (HUCs):</strong> 16 cities within Metro Manila plus 17 provincial metropolitan hubs (e.g., Cebu City, Davao City, Baguio City, Cagayan de Oro City, Iloilo City) are entirely autonomous from any provincial jurisdiction.
-			</li>
-			<li>
-				<strong>Disputed Boundaries:</strong> Areas under territorial jurisdiction disputes (such as certain border barangays between Taguig and Makati) require careful spatial verification when matching historical census logs with current administrative geometry.
-			</li>
-		</ul>
+		<div class="space-y-6 font-sans text-sm text-mapa-ink/90">
+			<div class="p-4 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<h3 class="font-serif font-bold text-base text-mapa-clay mb-2">
+					Negros Island Region (RA 12000, June 2024)
+				</h3>
+				<p class="text-xs leading-relaxed text-mapa-ink/85">
+					Signed into law on June 11, 2024, Republic Act No. 12000 unified Negros Occidental (transferred from Region VI, Western Visayas), Negros Oriental (transferred from Region VII, Central Visayas), and Siquijor (transferred from Region VII) into Region XVIII. Spatial queries aggregating statistics by region must reflect this realignment rather than relying on legacy Region VI or VII definitions.
+				</p>
+			</div>
+
+			<div class="p-4 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<h3 class="font-serif font-bold text-base text-mapa-clay mb-2">
+					BARMM Special Geographic Area (BAA Nos. 41 to 48, 2024)
+				</h3>
+				<p class="text-xs leading-relaxed text-mapa-ink/85">
+					Following the 2019 plebiscite where 63 barangays in North Cotabato voted to join BARMM, the Bangsamoro Transition Authority passed Bangsamoro Autonomy Act Nos. 41 through 48. In April 2024, voters ratified the creation of 8 new municipalities: Pahamudin, Kadayangan, Nabalawag, Tugunan, Ligawasan, Malidegao, Datu Benito, and Old Kaabakan. These units are coded under PSGC regional prefix <code>19</code> and geographic cluster <code>19099</code>, separating them from Region XII (SOCCSKSARGEN).
+				</p>
+			</div>
+
+			<div class="p-4 rounded border border-mapa-contour/60 bg-mapa-canvas-dark">
+				<h3 class="font-serif font-bold text-base text-mapa-clay mb-2">
+					Taguig City vs City of Makati Jurisdictional Ruling (G.R. No. 235316)
+				</h3>
+				<p class="text-xs leading-relaxed text-mapa-ink/85">
+					In 2021, the Supreme Court Special Third Division issued its final entry of judgment in G.R. No. 235316, affirming that Fort Bonifacio and the 10 Enlisted Men's Barrio (EMBO) barangays (Pembo, Comembo, Cembo, South Cembo, West Rembo, East Rembo, Pitogo, Post Proper Northside, Post Proper Southside, and Rizal) belong to the territorial jurisdiction of Taguig City. GIS datasets dated prior to 2023 list these under Makati City (PSGC <code>137602000</code>). In current datasets, they resolve under Taguig City (PSGC <code>137607000</code>).
+				</p>
+			</div>
+		</div>
 	</section>
 
-	<!-- SECTION 5: Developer Implementation Code -->
+	<!-- SECTION 5: Database Design and Schema Storage -->
 	<section class="border-t border-mapa-contour/40 pt-8">
 		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
-			Developer Guide: Parsing & Querying PSGC Codes
+			Database Schema Design: Storing and Indexing PSGC in PostgreSQL
 		</h2>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
+			A frequent database anti-pattern is storing PSGC codes as numeric integers (<code>INT</code> or <code>BIGINT</code>). Because Northern Luzon regions use leading zeros (e.g., Ilocos Region is <code>01</code>, Cagayan Valley is <code>02</code>, Central Luzon is <code>03</code>), integer types automatically strip the zero. This turns <code>037114000</code> into <code>37114000</code>, breaking 9-character fixed-length string joins.
+		</p>
 		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-			Here is how you can parse a standard 9-digit PSGC string in JavaScript or TypeScript to extract geographic hierarchy attributes:
+			Always store PSGC codes as fixed-length or variable-length text fields with B-Tree indexes on administrative substring slices:
 		</p>
 
-		<pre class="bg-mapa-canvas-dark border border-mapa-contour/80 rounded p-4 text-xs font-mono overflow-x-auto text-mapa-ink leading-relaxed">{`interface PsgcHierarchy {
+		<pre class="bg-mapa-canvas-dark border border-mapa-contour/80 rounded p-4 text-xs font-mono overflow-x-auto text-mapa-ink leading-relaxed">{`-- PostgreSQL / PostGIS Schema for PSGC Administrative Boundaries
+CREATE TABLE ph_administrative_boundaries (
+    id SERIAL PRIMARY KEY,
+    psgc_code VARCHAR(10) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL,
+    admin_level VARCHAR(20) NOT NULL CHECK (admin_level IN ('region', 'province', 'city', 'municipality', 'barangay')),
+    region_code VARCHAR(2) GENERATED ALWAYS AS (SUBSTRING(psgc_code FROM 1 FOR 2)) STORED,
+    province_code VARCHAR(4) GENERATED ALWAYS AS (SUBSTRING(psgc_code FROM 1 FOR 4)) STORED,
+    geom GEOMETRY(MultiPolygon, 4326) NOT NULL
+);
+
+-- Fast B-Tree indexing on administrative slices
+CREATE INDEX idx_admin_region ON ph_administrative_boundaries (region_code);
+CREATE INDEX idx_admin_province ON ph_administrative_boundaries (province_code);
+CREATE INDEX idx_admin_level ON ph_administrative_boundaries (admin_level);
+
+-- Spatial index for point-in-polygon coordinates lookup
+CREATE INDEX idx_admin_geom ON ph_administrative_boundaries USING GIST (geom);
+
+-- Example: Find the exact LGU for a WGS84 GPS coordinate (e.g. Subic, Zambales)
+SELECT psgc_code, name, admin_level
+FROM ph_administrative_boundaries
+WHERE ST_Contains(geom, ST_SetSRID(ST_Point(120.2315, 14.8803), 4326))
+ORDER BY admin_level DESC;`}</pre>
+	</section>
+
+	<!-- SECTION 6: TypeScript Implementation Code -->
+	<section class="border-t border-mapa-contour/40 pt-8">
+		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
+			TypeScript Utility: Parsing 9-Digit and 10-Digit PSGC Codes
+		</h2>
+		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+			The utility below handles both legacy 9-digit and modern 10-digit formats, validates numeric format, and returns the structural hierarchy slices:
+		</p>
+
+		<pre class="bg-mapa-canvas-dark border border-mapa-contour/80 rounded p-4 text-xs font-mono overflow-x-auto text-mapa-ink leading-relaxed">{`export interface PsgcEntity {
   rawCode: string;
-  regionCode: string;
-  provinceCode: string;
-  cityMuniCode: string;
-  barangayCode: string;
-  isBarangayLevel: boolean;
+  codeLength: 9 | 10;
+  regionPrefix: string;
+  provincePrefix: string;
+  cityMuniPrefix: string;
+  barangayPrefix: string;
+  isBarangay: boolean;
+  isValid: boolean;
 }
 
 /**
- * Parses a 9-digit PSGC code into administrative hierarchy segments.
- * @param psgc 9-digit PSGC string (e.g., "045618000")
+ * Parses and validates a raw PSGC string into geographic hierarchy prefixes.
+ * Handles both 9-digit (legacy) and 10-digit (expanded) formats.
  */
-function parsePsgc(psgc: string): PsgcHierarchy {
-  const cleanCode = psgc.padStart(9, '0');
-  
+export function parsePsgc(input: string | number): PsgcEntity {
+  const raw = String(input).trim();
+  const digitsOnly = raw.replace(/\\D/g, '');
+  const isValidLength = digitsOnly.length === 9 || digitsOnly.length === 10;
+
+  if (!isValidLength) {
+    return {
+      rawCode: raw,
+      codeLength: 9,
+      regionPrefix: '',
+      provincePrefix: '',
+      cityMuniPrefix: '',
+      barangayPrefix: '',
+      isBarangay: false,
+      isValid: false
+    };
+  }
+
+  const length = digitsOnly.length as 9 | 10;
+  const regionPrefix = digitsOnly.slice(0, 2);
+
+  // In 9-digit codes: Province is 2 digits (pos 2-4), City is 2 digits (pos 4-6), Brgy is 3 digits
+  // In 10-digit codes: Province is 3 digits (pos 2-5), City is 2 digits (pos 5-7), Brgy is 3 digits
+  const provincePrefix = length === 9 ? digitsOnly.slice(0, 4) : digitsOnly.slice(0, 5);
+  const cityMuniPrefix = length === 9 ? digitsOnly.slice(0, 6) : digitsOnly.slice(0, 7);
+  const barangaySuffix = length === 9 ? digitsOnly.slice(6, 9) : digitsOnly.slice(7, 10);
+  const isBarangay = barangaySuffix !== '000';
+
   return {
-    rawCode: cleanCode,
-    regionCode: cleanCode.substring(0, 2),
-    provinceCode: cleanCode.substring(0, 4),
-    cityMuniCode: cleanCode.substring(0, 6),
-    barangayCode: cleanCode.substring(6, 9),
-    isBarangayLevel: cleanCode.substring(6, 9) !== '000'
+    rawCode: digitsOnly,
+    codeLength: length,
+    regionPrefix,
+    provincePrefix,
+    cityMuniPrefix,
+    barangayPrefix: isBarangay ? digitsOnly : '',
+    isBarangay,
+    isValid: true
   };
 }
 
-// Example Usage:
-const info = parsePsgc("045618000");
-console.log("Region Prefix:", info.regionCode);     // Output: "04"
-console.log("Province Prefix:", info.provinceCode); // Output: "0456"
-console.log("Is Barangay Level:", info.isBarangayLevel); // Output: false`}</pre>
+// Example usage:
+const subic = parsePsgc('037114000');
+console.log(subic.regionPrefix);   // '03' (Central Luzon)
+console.log(subic.provincePrefix); // '0371' (Zambales)
+console.log(subic.isBarangay);     // false (Municipal level)`}</pre>
 	</section>
 </div>
+

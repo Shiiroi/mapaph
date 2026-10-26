@@ -10,118 +10,157 @@ import Footer from '../components/Footer.astro';
 ---
 
 <BaseLayout 
-	title="Terms of Use: mapaPH" 
-	description="Read the complete Terms of Use for mapaPH. Learn about open-source licenses, data warnings, and disclaimer of warranty."
+	title="Terms of Use & Legal Disclaimers | mapaPH" 
+	description="Read the complete Terms of Use for mapaPH. Learn about open-source MIT licensing, public-domain Philippine government datasets, geodetic survey disclaimers under RA 8560, and transit tariff terms."
 >
+	<script type="application/ld+json" slot="schema" is:inline>
+		{
+			"@context": "https://schema.org",
+			"@graph": [
+				{
+					"@type": "WebPage",
+					"name": "Terms of Use | mapaPH",
+					"url": "https://www.mapaph.com/terms",
+					"description": "Terms of Use, open-source MIT licensing, public-domain government data attribution, and engineering/transit disclaimers for mapaPH."
+				},
+				{
+					"@type": "BreadcrumbList",
+					"itemListElement": [
+						{
+							"@type": "ListItem",
+							"position": 1,
+							"name": "Home",
+							"item": "https://www.mapaph.com"
+						},
+						{
+							"@type": "ListItem",
+							"position": 2,
+							"name": "Terms of Use",
+							"item": "https://www.mapaph.com/terms"
+						}
+					]
+				}
+			]
+		}
+	</script>
+
 	<Navbar />
 
-	<main class="max-w-3xl mx-auto px-6 py-16 text-mapa-ink">
+	<main id="main-content" class="max-w-3xl mx-auto px-6 py-16 text-mapa-ink">
 		<article>
 			<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
-				Legal
+				Legal & Licensing
 			</span>
 			<h1 class="text-4xl font-extrabold text-mapa-green tracking-tight sm:text-5xl font-serif mt-2">
 				Terms of Use
 			</h1>
 			
-			<p class="font-sans text-xs text-mapa-clay mt-2">
-				Last updated: July 15, 2026
+			<p class="font-sans text-xs text-mapa-muted mt-2">
+				Last updated: October 2026
 			</p>
 
 			<div class="mt-10 border-t border-mapa-contour/60 pt-8">
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4">
-					1. Acceptance of terms
+					1. Acceptance of Terms
 				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					By accessing and browsing the mapaPH hub (mapaph.com) or using any of our linked tools, you agree to comply with and be bound by these Terms of Use. If you do not agree to these terms, you should not access or use the site.
+					By accessing and browsing the mapaPH hub (<a href="https://www.mapaph.com" class="text-mapa-green hover:underline">www.mapaph.com</a>), using any of our interactive mapping calculators, or downloading GeoJSON boundary exports, you agree to comply with and be bound by these Terms of Use. If you do not agree to these terms, please discontinue use of the site.
 				</p>
 
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					2. Description of the service
+					2. Description of the Service
 				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					mapaPH is an independent, community-driven hub that catalogs open-source utilities built around maps of the Philippines. Each tool listed in our directory is built as a separate application, hosted on its own repository and subdomain.
+					mapaPH is an independent, open-source civic cartography hub and technical documentation portal that builds browser-native utilities around maps and spatial datasets of the Philippines. Our suite includes administrative code decoders (PSGC and PHLPost ZIP directories), geodetic coordinate converters (PRS92 and WGS84), public transit and expressway tariff estimators, highway milestone locators, and the Lens choropleth visualizer.
 				</p>
 
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					3. Independence disclaimer
+					3. Non-Government Independence Disclaimer
 				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					mapaPH is a personal, independent project developed and run by an individual. We are not officially affiliated with, endorsed by, or representing any government agency, municipal office, or official institution of the Republic of the Philippines (such as the Philippine Statistics Authority or the Commission on Elections), despite using public geographic and census data.
+					mapaPH is an independent civic technology project developed and maintained by private open-source contributors. We are <strong>not affiliated with, endorsed by, sponsored by, or acting on behalf of any government agency, municipal authority, or public corporation of the Republic of the Philippines</strong>, including the Philippine Statistics Authority (PSA), National Mapping and Resource Information Authority (NAMRIA), Land Transportation Franchising and Regulatory Board (LTFRB), Toll Regulatory Board (TRB), Department of Public Works and Highways (DPWH), Department of Transportation (DOTr), Philippine Postal Corporation (PHLPost), or Commission on Elections (COMELEC).
 				</p>
 
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					4. Intellectual property and licensing
-				</h2>
-				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					The source code for the hub and all our subprojects is open source and published under the MIT License. You are free to inspect, download, modify, and redistribute the code in accordance with the MIT License terms. The original site layouts, copy, and specific visual branding elements are owned by the project creator.
-				</p>
-
-				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					5. Warranty disclaimer
-				</h2>
-				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					All tools, services, maps, and geographic datasets are provided strictly on an as-is and as-available basis, without warranties of any kind, either express or implied. Because this project is maintained on a volunteer basis, we do not guarantee that the tools will be accurate, error-free, uninterrupted, or secure. We reserve the right to alter, take offline, or discontinue any application or subdomain without notice.
-				</p>
-
-				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					6. Limitation of liability
-				</h2>
-				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					To the maximum extent permitted by applicable law, the project creator and contributors shall not be liable for any direct, indirect, incidental, special, or consequential damages resulting from the use of or the inability to use our tools, including but not limited to transit delays, incorrect routing parameters, or mapping inaccuracies.
-				</p>
-
-				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					7. User conduct and prohibited uses
+					4. Intellectual Property, MIT License, and Public Domain Data
 				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
-					You agree to use our tools only for lawful purposes. You are explicitly prohibited from:
+					Resources hosted on mapaPH fall into three distinct legal categories:
+				</p>
+
+				<div class="overflow-x-auto my-6 border border-mapa-contour rounded-xl bg-mapa-canvas-dark font-sans">
+					<table class="w-full text-left text-xs border-collapse">
+						<thead class="border-b border-mapa-contour bg-mapa-canvas text-mapa-ink uppercase text-[11px] font-bold">
+							<tr>
+								<th class="p-3">Asset Category</th>
+								<th class="p-3">Governing License / Statute</th>
+								<th class="p-3">Permitted Use</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85">
+							<tr>
+								<td class="p-3 font-semibold text-mapa-green">Application Source Code & Scripts</td>
+								<td class="p-3">MIT Open-Source License</td>
+								<td class="p-3">Free to inspect, fork, modify, and redistribute for commercial or non-commercial use with copyright notice preserved.</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-semibold text-mapa-navy">Government Statistical & Tariff Data</td>
+								<td class="p-3">RA 8293 Sec. 176 &amp; EO No. 2 (s. 2016)</td>
+								<td class="p-3">Works of the Government of the Philippines are in the public domain. Users should cite the originating agency (PSA, NAMRIA, LTFRB, TRB, PHLPost).</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-semibold text-mapa-rust">Basemap Tiles &amp; OCHA Boundaries</td>
+								<td class="p-3">ODbL 1.0 / CC BY 4.0</td>
+								<td class="p-3">OpenStreetMap tiles require attribution to OpenStreetMap contributors; UN OCHA HDX boundaries require attribution to NAMRIA/PSA/HDX.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					5. Geodetic & Cadastral Surveying Disclaimer (RA 8560)
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					Under <strong>Republic Act No. 8560 (The Philippine Geodetic Engineering Act of 1998)</strong> and DENR Administrative Order No. 2007-29, only a duly registered and licensed Geodetic Engineer is legally authorized to execute relocation surveys, subdivision plans, and cadastral boundary verifications for land titling in the Philippines. The PRS92 to WGS84 coordinate transformations, Transverse Mercator calculations, and simplified GeoJSON municipal polygons provided on mapaPH are intended strictly for GIS visualization, academic research, and preliminary spatial planning. They must never be used to adjudicate property boundary disputes, establish legal lot monuments, or substitute for an official survey plan approved by the DENR Land Management Bureau (LMB) or Land Registration Authority (LRA).
+				</p>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					6. Public Transit, Rail, and Expressway Tariff Disclaimer
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					Our Commute Fare Estimator, Metro Manila Rail Transit Guide, EDSA Carousel Calculator, and Expressway Toll Calculator compute fares based on published LTFRB Board Resolutions, DOTr Department Orders, LRTA tariff tables, and TRB toll matrices. However, fuel subsidy adjustments, provisional tariff petitions, toll plaza reclassifications, and route diversions can occur between dataset updates. In all commercial transit and tollway transactions, the official laminated <strong>LTFRB Fare Matrix (<em>Talaan ng Pamasahe</em>)</strong> displayed inside the vehicle or the electronic toll deduction recorded at the concessionaire's barrier gantry (Autosweep / Easytrip) governs the legally binding fare.
+				</p>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					7. Warranty Disclaimer and Limitation of Liability
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
+					All tools, services, maps, and geographic datasets on mapaPH are provided strictly on an "as-is" and "as-available" basis, without warranties of any kind, either express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement. To the maximum extent permitted by applicable law, the project maintainers and contributors shall not be liable for any direct, indirect, incidental, special, or consequential damages resulting from the use of or inability to use our tools, including transit delays, toll balance penalties, routing discrepancies, or spatial projection errors.
+				</p>
+
+				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
+					8. User Conduct and Prohibited Uses
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
+					You agree to use our tools only for lawful civic, educational, personal, or professional purposes. You are prohibited from:
 				</p>
 				<ul class="font-sans text-sm text-mapa-ink/90 list-disc pl-5 mb-6 space-y-2">
 					<li>
-						Attempting to disrupt or overload our hosting servers or subdomains through automated scraping scripts or denial-of-service tactics.
+						Launching automated denial-of-service attacks or abusive scraping traffic that degrades CDN availability for other users (if you need raw JSON datasets, please download them directly from our public GitHub repository instead of scraping HTML pages).
 					</li>
 					<li>
-						Submitting false, offensive, or malicious datasets to any of our crowdsourced mapping directories.
+						Misrepresenting mapaPH visualizations or exports as official government-issued certificates or certified cadastral plans.
 					</li>
 					<li>
-						Using our tools or geographical exports for any illegal, hazardous, or high-risk activity where spatial errors could lead to physical injury or property damage.
+						Using our tools for real-time safety-critical navigation, aviation, maritime piloting, or emergency dispatch where approximation tolerances could lead to physical harm.
 					</li>
 				</ul>
 
 				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					8. Crowdsourced data and content
+					9. Governing Law, Jurisdiction, and Contact
 				</h2>
 				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					Some directories display entries submitted by community contributors. We do not guarantee the validity or accuracy of these listings. We reserve the right to review, edit, or delete any community submissions at our discretion. You should independently verify any information (such as locations, routes, or pet policies) before relying on it.
-				</p>
-
-				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					9. Third-party links
-				</h2>
-				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					Our site links to external repositories and community sites. We are not responsible for the content, privacy practices, or terms of third-party resources.
-				</p>
-
-				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					10. Governing law and jurisdiction
-				</h2>
-				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					These terms are governed by and construed in accordance with the laws of the Republic of the Philippines. Any disputes arising out of these terms shall be subject to the exclusive jurisdiction of the courts of the Philippines.
-				</p>
-
-				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					11. Changes to these terms
-				</h2>
-				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					We reserve the right to update these terms at any time. Changes will be posted here with an updated revision date listed at the top.
-				</p>
-
-				<h2 class="text-xl sm:text-2xl font-bold text-mapa-ink font-serif mb-4 mt-10">
-					12. Contact
-				</h2>
-				<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-6">
-					For questions regarding these terms, you can reach out via email at vrsmagwili@gmail.com or by filing an issue in our public GitHub repository.
+					These Terms of Use are governed by and construed in accordance with the laws of the Republic of the Philippines. Any legal disputes arising out of these terms shall be subject to the exclusive jurisdiction of the appropriate courts of the Philippines. For questions regarding licensing, terms, or attribution, please contact us at <a href="mailto:vrsmagwili@gmail.com" class="text-mapa-green underline font-medium">vrsmagwili@gmail.com</a> or visit our <a href="/contact" class="text-mapa-green underline font-medium">Contact Page</a>.
 				</p>
 			</div>
 		</article>

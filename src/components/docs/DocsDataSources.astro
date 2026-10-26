@@ -1,7 +1,8 @@
 ---
 /**
  * @file DocsDataSources.astro
- * @description Detailed reference directory of all Philippine public datasets, government sources, and legal frameworks used in mapaPH.
+ * @description Detailed reference directory of all Philippine public datasets, government sources,
+ * transport tariff matrices, and statutory legal frameworks used across mapaPH.
  */
 ---
 
@@ -13,90 +14,178 @@
 </h1>
 
 <p class="mt-4 text-lg text-mapa-ink/80 italic leading-relaxed font-serif">
-	A comprehensive citation index of official government datasets, cartographic sources, and legal data frameworks integrated across mapaPH utilities.
+	A citation index of official Philippine government datasets, transport tariff orders, cartographic databases, and statutory data frameworks integrated across mapaPH utilities.
 </p>
 
-<div class="mt-10 border-t border-mapa-contour/60 pt-8 space-y-10 font-serif">
-	<!-- SECTION 1: Overview -->
+<div class="mt-10 border-t border-mapa-contour/60 pt-8 space-y-12 font-serif">
+	<!-- SECTION 1: Overview & Data Standards -->
 	<section>
 		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
-			Overview & Data Sourcing Standards
+			1. Overview and Data Verification Standards
 		</h2>
 		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed mb-4">
-			All spatial boundaries, demographic census numbers, electoral tallies, and financial metrics displayed across mapaPH applications originate exclusively from publicly accessible Philippine government publications, open cartographic contributions, and open-data standards.
+			All spatial boundaries, demographic census figures, transport fare formulas, toll rates, and geodetic reference parameters displayed across mapaPH applications originate exclusively from Philippine government agencies, statutory regulatory boards, or open cartographic registries.
 		</p>
 		<p class="font-sans text-sm text-mapa-ink/90 leading-relaxed">
-			We maintain complete citation transparency to enable researchers, developers, and citizens to cross-reference our interactive visualizers against official source documents.
+			We maintain complete citation transparency so that researchers, urban planners, software developers, and commuters can trace every figure back to its original administrative order or gazetted tariff sheet. No synthetic demographic data or estimated toll figures are published without explicit notation of the underlying agency formula.
 		</p>
 	</section>
 
-	<!-- SECTION 2: Official Government Datasets Directory -->
+	<!-- SECTION 2: Government Agencies & Primary Registries -->
 	<section class="border-t border-mapa-contour/40 pt-8">
 		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-6">
-			Official Government Datasets & Agencies Index
+			2. Government Agencies and Dataset Registry
 		</h2>
 
 		<div class="space-y-6 font-sans">
-			<!-- PSA Census -->
+			<!-- PSA -->
 			<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60">
 				<div class="flex items-center justify-between border-b border-mapa-contour/40 pb-3 mb-3">
-					<h3 class="font-serif text-xl font-bold text-mapa-green">1. Philippine Statistics Authority (PSA)</h3>
+					<h3 class="font-serif text-xl font-bold text-mapa-green">Philippine Statistics Authority (PSA)</h3>
 					<span class="text-xs font-mono text-mapa-clay font-bold">psa.gov.ph</span>
 				</div>
 				<ul class="text-xs text-mapa-ink/90 space-y-2 leading-relaxed list-disc pl-5">
 					<li>
-						<strong>2020 Census of Population and Housing (CPH):</strong> Total municipal headcounts, household population distribution, age/gender breakdowns, and urban density figures.
+						<strong>Philippine Standard Geographic Code (PSGC):</strong> Master classification coding all 18 administrative regions, 82 provinces, 149 cities (33 Highly Urbanized Cities, 5 Independent Component Cities, 111 Component Cities), 1,493 municipalities, and 42,000+ barangays. Updated quarterly by the PSA Technical Committee on Statistical Classifications.
 					</li>
 					<li>
-						<strong>Provincial Product Accounts (PPA):</strong> Gross Domestic Product (GDP) metrics per province compiled in constant 2018 prices.
+						<strong>2020 Census of Population and Housing (CPH):</strong> Total municipal headcounts, household counts, sex ratio breakdowns, and population density figures established under Proclamation No. 1179 series of 2021.
 					</li>
 					<li>
-						<strong>Philippine Standard Geographic Code (PSGC):</strong> Official 9-digit and 10-digit numeric coding catalog for all regional, provincial, municipal, and barangay units.
-					</li>
-				</ul>
-			</div>
-
-			<!-- COMELEC Elections -->
-			<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60">
-				<div class="flex items-center justify-between border-b border-mapa-contour/40 pb-3 mb-3">
-					<h3 class="font-serif text-xl font-bold text-mapa-green">2. Commission on Elections (COMELEC)</h3>
-					<span class="text-xs font-mono text-mapa-clay font-bold">comelec.gov.ph</span>
-				</div>
-				<ul class="text-xs text-mapa-ink/90 space-y-2 leading-relaxed list-disc pl-5">
-					<li>
-						<strong>2022 Presidential & Vice-Presidential Election Tallies:</strong> Aggregated municipal and provincial voting totals, registered voter counts, and precinct turnout statistics.
+						<strong>Provincial Product Accounts (PPA):</strong> Sub-national Gross Domestic Product (GDP) economic indicators compiled annually in constant 2018 prices.
 					</li>
 					<li>
-						<strong>Electoral District Registers:</strong> Congressional district boundaries and municipal legislative allocations.
+						<strong>Full Year Poverty Statistics:</strong> Official poverty incidence and subsistence incidence across basic sectors based on the Family Income and Expenditure Survey (FIES).
 					</li>
 				</ul>
 			</div>
 
-			<!-- COA LGU Audits -->
+			<!-- NAMRIA -->
 			<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60">
 				<div class="flex items-center justify-between border-b border-mapa-contour/40 pb-3 mb-3">
-					<h3 class="font-serif text-xl font-bold text-mapa-green">3. Commission on Audit (COA)</h3>
-					<span class="text-xs font-mono text-mapa-clay font-bold">coa.gov.ph</span>
+					<h3 class="font-serif text-xl font-bold text-mapa-green">National Mapping and Resource Information Authority (NAMRIA)</h3>
+					<span class="text-xs font-mono text-mapa-clay font-bold">namria.gov.ph</span>
 				</div>
 				<ul class="text-xs text-mapa-ink/90 space-y-2 leading-relaxed list-disc pl-5">
 					<li>
-						<strong>Annual Audit Reports (AAR) for Local Government Units:</strong> Annual financial statements detailing total assets, liabilities, government equity, local tax revenue, and Internal Revenue Allotment (IRA) / National Tax Allotment (NTA) shares.
+						<strong>Philippine Reference System of 1992 (PRS92):</strong> Primary geodetic control network parameters, datum transformation shifts, and Philippine Transverse Mercator (PTM) Zones I through V defined under Executive Order No. 45 series of 1993.
+					</li>
+					<li>
+						<strong>Philippine Geoportal:</strong> Official baseline administrative boundary vectors and coastline shapefiles covering the national territorial baseline under Republic Act No. 9522.
+					</li>
+					<li>
+						<strong>Topographic Base Maps (1:50,000 scale):</strong> Elevation contours, hydrography, and physiographic benchmarks used to verify elevation and coordinate conversion accuracy.
 					</li>
 				</ul>
 			</div>
 
-			<!-- Cartography -->
+			<!-- LTFRB & DOTr -->
 			<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60">
 				<div class="flex items-center justify-between border-b border-mapa-contour/40 pb-3 mb-3">
-					<h3 class="font-serif text-xl font-bold text-mapa-green">4. Cartographic & Spatial Geometry Sources</h3>
-					<span class="text-xs font-mono text-mapa-clay font-bold">OSM / GADM / NAMRIA</span>
+					<h3 class="font-serif text-xl font-bold text-mapa-green">Land Transportation Franchising and Regulatory Board (LTFRB) & DOTr</h3>
+					<span class="text-xs font-mono text-mapa-clay font-bold">ltfrb.gov.ph</span>
 				</div>
 				<ul class="text-xs text-mapa-ink/90 space-y-2 leading-relaxed list-disc pl-5">
 					<li>
-						<strong>OpenStreetMap (OSM) Philippines Community:</strong> Crowd-curated administrative boundary polygons, coastline geometry, and road network features (ODbL License).
+						<strong>LTFRB Memorandum Circular No. 2023-040:</strong> Official nationwide tariff matrix for Traditional Public Utility Jeepneys (TPUJ: ₱13.00 first 4 km, ₱1.80 per succeeding km) and Modern Public Utility Jeepneys (MPUJ Class 1, 2, and 3: ₱15.00 first 4 km, ₱2.20 per succeeding km).
 					</li>
 					<li>
-						<strong>GADM (Database of Global Administrative Areas):</strong> Level 0 to Level 3 boundary shapefiles converted to EPSG:4326 WGS 84 spatial coordinates.
+						<strong>LTFRB Memorandum Circular No. 2023-041:</strong> Official city and provincial bus fare matrices. Regular ordinary city buses operate at ₱13.00 for the first 5 km plus ₱2.25 per succeeding km; airconditioned city buses operate at ₱15.00 for the first 5 km plus ₱2.65 per succeeding km.
+					</li>
+					<li>
+						<strong>EDSA Carousel Median Busway Fare Table:</strong> Regulated 21-station point-to-point tariff table connecting Monumento, Caloocan to the Parañaque Integrated Terminal Exchange (PITX).
+					</li>
+					<li>
+						<strong>Statutory 20% Discount Matrices:</strong> Legal discount enforcement across all franchised public utility vehicles under Republic Act No. 11314 (students), Republic Act No. 9994 (senior citizens), and Republic Act No. 10754 (persons with disabilities).
+					</li>
+				</ul>
+			</div>
+
+			<!-- Toll Regulatory Board -->
+			<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60">
+				<div class="flex items-center justify-between border-b border-mapa-contour/40 pb-3 mb-3">
+					<h3 class="font-serif text-xl font-bold text-mapa-green">Toll Regulatory Board (TRB)</h3>
+					<span class="text-xs font-mono text-mapa-clay font-bold">trb.gov.ph</span>
+				</div>
+				<ul class="text-xs text-mapa-ink/90 space-y-2 leading-relaxed list-disc pl-5">
+					<li>
+						<strong>Official Toll Rate Schedules:</strong> Regulated entry-to-exit toll matrices for Class 1 (cars, jeeps, pickups, vans), Class 2 (light trucks and commercial buses), and Class 3 (heavy multi-axle freight trucks and articulated trailers).
+					</li>
+					<li>
+						<strong>Covered Concession Highways:</strong> North Luzon Expressway (NLEX), Subic-Clark-Tarlac Expressway (SCTEX), Tarlac-Pangasinan-La Union Expressway (TPLEX), South Luzon Expressway (SLEX), Skyway Stages 1, 2, and 3, Cavite-Laguna Expressway (CALAX), Manila-Cavite Toll Expressway (CAVITEX), Muntinlupa-Cavite Expressway (MCX), NAIA Expressway (NAIAX), and Cebu-Cordova Link Expressway (CCLEX).
+					</li>
+					<li>
+						<strong>RFID Interoperability Framework:</strong> Regulations governing Autosweep RFID and Easytrip RFID tag integration, cashless toll plaza mandates, and balance enforcement under DOTr Joint Administrative Order (JAO) 2024-001.
+					</li>
+				</ul>
+			</div>
+
+			<!-- Rail Transit Authorities -->
+			<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60">
+				<div class="flex items-center justify-between border-b border-mapa-contour/40 pb-3 mb-3">
+					<h3 class="font-serif text-xl font-bold text-mapa-green">Rail Transit Authorities (LRMC, LRTA, DOTr MRT-3)</h3>
+					<span class="text-xs font-mono text-mapa-clay font-bold">lra.gov.ph / dotrmrt3.gov.ph</span>
+				</div>
+				<ul class="text-xs text-mapa-ink/90 space-y-2 leading-relaxed list-disc pl-5">
+					<li>
+						<strong>LRT Line 1 (Green Line):</strong> Light Rail Manila Corporation (LRMC) official distance-based fare structure covering 25 stations from Fernando Poe Jr. (Roosevelt) in Quezon City to Dr. Santos (Sucat) in Parañaque.
+					</li>
+					<li>
+						<strong>LRT Line 2 (Purple Line):</strong> Light Rail Transit Authority (LRTA) official fare structure covering 13 stations from Recto in Manila to Antipolo in Rizal.
+					</li>
+					<li>
+						<strong>MRT Line 3 (Yellow Line):</strong> Department of Transportation Metro Rail Transit 3 official distance tariff covering 13 stations along Epifanio de los Santos Avenue (EDSA) from North Avenue to Taft Avenue.
+					</li>
+					<li>
+						<strong>Beep Card Stored Value Card Rates:</strong> Differentiated pricing tables for contactless stored-value cards compared against Single Journey Tickets (SJT).
+					</li>
+				</ul>
+			</div>
+
+			<!-- DPWH & Highway Benchmarks -->
+			<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60">
+				<div class="flex items-center justify-between border-b border-mapa-contour/40 pb-3 mb-3">
+					<h3 class="font-serif text-xl font-bold text-mapa-green">Department of Public Works and Highways (DPWH)</h3>
+					<span class="text-xs font-mono text-mapa-clay font-bold">dpwh.gov.ph</span>
+				</div>
+				<ul class="text-xs text-mapa-ink/90 space-y-2 leading-relaxed list-disc pl-5">
+					<li>
+						<strong>National Road Network (NRN) Database:</strong> Official highway route numbering (such as N1, N2, N68, AH26), road classifications (Primary, Secondary, Tertiary), and surface condition inventories.
+					</li>
+					<li>
+						<strong>Physical Kilometer Post (KM) Benchmarks:</strong> Standard concrete milestone placements along national arterial roads referenced to Kilometer Zero (KM 0) in Rizal Park, Manila, and regional benchmark pillars in Cebu, Iloilo, and Mindanao.
+					</li>
+					<li>
+						<strong>Filipino-American Memorial Endowment (FAME):</strong> Historical registry and geographic coordinates of the 138 preserved World War II Bataan Death March milestone obelisks spanning Bataan and Pampanga.
+					</li>
+				</ul>
+			</div>
+
+			<!-- PHLPost -->
+			<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60">
+				<div class="flex items-center justify-between border-b border-mapa-contour/40 pb-3 mb-3">
+					<h3 class="font-serif text-xl font-bold text-mapa-green">Philippine Postal Corporation (PHLPost)</h3>
+					<span class="text-xs font-mono text-mapa-clay font-bold">phlpost.gov.ph</span>
+				</div>
+				<ul class="text-xs text-mapa-ink/90 space-y-2 leading-relaxed list-disc pl-5">
+					<li>
+						<strong>National ZIP Code Directory:</strong> Official 4-digit postal code mapping across 2,139 delivery zones in Metro Manila, provincial cities, municipalities, central post offices, and specialized corporate mail sorting areas.
+					</li>
+				</ul>
+			</div>
+
+			<!-- Cartographic Open Data -->
+			<div class="p-6 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/60">
+				<div class="flex items-center justify-between border-b border-mapa-contour/40 pb-3 mb-3">
+					<h3 class="font-serif text-xl font-bold text-mapa-green">Open Cartography and Boundary Registries</h3>
+					<span class="text-xs font-mono text-mapa-clay font-bold">OpenStreetMap / GADM / PhilGIS</span>
+				</div>
+				<ul class="text-xs text-mapa-ink/90 space-y-2 leading-relaxed list-disc pl-5">
+					<li>
+						<strong>OpenStreetMap (OSM) Philippines Community:</strong> Crowd-curated transit stop coordinates, pedestrian footpaths, road centerlines, and landmark geometries licensed under the Open Database License (ODbL).
+					</li>
+					<li>
+						<strong>GADM (Database of Global Administrative Areas):</strong> Vector spatial boundaries for Philippine administrative divisions processed and cleaned in EPSG:4326.
 					</li>
 				</ul>
 			</div>
@@ -106,17 +195,17 @@
 	<!-- SECTION 3: Legal Data Framework -->
 	<section class="border-t border-mapa-contour/40 pt-8">
 		<h2 class="text-2xl font-bold text-mapa-ink font-serif mb-4">
-			Statutory Legal Basis & Public Domain Compliance
+			3. Statutory Legal Basis and Public Domain Compliance
 		</h2>
 		<div class="p-6 rounded border-l-4 border-mapa-green bg-mapa-canvas-dark font-sans text-xs text-mapa-ink/90 space-y-3">
 			<p>
-				<strong>Republic Act No. 8293 Section 176:</strong> Dictates that no copyright subsists in any work of the Government of the Philippines. Public statistics, census reports, and official cartographic boundaries are public domain materials.
+				<strong>Republic Act No. 8293 Section 176 (Intellectual Property Code of the Philippines):</strong> Provides that no copyright shall subsist in any work of the Government of the Philippines. Official government reports, census data, legislative enactments, gazetted tariff matrices, and administrative boundaries are public domain materials that may be reproduced, distributed, and utilized freely for educational and civic purposes.
 			</p>
 			<p>
-				<strong>Republic Act No. 10173 (Data Privacy Act of 2012):</strong> Section 4(e) exempts personal information processed for statistical and research purposes. mapaPH handles zero personally identifiable information (PII).
+				<strong>Executive Order No. 2, series of 2016 (Freedom of Information):</strong> Mandates complete operational transparency and public access to government records, financial audits, public transit fare matrices, and geographic surveys.
 			</p>
 			<p>
-				<strong>Executive Order No. 2, s. 2016 (Freedom of Information):</strong> Reaffirms public entitlement to government records, financial audits, and election returns.
+				<strong>Republic Act No. 10173 (Data Privacy Act of 2012):</strong> Section 4(e) specifically exempts information necessary for statistical, scientific, and research purposes. mapaPH tools execute entirely client-side in the user browser and collect zero personally identifiable information (PII).
 			</p>
 		</div>
 	</section>
