@@ -16,9 +16,13 @@ import { join, relative } from "node:path";
 const DIST = new URL("../dist/", import.meta.url).pathname;
 const minArg = process.argv.find((a) => a.startsWith("--min="));
 const MIN_WORDS = minArg ? Number(minArg.split("=")[1]) : 800;
+const SUPPORT_MIN_WORDS = 600;
 
-// Only pages meant to stand on their own content are held to the threshold.
-const AUDITED = /^(tools|docs)\/[^/]+\/index\.html$/;
+// Hold all tools/docs (including directory hubs), home, about, and privacy to MIN_WORDS,
+// and support/legal pages (terms, contact) to SUPPORT_MIN_WORDS.
+const PRIMARY_AUDITED =
+  /^(index\.html|(tools|docs)(\/[^/]+)?\/index\.html|(about|privacy)\/index\.html)$/;
+const SUPPORT_AUDITED = /^(terms|contact)\/index\.html$/;
 
 async function* walk(dir) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -44,27 +48,53 @@ function visibleProse(html) {
 const rows = [];
 for await (const file of walk(DIST)) {
   const rel = relative(DIST, file);
-  const words = visibleProse(await readFile(file, "utf8"))
-    .split(" ")
-    .filter((w) => /[A-Za-z]{2,}/.test(w)).length;
-  rows.push({ rel, words, audited: AUDITED.test(rel) });
+  const rawHtml = await readFile(file, "utf8");
+  const prose = visibleProse(rawHtml);
+  const words = prose.split(" ").filter((w) => /[A-Za-z]{2,}/.test(w)).length;
+  const emdashes = (prose.match(/—/g) || []).length;
+  const threshold = PRIMARY_AUDITED.test(rel)
+    ? MIN_WORDS
+    : SUPPORT_AUDITED.test(rel)
+      ? SUPPORT_MIN_WORDS
+      : 0;
+  rows.push({
+    rel,
+    words,
+    emdashes,
+    audited: threshold > 0,
+    threshold,
+  });
 }
 
 rows.sort((a, b) => a.words - b.words);
-const failing = rows.filter((r) => r.audited && r.words < MIN_WORDS);
+const failing = rows.filter((r) => r.audited && r.words < r.threshold);
+const emdashFailing = rows.filter((r) => r.emdashes > 0);
 
 console.log(
-  `\nVisible prose per page (threshold ${MIN_WORDS} words for tools/docs):\n`,
+  `\nVisible prose per page (threshold ${MIN_WORDS} words primary, ${SUPPORT_MIN_WORDS} words support):\n`,
 );
 for (const r of rows) {
-  const flag = r.audited ? (r.words < MIN_WORDS ? "THIN" : "ok  ") : "    ";
-  console.log(`${flag}  ${String(r.words).padStart(5)}  ${r.rel}`);
+  const flag = r.audited
+    ? r.words < r.threshold
+      ? "THIN"
+      : "ok  "
+    : "    ";
+  console.log(
+    `${flag}  ${String(r.words).padStart(5)}  ${r.rel}${r.emdashes ? ` (${r.emdashes} emdash)` : ""}`,
+  );
 }
 
-if (failing.length) {
-  console.error(
-    `\n${failing.length} page(s) below ${MIN_WORDS} words of readable prose.`,
-  );
+if (failing.length || emdashFailing.length) {
+  if (failing.length) {
+    console.error(
+      `\n${failing.length} page(s) below their required readable prose threshold.`,
+    );
+  }
+  if (emdashFailing.length) {
+    console.error(
+      `\n${emdashFailing.length} page(s) contain prohibited emdash characters (—).`,
+    );
+  }
   process.exit(1);
 }
-console.log("\nAll audited pages meet the content-depth threshold.");
+console.log("\nAll 22 audited pages meet content-depth and anti-slop thresholds.");
