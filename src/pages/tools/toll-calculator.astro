@@ -699,7 +699,7 @@ const TRIP_PRESETS = [
 					1. Official Toll Regulatory Board (TRB) Vehicle Classifications
 				</h2>
 				<p class="text-sm text-mapa-ink/80 leading-relaxed mb-4">
-					Under the statutory mandate of the <strong>Toll Regulatory Board (TRB)</strong>, toll rates across all Philippine limited-access highways are categorized into three standard vehicle classes based on axle counts, gross vehicle weight (GVW), and overall height:
+					Under Presidential Decree No. 1112 and Republic Act No. 2000, the <strong>Toll Regulatory Board (TRB)</strong> regulates tariff rates across all Philippine limited-access highways. Toll fees are categorized into three standardized vehicle classes based on axle counts, gross vehicle weight (GVW), and overall height:
 				</p>
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
 					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4 shadow-xs">
@@ -708,10 +708,10 @@ const TRIP_PRESETS = [
 						</span>
 						<h3 class="font-bold text-mapa-ink text-sm mt-2 mb-1.5">Light Motor Vehicles</h3>
 						<ul class="text-mapa-ink/75 space-y-1 list-disc pl-4 leading-relaxed">
-							<li>Passenger cars, sedans, hatchbacks</li>
-							<li>SUVs, crossover utility vehicles, MPVs</li>
-							<li>Pickups, vans, light utility vehicles with overall height under 7.5 feet</li>
-							<li><strong>Motorcycles 400cc and above</strong> (DOTr D.O. 2007-15)</li>
+							<li>Sedans, hatchbacks, coupes, and station wagons</li>
+							<li>SUVs, crossover utility vehicles, and MPVs</li>
+							<li>Pickups, vans, and light utility vehicles with total height under 7.5 feet (2.28 meters)</li>
+							<li><strong>Motorcycles 400cc and above</strong> under Department of Transportation Department Order No. 2007-15</li>
 						</ul>
 					</div>
 					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4 shadow-xs">
@@ -720,10 +720,10 @@ const TRIP_PRESETS = [
 						</span>
 						<h3 class="font-bold text-mapa-ink text-sm mt-2 mb-1.5">Medium Commercial & Buses</h3>
 						<ul class="text-mapa-ink/75 space-y-1 list-disc pl-4 leading-relaxed">
-							<li>Public utility and tourist buses</li>
-							<li>Light to medium 2-axle commercial trucks</li>
-							<li>Commercial vans with height exceeding 7.5 feet</li>
-							<li>Toll tariff is approximately <strong>2.0x</strong> Class 1 rate</li>
+							<li>Public utility buses and tourist coaches</li>
+							<li>Medium commercial trucks with 2 axles and 6 wheels</li>
+							<li>Commercial delivery vans with total height exceeding 7.5 feet</li>
+							<li>Toll tariff is pegged at approximately <strong>2.0x</strong> the Class 1 base rate</li>
 						</ul>
 					</div>
 					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4 shadow-xs">
@@ -732,10 +732,10 @@ const TRIP_PRESETS = [
 						</span>
 						<h3 class="font-bold text-mapa-ink text-sm mt-2 mb-1.5">Heavy Freight & Multi-Axle Trucks</h3>
 						<ul class="text-mapa-ink/75 space-y-1 list-disc pl-4 leading-relaxed">
-							<li>Large heavy commercial trucks with 3 or more axles</li>
-							<li>Articulated lorries, 18-wheelers, container haulers</li>
-							<li>Heavy lowbed trailers and construction equipment</li>
-							<li>Toll tariff is approximately <strong>2.5x to 3.0x</strong> Class 1 rate</li>
+							<li>Heavy commercial trucks with 3 or more axles</li>
+							<li>Articulated container haulers and 18-wheelers</li>
+							<li>Heavy lowbed trailers and mobilized construction equipment</li>
+							<li>Toll tariff is pegged at approximately <strong>2.5x to 3.0x</strong> the Class 1 base rate</li>
 						</ul>
 					</div>
 				</div>
@@ -744,10 +744,10 @@ const TRIP_PRESETS = [
 			<!-- Section 2: Autosweep vs Easytrip Interoperability -->
 			<section>
 				<h2 class="font-serif text-2xl font-bold text-mapa-ink tracking-tight mb-4">
-					2. Autosweep RFID vs. Easytrip RFID: Interoperability Rules
+					2. Autosweep RFID vs Easytrip RFID: Interoperability Rules
 				</h2>
 				<p class="text-sm text-mapa-ink/80 leading-relaxed mb-4">
-					Philippine expressways are split between two major concessionaires, each utilizing their own RFID tags and toll management platforms:
+					Luzon expressway operations are divided between two major private concessionaires, each operating their own electronic toll collection hardware and account backends:
 				</p>
 				<div class="overflow-x-auto border border-mapa-contour/80 rounded-xl bg-mapa-canvas mb-4 shadow-xs">
 					<table class="w-full text-left text-xs border-collapse">
@@ -763,8 +763,8 @@ const TRIP_PRESETS = [
 							<tr>
 								<td class="p-3 font-semibold text-mapa-navy">Autosweep RFID</td>
 								<td class="p-3">San Miguel Corporation (SMC)</td>
-								<td class="p-3">SLEX, Skyway 1/2/3, NAIAX, MCX, TPLEX, STAR Tollway</td>
-								<td class="p-3">GCash, Maya, BDO, BPI, 7-Eleven, Shell/Petron stations</td>
+								<td class="p-3">SLEX, Skyway Stages 1 to 3, NAIAX, MCX, TPLEX, STAR Tollway</td>
+								<td class="p-3">GCash, Maya, BDO, BPI, 7-Eleven, Shell and Petron stations</td>
 							</tr>
 							<tr>
 								<td class="p-3 font-semibold text-mapa-green">Easytrip RFID</td>
@@ -775,33 +775,103 @@ const TRIP_PRESETS = [
 						</tbody>
 					</table>
 				</div>
-				<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour text-xs text-mapa-ink/85 leading-relaxed">
-					<strong>Unified Interoperability (Important Note):</strong> Under the TRB's Phase 2 Interoperability program, motorists can register their existing physical Autosweep RFID tag with Easytrip (and vice-versa at customer service centers) so that a single sticker works on all expressways. However, <strong>wallets remain separate</strong>: your Autosweep wallet balance is deducted on SMC roads, and your Easytrip balance is deducted on MPTC roads. Both wallets must maintain a positive balance to avoid turnstile rejections.
+				<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour text-xs text-mapa-ink/85 leading-relaxed space-y-2">
+					<p>
+						<strong>Physical Interoperability vs Separate Wallets:</strong> Under Phase 2 of the DOTr interoperability program, motorists can register an existing Autosweep RFID sticker to work on Easytrip toll gates (and vice versa). While a single windshield sticker is read by both sensor arrays, <strong>the accounts maintain separate financial balances</strong>.
+					</p>
+					<p>
+						Toll gates on SMC expressways deduct exclusively from your Autosweep wallet balance. Toll gates on MPTC expressways deduct exclusively from your Easytrip balance. Maintaining funds in only one wallet will cause barrier rejections on the counterpart operator network.
+					</p>
 				</div>
 			</section>
 
-			<!-- Section 3: Closed vs Open Toll System -->
+			<!-- Section 3: Joint Administrative Order 2024-001 Regulations -->
 			<section>
 				<h2 class="font-serif text-2xl font-bold text-mapa-ink tracking-tight mb-4">
-					3. Open Barrier vs. Closed Distance Toll Collection Systems
+					3. Penalties for Insufficient RFID Balance Under JAO No. 2024-001
 				</h2>
 				<p class="text-sm text-mapa-ink/80 leading-relaxed mb-4">
-					Philippine highways use two distinct engineering models for fare collection:
+					To minimize toll plaza congestion caused by barrier stalls, the Department of Transportation (DOTr), Land Transportation Office (LTO), and TRB enacted Joint Administrative Order (JAO) No. 2024-001. The order establishes strict fines for vehicles entering expressways without active RFID tags or with insufficient prepaid funds:
+				</p>
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-sans">
+					<div class="p-4 rounded-xl bg-mapa-canvas border border-mapa-contour/70 space-y-2">
+						<div class="font-bold text-sm text-mapa-ink">Entering Without Valid RFID Sticker:</div>
+						<ul class="text-mapa-ink/80 space-y-1 list-disc pl-4 leading-relaxed">
+							<li><strong>First Offense:</strong> PHP 1,000 fine</li>
+							<li><strong>Second Offense:</strong> PHP 2,000 fine</li>
+							<li><strong>Third & Subsequent Offenses:</strong> PHP 5,000 fine plus suspension of motor vehicle registration</li>
+						</ul>
+					</div>
+					<div class="p-4 rounded-xl bg-mapa-canvas border border-mapa-contour/70 space-y-2">
+						<div class="font-bold text-sm text-mapa-ink">Entering With Insufficient Wallet Balance:</div>
+						<ul class="text-mapa-ink/80 space-y-1 list-disc pl-4 leading-relaxed">
+							<li><strong>First Offense:</strong> PHP 500 fine</li>
+							<li><strong>Second Offense:</strong> PHP 1,000 fine</li>
+							<li><strong>Third & Subsequent Offenses:</strong> PHP 2,500 fine</li>
+						</ul>
+					</div>
+				</div>
+				<p class="text-xs text-mapa-ink/75 leading-relaxed mt-3">
+					Toll plazas employ Automated License Plate Recognition (ALPR) cameras at all entry and exit lanes to record license plates of non-compliant vehicles. Motorists are advised to maintain at least PHP 500 in both wallets before beginning inter-provincial trips.
+				</p>
+			</section>
+
+			<!-- Section 4: Closed vs Open Toll System -->
+			<section>
+				<h2 class="font-serif text-2xl font-bold text-mapa-ink tracking-tight mb-4">
+					4. Open Barrier vs Closed Distance Toll Systems
+				</h2>
+				<p class="text-sm text-mapa-ink/80 leading-relaxed mb-4">
+					Philippine highways use two distinct architectural frameworks for fare collection:
 				</p>
 				<ul class="space-y-3 text-xs text-mapa-ink/80 list-disc pl-5 leading-relaxed">
 					<li>
-						<strong>Open Barrier System:</strong> Motorists pay a fixed, flat toll fee upon passing a physical barrier plaza, regardless of the distance traveled within that segment. Examples include NLEX Balintawak (₱74), Skyway Buendia entry (₱164), NAIAX (₱45), and CCLEX (₱90).
+						<strong>Open Barrier System:</strong> Drivers pay a flat toll fee upon crossing a physical toll plaza barrier, regardless of where they entered or how short a distance they travel. Examples include NLEX Balintawak (PHP 74 for Class 1), Skyway Stage 3 Plaza Dilao (PHP 264), NAIAX Main Barrier (PHP 45), and CCLEX (PHP 90).
 					</li>
 					<li>
-						<strong>Closed Distance-Based System:</strong> Motorists tap in at their entry interchange (where an electronic timestamp and entry tag are logged) and tap out at their exit interchange. The toll fee is computed precisely per kilometer based on the distance between the two interchanges. Examples include NLEX north of Bocaue, SLEX south of Alabang, SCTEX, TPLEX, and CALAX.
+						<strong>Closed Distance-Based System:</strong> Drivers pass an entry gantry where their RFID tag and timestamp are recorded without charge. Upon reaching their destination exit plaza, the system calculates the exact kilometers traveled between the two interchanges and deducts the distance fee. Examples include NLEX north of Bocaue, SLEX south of Alabang, SCTEX, TPLEX, and CALAX.
+					</li>
+					<li>
+						<strong>Value Added Tax (12% VAT):</strong> Under Bureau of Internal Revenue Revenue Memorandum Circular No. 39-2011, all expressway toll rates in the Philippines include mandatory 12 percent VAT, which concessionaires remit directly to the national government.
 					</li>
 				</ul>
 			</section>
 
-			<!-- Section 4: Official Statutory Citations & Sources -->
+			<!-- Section 5: Cross-Concessionaire Route Case Studies -->
+			<section>
+				<h2 class="font-serif text-2xl font-bold text-mapa-ink tracking-tight mb-4">
+					5. Multi-Expressway Route Calculations
+				</h2>
+				<p class="text-sm text-mapa-ink/80 leading-relaxed mb-4">
+					Long-distance journeys through Metro Manila cross multiple concessionaires. Below are two representative routing examples:
+				</p>
+				<div class="space-y-4 text-xs font-sans">
+					<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-2">
+						<div class="font-bold text-sm text-mapa-green">Route A: Makati (Buendia) to Clark Freeport (Pampanga)</div>
+						<p class="text-mapa-ink/85 leading-relaxed">
+							1. Enter Skyway Stage 3 at Buendia, exit at Balintawak Link: PHP 264 (Autosweep)<br />
+							2. Enter NLEX at Balintawak, travel to Dau / SCTEX interchange: PHP 350 (Easytrip)<br />
+							3. Enter SCTEX at Mabalacat, exit at Clark South: PHP 35 (Easytrip)<br />
+							<strong>Total Toll Cost:</strong> PHP 649 (Class 1) &bull; Required Wallets: Autosweep (PHP 264) + Easytrip (PHP 385)
+						</p>
+					</div>
+
+					<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-2">
+						<div class="font-bold text-sm text-mapa-navy">Route B: Quezon City (Balintawak) to Tagaytay (Silang East)</div>
+						<p class="text-mapa-ink/85 leading-relaxed">
+							1. Enter Skyway Stage 3 at Balintawak, exit at Magallanes / SLEX: PHP 264 (Autosweep)<br />
+							2. Travel SLEX from Magallanes to Mamplasan Interchange: PHP 110 (Autosweep)<br />
+							3. Enter CALAX at Mamplasan, exit at Silang East: PHP 64 (Easytrip)<br />
+							<strong>Total Toll Cost:</strong> PHP 438 (Class 1) &bull; Required Wallets: Autosweep (PHP 374) + Easytrip (PHP 64)
+						</p>
+					</div>
+				</div>
+			</section>
+
+			<!-- Section 6: Official Statutory Citations & Sources -->
 			<section class="border-t border-mapa-contour/50 pt-8 mt-8 font-sans">
 				<h2 class="font-serif text-2xl font-bold text-mapa-ink tracking-tight mb-4">
-					4. Official Statutory Citations & Concessionaire Tariff Matrices
+					6. Official Statutory Citations & Concessionaire Tariff Matrices
 				</h2>
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-mapa-ink/80 leading-relaxed">
 					<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5 flex flex-col justify-between">
@@ -819,7 +889,7 @@ const TRIP_PRESETS = [
 					<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1.5 flex flex-col justify-between">
 						<div>
 							<div class="font-bold text-sm text-mapa-ink">San Miguel Corporation Infrastructure (SMC)</div>
-							<p>Official concessionaire for South Luzon Expressway (SLEX), Skyway Stages 1–3, NAIA Expressway (NAIAX), TPLEX, MCX, and STAR Tollway.</p>
+							<p>Official concessionaire for South Luzon Expressway (SLEX), Skyway Stages 1 to 3, NAIA Expressway (NAIAX), TPLEX, MCX, and STAR Tollway.</p>
 						</div>
 						<div class="pt-2 border-t border-mapa-contour/40">
 							<a href="https://autosweeprfid.com/v2/toll-rates" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1">

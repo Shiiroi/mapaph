@@ -254,7 +254,7 @@ const HIGHWAY_CORRIDORS = [
 ---
 
 <BaseLayout
-	title="Philippine Highway Kilometer Post & KM 0 Marker Locator — mapaPH Tools"
+	title="Philippine Highway Kilometer Post & KM 0 Marker Locator | mapaPH Tools"
 	description="Interactive locator and visualizer for Philippine Department of Public Works and Highways (DPWH) concrete kilometer posts and official Kilometer Zero monuments. Search milestone markers along MacArthur Highway, Maharlika Highway, Marilaque Highway (Rizal), Manila East Road, Aguinaldo Highway, Kennon Road, and the Bataan Death March."
 	keywords="Philippine kilometer post finder, KM 0 Manila Luneta, Philippine highway markers, DPWH kilometer posts, Marilaque highway km posts, Manila East Road Rizal, MacArthur Highway km posts, Maharlika Highway km markers, Bataan Death March km markers, distance from Luneta KM 0, how to read Philippine KM posts"
 >
@@ -646,11 +646,11 @@ const HIGHWAY_CORRIDORS = [
 					How to Read a Philippine Highway Kilometer Post
 				</h2>
 				<p class="text-sm text-mapa-clay mt-1">
-					Standard anatomy and official DPWH Highway Design Guidelines (Design Guidelines, Criteria and Standards - DGCS).
+					Standard anatomy and official DPWH Highway Design Guidelines (Design Guidelines, Criteria and Standards, Volume 4: Highway Design).
 				</p>
 			</div>
 
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm mb-8">
 				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-2xs">
 					<div class="w-8 h-8 rounded-lg bg-mapa-green/15 text-mapa-green flex items-center justify-center font-bold text-sm mb-3">
 						1
@@ -659,7 +659,7 @@ const HIGHWAY_CORRIDORS = [
 						The Top Cap (Destination & Target Distance)
 					</h3>
 					<p class="text-xs text-mapa-ink/80 leading-relaxed">
-						The upper semicircular or trapezoidal section indicates the <strong>name of the next major city or town</strong> followed by the distance in kilometers to its municipal hall or provincial plaza (e.g. <code>ANGELES 17</code> means Angeles City center is 17 km ahead).
+						The upper semicircular or trapezoidal head displays the <strong>abbreviated name of the next major municipal center</strong> and the remaining road distance in kilometers (e.g. <code>ANGELES 17</code> indicates the town center of Angeles City is 17.0 kilometers ahead along this corridor).
 					</p>
 				</div>
 
@@ -671,7 +671,7 @@ const HIGHWAY_CORRIDORS = [
 						The Center Body (Distance from KM 0)
 					</h3>
 					<p class="text-xs text-mapa-ink/80 leading-relaxed">
-						The large, prominent numeral preceded by <code>KM</code> displays your <strong>exact physical distance from Kilometer Zero</strong> (e.g. <code>KM 66</code> indicates you are precisely 66.0 kilometers away from the Rizal Monument at Luneta Park in Manila).
+						The large center numeral preceded by <code>KM</code> displays your <strong>exact cumulative distance from Kilometer Zero</strong> (e.g. <code>KM 66</code> indicates you are precisely 66.0 kilometers away from the Rizal Monument at Luneta Park in Manila or your regional origin benchmark).
 					</p>
 				</div>
 
@@ -680,12 +680,25 @@ const HIGHWAY_CORRIDORS = [
 						3
 					</div>
 					<h3 class="font-serif font-bold text-base text-mapa-ink mb-1.5">
-						The Base Band (DPWH District & Route)
+						The Base Band (DPWH Engineering District)
 					</h3>
 					<p class="text-xs text-mapa-ink/80 leading-relaxed">
-						The red painted base (or yellow for provincial roads) often bears embossed lettering denoting the <strong>DPWH Engineering District Office</strong> and national highway classification code (e.g. <code>N2</code> for primary roads or <code>DEO-PAMPANGA</code>).
+						The color-coded lower band denotes administrative responsibility: <strong>Red base</strong> signifies a primary national arterial road (e.g. N1, N2), while a <strong>Yellow base</strong> signifies a secondary or provincial road. The text identifies the maintaining DPWH District Engineering Office (e.g. <code>DEO-PAMPANGA</code>).
 					</p>
 				</div>
+			</div>
+
+			<!-- Technical Engineering Specifications -->
+			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-2xs space-y-4 text-xs font-sans text-mapa-ink/85">
+				<h3 class="font-serif font-bold text-base text-mapa-ink">
+					DPWH Standard Engineering Specifications (DGCS Volume 4)
+				</h3>
+				<p class="leading-relaxed">
+					Under Department Order No. 73, Series of 2016, DPWH standard kilometer posts must be precast reinforced concrete with a minimum 28-day compressive strength of 20.7 MPa (3,000 psi). The post stands 600 millimeters above the roadway shoulder with an embedded foundation depth of at least 400 millimeters to resist vehicular side-impact and soil erosion.
+				</p>
+				<p class="leading-relaxed">
+					All markings are painted using reflective highway-grade traffic paint. Lettering uses the FHWA Highway Gothic Series D typeface with a minimum stroke width of 15 millimeters, ensuring readability from moving vehicles at 60 km/h under low-beam headlight illumination.
+				</p>
 			</div>
 		</section>
 
@@ -699,28 +712,28 @@ const HIGHWAY_CORRIDORS = [
 				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5">
 					<h3 class="font-bold text-mapa-ink mb-2">Where is the primary Kilometer Zero (KM 0) in the Philippines?</h3>
 					<p class="text-mapa-ink/80 leading-relaxed text-xs">
-						The primary and official geodetic Kilometer Zero for the entire island of Luzon is located across from the <strong>José Rizal Monument in Luneta Park (Rizal Park), City of Manila</strong>. Distance measurements for all major highways—including MacArthur Highway, Maharlika Highway, Manila South Road, and Aguinaldo Highway—originate from this spot.
+						The primary geodetic Kilometer Zero for the island of Luzon sits across from the <strong>José Rizal Monument in Luneta Park (Rizal Park), City of Manila</strong>. Distance measurements for all major radial highways, including MacArthur Highway (N2), Maharlika Highway (AH26), Manila South Road, and Aguinaldo Highway, originate from this monument.
 					</p>
 				</div>
 
 				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5">
 					<h3 class="font-bold text-mapa-ink mb-2">Does Mindanao have its own Kilometer Zero?</h3>
 					<p class="text-mapa-ink/80 leading-relaxed text-xs">
-						Yes. Mindanao’s historical Kilometer Zero is located in <strong>Marawi City, Lanao del Sur</strong>, along the shoreline of Lake Lanao near Banggolo Bridge. It served as the original survey baseline when the trans-Mindanao highway network was surveyed and constructed.
+						Yes. Mindanao has an independent historical Kilometer Zero situated in <strong>Marawi City, Lanao del Sur</strong>, along the shoreline of Lake Lanao near Banggolo Bridge. It served as the survey baseline when the Bureau of Public Works constructed the initial trans-Mindanao road network connecting Iligan, Cotabato, and Davao.
 					</p>
 				</div>
 
 				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5">
-					<h3 class="font-bold text-mapa-ink mb-2">Why are kilometer markers important for cyclists and emergency responders?</h3>
+					<h3 class="font-bold text-mapa-ink mb-2">Why do major islands have independent KM 0 monuments?</h3>
 					<p class="text-mapa-ink/80 leading-relaxed text-xs">
-						In rural stretches where cellular GPS data may experience dead zones, physical kilometer posts provide an unambiguous, universally recognized location stamp. Philippine National Police (PNP), DPWH, and ambulance dispatchers (911) frequently use KM posts to pinpoint road accident locations.
+						Because the Philippines is an archipelago, measuring road distance continuously from Manila across open water bodies is geographically impractical for local highway maintenance. Island provinces such as Cebu (Cebu Provincial Capitol), Panay (Casa Real de Iloilo), Bohol (Tagbilaran), and Leyte (Tacloban) each maintain their own KM 0 benchmarks to calculate radial provincial road chains.
 					</p>
 				</div>
 
 				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-5">
 					<h3 class="font-bold text-mapa-ink mb-2">What are the Bataan Death March Kilometer Markers?</h3>
 					<p class="text-mapa-ink/80 leading-relaxed text-xs">
-						These are 138 specially designed white obelisk memorial markers erected to honor Filipino and American soldiers forced into the 1942 Bataan Death March during World War II. They start at KM 00 in Mariveles and KM 00 in Bagac, continuing through Pampanga up to San Fernando (KM 102) and Capas, Tarlac.
+						These are 138 specialized white obelisk concrete monuments maintained by the Filipino-American Memorial Endowment (FAME). They trace the exact route marched by approximately 75,000 Filipino and American prisoners of war in April 1942, starting from KM 00 in Mariveles and KM 00 in Bagac, through San Fernando, Pampanga (KM 102), and ending at Camp O'Donnell in Capas, Tarlac.
 					</p>
 				</div>
 			</div>
@@ -736,7 +749,7 @@ const HIGHWAY_CORRIDORS = [
 					<div>
 						<div class="font-bold text-sm text-mapa-ink">Department of Public Works and Highways (DPWH)</div>
 						<p>Design Guidelines, Criteria and Standards (DGCS) Volume 4: Highway Design (Standard Kilometer Post Geometry, Color Codes, and Lettering Dimensions).</p>
-						<p class="text-[11px] text-mapa-clay">Official Road and Bridge Information Application (RBIA) & Highway Planning Division.</p>
+						<p class="text-[11px] text-mapa-clay">Official Road and Bridge Information Application (RBIA) and Highway Planning Division.</p>
 					</div>
 					<div class="pt-2 border-t border-mapa-contour/40">
 						<a href="https://www.dpwh.gov.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1">
@@ -749,7 +762,7 @@ const HIGHWAY_CORRIDORS = [
 					<div>
 						<div class="font-bold text-sm text-mapa-ink">National Historical Commission of the Philippines (NHCP)</div>
 						<p>Historical Marker Register for Kilometer Zero Luneta (Manila), Banggolo Bridge (Marawi City), and Casa Real de Iloilo.</p>
-						<p class="text-[11px] text-mapa-clay">Executive Order No. 45 & Bureau of Public Works Historical Archives (1913).</p>
+						<p class="text-[11px] text-mapa-clay">Executive Order No. 45 and Bureau of Public Works Historical Archives (1913).</p>
 					</div>
 					<div class="pt-2 border-t border-mapa-contour/40">
 						<a href="https://nhcp.gov.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1">
@@ -1019,7 +1032,7 @@ const HIGHWAY_CORRIDORS = [
 					markerObj.bindPopup(`
 						<div class="font-sans text-xs">
 							<div class="flex items-center gap-1.5 mb-0.5">
-								<strong class="font-serif text-sm">KM ${marker.km} — ${marker.town}</strong>
+								<strong class="font-serif text-sm">KM ${marker.km}: ${marker.town}</strong>
 								${marker.isTourist ? '<span class="text-[9px] font-bold px-1 py-0.2 rounded bg-mapa-rust/10 text-mapa-rust border border-mapa-rust/30">Landmark</span>' : ''}
 							</div>
 							<span class="text-mapa-muted">${marker.prov}</span><br/>
