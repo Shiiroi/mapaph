@@ -86,15 +86,38 @@ const FARE_RATES = {
 				{
 					"@type": "WebApplication",
 					"name": "Philippine Public Transit Fare Estimator",
-					"url": "https://mapaph.com/tools/fare-calculator",
+					"url": "https://www.mapaph.com/tools/fare-calculator",
 					"applicationCategory": "Commuting & Transit Utility",
 					"operatingSystem": "All",
 					"description": "Interactive fare calculator for Philippine public utility vehicles based on official LTFRB and DOTr distance matrices.",
 					"provider": {
 						"@type": "Organization",
 						"name": "mapaPH",
-						"url": "https://mapaph.com"
+						"url": "https://www.mapaph.com"
 					}
+				},
+				{
+					"@type": "BreadcrumbList",
+					"itemListElement": [
+						{
+							"@type": "ListItem",
+							"position": 1,
+							"name": "Home",
+							"item": "https://www.mapaph.com"
+						},
+						{
+							"@type": "ListItem",
+							"position": 2,
+							"name": "Tools",
+							"item": "https://www.mapaph.com/tools"
+						},
+						{
+							"@type": "ListItem",
+							"position": 3,
+							"name": "Commute Fare Estimator",
+							"item": "https://www.mapaph.com/tools/fare-calculator"
+						}
+					]
 				},
 				{
 					"@type": "FAQPage",
@@ -597,9 +620,28 @@ const FARE_RATES = {
 			</section>
 
 			<!-- Section 7: Editorial Notice -->
-			<section class="mb-6 font-sans border-t border-mapa-contour/40 pt-6 text-xs text-mapa-clay">
+			<section class="mb-6 font-sans border-t border-mapa-contour/40 pt-6 text-xs text-mapa-clay not-prose">
+				<div class="p-5 rounded-2xl bg-mapa-canvas-dark border border-mapa-contour mb-6">
+					<h3 class="font-serif text-base font-bold text-mapa-ink mb-3">
+						Related Philippine Transit &amp; Mobility Calculators
+					</h3>
+					<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+						<a href="/tools/rail-transit" class="p-3 rounded-xl bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-colors block">
+							<span class="font-bold text-mapa-green block mb-0.5">Metro Manila Rail Guide &rarr;</span>
+							<span class="text-mapa-ink/75">Exact station-to-station LRT-1, LRT-2, and MRT-3 fares and transfer walkways.</span>
+						</a>
+						<a href="/tools/edsa-carousel" class="p-3 rounded-xl bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-colors block">
+							<span class="font-bold text-mapa-green block mb-0.5">EDSA Carousel Busway &rarr;</span>
+							<span class="text-mapa-ink/75">24/7 median busway stop-by-stop fare matrix from Monumento to PITX.</span>
+						</a>
+						<a href="/tools/toll-calculator" class="p-3 rounded-xl bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-colors block">
+							<span class="font-bold text-mapa-green block mb-0.5">Expressway Toll Calculator &rarr;</span>
+							<span class="text-mapa-ink/75">TRB Class 1, 2, and 3 toll tariffs across NLEX, SLEX, Skyway, SCTEX, and TPLEX.</span>
+						</a>
+					</div>
+				</div>
 				<div class="flex flex-wrap items-center justify-between gap-2">
-					<span>Maintained by the <strong>mapaPH Civic Cartography & Transit Initiative</strong>.</span>
+					<span>Maintained by the <strong>mapaPH Civic Cartography &amp; Transit Initiative</strong>.</span>
 					<span>Baseline Rates: LTFRB Official Nationwide Circulars.</span>
 				</div>
 			</section>

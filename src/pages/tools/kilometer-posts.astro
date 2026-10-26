@@ -274,14 +274,14 @@ const HIGHWAY_CORRIDORS = [
 				{
 					"@type": "WebApplication",
 					"name": "Philippine Highway Kilometer Post & KM 0 Marker Locator",
-					"url": "https://mapaph.com/tools/kilometer-posts",
+					"url": "https://www.mapaph.com/tools/kilometer-posts",
 					"applicationCategory": "Geographic Reference & Highway Utility",
 					"operatingSystem": "All",
 					"description": "Interactive search and visualization utility for DPWH highway milestone posts and regional Kilometer Zero geodetic benchmarks across the Philippines.",
 					"provider": {
 						"@type": "Organization",
 						"name": "mapaPH",
-						"url": "https://mapaph.com"
+						"url": "https://www.mapaph.com"
 					}
 				},
 				{
@@ -291,19 +291,19 @@ const HIGHWAY_CORRIDORS = [
 							"@type": "ListItem",
 							"position": 1,
 							"name": "Home",
-							"item": "https://mapaph.com"
+							"item": "https://www.mapaph.com"
 						},
 						{
 							"@type": "ListItem",
 							"position": 2,
 							"name": "Tools",
-							"item": "https://mapaph.com/tools"
+							"item": "https://www.mapaph.com/tools"
 						},
 						{
 							"@type": "ListItem",
 							"position": 3,
 							"name": "Kilometer Post Locator",
-							"item": "https://mapaph.com/tools/kilometer-posts"
+							"item": "https://www.mapaph.com/tools/kilometer-posts"
 						}
 					]
 				}
@@ -699,6 +699,60 @@ const HIGHWAY_CORRIDORS = [
 				<p class="leading-relaxed">
 					All markings are painted using reflective highway-grade traffic paint. Lettering uses the FHWA Highway Gothic Series D typeface with a minimum stroke width of 15 millimeters, ensuring readability from moving vehicles at 60 km/h under low-beam headlight illumination.
 				</p>
+			</div>
+
+			<!-- Regional KM 0 Benchmark Reference Table -->
+			<div class="mt-8 bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 shadow-2xs text-xs font-sans">
+				<h3 class="font-serif font-bold text-base text-mapa-ink mb-2">
+					Summary Table of Philippine Kilometer Zero (KM 0) Geodetic Origins
+				</h3>
+				<p class="text-mapa-ink/80 leading-relaxed mb-4">
+					Because the Philippine highway network spans disconnected island groups, the Bureau of Public Works (now DPWH) established separate island origin monuments so that provincial engineers could survey radial road chains without crossing open seas. Below is the complete coordinate and corridor specification for the five primary benchmarks:
+				</p>
+				<div class="overflow-x-auto border border-mapa-contour rounded-xl bg-mapa-canvas">
+					<table class="w-full text-left text-xs border-collapse">
+						<thead class="bg-mapa-canvas-dark border-b border-mapa-contour text-mapa-ink uppercase text-[10px] font-bold">
+							<tr>
+								<th class="p-3">Regional Benchmark</th>
+								<th class="p-3">Exact Monument Site</th>
+								<th class="p-3">WGS84 Coordinates</th>
+								<th class="p-3">Primary Originating Highways</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85">
+							<tr>
+								<td class="p-3 font-semibold text-mapa-green">Luzon KM 0</td>
+								<td class="p-3">Rizal Park (Luneta), Ermita, Manila</td>
+								<td class="p-3 font-mono">14.5826° N, 120.9787° E</td>
+								<td class="p-3">MacArthur Hwy (N2), Maharlika Hwy (AH26), Manila East Rd (N601), Marilaque (N68), Aguinaldo Hwy (N419)</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-semibold text-mapa-green">Mindanao KM 0</td>
+								<td class="p-3">Banggolo Bridge / Lake Lanao, Marawi City</td>
+								<td class="p-3 font-mono">8.0019° N, 124.2858° E</td>
+								<td class="p-3">Marawi-Iligan Rd, Sayre Hwy (N10), Davao-Cotabato Rd, Surigao-Davao Coastal Rd</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-semibold text-mapa-green">Cebu Island KM 0</td>
+								<td class="p-3">Cebu Provincial Capitol, Cebu City</td>
+								<td class="p-3 font-mono">10.3167° N, 123.8907° E</td>
+								<td class="p-3">Cebu North Rd (N8), Cebu South Coastal Rd (N8), Trans-Central Hwy (N815)</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-semibold text-mapa-green">Panay Island KM 0</td>
+								<td class="p-3">Casa Real de Iloilo, Iloilo City</td>
+								<td class="p-3 font-mono">10.6969° N, 122.5644° E</td>
+								<td class="p-3">Iloilo-Capiz Rd (N5), Iloilo-Antique Rd (N501), Panay East Coast Hwy</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-semibold text-mapa-rust">Bataan Death March KM 00</td>
+								<td class="p-3">Mariveles &amp; Bagac Plazas, Bataan</td>
+								<td class="p-3 font-mono">14.4333° N, 120.4833° E</td>
+								<td class="p-3">138 WWII Memorial Obelisks along Old Bataan National Rd to San Fernando (KM 102) &amp; Capas</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</section>
 

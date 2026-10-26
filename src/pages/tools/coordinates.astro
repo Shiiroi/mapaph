@@ -18,17 +18,44 @@ import Footer from '../../components/Footer.astro';
 	<script type="application/ld+json" slot="schema" is:inline>
 		{
 			"@context": "https://schema.org",
-			"@type": "WebApplication",
-			"name": "Philippine PRS92 / WGS84 Coordinate Converter",
-			"url": "https://mapaph.com/tools/coordinates",
-			"applicationCategory": "Geographic Utility",
-			"operatingSystem": "All",
-			"description": "Convert between GPS latitude/longitude (WGS84) and Philippine Reference System 1992 (PRS92 / UTM Zone 51N) with datum shift analysis.",
-			"provider": {
-				"@type": "Organization",
-				"name": "mapaPH",
-				"url": "https://mapaph.com"
-			}
+			"@graph": [
+				{
+					"@type": "WebApplication",
+					"name": "Philippine PRS92 / WGS84 Coordinate Converter",
+					"url": "https://www.mapaph.com/tools/coordinates",
+					"applicationCategory": "Geographic Utility",
+					"operatingSystem": "All",
+					"description": "Convert between GPS latitude/longitude (WGS84) and Philippine Reference System 1992 (PRS92 / UTM Zone 51N) with datum shift analysis.",
+					"provider": {
+						"@type": "Organization",
+						"name": "mapaPH",
+						"url": "https://www.mapaph.com"
+					}
+				},
+				{
+					"@type": "BreadcrumbList",
+					"itemListElement": [
+						{
+							"@type": "ListItem",
+							"position": 1,
+							"name": "Home",
+							"item": "https://www.mapaph.com"
+						},
+						{
+							"@type": "ListItem",
+							"position": 2,
+							"name": "Tools",
+							"item": "https://www.mapaph.com/tools"
+						},
+						{
+							"@type": "ListItem",
+							"position": 3,
+							"name": "Coordinate Converter",
+							"item": "https://www.mapaph.com/tools/coordinates"
+						}
+					]
+				}
+			]
 		}
 	</script>
 
@@ -370,6 +397,26 @@ SELECT ST_Distance(
 					<strong>Historical Station Balanacan Heritage:</strong> First established in 1906 by the United States Coast and Geodetic Survey (USCGS) atop Mount Arapitan in Marinduque, Station Balanacan was officially declared a National Historical Landmark by the National Historical Commission of the Philippines. It remains the physical and geodetic reference anchor for the Philippine geodetic network under Executive Order No. 45.
 				</li>
 			</ul>
+
+			<div class="mt-10 p-6 rounded-2xl bg-mapa-canvas-dark border border-mapa-contour font-sans not-prose">
+				<h3 class="font-serif text-lg font-bold text-mapa-ink mb-3">
+					Related Geodetic Guides &amp; Spatial Utilities
+				</h3>
+				<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+					<a href="/docs/prs92-wgs84-guide" class="p-3.5 rounded-xl bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-colors block">
+						<span class="font-bold text-mapa-green block mb-1">PRS92 vs WGS84 Technical Guide &rarr;</span>
+						<span class="text-mapa-ink/75">Full 7-parameter Bursa-Wolf transformation formulas, PROJ strings, and QGIS reprojection steps.</span>
+					</a>
+					<a href="/tools/kilometer-posts" class="p-3.5 rounded-xl bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-colors block">
+						<span class="font-bold text-mapa-green block mb-1">Highway KM Post &amp; KM 0 Locator &rarr;</span>
+						<span class="text-mapa-ink/75">Inspect Luneta KM 0, regional geodetic benchmarks, and DPWH highway milestone markers.</span>
+					</a>
+					<a href="/docs/philippine-gis-sources" class="p-3.5 rounded-xl bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-colors block">
+						<span class="font-bold text-mapa-green block mb-1">Philippine GIS Data Sources &rarr;</span>
+						<span class="text-mapa-ink/75">Download official NAMRIA, HDX, and Geoportal Philippines vector boundaries and DEM rasters.</span>
+					</a>
+				</div>
+			</div>
 		</article>
 	</main>
 
