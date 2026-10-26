@@ -74,11 +74,7 @@ console.log(
   `\nVisible prose per page (threshold ${MIN_WORDS} words primary, ${SUPPORT_MIN_WORDS} words support):\n`,
 );
 for (const r of rows) {
-  const flag = r.audited
-    ? r.words < r.threshold
-      ? "THIN"
-      : "ok  "
-    : "    ";
+  const flag = r.audited ? (r.words < r.threshold ? "THIN" : "ok  ") : "    ";
   console.log(
     `${flag}  ${String(r.words).padStart(5)}  ${r.rel}${r.emdashes ? ` (${r.emdashes} emdash)` : ""}`,
   );
@@ -97,4 +93,6 @@ if (failing.length || emdashFailing.length) {
   }
   process.exit(1);
 }
-console.log("\nAll 22 audited pages meet content-depth and anti-slop thresholds.");
+console.log(
+  "\nAll 22 audited pages meet content-depth and anti-slop thresholds.",
+);
