@@ -40,3 +40,6 @@ jobs:
 
       - name: Build production bundle
         run: pnpm run build
+
+      - name: Audit content depth
+        run: pnpm run audit:content
