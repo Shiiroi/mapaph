@@ -1,7 +1,7 @@
 ---
 /**
  * @file ToolsSection.astro
- * @description Grid directory of mapping applications. Entire card is clickable; GitHub icon link stacks above.
+ * @description Grid directory of mapping applications with custom schematic previews per tool.
  */
 
 import { Image } from 'astro:assets';
@@ -9,6 +9,7 @@ import lensImg from '../assets/lens.png';
 
 const tools = [
 	{
+		id: "lens",
 		name: "Lens",
 		status: "Active",
 		category: "Web Application",
@@ -18,24 +19,27 @@ const tools = [
 		badge: "Choropleth Mapper"
 	},
 	{
+		id: "psgc",
 		name: "PSGC Lookup & Code Decoder",
 		status: "Active",
 		category: "Geographic Standards",
 		url: "/tools/psgc-lookup",
-		description: "Fast search across 1,742 Philippine divisions. Decode 9-digit PSGC hierarchy with 2024 PSA census demographics.",
+		description: "Fast search across 1,742 Philippine divisions. Decode 9-digit and 10-digit PSGC hierarchy with 2024 PSA census demographics.",
 		image: null,
 		badge: "1,742 Divisions"
 	},
 	{
+		id: "coordinates",
 		name: "Coordinate Converter (PRS92 ↔ WGS84)",
 		status: "Active",
 		category: "Geodetic & GIS",
 		url: "/tools/coordinates",
-		description: "Convert GPS coordinates (WGS84 decimal degrees) to Philippine Reference System 1992 (PRS92 / UTM Zone 51N).",
+		description: "Convert GPS coordinates (WGS84 decimal degrees) to Philippine Reference System 1992 (PRS92 / PTM Zones I-V / UTM 51N).",
 		image: null,
 		badge: "Surveying Utility"
 	},
 	{
+		id: "zip",
 		name: "Philippine ZIP Code Directory",
 		status: "Active",
 		category: "Postal Directory",
@@ -45,6 +49,7 @@ const tools = [
 		badge: "2,139 Codes"
 	},
 	{
+		id: "fare",
 		name: "Commute Fare Estimator",
 		status: "Active",
 		category: "Public Transit",
@@ -54,6 +59,7 @@ const tools = [
 		badge: "LTFRB Matrix"
 	},
 	{
+		id: "walkability",
 		name: "Walkability & 15-Minute Radius Map",
 		status: "Active",
 		category: "Urban Mobility",
@@ -63,33 +69,37 @@ const tools = [
 		badge: "15-Min Catchment"
 	},
 	{
+		id: "rail",
 		name: "Metro Manila Rail Transit Map & Fare Guide",
 		status: "Active",
 		category: "Rail Transit",
 		url: "/tools/rail-transit",
 		description: "Interactive station-to-station fare calculator and schematic network guide for LRT-1, LRT-2, and MRT-3 with Beep™ rates.",
 		image: null,
-		badge: "51 Stations &bull; 3 Lines"
+		badge: "51 Stations • 3 Lines"
 	},
 	{
+		id: "toll",
 		name: "Expressway Toll & Schematic Route Calculator",
 		status: "Active",
 		category: "Expressways & Toll",
 		url: "/tools/toll-calculator",
 		description: "Official TRB entry-to-exit toll fee calculator for NLEX, SLEX, Skyway, SCTEX, TPLEX, CALAX, and CCLEX with RFID tag guides.",
 		image: null,
-		badge: "TRB Tariffs &bull; Class 1–3"
+		badge: "TRB Tariffs • Class 1-3"
 	},
 	{
+		id: "carousel",
 		name: "EDSA Carousel Busway Fare & Route Map",
 		status: "Active",
 		category: "Bus Rapid Transit",
 		url: "/tools/edsa-carousel",
 		description: "Stop-by-stop fare calculator, 2D schematic diagram, and route map for Metro Manila's 24/7 median busway from Monumento to PITX.",
 		image: null,
-		badge: "21 Stations &bull; 24/7 BRT"
+		badge: "21 Stations • 24/7 BRT"
 	},
 	{
+		id: "kmposts",
 		name: "Philippine Kilometer Post & KM 0 Locator",
 		status: "Active",
 		category: "Highway Infrastructure",
@@ -105,15 +115,18 @@ const tools = [
 	<!-- Section Header -->
 	<div class="border-b border-mapa-contour/50 pb-5 mb-10 font-serif flex flex-col sm:flex-row sm:items-end justify-between gap-4">
 		<div>
+			<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green block mb-1.5">
+				Interactive Civic Cartography
+			</span>
 			<h2 class="text-3xl font-extrabold text-mapa-ink tracking-tight">
-				The Directory
+				The Tools Directory
 			</h2>
 			<p class="font-sans text-sm text-mapa-muted mt-1">
-				A catalog of open-source applications and utilities using maps of the Philippines.
+				A catalog of open-source applications and calculators built around the map of the Philippines.
 			</p>
 		</div>
 		<a href="/tools" class="font-sans text-xs sm:text-sm font-semibold text-mapa-green hover:underline shrink-0">
-			View All Tools Directory →
+			View All Tools &amp; Specifications &rarr;
 		</a>
 	</div>
 
@@ -143,17 +156,139 @@ const tools = [
 								class="w-full h-44 object-cover object-top transition-transform duration-500 group-hover:scale-105"
 							/>
 						) : (
-							<div class="h-44 bg-mapa-canvas-dark flex flex-col items-center justify-center p-6 text-center border-b border-mapa-contour/30 relative overflow-hidden">
-								{/* Decorative subtle grid lines */}
-								<div class="absolute inset-0 opacity-15 bg-[radial-gradient(#3d5a45_1px,transparent_1px)] [background-size:16px_16px]"></div>
-								
-								<div class="w-10 h-10 rounded-full bg-mapa-green/10 border border-mapa-green/20 flex items-center justify-center text-mapa-green mb-2 relative z-10 transition-transform duration-300 group-hover:scale-110">
-									<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-									</svg>
-								</div>
-								<span class="font-serif text-sm font-bold text-mapa-ink/90 relative z-10">{tool.name}</span>
-								<span class="font-sans text-[11px] text-mapa-muted font-medium mt-0.5 relative z-10">{tool.badge}</span>
+							<div class="h-44 bg-mapa-canvas-dark flex flex-col items-center justify-center p-5 text-center border-b border-mapa-contour/30 relative overflow-hidden">
+								<div class="absolute inset-0 opacity-15 bg-[radial-gradient(#3d5a45_1px,transparent_1px)] [background-size:16px_16px]" aria-hidden="true"></div>
+
+								{/* Tool-specific schematic preview */}
+								{tool.id === "psgc" && (
+									<div class="relative z-10 flex flex-col items-center gap-2 w-full">
+										<div class="inline-flex items-center gap-1 font-mono text-xs font-bold">
+											<span class="px-2 py-1 rounded bg-mapa-green text-mapa-canvas">13</span>
+											<span class="px-2 py-1 rounded bg-mapa-navy text-mapa-canvas">806</span>
+											<span class="px-2 py-1 rounded bg-mapa-rust text-mapa-canvas">00</span>
+											<span class="px-2 py-1 rounded bg-mapa-canvas border border-mapa-contour text-mapa-ink">000</span>
+										</div>
+										<div class="flex items-center gap-2 text-[10px] font-mono text-mapa-muted uppercase tracking-wider">
+											<span>Reg</span>
+											<span>•</span>
+											<span>Muni/City</span>
+											<span>•</span>
+											<span>Brgy</span>
+										</div>
+										<span class="font-sans text-[11px] font-semibold text-mapa-green mt-1">{tool.badge}</span>
+									</div>
+								)}
+
+								{tool.id === "coordinates" && (
+									<div class="relative z-10 flex flex-col items-center gap-1.5 w-full font-mono text-[11px]">
+										<div class="px-2.5 py-1 rounded bg-mapa-canvas border border-mapa-contour text-mapa-ink">
+											14.5826° N, 120.9787° E
+										</div>
+										<span class="text-mapa-green font-bold text-xs">⇅ 7-Param Bursa-Wolf</span>
+										<div class="px-2.5 py-1 rounded bg-mapa-green/15 border border-mapa-green/30 text-mapa-green font-bold">
+											N 1,613,142m • E 497,705m
+										</div>
+									</div>
+								)}
+
+								{tool.id === "zip" && (
+									<div class="relative z-10 flex flex-col items-center gap-2 w-full">
+										<div class="flex items-center gap-1.5 font-mono text-base font-extrabold text-mapa-green">
+											<span class="w-7 h-8 flex items-center justify-center rounded bg-mapa-canvas border border-mapa-contour shadow-2xs">1</span>
+											<span class="w-7 h-8 flex items-center justify-center rounded bg-mapa-canvas border border-mapa-contour shadow-2xs">2</span>
+											<span class="w-7 h-8 flex items-center justify-center rounded bg-mapa-canvas border border-mapa-contour shadow-2xs">2</span>
+											<span class="w-7 h-8 flex items-center justify-center rounded bg-mapa-canvas border border-mapa-contour shadow-2xs">6</span>
+										</div>
+										<span class="text-[11px] font-mono text-mapa-ink/80">PHLPost 4-Digit Zone Index</span>
+										<span class="text-[10px] font-semibold text-mapa-muted">{tool.badge}</span>
+									</div>
+								)}
+
+								{tool.id === "fare" && (
+									<div class="relative z-10 flex flex-col items-center gap-1.5 w-full max-w-[210px] text-[11px]">
+										<div class="w-full flex justify-between px-2.5 py-1 rounded bg-mapa-canvas border border-mapa-contour">
+											<span class="font-semibold text-mapa-ink">Trad. Jeepney</span>
+											<span class="font-mono font-bold text-mapa-green">₱13.00</span>
+										</div>
+										<div class="w-full flex justify-between px-2.5 py-1 rounded bg-mapa-canvas border border-mapa-contour">
+											<span class="font-semibold text-mapa-ink">Modern PUJ</span>
+											<span class="font-mono font-bold text-mapa-navy">₱15.00</span>
+										</div>
+										<span class="text-[10px] text-mapa-muted mt-0.5">LTFRB Base + Per-KM Tariff</span>
+									</div>
+								)}
+
+								{tool.id === "walkability" && (
+									<div class="relative z-10 flex flex-col items-center justify-center">
+										<div class="relative w-20 h-20 flex items-center justify-center">
+											<div class="absolute inset-0 rounded-full border border-dashed border-mapa-rust/60 bg-mapa-rust/5"></div>
+											<div class="w-13 h-13 rounded-full border border-mapa-navy/60 bg-mapa-navy/10 flex items-center justify-center">
+												<div class="w-6 h-6 rounded-full bg-mapa-green text-mapa-canvas flex items-center justify-center text-[9px] font-bold">
+													5m
+												</div>
+											</div>
+										</div>
+										<span class="text-[10px] font-mono text-mapa-ink/80 mt-1.5">400m • 800m • 1,200m Rings</span>
+									</div>
+								)}
+
+								{tool.id === "rail" && (
+									<div class="relative z-10 flex flex-col items-center gap-2 w-full max-w-[210px]">
+										<div class="w-full flex items-center justify-between gap-1 text-[10px] font-bold">
+											<span class="px-2 py-0.5 rounded bg-amber-600 text-white">LRT-1</span>
+											<span class="h-0.5 flex-1 bg-mapa-contour"></span>
+											<span class="px-2 py-0.5 rounded bg-purple-700 text-white">LRT-2</span>
+											<span class="h-0.5 flex-1 bg-mapa-contour"></span>
+											<span class="px-2 py-0.5 rounded bg-sky-700 text-white">MRT-3</span>
+										</div>
+										<div class="px-2.5 py-1 rounded bg-mapa-canvas border border-mapa-contour text-[11px] font-mono text-mapa-ink">
+											Beep™ &amp; Single Journey Matrix
+										</div>
+										<span class="text-[10px] text-mapa-muted">{tool.badge}</span>
+									</div>
+								)}
+
+								{tool.id === "toll" && (
+									<div class="relative z-10 flex flex-col items-center gap-1.5 w-full max-w-[215px]">
+										<div class="flex items-center gap-1.5 text-[10px] font-bold">
+											<span class="px-2 py-0.5 rounded bg-mapa-green text-mapa-canvas">Autosweep</span>
+											<span class="px-2 py-0.5 rounded bg-mapa-navy text-mapa-canvas">Easytrip</span>
+										</div>
+										<div class="text-[11px] font-mono px-2.5 py-1 rounded bg-mapa-canvas border border-mapa-contour text-mapa-ink">
+											NLEX • SLEX • Skyway • TPLEX
+										</div>
+										<span class="text-[10px] text-mapa-muted">{tool.badge}</span>
+									</div>
+								)}
+
+								{tool.id === "carousel" && (
+									<div class="relative z-10 flex flex-col items-center gap-2 w-full max-w-[215px]">
+										<div class="w-full flex items-center justify-between text-[10px] font-mono font-bold text-mapa-ink">
+											<span class="px-1.5 py-0.5 rounded bg-mapa-canvas border border-mapa-contour">Monumento</span>
+											<span class="flex-1 border-t-2 border-mapa-green mx-1"></span>
+											<span class="w-2.5 h-2.5 rounded-full bg-mapa-green"></span>
+											<span class="flex-1 border-t-2 border-mapa-green mx-1"></span>
+											<span class="px-1.5 py-0.5 rounded bg-mapa-canvas border border-mapa-contour">PITX</span>
+										</div>
+										<span class="text-[11px] font-semibold text-mapa-green">28.0 km Dedicated Median Busway</span>
+										<span class="text-[10px] text-mapa-muted">{tool.badge}</span>
+									</div>
+								)}
+
+								{tool.id === "kmposts" && (
+									<div class="relative z-10 flex items-center gap-3">
+										<div class="w-11 h-16 rounded-t-lg bg-amber-400 border-2 border-stone-900 flex flex-col items-center justify-between py-1 px-1 font-mono leading-none shadow-xs">
+											<span class="text-[8px] font-bold text-stone-900">KM</span>
+											<span class="text-xs font-extrabold text-stone-900">0</span>
+											<span class="w-full h-2 bg-stone-900"></span>
+										</div>
+										<div class="text-left">
+											<div class="font-serif text-xs font-bold text-mapa-ink">Luneta KM 0</div>
+											<div class="font-mono text-[10px] text-mapa-muted">DPWH RBIA Linear</div>
+											<div class="font-sans text-[10px] font-semibold text-mapa-green mt-0.5">{tool.badge}</div>
+										</div>
+									</div>
+								)}
 							</div>
 						)}
 					</div>
@@ -183,7 +318,7 @@ const tools = [
 						<div class="flex items-center justify-between mt-5 pt-3 border-t border-mapa-contour/40 text-xs">
 							<span class="text-mapa-green font-semibold inline-flex items-center gap-1 group-hover:underline">
 								<span>Open Tool</span>
-								<span>→</span>
+								<span>&rarr;</span>
 							</span>
 						</div>
 					</div>

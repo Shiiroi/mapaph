@@ -1,0 +1,147 @@
+---
+/**
+ * @file GuidesSection.astro
+ * @description Homepage showcase of technical documentation, cartographic standards,
+ * and open-data methodology articles published on mapaPH.
+ */
+
+const guides = [
+	{
+		title: "Philippine Standard Geographic Code (PSGC) Reference Guide",
+		category: "Geographic Standards",
+		standard: "PSA 10-Digit Standard",
+		readTime: "8 min read",
+		url: "/docs/psgc",
+		summary:
+			"How the Philippine Statistics Authority structures 10-digit administrative identifiers across 18 regions, 82 provinces, 149 cities, 1,493 municipalities, and 42,011 barangays, including legacy 9-digit migration rules and HUC statistical grouping.",
+		highlights: ["9-to-10 Digit Migration", "HUC & ICC Rules", "SQL/CSV Join Keys"],
+	},
+	{
+		title: "PRS92 vs. WGS84: Philippine Geodetic Datums & Coordinate Shifts",
+		category: "Geodesy & Surveying",
+		standard: "DENR DAO 2007-29 / EO 45",
+		readTime: "10 min read",
+		url: "/docs/prs92-wgs84-guide",
+		summary:
+			"Mathematical breakdown of the Clarke 1866 ellipsoid, Philippine Transverse Mercator (PTM) Zones I to V central meridians, and the 7-parameter Bursa-Wolf helmert transformation required to eliminate the 180-meter positional offset against GPS.",
+		highlights: ["PTM Zones I-V", "7-Parameter Bursa-Wolf", "Cadastral Tie Lines"],
+	},
+	{
+		title: "Where to Download Free Philippine GIS Shapefiles & Boundary Data",
+		category: "Spatial Data Repositories",
+		standard: "NAMRIA / PSA / HDX / OSM",
+		readTime: "7 min read",
+		url: "/docs/philippine-gis-sources",
+		summary:
+			"Comparative directory of authoritative Philippine vector and raster repositories, evaluating administrative boundary accuracy, update cadences, coordinate reference systems, and public-domain licensing across government and humanitarian portals.",
+		highlights: ["Boundary Comparison", "CRS & Licensing", "Vector & LiDAR Portals"],
+	},
+	{
+		title: "GeoJSON Developer Guide for Philippine Web Cartography",
+		category: "Web GIS Engineering",
+		standard: "IETF RFC 7946 / EPSG:4326",
+		readTime: "9 min read",
+		url: "/docs/geojson-guide",
+		summary:
+			"Implementation patterns for rendering archipelagic MultiPolygon topologies in MapLibre GL JS and Leaflet, covering right-hand winding order, Douglas-Peucker simplification tolerances, and client-side choropleth data joins.",
+		highlights: ["RFC 7946 Topology", "Polygon Simplification", "Leaflet & MapLibre"],
+	},
+	{
+		title: "Open Civic Data Sources & Verification Methodology",
+		category: "Data Governance",
+		standard: "RA 8293 Sec. 176 / EO 2",
+		readTime: "7 min read",
+		url: "/docs/data-sources",
+		summary:
+			"Documentation of our ingestion pipeline for PSA Census of Population (POPCEN) releases, Commission on Audit (COA) Annual Financial Reports, COMELEC election returns, LTFRB fare matrices, and TRB expressway tariff schedules.",
+		highlights: ["PSA POPCEN Pipeline", "COA & COMELEC Audits", "FOI Statutory Basis"],
+	},
+	{
+		title: "Lens Choropleth Visualizer & Custom CSV Mapping Manual",
+		category: "Application Manual",
+		standard: "PSGC-Keyed Choropleths",
+		readTime: "6 min read",
+		url: "/docs/lens",
+		summary:
+			"Step-by-step guide to inspecting regional, provincial, municipal, and barangay boundary layers in Lens, exporting standards-compliant GeoJSON vectors, and joining custom spreadsheets by PSGC identifier.",
+		highlights: ["Barangay Vector Export", "Custom CSV Joins", "Bivariate Overlays"],
+	},
+];
+---
+
+<section
+	id="guides"
+	class="bg-mapa-canvas border-t border-mapa-contour/60 py-16 md:py-24 font-serif"
+>
+	<div class="max-w-7xl mx-auto px-6 lg:px-8">
+		<!-- Section Header -->
+		<div class="border-b border-mapa-contour/50 pb-5 mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+			<div>
+				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green block mb-1.5">
+					Cartographic Standards &amp; Engineering Reference
+				</span>
+				<h2 class="text-3xl font-extrabold text-mapa-ink tracking-tight">
+					Technical Guides &amp; Documentation
+				</h2>
+				<p class="font-sans text-sm text-mapa-muted mt-1 max-w-3xl">
+					In-depth engineering articles covering Philippine geodetic datums, administrative coding standards, public-domain GIS repositories, and statutory transit tariffs.
+				</p>
+			</div>
+			<a
+				href="/docs"
+				class="font-sans text-xs sm:text-sm font-semibold text-mapa-green hover:underline shrink-0"
+			>
+				Browse Full Documentation Portal &rarr;
+			</a>
+		</div>
+
+		<!-- Guides Grid -->
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-sans">
+			{guides.map((guide) => (
+				<article class="flex flex-col justify-between bg-mapa-canvas-dark border border-mapa-contour/80 rounded-xl p-6 transition-all duration-300 hover:border-mapa-green/60 hover:-translate-y-0.5 shadow-xs">
+					<div>
+						<div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+							<span class="uppercase text-[10px] font-bold tracking-wider px-2.5 py-0.5 rounded bg-mapa-green/10 border border-mapa-green/30 text-mapa-green">
+								{guide.category}
+							</span>
+							<span class="text-[11px] font-mono text-mapa-muted">
+								{guide.standard}
+							</span>
+						</div>
+
+						<h3 class="font-serif text-lg font-bold text-mapa-ink leading-snug mb-2.5">
+							<a href={guide.url} class="hover:text-mapa-green transition-colors">
+								{guide.title}
+							</a>
+						</h3>
+
+						<p class="text-xs text-mapa-ink/85 leading-relaxed mb-4">
+							{guide.summary}
+						</p>
+					</div>
+
+					<div>
+						<div class="flex flex-wrap gap-1.5 mb-4 pt-3 border-t border-mapa-contour/40">
+							{guide.highlights.map((tag) => (
+								<span class="text-[10px] font-medium px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/70 text-mapa-ink/75">
+									{tag}
+								</span>
+							))}
+						</div>
+
+						<div class="flex items-center justify-between text-xs">
+							<span class="text-mapa-muted font-medium">{guide.readTime}</span>
+							<a
+								href={guide.url}
+								class="text-mapa-green font-semibold inline-flex items-center gap-1 hover:underline"
+							>
+								<span>Read Technical Guide</span>
+								<span aria-hidden="true">&rarr;</span>
+							</a>
+						</div>
+					</div>
+				</article>
+			))}
+		</div>
+	</div>
+</section>
