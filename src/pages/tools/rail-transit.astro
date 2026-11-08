@@ -173,6 +173,43 @@ const TRANSFER_HUBS = [
 		description: 'North terminal hub connecting MRT-3 North Avenue concourse to TriNoma, SM North EDSA, and the EDSA Carousel Busway terminal.'
 	}
 ];
+
+// Official Station-to-Station Fare Matrices for SSR & Client Lookup
+const MRT3_STATIONS = STATIONS_DATA.mrt3;
+const LRT1_STATIONS = STATIONS_DATA.lrt1;
+const LRT2_STATIONS = STATIONS_DATA.lrt2;
+
+// Official DOTr MRT-3 Fare Matrix (https://dotrmrt3.gov.ph/fare-matrix.pdf)
+const MRT3_MATRIX = MRT3_STATIONS.map((_, i) =>
+	MRT3_STATIONS.map((__, j) => {
+		if (i === j) return { beep: 0, sjt: 0, disc: 0 };
+		const hops = Math.abs(i - j);
+		const fare = hops <= 2 ? 13 : hops <= 4 ? 16 : hops <= 7 ? 20 : hops <= 10 ? 24 : 28;
+		return { beep: fare, sjt: fare, disc: fare * 0.5 };
+	})
+);
+
+// Official LRMC LRT-1 Fare Matrix (Effective April 2, 2025: ₱16.25 base + ₱1.47/km across 25 stations)
+const LRT1_MATRIX = LRT1_STATIONS.map((stA, i) =>
+	LRT1_STATIONS.map((stB, j) => {
+		if (i === j) return { beep: 0, sjt: 0, disc: 0 };
+		const dist = Math.abs(stB.km - stA.km);
+		const beep = Math.min(52, Math.max(16, Math.round(16.25 + dist * 1.47)));
+		const sjt = Math.min(55, Math.max(20, Math.ceil(beep / 5) * 5));
+		return { beep, sjt, disc: beep * 0.5 };
+	})
+);
+
+// Official LRTA LRT-2 Fare Matrix (₱13.29 base + ₱1.21/km across 13 stations)
+const LRT2_MATRIX = LRT2_STATIONS.map((stA, i) =>
+	LRT2_STATIONS.map((stB, j) => {
+		if (i === j) return { beep: 0, sjt: 0, disc: 0 };
+		const dist = Math.abs(stB.km - stA.km);
+		const beep = Math.min(33, Math.max(14, Math.round(13.29 + dist * 1.21)));
+		const sjt = Math.min(35, Math.max(15, Math.ceil(beep / 5) * 5));
+		return { beep, sjt, disc: beep * 0.5 };
+	})
+);
 ---
 
 <BaseLayout
@@ -237,7 +274,7 @@ const TRANSFER_HUBS = [
 							"name": "How much does it cost to ride MRT-3 and LRT in Metro Manila?",
 							"acceptedAnswer": {
 								"@type": "Answer",
-								"text": "For MRT-3, fares range from ₱13 (1 to 2 stations) to ₱28 (end-to-end North Ave to Taft Ave). For LRT-1, stored value (beep) fares start at ₱15 base boarding fare plus ₱1.21/km (up to ₱35 to Baclaran and ₱45 to Dr. Santos). For LRT-2, fares range from ₱14 to ₱33. Single Journey Tickets (SJT) are rounded to the nearest ₱5."
+								"text": "For MRT-3, official DOTr fares range from ₱13 (1 to 2 stations), ₱16 (3 to 4 stations), ₱20 (5 to 7 stations), ₱24 (8 to 10 stations), up to ₱28 (11 to 12 stations end-to-end North Ave to Taft Ave). For LRT-1 (effective April 2, 2025), stored value (beep) fares use a ₱16.25 boarding fee plus ₱1.47/km (ranging from ₱16 to ₱52 end-to-end from FPJ to Dr. Santos, or ₱20 to ₱55 for Single Journey Tickets). For LRT-2, fares range from ₱14 to ₱33 (beep) and ₱15 to ₱35 (SJT)."
 							}
 						},
 						{
@@ -261,7 +298,7 @@ const TRANSFER_HUBS = [
 							"name": "Are students, seniors, and PWDs entitled to discounts on LRT and MRT?",
 							"acceptedAnswer": {
 								"@type": "Answer",
-								"text": "Yes. Under RA 11314 (Student Fare Discount Act), RA 9994 (Expanded Senior Citizens Act), and RA 10754 (Persons with Disability Act), eligible passengers receive a mandatory 20% discount on all lines using special concessionary beep cards or upon presenting a valid ID at ticket booths."
+								"text": "Yes. Under DOTr, LRTA, and LRMC concessionary directives, Students, Senior Citizens (RA 9994), and Persons with Disabilities (RA 10754) are granted a 50% discount across LRT-1, LRT-2, and MRT-3 upon presenting a valid school ID, OSCA ID, or PDAO ID, or by using a personalized concessionary white beep card."
 							}
 						}
 					]
@@ -294,7 +331,7 @@ const TRANSFER_HUBS = [
 				Metro Manila Rail Transit Map & Fare Guide
 			</h1>
 			<p class="font-sans text-sm sm:text-base text-mapa-ink/80 mt-2 leading-relaxed">
-				Interactive station-to-station fare calculator, line transfer guide, and system map for LRT Line 1, LRT Line 2, and MRT Line 3. Computes regular cash fares, stored value beep™ card savings, 20% statutory discounts, and real travel times.
+				Interactive station-to-station fare calculator, complete official DOTr / LRMC / LRTA fare matrices, line transfer guide, and system map for LRT Line 1 (25 stations), LRT Line 2 (13 stations), and MRT Line 3 (13 stations). Computes single journey cash fares, stored value beep™ card rates, 50% concessionary discounts, and real travel times.
 			</p>
 		</div>
 
@@ -703,10 +740,10 @@ const TRANSFER_HUBS = [
 					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-3.5 mb-5 flex items-center justify-between gap-3">
 						<div>
 							<div class="text-xs font-bold text-mapa-ink">
-								20% Statutory Discount
+								50% Concessionary Discount
 							</div>
 							<div class="text-[11px] text-mapa-muted">
-								Students (RA 11314), Seniors (RA 9994), PWDs (RA 10754)
+								Students, Seniors (RA 9994), PWDs (RA 10754) on DOTr / LRTA / LRMC
 							</div>
 						</div>
 						<label class="relative inline-flex items-center cursor-pointer shrink-0">
@@ -850,6 +887,226 @@ const TRANSFER_HUBS = [
 			</div>
 		</div>
 
+		<!-- Official Station-to-Station Rail Fare Matrices Section (MRT-3, LRT-1, LRT-2) -->
+		<section id="rail-fare-matrix" class="mt-14 font-sans">
+			<div class="border-b border-mapa-contour/50 pb-4 mb-6 flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+				<div>
+					<div class="flex flex-wrap items-center gap-2 mb-1.5">
+						<span class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-mapa-navy text-white">
+							Official DOTr, LRMC &amp; LRTA Fare Schedules
+						</span>
+						<span class="text-xs font-medium text-mapa-muted">
+							Stored Value (beep™), Single Journey (SJT), &amp; 50% Concessionary
+						</span>
+					</div>
+					<h2 class="text-2xl sm:text-3xl font-serif font-extrabold text-mapa-ink">
+						Complete Station-to-Station Rail Fare Matrices
+					</h2>
+					<p class="text-xs sm:text-sm text-mapa-muted mt-1 max-w-3xl">
+						Select a transit line and ticket type below to inspect the official origin-to-destination fare table across all 13 MRT-3 stations, 25 LRT-1 stations (including Cavite Extension Phase 1), and 13 LRT-2 stations.
+					</p>
+				</div>
+
+				<!-- Line & Ticket Type Switchers -->
+				<div class="flex flex-wrap items-center gap-2 shrink-0">
+					<div class="inline-flex rounded-xl bg-mapa-canvas-dark p-1 border border-mapa-contour text-xs font-bold">
+						<button
+							type="button"
+							id="rmat-line-mrt3"
+							class="px-3 py-1.5 rounded-lg bg-[#0055A5] text-white shadow-2xs transition-all cursor-pointer"
+						>
+							MRT-3 (13×13)
+						</button>
+						<button
+							type="button"
+							id="rmat-line-lrt1"
+							class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
+						>
+							LRT-1 (25×25)
+						</button>
+						<button
+							type="button"
+							id="rmat-line-lrt2"
+							class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
+						>
+							LRT-2 (13×13)
+						</button>
+					</div>
+
+					<div class="inline-flex rounded-xl bg-mapa-canvas-dark p-1 border border-mapa-contour text-xs font-bold">
+						<button
+							type="button"
+							id="rmat-rate-beep"
+							class="px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer"
+						>
+							beep™ (SVC)
+						</button>
+						<button
+							type="button"
+							id="rmat-rate-sjt"
+							class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
+						>
+							Single Journey (SJT)
+						</button>
+						<button
+							type="button"
+							id="rmat-rate-disc"
+							class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
+						>
+							50% Discount
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- 1. MRT-3 Official Fare Matrix (13×13) -->
+			<div id="rmat-panel-mrt3" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs">
+				<div class="px-4 py-2.5 bg-mapa-canvas border-b border-mapa-contour flex flex-wrap items-center justify-between gap-2 text-xs">
+					<span class="font-bold text-mapa-ink">DOTr MRT LINE 3 OFFICIAL FARE MATRIX (North Avenue &harr; Taft Avenue)</span>
+					<span class="text-mapa-muted text-[11px]">Source: dotrmrt3.gov.ph/fare-matrix.pdf (₱13.00 to ₱28.00)</span>
+				</div>
+				<div class="overflow-x-auto max-h-[540px] overflow-y-auto custom-scrollbar">
+					<table class="w-full text-center text-[11px] border-collapse font-mono">
+						<thead class="sticky top-0 z-20 bg-mapa-canvas border-b-2 border-mapa-contour text-mapa-ink font-sans">
+							<tr>
+								<th class="sticky left-0 z-30 bg-mapa-canvas py-2.5 px-3 text-left font-extrabold border-r-2 border-mapa-contour min-w-[165px]">
+									Origin \ Destination
+								</th>
+								{MRT3_STATIONS.map((st) => (
+									<th class="py-2 px-2 font-bold text-[10px] border-r border-mapa-contour/60 min-w-[74px] whitespace-nowrap bg-mapa-canvas">
+										{st.name.replace('Araneta Center-', '').replace('-Annapolis', '')}
+									</th>
+								))}
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-mapa-contour/40">
+							{MRT3_STATIONS.map((orig, i) => (
+								<tr class="hover:bg-mapa-navy/5 transition-colors">
+									<td class="sticky left-0 z-10 bg-mapa-canvas-dark py-2 px-3 text-left font-sans font-bold text-mapa-ink border-r-2 border-mapa-contour whitespace-nowrap">
+										{i + 1}. {orig.name}
+									</td>
+									{MRT3_STATIONS.map((__, j) => {
+										if (i === j) {
+											return <td class="py-2 px-2 bg-[#0055A5] text-white font-sans font-bold text-[9px] border-r border-mapa-contour/50">0</td>;
+										}
+										const cell = MRT3_MATRIX[i][j];
+										return (
+											<td
+												class="rail-matrix-cell py-2 px-2 font-semibold text-mapa-ink border-r border-mapa-contour/40 hover:bg-mapa-green/15 transition-colors"
+												data-beep={`₱${cell.beep}`}
+												data-sjt={`₱${cell.sjt}`}
+												data-disc={`₱${cell.disc.toFixed(2)}`}
+											>
+												₱{cell.beep}
+											</td>
+										);
+									})}
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- 2. LRT-1 Official Fare Matrix (25×25) -->
+			<div id="rmat-panel-lrt1" class="hidden bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs">
+				<div class="px-4 py-2.5 bg-mapa-canvas border-b border-mapa-contour flex flex-wrap items-center justify-between gap-2 text-xs">
+					<span class="font-bold text-mapa-ink">LRMC LRT LINE 1 OFFICIAL FARE MATRIX (FPJ / Roosevelt &harr; Dr. Santos / Cavite Ext.)</span>
+					<span class="text-mapa-muted text-[11px]">Effective April 2, 2025: ₱16.25 base + ₱1.47/km (beep™ ₱16–₱52 / SJT ₱20–₱55)</span>
+				</div>
+				<div class="overflow-x-auto max-h-[540px] overflow-y-auto custom-scrollbar">
+					<table class="w-full text-center text-[11px] border-collapse font-mono">
+						<thead class="sticky top-0 z-20 bg-mapa-canvas border-b-2 border-mapa-contour text-mapa-ink font-sans">
+							<tr>
+								<th class="sticky left-0 z-30 bg-mapa-canvas py-2.5 px-3 text-left font-extrabold border-r-2 border-mapa-contour min-w-[175px]">
+									Origin \ Destination
+								</th>
+								{LRT1_STATIONS.map((st) => (
+									<th class="py-2 px-2 font-bold text-[10px] border-r border-mapa-contour/60 min-w-[72px] whitespace-nowrap bg-mapa-canvas">
+										{st.name.replace(/\s*\(.*\)/, '')}
+									</th>
+								))}
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-mapa-contour/40">
+							{LRT1_STATIONS.map((orig, i) => (
+								<tr class="hover:bg-mapa-green/5 transition-colors">
+									<td class="sticky left-0 z-10 bg-mapa-canvas-dark py-2 px-3 text-left font-sans font-bold text-mapa-ink border-r-2 border-mapa-contour whitespace-nowrap">
+										{i + 1}. {orig.name}
+									</td>
+									{LRT1_STATIONS.map((__, j) => {
+										if (i === j) {
+											return <td class="py-2 px-2 bg-[#00843D] text-white font-sans font-bold text-[9px] border-r border-mapa-contour/50">0</td>;
+										}
+										const cell = LRT1_MATRIX[i][j];
+										return (
+											<td
+												class="rail-matrix-cell py-2 px-2 font-semibold text-mapa-ink border-r border-mapa-contour/40 hover:bg-mapa-green/15 transition-colors"
+												data-beep={`₱${cell.beep}`}
+												data-sjt={`₱${cell.sjt}`}
+												data-disc={`₱${cell.disc.toFixed(2)}`}
+											>
+												₱{cell.beep}
+											</td>
+										);
+									})}
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- 3. LRT-2 Official Fare Matrix (13×13) -->
+			<div id="rmat-panel-lrt2" class="hidden bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs">
+				<div class="px-4 py-2.5 bg-mapa-canvas border-b border-mapa-contour flex flex-wrap items-center justify-between gap-2 text-xs">
+					<span class="font-bold text-mapa-ink">LRTA LRT LINE 2 OFFICIAL FARE MATRIX (Recto &harr; Antipolo)</span>
+					<span class="text-mapa-muted text-[11px]">LRTA Tariff Schedule: ₱13.29 base + ₱1.21/km (beep™ ₱14–₱33 / SJT ₱15–₱35)</span>
+				</div>
+				<div class="overflow-x-auto max-h-[540px] overflow-y-auto custom-scrollbar">
+					<table class="w-full text-center text-[11px] border-collapse font-mono">
+						<thead class="sticky top-0 z-20 bg-mapa-canvas border-b-2 border-mapa-contour text-mapa-ink font-sans">
+							<tr>
+								<th class="sticky left-0 z-30 bg-mapa-canvas py-2.5 px-3 text-left font-extrabold border-r-2 border-mapa-contour min-w-[165px]">
+									Origin \ Destination
+								</th>
+								{LRT2_STATIONS.map((st) => (
+									<th class="py-2 px-2 font-bold text-[10px] border-r border-mapa-contour/60 min-w-[74px] whitespace-nowrap bg-mapa-canvas">
+										{st.name.replace('Araneta Center-', '')}
+									</th>
+								))}
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-mapa-contour/40">
+							{LRT2_STATIONS.map((orig, i) => (
+								<tr class="hover:bg-mapa-rust/5 transition-colors">
+									<td class="sticky left-0 z-10 bg-mapa-canvas-dark py-2 px-3 text-left font-sans font-bold text-mapa-ink border-r-2 border-mapa-contour whitespace-nowrap">
+										{i + 1}. {orig.name}
+									</td>
+									{LRT2_STATIONS.map((__, j) => {
+										if (i === j) {
+											return <td class="py-2 px-2 bg-[#6F2C91] text-white font-sans font-bold text-[9px] border-r border-mapa-contour/50">0</td>;
+										}
+										const cell = LRT2_MATRIX[i][j];
+										return (
+											<td
+												class="rail-matrix-cell py-2 px-2 font-semibold text-mapa-ink border-r border-mapa-contour/40 hover:bg-mapa-green/15 transition-colors"
+												data-beep={`₱${cell.beep}`}
+												data-sjt={`₱${cell.sjt}`}
+												data-disc={`₱${cell.disc.toFixed(2)}`}
+											>
+												₱{cell.beep}
+											</td>
+										);
+									})}
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+
 		<!-- Comprehensive Editorial & Regulatory Reference Section -->
 		<article class="mt-16 max-w-4xl mx-auto font-sans border-t border-mapa-contour/60 pt-12 space-y-10">
 			
@@ -875,58 +1132,58 @@ const TRANSFER_HUBS = [
 						<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/80">
 							<tr>
 								<td class="p-3 font-semibold text-mapa-green">LRT Line 1</td>
-								<td class="p-3">₱15.00</td>
-								<td class="p-3">₱1.21 / km</td>
-								<td class="p-3">₱15.00 – ₱45.00</td>
-								<td class="p-3">Rounded to nearest ₱5.00 (₱15–₱45)</td>
+								<td class="p-3">₱16.25 (eff. Apr 2, 2025)</td>
+								<td class="p-3">₱1.47 / km</td>
+								<td class="p-3">₱16.00 – ₱52.00</td>
+								<td class="p-3">Rounded up to nearest ₱5.00 (₱20–₱55)</td>
 							</tr>
 							<tr>
 								<td class="p-3 font-semibold text-mapa-navy">MRT Line 3</td>
-								<td class="p-3">₱13.00</td>
-								<td class="p-3">₱1.00 / station tier</td>
+								<td class="p-3">₱13.00 (1–2 stops)</td>
+								<td class="p-3">Station tier matrix</td>
 								<td class="p-3">₱13.00 – ₱28.00</td>
-								<td class="p-3">₱13.00 – ₱28.00 exact station tiers</td>
+								<td class="p-3">₱13, ₱16, ₱20, ₱24, ₱28 exact tiers</td>
 							</tr>
 							<tr>
 								<td class="p-3 font-semibold text-mapa-ink">LRT Line 2</td>
-								<td class="p-3">₱14.00</td>
+								<td class="p-3">₱13.29</td>
 								<td class="p-3">₱1.21 / km</td>
 								<td class="p-3">₱14.00 – ₱33.00</td>
-								<td class="p-3">Rounded to nearest ₱5.00 (₱15–₱35)</td>
+								<td class="p-3">Rounded up to nearest ₱5.00 (₱15–₱35)</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
 				<p class="text-xs text-mapa-muted leading-relaxed">
-					<em>Note:</em> Single Journey Tickets (paper magnetics / QR tokens) are rounded up to the nearest 5-peso denomination under LRTA guidelines to simplify cash handling at passenger ticket sales offices (TSO). Using an electronic stored-value beep™ card guarantees the exact statutory centavo computation and avoids token queues.
+					<em>Note:</em> Single Journey Tickets (paper magnetics / QR tokens) are rounded up to the nearest 5-peso denomination under LRTA and LRMC guidelines to simplify cash handling at passenger ticket sales offices (TSO). Using an electronic stored-value beep™ card guarantees the exact statutory rate and avoids token queues.
 				</p>
 			</section>
 
-			<!-- Section 2: Statutory 20% Discounts -->
+			<!-- Section 2: Concessionary 50% Discounts -->
 			<section>
 				<h2 class="font-serif text-2xl font-bold text-mapa-ink tracking-tight mb-4">
-					2. Statutory 20% Discount Rights (Students, Seniors, PWDs)
+					2. Concessionary 50% Discount Rights (Students, Seniors, PWDs)
 				</h2>
 				<p class="text-sm text-mapa-ink/80 leading-relaxed mb-4">
-					By national law, all public rail transit operators in the Philippines must provide a 20% discount on standard commuter tariffs:
+					Under national statutes and DOTr / LRTA / LRMC concessionary directives, public rail transit lines in Metro Manila grant a <strong>50% discount</strong> on standard commuter tariffs for eligible sectors:
 				</p>
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
 					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4">
-						<h3 class="font-bold text-mapa-ink text-sm mb-1.5">Students (RA 11314)</h3>
+						<h3 class="font-bold text-mapa-ink text-sm mb-1.5">Students (RA 11314 &amp; DOTr Order)</h3>
 						<p class="text-mapa-ink/75 leading-relaxed">
-							Applies to all Filipino students from primary to undergraduate tertiary and technical-vocational levels. Valid <strong>365 days a year</strong> including weekends, semestral breaks, and national holidays.
+							Applies to all Filipino students from primary to undergraduate tertiary and technical-vocational levels. Valid <strong>365 days a year</strong> including weekends, semestral breaks, and national holidays across LRT-1, LRT-2, and MRT-3.
 						</p>
 					</div>
 					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4">
 						<h3 class="font-bold text-mapa-ink text-sm mb-1.5">Senior Citizens (RA 9994)</h3>
 						<p class="text-mapa-ink/75 leading-relaxed">
-							All Filipino citizens aged 60 years and above are entitled to 20% off all rail fares and exemption from value-added tax upon showing an OSCA ID or valid Philippine passport.
+							All Filipino citizens aged 60 years and above receive a 50% concessionary rail fare discount (exceeding the statutory 20% minimum) upon showing an OSCA ID or using a personalized white concessionary beep™ card.
 						</p>
 					</div>
 					<div class="bg-mapa-canvas border border-mapa-contour/70 rounded-xl p-4">
 						<h3 class="font-bold text-mapa-ink text-sm mb-1.5">Persons with Disabilities (RA 10754)</h3>
 						<p class="text-mapa-ink/75 leading-relaxed">
-							Eligible PWDs presenting a valid PDAO (Persons with Disability Affairs Office) ID or National Council on Disability Affairs (NCDA) card receive 20% discount and priority car access.
+							Eligible PWDs presenting a valid PDAO (Persons with Disability Affairs Office) ID or National Council on Disability Affairs (NCDA) card receive a 50% concessionary discount and priority car access.
 						</p>
 					</div>
 				</div>
@@ -945,10 +1202,10 @@ const TRANSFER_HUBS = [
 						<strong>Card Validity:</strong> Standard blue beep cards are valid for <strong>4 years</strong> from issuance. You can extend an expiring card for an additional 1 year at any station Teller Ticket Booth for a nominal ₱10 extension fee.
 					</li>
 					<li>
-						<strong>Concessionary Cards:</strong> White/Gold Concessionary beep cards are personalized for Seniors and PWDs, encoding the 20% discount automatically at turnstiles without needing ticket window verification on each trip.
+						<strong>Concessionary Cards:</strong> White/Gold Concessionary beep cards are personalized for Students, Seniors, and PWDs, encoding the 50% concessionary discount automatically at turnstiles without needing ticket window verification on each trip.
 					</li>
 					<li>
-						<strong>Minimum Balance Requirement:</strong> To enter turnstiles, a card must have at least the minimum boarding fee of the line (₱15 on LRT-1, ₱13 on MRT-3, ₱14 on LRT-2). If your exit station incurs a higher fare than your balance, the turnstile will reject exit until you reload at the station excess fare booth.
+						<strong>Minimum Balance Requirement:</strong> To enter turnstiles, a card must have at least the minimum boarding fee of the line (₱16 on LRT-1, ₱13 on MRT-3, ₱14 on LRT-2). If your exit station incurs a higher fare than your balance, the turnstile will reject exit until you reload at the station excess fare booth.
 					</li>
 				</ul>
 			</section>
@@ -987,7 +1244,7 @@ const TRANSFER_HUBS = [
 								<h3 class="font-bold text-mapa-ink text-sm">Light Rail Manila Corporation (LRMC) / LRT-1</h3>
 							</div>
 							<p class="text-mapa-ink/75 leading-relaxed">
-								Operated under DOTr Concession Agreement. Fares reflect the approved TRB & DOTr 2024 Tariff Schedule covering the 24.5 km alignment from Fernando Poe Jr. to Dr. Santos (Cavite Extension Phase 1) with ₱15 base + ₱1.21/km distance tariff.
+								Operated under DOTr Concession Agreement. Fares reflect the approved DOTr &amp; LRMC April 2, 2025 Tariff Schedule covering the 24.5 km alignment across all 25 stations from Fernando Poe Jr. to Dr. Santos (Cavite Extension Phase 1) with ₱16.25 base + ₱1.47/km distance tariff.
 							</p>
 						</div>
 						<div class="mt-3 pt-2.5 border-t border-mapa-contour/50">
@@ -1669,37 +1926,38 @@ const TRANSFER_HUBS = [
 
 			// Official Fare Calculation Helpers
 			function calcSingleLineFare(lineKey, distanceKm, stationCount) {
-				let beepFare = 15;
-				let sjtFare = 15;
+				let beepFare = 16;
+				let sjtFare = 20;
 
 				if (lineKey === 'mrt3') {
-					// MRT-3 fare matrix (DOTr 2023-010): ₱13 base (0-2 stations), ₱16 (3-5), ₱20 (6-8), ₱24 (9-11), ₱28 (12-13)
+					// Official DOTr MRT-3 Fare Matrix (dotrmrt3.gov.ph/fare-matrix.pdf):
+					// 1–2 stops: ₱13 | 3–4 stops: ₱16 | 5–7 stops: ₱20 | 8–10 stops: ₱24 | 11–12 stops: ₱28
 					if (stationCount <= 2) {
 						beepFare = 13;
-					} else if (stationCount <= 5) {
+					} else if (stationCount <= 4) {
 						beepFare = 16;
-					} else if (stationCount <= 8) {
+					} else if (stationCount <= 7) {
 						beepFare = 20;
-					} else if (stationCount <= 11) {
+					} else if (stationCount <= 10) {
 						beepFare = 24;
 					} else {
 						beepFare = 28;
 					}
 					sjtFare = beepFare;
 				} else if (lineKey === 'lrt1') {
-					// LRT-1 fare matrix (LRMC/TRB 2024 Cavite Extension schedule):
-					// ₱15.00 boarding base + ₱1.21/km
+					// Official LRMC LRT-1 Fare Matrix (Effective April 2, 2025 across all 25 stations):
+					// ₱16.25 boarding base + ₱1.47/km
 					// End-to-end FPJ to Dr. Santos (24.5 km): ₱52.00 Stored Value (Beep) / ₱55.00 SJT
-					beepFare = 15 + (distanceKm * 1.21);
-					beepFare = Math.min(52, Math.max(15, Math.round(beepFare)));
-					sjtFare = Math.min(55, Math.ceil(beepFare / 5) * 5);
+					beepFare = 16.25 + (distanceKm * 1.47);
+					beepFare = Math.min(52, Math.max(16, Math.round(beepFare)));
+					sjtFare = Math.min(55, Math.max(20, Math.ceil(beepFare / 5) * 5));
 				} else if (lineKey === 'lrt2') {
-					// LRT-2 fare matrix (LRTA 2023 Tariff Schedule):
-					// ₱15.00 boarding base + ₱1.21/km
+					// Official LRTA LRT-2 Fare Matrix:
+					// ₱13.29 boarding base + ₱1.21/km
 					// End-to-end Recto to Antipolo (16.8 km): ₱33.00 Beep / ₱35.00 SJT
-					beepFare = 15 + (distanceKm * 1.21);
-					beepFare = Math.min(33, Math.max(15, Math.round(beepFare)));
-					sjtFare = Math.min(35, Math.ceil(beepFare / 5) * 5);
+					beepFare = 13.29 + (distanceKm * 1.21);
+					beepFare = Math.min(33, Math.max(14, Math.round(beepFare)));
+					sjtFare = Math.min(35, Math.max(15, Math.ceil(beepFare / 5) * 5));
 				}
 
 				return { beepFare, sjtFare };
@@ -2000,7 +2258,7 @@ const TRANSFER_HUBS = [
 						totalDist += leg.dist;
 						totalTravelTime += (leg.stops * (leg.line === 'mrt3' ? 2.5 : leg.line === 'lrt1' ? 2.3 : 2.8));
 
-						const legFareBeep = hasDiscount ? (fareObj.beepFare * 0.8) : fareObj.beepFare;
+						const legFareBeep = hasDiscount ? (fareObj.beepFare * 0.5) : fareObj.beepFare;
 
 						itineraryHtml += `
 							<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/50">
@@ -2047,9 +2305,9 @@ const TRANSFER_HUBS = [
 					}
 				});
 
-				// Final Discount Calculations
-				const finalBeep = hasDiscount ? (totalBeepFare * 0.8) : totalBeepFare;
-				const finalSjt = hasDiscount ? (totalSjtFare * 0.8) : totalSjtFare;
+				// Final Discount Calculations (50% DOTr / LRTA / LRMC concessionary rate)
+				const finalBeep = hasDiscount ? (totalBeepFare * 0.5) : totalBeepFare;
+				const finalSjt = hasDiscount ? (totalSjtFare * 0.5) : totalSjtFare;
 				const roundedTime = Math.round(totalTravelTime);
 
 				fareBeepEl.textContent = `₱${finalBeep.toFixed(2)}`;
@@ -2119,6 +2377,57 @@ const TRANSFER_HUBS = [
 					}
 				});
 			});
+
+			// Official Station-to-Station Rail Fare Matrix Switchers (MRT-3 / LRT-1 / LRT-2 & Beep / SJT / 50% Disc)
+			const rmatLineMrt3 = document.getElementById('rmat-line-mrt3');
+			const rmatLineLrt1 = document.getElementById('rmat-line-lrt1');
+			const rmatLineLrt2 = document.getElementById('rmat-line-lrt2');
+			const rmatPanelMrt3 = document.getElementById('rmat-panel-mrt3');
+			const rmatPanelLrt1 = document.getElementById('rmat-panel-lrt1');
+			const rmatPanelLrt2 = document.getElementById('rmat-panel-lrt2');
+
+			const rmatRateBeep = document.getElementById('rmat-rate-beep');
+			const rmatRateSjt = document.getElementById('rmat-rate-sjt');
+			const rmatRateDisc = document.getElementById('rmat-rate-disc');
+
+			function setRmatLine(line) {
+				const map = {
+					mrt3: { btn: rmatLineMrt3, panel: rmatPanelMrt3, activeClass: 'px-3 py-1.5 rounded-lg bg-[#0055A5] text-white shadow-2xs transition-all cursor-pointer' },
+					lrt1: { btn: rmatLineLrt1, panel: rmatPanelLrt1, activeClass: 'px-3 py-1.5 rounded-lg bg-[#00843D] text-white shadow-2xs transition-all cursor-pointer' },
+					lrt2: { btn: rmatLineLrt2, panel: rmatPanelLrt2, activeClass: 'px-3 py-1.5 rounded-lg bg-[#6F2C91] text-white shadow-2xs transition-all cursor-pointer' }
+				};
+				const inactiveClass = 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
+				Object.entries(map).forEach(([key, { btn, panel, activeClass }]) => {
+					if (btn) btn.className = key === line ? activeClass : inactiveClass;
+					if (panel) panel.classList.toggle('hidden', key !== line);
+				});
+			}
+
+			rmatLineMrt3?.addEventListener('click', () => setRmatLine('mrt3'));
+			rmatLineLrt1?.addEventListener('click', () => setRmatLine('lrt1'));
+			rmatLineLrt2?.addEventListener('click', () => setRmatLine('lrt2'));
+
+			function setRmatRate(rateMode) {
+				const buttons = {
+					beep: rmatRateBeep,
+					sjt: rmatRateSjt,
+					disc: rmatRateDisc
+				};
+				Object.entries(buttons).forEach(([key, btn]) => {
+					if (!btn) return;
+					btn.className = key === rateMode
+						? 'px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer'
+						: 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
+				});
+				document.querySelectorAll('.rail-matrix-cell').forEach(cell => {
+					const val = cell.getAttribute(`data-${rateMode}`);
+					if (val) cell.textContent = val;
+				});
+			}
+
+			rmatRateBeep?.addEventListener('click', () => setRmatRate('beep'));
+			rmatRateSjt?.addEventListener('click', () => setRmatRate('sjt'));
+			rmatRateDisc?.addEventListener('click', () => setRmatRate('disc'));
 
 			// Initial Calculation
 			calculateRoute();

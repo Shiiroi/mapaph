@@ -23,19 +23,19 @@ const EXPRESSWAYS = [
 		lengthKm: 84.0,
 		description: 'Major northern artery connecting Balintawak/Mindanao Ave to Sta. Ines, Pampanga and SCTEX.',
 		plazas: [
-			{ id: 'balintawak', name: 'Balintawak (Open Barrier)', km: 0.0, isBarrier: true, c1: 74, c2: 186, c3: 223, lat: 14.6580, lon: 121.0030 },
-			{ id: 'mindanao', name: 'Mindanao Ave (Open Barrier)', km: 2.5, isBarrier: true, c1: 74, c2: 186, c3: 223, lat: 14.6750, lon: 121.0250 },
-			{ id: 'marilao', name: 'Marilao (Bulacan)', km: 13.0, isBarrier: false, c1: 105, c2: 263, c3: 316, lat: 14.7700, lon: 120.9400 },
-			{ id: 'bocaue', name: 'Bocaue (Toll Barrier)', km: 18.0, isBarrier: true, c1: 133, c2: 333, c3: 400, lat: 14.8100, lon: 120.9150 },
-			{ id: 'balagtas', name: 'Balagtas Interchange', km: 23.0, isBarrier: false, c1: 160, c2: 401, c3: 481, lat: 14.8350, lon: 120.9000 },
-			{ id: 'sta_rita', name: 'Sta. Rita (Guiguinto)', km: 28.0, isBarrier: false, c1: 183, c2: 458, c3: 550, lat: 14.8600, lon: 120.8750 },
-			{ id: 'pulilan', name: 'Pulilan (Bulacan)', km: 35.0, isBarrier: false, c1: 204, c2: 510, c3: 612, lat: 14.8950, lon: 120.8300 },
-			{ id: 'san_simon', name: 'San Simon (Pampanga)', km: 45.0, isBarrier: false, c1: 237, c2: 593, c3: 712, lat: 14.9850, lon: 120.7300 },
-			{ id: 'san_fernando', name: 'San Fernando (Pampanga)', km: 54.0, isBarrier: false, c1: 268, c2: 670, c3: 804, lat: 15.0350, lon: 120.6800 },
-			{ id: 'mexico', name: 'Mexico Interchange', km: 62.0, isBarrier: false, c1: 302, c2: 755, c3: 906, lat: 15.0750, lon: 120.6900 },
-			{ id: 'angeles', name: 'Angeles City', km: 70.0, isBarrier: false, c1: 331, c2: 828, c3: 994, lat: 15.1450, lon: 120.6100 },
-			{ id: 'dau', name: 'Dau (Mabalacat / SCTEX Entry)', km: 76.0, isBarrier: false, c1: 350, c2: 875, c3: 1050, lat: 15.1850, lon: 120.5850 },
-			{ id: 'sta_ines', name: 'Sta. Ines (Mabalacat Terminus)', km: 82.0, isBarrier: true, c1: 377, c2: 943, c3: 1131, lat: 15.2250, lon: 120.5700 }
+			{ id: 'balintawak', name: 'Balintawak (Open Barrier)', km: 0.0, isBarrier: true, c1: 79, c2: 199, c3: 238, lat: 14.6580, lon: 121.0030 },
+			{ id: 'mindanao', name: 'Mindanao Ave (Open Barrier)', km: 2.5, isBarrier: true, c1: 79, c2: 199, c3: 238, lat: 14.6750, lon: 121.0250 },
+			{ id: 'marilao', name: 'Marilao (Bulacan)', km: 13.0, isBarrier: false, c1: 112, c2: 280, c3: 336, lat: 14.7700, lon: 120.9400 },
+			{ id: 'bocaue', name: 'Bocaue (Toll Barrier)', km: 18.0, isBarrier: true, c1: 142, c2: 355, c3: 426, lat: 14.8100, lon: 120.9150 },
+			{ id: 'balagtas', name: 'Balagtas Interchange', km: 23.0, isBarrier: false, c1: 171, c2: 428, c3: 513, lat: 14.8350, lon: 120.9000 },
+			{ id: 'sta_rita', name: 'Sta. Rita (Guiguinto)', km: 28.0, isBarrier: false, c1: 195, c2: 488, c3: 585, lat: 14.8600, lon: 120.8750 },
+			{ id: 'pulilan', name: 'Pulilan (Bulacan)', km: 35.0, isBarrier: false, c1: 218, c2: 545, c3: 654, lat: 14.8950, lon: 120.8300 },
+			{ id: 'san_simon', name: 'San Simon (Pampanga)', km: 45.0, isBarrier: false, c1: 253, c2: 633, c3: 759, lat: 14.9850, lon: 120.7300 },
+			{ id: 'san_fernando', name: 'San Fernando (Pampanga)', km: 54.0, isBarrier: false, c1: 314, c2: 785, c3: 942, lat: 15.0350, lon: 120.6800 },
+			{ id: 'mexico', name: 'Mexico Interchange', km: 62.0, isBarrier: false, c1: 352, c2: 880, c3: 1056, lat: 15.0750, lon: 120.6900 },
+			{ id: 'angeles', name: 'Angeles City', km: 70.0, isBarrier: false, c1: 386, c2: 965, c3: 1158, lat: 15.1450, lon: 120.6100 },
+			{ id: 'dau', name: 'Dau (Mabalacat / SCTEX Entry)', km: 76.0, isBarrier: false, c1: 411, c2: 1028, c3: 1233, lat: 15.1850, lon: 120.5850 },
+			{ id: 'sta_ines', name: 'Sta. Ines (Mabalacat Terminus)', km: 82.0, isBarrier: true, c1: 440, c2: 1099, c3: 1319, lat: 15.2250, lon: 120.5700 }
 		]
 	},
 	{
@@ -143,14 +143,15 @@ const EXPRESSWAYS = [
 		system: 'Closed Distance-Based System',
 		color: '#3D5A45',
 		lengthKm: 44.6,
-		description: 'Modern 4-lane expressway connecting SLEX Mamplasan to Tagaytay and Kawit (CAVITEX).',
+		description: 'Modern 4-lane expressway connecting SLEX Mamplasan to Tagaytay, Silang, and General Trias (Governor’s Drive).',
 		plazas: [
 			{ id: 'calax_mamplasan', name: 'Mamplasan (SLEX Entry)', km: 0.0, isBarrier: true, c1: 0, c2: 0, c3: 0, lat: 14.2650, lon: 121.0800 },
 			{ id: 'calax_technopark', name: 'Laguna Technopark', km: 4.0, isBarrier: false, c1: 14, c2: 28, c3: 42, lat: 14.2500, lon: 121.0650 },
 			{ id: 'calax_laguna_blvd', name: 'Laguna Boulevard', km: 8.5, isBarrier: false, c1: 31, c2: 62, c3: 93, lat: 14.2350, lon: 121.0500 },
 			{ id: 'calax_sta_rosa', name: 'Sta. Rosa–Tagaytay Road', km: 13.0, isBarrier: false, c1: 47, c2: 94, c3: 141, lat: 14.2150, lon: 121.0250 },
 			{ id: 'calax_silang_east', name: 'Silang East Interchange', km: 18.0, isBarrier: false, c1: 64, c2: 128, c3: 192, lat: 14.2250, lon: 120.9850 },
-			{ id: 'calax_aguinaldo', name: 'Silang (Aguinaldo Highway / Tagaytay)', km: 22.5, isBarrier: true, c1: 82, c2: 164, c3: 246, lat: 14.2300, lon: 120.9650 }
+			{ id: 'calax_aguinaldo', name: 'Silang (Aguinaldo Highway / Tagaytay)', km: 22.5, isBarrier: false, c1: 82, c2: 164, c3: 246, lat: 14.2300, lon: 120.9650 },
+			{ id: 'calax_gov_drive', name: 'Governor’s Drive (General Trias)', km: 31.1, isBarrier: true, c1: 117, c2: 234, c3: 351, lat: 14.2880, lon: 120.9150 }
 		]
 	},
 	{
@@ -165,8 +166,8 @@ const EXPRESSWAYS = [
 		lengthKm: 8.9,
 		description: 'Iconic cable-stayed bridge expressway connecting Cebu City directly to Cordova and Mactan International Airport.',
 		plazas: [
-			{ id: 'cclex_cebu', name: 'Cebu City (SRP Entry)', km: 0.0, isBarrier: true, c1: 90, c2: 180, c3: 270, lat: 10.2850, lon: 123.8850 },
-			{ id: 'cclex_cordova', name: 'Cordova (Mactan Island)', km: 8.9, isBarrier: true, c1: 90, c2: 180, c3: 270, lat: 10.2650, lon: 123.9450 }
+			{ id: 'cclex_cebu', name: 'Cebu City (SRP Entry)', km: 0.0, isBarrier: true, c1: 100, c2: 200, c3: 300, lat: 10.2850, lon: 123.8850 },
+			{ id: 'cclex_cordova', name: 'Cordova (Mactan Island)', km: 8.9, isBarrier: true, c1: 100, c2: 200, c3: 300, lat: 10.2650, lon: 123.9450 }
 		]
 	}
 ];
@@ -376,7 +377,7 @@ const TRIP_PRESETS = [
 						</div>
 						<div class="flex items-center gap-1.5">
 							<span id="summary-toll-metric" class="text-[11px] font-bold px-2.5 py-1 rounded-md bg-mapa-green text-white shadow-2xs">
-								76.0 km &bull; ₱350.00
+								76.0 km &bull; ₱411.00
 							</span>
 						</div>
 					</div>
@@ -589,7 +590,7 @@ const TRIP_PRESETS = [
 								</span>
 								<div class="flex items-baseline gap-2 mt-0.5">
 									<span id="toll-fee-display" class="text-3xl sm:text-4xl font-extrabold text-mapa-green font-serif">
-										₱350.00
+										₱411.00
 									</span>
 								</div>
 							</div>
@@ -712,6 +713,131 @@ const TRIP_PRESETS = [
 
 			</div>
 		</div>
+
+		<!-- Official TRB Expressway Entry-to-Exit Toll Matrices Section -->
+		<section id="expressway-toll-matrix" class="mt-14 font-sans">
+			<div class="border-b border-mapa-contour/50 pb-4 mb-6 flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+				<div>
+					<div class="flex flex-wrap items-center gap-2 mb-1.5">
+						<span class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-mapa-green text-white">
+							Official TRB Approved Toll Schedules
+						</span>
+						<span class="text-xs font-medium text-mapa-muted">
+							Class 1, Class 2, &amp; Class 3 Entry-to-Exit Matrices (12% VAT Inclusive)
+						</span>
+					</div>
+					<h2 class="text-2xl sm:text-3xl font-serif font-extrabold text-mapa-ink">
+						Complete Expressway Entry-to-Exit Toll Matrices
+					</h2>
+					<p class="text-xs sm:text-sm text-mapa-muted mt-1 max-w-3xl">
+						Select an expressway corridor and TRB vehicle classification below to inspect the complete entry-to-exit toll matrix across NLEX, SLEX, Skyway Stages 1–3, SCTEX, TPLEX, CALAX (up to Governor’s Drive), and CCLEX.
+					</p>
+				</div>
+
+				<!-- Matrix Expressway & Vehicle Class Controls -->
+				<div class="flex flex-wrap items-center gap-2 shrink-0">
+					<select
+						id="tmat-exp-select"
+						aria-label="Select expressway for toll matrix table"
+						class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl px-3 py-1.5 text-xs font-bold text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green cursor-pointer"
+					>
+						{EXPRESSWAYS.map((exp) => (
+							<option value={exp.id}>{exp.name}</option>
+						))}
+					</select>
+
+					<div class="inline-flex rounded-xl bg-mapa-canvas-dark p-1 border border-mapa-contour text-xs font-bold">
+						<button
+							type="button"
+							id="tmat-class-1"
+							class="px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer"
+						>
+							Class 1 (Cars)
+						</button>
+						<button
+							type="button"
+							id="tmat-class-2"
+							class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
+						>
+							Class 2 (Buses)
+						</button>
+						<button
+							type="button"
+							id="tmat-class-3"
+							class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
+						>
+							Class 3 (Trucks)
+						</button>
+					</div>
+				</div>
+			</div>
+
+			{EXPRESSWAYS.map((exp, expIdx) => (
+				<div
+					id={`tmat-panel-${exp.id}`}
+					class={`${expIdx === 0 ? '' : 'hidden'} bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs`}
+				>
+					<div class="px-4 py-2.5 bg-mapa-canvas border-b border-mapa-contour flex flex-wrap items-center justify-between gap-2 text-xs">
+						<span class="font-bold text-mapa-ink uppercase">{exp.name} OFFICIAL ENTRY-TO-EXIT TOLL MATRIX</span>
+						<span class="text-mapa-muted text-[11px]">{exp.operator} &bull; {exp.rfid}</span>
+					</div>
+					<div class="overflow-x-auto max-h-[540px] overflow-y-auto custom-scrollbar">
+						<table class="w-full text-center text-[11px] border-collapse font-mono">
+							<thead class="sticky top-0 z-20 bg-mapa-canvas border-b-2 border-mapa-contour text-mapa-ink font-sans">
+								<tr>
+									<th class="sticky left-0 z-30 bg-mapa-canvas py-2.5 px-3 text-left font-extrabold border-r-2 border-mapa-contour min-w-[175px]">
+										Entry \ Exit Plaza
+									</th>
+									{exp.plazas.map((plaza) => (
+										<th class="py-2 px-2 font-bold text-[10px] border-r border-mapa-contour/60 min-w-[78px] whitespace-nowrap bg-mapa-canvas">
+											{plaza.name.split(' (')[0]}
+										</th>
+									))}
+								</tr>
+							</thead>
+							<tbody class="divide-y divide-mapa-contour/40">
+								{exp.plazas.map((entryP, i) => (
+									<tr class="hover:bg-mapa-green/5 transition-colors">
+										<td class="sticky left-0 z-10 bg-mapa-canvas-dark py-2 px-3 text-left font-sans font-bold text-mapa-ink border-r-2 border-mapa-contour whitespace-nowrap">
+											{i + 1}. {entryP.name.split(' (')[0]} <span class="text-[10px] font-mono font-normal text-mapa-muted">(km {entryP.km.toFixed(0)})</span>
+										</td>
+										{exp.plazas.map((exitP, j) => {
+											if (i === j) {
+												return <td class="py-2 px-2 bg-mapa-navy text-white font-sans font-bold text-[9px] border-r border-mapa-contour/50">-</td>;
+											}
+											const dist = Math.abs(exitP.km - entryP.km);
+											const computeClassFee = (cKey: 'c1' | 'c2' | 'c3') => {
+												if (exp.id === 'cclex') {
+													return cKey === 'c1' ? 100 : cKey === 'c2' ? 200 : 300;
+												}
+												const maxT = Math.max(entryP[cKey], exitP[cKey]);
+												const minT = Math.min(entryP[cKey], exitP[cKey]);
+												if (minT === 0) return maxT;
+												const diff = Math.abs(maxT - minT);
+												return diff < 15 && dist > 0 ? 15 : diff;
+											};
+											const f1 = computeClassFee('c1');
+											const f2 = computeClassFee('c2');
+											const f3 = computeClassFee('c3');
+											return (
+												<td
+													class="toll-matrix-cell py-2 px-2 font-semibold text-mapa-ink border-r border-mapa-contour/40 hover:bg-mapa-green/15 transition-colors"
+													data-c1={`₱${f1}`}
+													data-c2={`₱${f2}`}
+													data-c3={`₱${f3}`}
+												>
+													₱{f1}
+												</td>
+											);
+										})}
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			))}
+		</section>
 
 		<!-- Comprehensive Editorial & Regulatory Reference Section -->
 		<article class="mt-16 max-w-4xl mx-auto font-sans border-t border-mapa-contour/60 pt-12 space-y-10">
@@ -849,7 +975,7 @@ const TRIP_PRESETS = [
 				</p>
 				<ul class="space-y-3 text-xs text-mapa-ink/80 list-disc pl-5 leading-relaxed">
 					<li>
-						<strong>Open Barrier System:</strong> Drivers pay a flat toll fee upon crossing a physical toll plaza barrier, regardless of where they entered or how short a distance they travel. Examples include NLEX Balintawak (PHP 74 for Class 1), Skyway Stage 3 Plaza Dilao (PHP 264), NAIAX Main Barrier (PHP 45), and CCLEX (PHP 90).
+						<strong>Open Barrier System:</strong> Drivers pay a flat toll fee upon crossing a physical toll plaza barrier, regardless of where they entered or how short a distance they travel. Examples include NLEX Balintawak (PHP 79 for Class 1), Skyway Stage 3 Plaza Dilao (PHP 264), NAIAX Main Barrier (PHP 45), and CCLEX (PHP 100).
 					</li>
 					<li>
 						<strong>Closed Distance-Based System:</strong> Drivers pass an entry gantry where their RFID tag and timestamp are recorded without charge. Upon reaching their destination exit plaza, the system calculates the exact kilometers traveled between the two interchanges and deducts the distance fee. Examples include NLEX north of Bocaue, SLEX south of Alabang, SCTEX, TPLEX, and CALAX.
@@ -873,19 +999,19 @@ const TRIP_PRESETS = [
 						<div class="font-bold text-sm text-mapa-green">Route A: Makati (Buendia) to Clark Freeport (Pampanga)</div>
 						<p class="text-mapa-ink/85 leading-relaxed">
 							1. Enter Skyway Stage 3 at Buendia, exit at Balintawak Link: PHP 264 (Autosweep)<br />
-							2. Enter NLEX at Balintawak, travel to Dau / SCTEX interchange: PHP 350 (Easytrip)<br />
+							2. Enter NLEX at Balintawak, travel to Dau / SCTEX interchange: PHP 411 (Easytrip)<br />
 							3. Enter SCTEX at Mabalacat, exit at Clark South: PHP 35 (Easytrip)<br />
-							<strong>Total Toll Cost:</strong> PHP 649 (Class 1) &bull; Required Wallets: Autosweep (PHP 264) + Easytrip (PHP 385)
+							<strong>Total Toll Cost:</strong> PHP 710 (Class 1) &bull; Required Wallets: Autosweep (PHP 264) + Easytrip (PHP 446)
 						</p>
 					</div>
 
 					<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/70 space-y-2">
-						<div class="font-bold text-sm text-mapa-navy">Route B: Quezon City (Balintawak) to Tagaytay (Silang East)</div>
+						<div class="font-bold text-sm text-mapa-navy">Route B: Quezon City (Balintawak) to General Trias (Governor’s Drive via CALAX)</div>
 						<p class="text-mapa-ink/85 leading-relaxed">
 							1. Enter Skyway Stage 3 at Balintawak, exit at Magallanes / SLEX: PHP 264 (Autosweep)<br />
 							2. Travel SLEX from Magallanes to Mamplasan Interchange: PHP 110 (Autosweep)<br />
-							3. Enter CALAX at Mamplasan, exit at Silang East: PHP 64 (Easytrip)<br />
-							<strong>Total Toll Cost:</strong> PHP 438 (Class 1) &bull; Required Wallets: Autosweep (PHP 374) + Easytrip (PHP 64)
+							3. Enter CALAX at Mamplasan, exit at Governor’s Drive (General Trias): PHP 117 (Easytrip)<br />
+							<strong>Total Toll Cost:</strong> PHP 491 (Class 1) &bull; Required Wallets: Autosweep (PHP 374) + Easytrip (PHP 117)
 						</p>
 					</div>
 				</div>
@@ -1444,8 +1570,8 @@ const TRIP_PRESETS = [
 				if (entry.id === exit.id) {
 					fee = 0;
 				} else if (exp.id === 'cclex') {
-					// Flat toll
-					fee = currentClass === 1 ? 90 : currentClass === 2 ? 180 : 270;
+					// Flat toll (₱100 Class 1 / ₱200 Class 2 / ₱300 Class 3)
+					fee = currentClass === 1 ? 100 : currentClass === 2 ? 200 : 300;
 				} else {
 					// Distance-based with open barrier components
 					// We use exit plaza tariff as standard TRB closed system table
@@ -1594,6 +1720,45 @@ const TRIP_PRESETS = [
 					}
 				});
 			});
+
+			// Official Expressway Entry-to-Exit Toll Matrix Switchers
+			const tmatExpSelect = document.getElementById('tmat-exp-select');
+			const tmatClass1Btn = document.getElementById('tmat-class-1');
+			const tmatClass2Btn = document.getElementById('tmat-class-2');
+			const tmatClass3Btn = document.getElementById('tmat-class-3');
+
+			function setTmatExpressway(expId) {
+				EXPRESSWAYS.forEach(exp => {
+					const panel = document.getElementById(`tmat-panel-${exp.id}`);
+					if (panel) panel.classList.toggle('hidden', exp.id !== expId);
+				});
+			}
+
+			tmatExpSelect?.addEventListener('change', () => {
+				setTmatExpressway(tmatExpSelect.value);
+			});
+
+			function setTmatClass(classNum) {
+				const btns = {
+					1: tmatClass1Btn,
+					2: tmatClass2Btn,
+					3: tmatClass3Btn
+				};
+				Object.entries(btns).forEach(([k, btn]) => {
+					if (!btn) return;
+					btn.className = Number(k) === classNum
+						? 'px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer'
+						: 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
+				});
+				document.querySelectorAll('.toll-matrix-cell').forEach(cell => {
+					const val = cell.getAttribute(`data-c${classNum}`);
+					if (val) cell.textContent = val;
+				});
+			}
+
+			tmatClass1Btn?.addEventListener('click', () => setTmatClass(1));
+			tmatClass2Btn?.addEventListener('click', () => setTmatClass(2));
+			tmatClass3Btn?.addEventListener('click', () => setTmatClass(3));
 
 			// Initialize
 			updateTargetModeUI();

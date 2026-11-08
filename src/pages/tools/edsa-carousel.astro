@@ -9,7 +9,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 
-// 21 Official EDSA Carousel Busway Stops (Monumento ↔ PITX)
+// 24 Official EDSA Carousel Busway (Route 1) Stops (Monumento ↔ PITX)
 const BUSWAY_STOPS = [
 	{
 		id: 'monumento',
@@ -28,7 +28,7 @@ const BUSWAY_STOPS = [
 		id: 'bagong_barrio',
 		name: 'Bagong Barrio',
 		city: 'Caloocan',
-		km: 1.6,
+		km: 1.3,
 		platform: 'Median Barrier Platform',
 		access: 'Elevated Footbridge',
 		interchanges: ['NLEX Harbor Link Entry', 'Malabon Jeepneys'],
@@ -41,7 +41,7 @@ const BUSWAY_STOPS = [
 		id: 'balintawak',
 		name: 'Balintawak',
 		city: 'Quezon City',
-		km: 2.7,
+		km: 2.0,
 		platform: 'Median Island Platform',
 		access: 'Elevated Footbridge / Concourse Walkway',
 		interchanges: ['LRT-1 Balintawak', 'Skyway Stage 3', 'A. Bonifacio UV Express'],
@@ -52,9 +52,9 @@ const BUSWAY_STOPS = [
 	},
 	{
 		id: 'kaingin',
-		name: 'Kaingin Road',
+		name: 'Kaingin',
 		city: 'Quezon City',
-		km: 4.2,
+		km: 2.8,
 		platform: 'Median Barrier Platform',
 		access: 'Pedestrian Overpass',
 		interchanges: ['Kaingin Local Tricycle / Jeepney routes'],
@@ -65,35 +65,61 @@ const BUSWAY_STOPS = [
 	},
 	{
 		id: 'roosevelt',
-		name: 'Roosevelt / Fernando Poe Jr.',
+		name: 'Fernando Poe Jr. (Roosevelt)',
 		city: 'Quezon City',
-		km: 5.3,
+		km: 3.6,
 		platform: 'Median Island Platform',
 		access: 'Direct Footbridge to Station Concourse',
-		interchanges: ['LRT-1 FPJ / Roosevelt', 'Congressional Ave Busses & Jeeps'],
+		interchanges: ['LRT-1 FPJ / Roosevelt', 'Congressional Ave Buses & Jeeps'],
 		landmarks: 'Muñoz Market, Congressional Town Center, WalterMart North EDSA',
 		lat: 14.6575,
 		lon: 121.0210,
 		isTerminus: false
 	},
 	{
+		id: 'sm_north_edsa',
+		name: 'SM North EDSA',
+		city: 'Quezon City',
+		km: 4.7,
+		platform: 'Dedicated Concourse Island Platform',
+		access: 'Direct SM City North EDSA & Sky Garden Footbridge',
+		interchanges: ['SM North EDSA Bus & UV Express Terminal', 'Unified Grand Central'],
+		landmarks: 'SM City North EDSA, The Block, Annex, Sky Garden Concourse',
+		lat: 14.6562,
+		lon: 121.0298,
+		isTerminus: false
+	},
+	{
 		id: 'north_ave',
 		name: 'North Avenue',
 		city: 'Quezon City',
-		km: 6.8,
+		km: 5.3,
 		platform: 'Median Island Platform with Turnstiles',
-		access: 'Direct Elevated Footbridge from TriNoma & SM North',
-		interchanges: ['MRT-3 North Avenue', 'Future Unified Grand Central', 'Mindanao Ave UV Express'],
-		landmarks: 'TriNoma, SM City North EDSA, Vertis North, Ayala Malls Vertis',
+		access: 'Direct Elevated Footbridge from TriNoma & MRT-3',
+		interchanges: ['MRT-3 North Avenue', 'Unified Grand Central', 'Mindanao Ave UV Express'],
+		landmarks: 'TriNoma, Vertis North, Ayala Malls Vertis North',
 		lat: 14.6525,
 		lon: 121.0322,
+		isTerminus: false
+	},
+	{
+		id: 'philam_qc',
+		name: 'Philam Q.C.',
+		city: 'Quezon City',
+		km: 5.8,
+		platform: 'Median Barrier Platform',
+		access: 'Pedestrian Footbridge (West Ave / Philam Homes)',
+		interchanges: ['West Avenue Jeepneys', 'Bago Bantay / Project 7 Jeeps'],
+		landmarks: 'Philam Homes Subdivision, West Avenue Corner EDSA, Toyota North EDSA',
+		lat: 14.6485,
+		lon: 121.0355,
 		isTerminus: false
 	},
 	{
 		id: 'quezon_ave',
 		name: 'Quezon Avenue',
 		city: 'Quezon City',
-		km: 8.1,
+		km: 6.7,
 		platform: 'Median Island Platform',
 		access: 'Direct Overpass to Centris Concourse',
 		interchanges: ['MRT-3 Quezon Avenue', 'Quezon Ave / Fairview Bus Hub', 'Agham Road UV Express'],
@@ -103,14 +129,27 @@ const BUSWAY_STOPS = [
 		isTerminus: false
 	},
 	{
-		id: 'q_mart',
-		name: 'Q-Mart (Nepa Q-Mart)',
+		id: 'kamuning',
+		name: 'Kamuning',
 		city: 'Quezon City',
-		km: 9.3,
+		km: 7.5,
+		platform: 'Median Island Platform',
+		access: 'Elevated Footbridge to MRT-3 GMA-Kamuning',
+		interchanges: ['MRT-3 GMA-Kamuning', 'Timog / East Ave Jeepneys'],
+		landmarks: 'GMA Network Center, LTO Central Office, Philippine Statistics Authority',
+		lat: 14.6353,
+		lon: 121.0433,
+		isTerminus: false
+	},
+	{
+		id: 'q_mart',
+		name: 'Nepa Q. Mart',
+		city: 'Quezon City',
+		km: 8.3,
 		platform: 'Median Island Platform',
 		access: 'Pedestrian Overpass',
-		interchanges: ['Kamuning / Ermin Garcia Jeeps'],
-		landmarks: 'Nepa Q-Mart Wet Market, Ramon Magsaysay High School, Kamuning Area',
+		interchanges: ['Kamias / Ermin Garcia Jeeps'],
+		landmarks: 'Nepa Q-Mart Wet Market, Ramon Magsaysay High School, Kamias Road',
 		lat: 14.6315,
 		lon: 121.0440,
 		isTerminus: false
@@ -119,23 +158,23 @@ const BUSWAY_STOPS = [
 		id: 'main_ave',
 		name: 'Main Avenue (Cubao)',
 		city: 'Quezon City',
-		km: 10.4,
+		km: 10.1,
 		platform: 'Median Barrier Platform',
 		access: 'Elevated Footbridge',
 		interchanges: ['MRT-3 Cubao (450m Walk)', 'LRT-2 Cubao via Gateway', 'Provincial Bus Terminals'],
-		landmarks: 'Araneta City, Farmers Plaza, Ali Mall, Smart Araneta Coliseum',
+		landmarks: 'Araneta City, Farmers Plaza, Ali Mall, Smart Araneta Coliseum, SM Cubao',
 		lat: 14.6212,
 		lon: 121.0505,
 		isTerminus: false
 	},
 	{
 		id: 'santolan',
-		name: 'Santolan-Annapolis',
+		name: 'Santolan',
 		city: 'Quezon City / San Juan',
-		km: 12.1,
+		km: 10.8,
 		platform: 'Median Barrier Platform',
 		access: 'Pedestrian Overpass',
-		interchanges: ['MRT-3 Santolan', 'Greenhills Shuttle / Annapolis Jeeps'],
+		interchanges: ['MRT-3 Santolan-Annapolis', 'Greenhills Shuttle / Annapolis Jeeps'],
 		landmarks: 'Camp Crame (PNP Headquarters), Camp Aguinaldo (AFP HQ), Greenhills Shopping Center',
 		lat: 14.6080,
 		lon: 121.0560,
@@ -145,7 +184,7 @@ const BUSWAY_STOPS = [
 		id: 'ortigas',
 		name: 'Ortigas',
 		city: 'Mandaluyong / Pasig',
-		km: 14.3,
+		km: 13.3,
 		platform: 'Median Island Platform',
 		access: 'Direct Concourse Walkway from Megamall & Galleria',
 		interchanges: ['MRT-3 Ortigas', 'Ortigas Center UV Express', 'Rizal Bus Hub'],
@@ -158,7 +197,7 @@ const BUSWAY_STOPS = [
 		id: 'guadalupe',
 		name: 'Guadalupe',
 		city: 'Makati',
-		km: 16.7,
+		km: 15.7,
 		platform: 'Median Platform with Rail Connection',
 		access: 'Direct Footbridge to MRT-3 & Ferry Wharf',
 		interchanges: ['MRT-3 Guadalupe', 'Pasig River Ferry (Guadalupe Wharf)', 'Taguig/Pateros Jeeps'],
@@ -169,9 +208,9 @@ const BUSWAY_STOPS = [
 	},
 	{
 		id: 'buendia',
-		name: 'Buendia (Sen. Gil Puyat)',
+		name: 'Buendia',
 		city: 'Makati',
-		km: 18.2,
+		km: 17.7,
 		platform: 'Median Island Platform',
 		access: 'Direct Overpass to MRT Concourse',
 		interchanges: ['MRT-3 Buendia', 'BGC Bus North Route', 'Ayala Ave UV Express'],
@@ -184,9 +223,9 @@ const BUSWAY_STOPS = [
 		id: 'ayala',
 		name: 'Ayala (One Ayala)',
 		city: 'Makati',
-		km: 19.5,
+		km: 18.5,
 		platform: 'Intermodal Concourse Terminal',
-		access: 'Direct Indoor Connection inside One Ayala',
+		access: 'Direct Indoor Connection inside One Ayala & McKinley Exchange (NB)',
 		interchanges: ['MRT-3 Ayala', 'One Ayala Intermodal Terminal', 'BGC Bus Terminal', 'P2P South Hub'],
 		landmarks: 'One Ayala, SM Makati, Glorietta, Greenbelt, Ayala Center',
 		lat: 14.5492,
@@ -195,10 +234,10 @@ const BUSWAY_STOPS = [
 	},
 	{
 		id: 'tramo',
-		name: 'Tramo',
+		name: 'Tramo (Southbound)',
 		city: 'Pasay',
-		km: 21.2,
-		platform: 'Median Barrier Platform',
+		km: 21.7,
+		platform: 'Southbound Median Barrier Platform',
 		access: 'Pedestrian Overpass',
 		interchanges: ['Aurora Blvd / Tramo Local Jeeps'],
 		landmarks: 'Pasay General Hospital, Cabrera St, Tramo Commercial Hub',
@@ -208,9 +247,9 @@ const BUSWAY_STOPS = [
 	},
 	{
 		id: 'taft_ave',
-		name: 'Taft Avenue (Pasay Rotonda)',
+		name: 'Taft Avenue',
 		city: 'Pasay',
-		km: 22.3,
+		km: 22.0,
 		platform: 'Median Island Platform',
 		access: 'Elevated Overpass connected to MRT-3 Taft & LRT-1 EDSA',
 		interchanges: ['MRT-3 Taft Avenue', 'LRT-1 EDSA', 'Cavite/Laguna Provincial Buses'],
@@ -223,68 +262,147 @@ const BUSWAY_STOPS = [
 		id: 'roxas_blvd',
 		name: 'Roxas Boulevard',
 		city: 'Pasay',
-		km: 23.8,
-		platform: 'Curbside / Dedicated Median Platform',
+		km: 22.8,
+		platform: 'Dedicated Median Platform',
 		access: 'Signalized Crosswalk & Overpass',
 		interchanges: ['Roxas Blvd Coastal Jeeps', 'Baclaran Market Hub'],
-		landmarks: 'Heritage Hotel, Baclaran Church (National Shrine of Our Mother of Perpetual Help)',
-		lat: 14.5320,
+		landmarks: 'Heritage Hotel, DoubleDragon Meridian Park, Baclaran Church',
+		lat: 14.5355,
 		lon: 120.9920,
 		isTerminus: false
 	},
 	{
-		id: 'macapagal',
-		name: 'Macapagal Boulevard',
-		city: 'Parañaque',
-		km: 25.0,
-		platform: 'Curbside Dedicated Bay',
-		access: 'Street Crosswalk',
-		interchanges: ['Aseana City Shuttle', 'Bradco Ave Trikes'],
-		landmarks: 'City of Dreams Manila, Bradco Avenue, Aseana One & Two',
-		lat: 14.5240,
-		lon: 120.9880,
+		id: 'moa',
+		name: 'SM Mall of Asia (MOA)',
+		city: 'Pasay',
+		km: 23.8,
+		platform: 'MOA Globe Transport Terminal Bay',
+		access: 'Direct Ground Level & Mall Footbridge Access',
+		interchanges: ['MOA P2P & UV Express Terminal', 'Pasay E-Trike & Multicab Hub'],
+		landmarks: 'SM Mall of Asia, MOA Globe, SMX Convention Center, Mall of Asia Arena',
+		lat: 14.5351,
+		lon: 120.9842,
 		isTerminus: false
 	},
 	{
 		id: 'dfa_aseana',
-		name: 'DFA Aseana',
+		name: 'DFA',
 		city: 'Parañaque',
-		km: 26.1,
+		km: 25.2,
 		platform: 'Curbside Dedicated Bay',
 		access: 'Signalized Pedestrian Crossing',
-		interchanges: ['Aseana City Shuttles'],
-		landmarks: 'Department of Foreign Affairs (DFA Consular Office), DoubleDragon Plaza',
-		lat: 14.5180,
-		lon: 120.9890,
+		interchanges: ['Aseana City Shuttles', 'Bradco Ave Jeeps'],
+		landmarks: 'Department of Foreign Affairs (DFA Aseana), S&R Membership Shopping',
+		lat: 14.5255,
+		lon: 120.9885,
 		isTerminus: false
 	},
 	{
 		id: 'ayala_manila_bay',
-		name: 'Ayala Malls Manila Bay',
+		name: 'Ayala Malls Manila Bay / City of Dreams',
 		city: 'Parañaque',
-		km: 27.0,
-		platform: 'Curbside Dedicated Bay',
+		km: 26.0,
+		platform: 'Curbside Dedicated Bay (SB: Ayala Malls / NB: City of Dreams)',
 		access: 'Direct Mall Footbridge & Ground Entrance',
-		interchanges: ['Entertainment City Casino Shuttles (Solaire, Okada, COD)'],
-		landmarks: 'Ayala Malls Manila Bay, Solaire Resort, Okada Manila Link',
-		lat: 14.5140,
-		lon: 120.9900,
+		interchanges: ['Entertainment City Shuttles (City of Dreams, Solaire, Okada)'],
+		landmarks: 'Ayala Malls Manila Bay, City of Dreams Manila, Parqal Aseana',
+		lat: 14.5205,
+		lon: 120.9898,
 		isTerminus: false
 	},
 	{
 		id: 'pitx',
 		name: 'PITX (Parañaque Integrated Terminal Exchange)',
 		city: 'Parañaque',
-		km: 28.1,
-		platform: 'Intermodal Grand Terminal Bay',
-		access: 'Direct Indoor Terminal Concourse',
-		interchanges: ['Cavite & Batangas Provincial Buses', 'Bicol & Visayas Buses', 'Modern Jeepney Hub', 'LRT-1 Cavite Extension (Asia World)'],
+		km: 27.5,
+		platform: 'Intermodal Grand Terminal Bay (Gate 10)',
+		access: 'Direct Indoor Terminal Concourse & LRT-1 Asia World Link',
+		interchanges: ['LRT-1 Asia World (PITX)', 'Cavite & Batangas Buses', 'Modern Jeepney Hub'],
 		landmarks: 'Parañaque Integrated Terminal Exchange, Coastal Road / CAVITEX, Asia World',
-		lat: 14.5090,
-		lon: 120.9920,
+		lat: 14.5101,
+		lon: 120.9912,
 		isTerminus: true
 	}
 ];
+
+// Official LTFRB Route 1: EDSA Busway Regular Fare Guides (Effective 28 September 2026)
+const SOUTHBOUND_STATIONS = [
+	'Monumento', 'Bagong Barrio', 'Balintawak', 'Kaingin', 'Fernando Poe Jr.',
+	'SM North EDSA', 'North Avenue', 'Philam Q.C.', 'Quezon Avenue', 'Kamuning',
+	'Nepa Q. Mart', 'Main Avenue', 'Santolan', 'Ortigas', 'Guadalupe',
+	'Buendia', 'Ayala', 'Tramo', 'Taft Avenue', 'Roxas Boulevard',
+	'SM Mall of Asia (MOA)', 'DFA', 'Ayala Malls/Aseana', 'PITX'
+];
+
+// Upper-triangular matrix rows from Origin i to Destination j (j > i)
+const SOUTHBOUND_FARES: number[][] = [
+	[18.00, 18.00, 18.00, 18.00, 18.00, 19.00, 20.50, 23.00, 25.25, 27.75, 33.25, 35.25, 42.75, 50.00, 55.75, 58.25, 67.75, 68.75, 71.25, 74.00, 78.25, 80.50, 85.00], // 0: Monumento
+	[18.00, 18.00, 18.00, 18.00, 18.00, 18.00, 19.25, 21.50, 24.00, 29.25, 31.50, 39.00, 46.00, 52.00, 54.50, 64.00, 65.00, 67.50, 70.25, 74.50, 76.75, 81.00], // 1: Bagong Barrio
+	[18.00, 18.00, 18.00, 18.00, 18.00, 18.00, 19.25, 21.75, 27.25, 29.25, 36.75, 44.00, 49.75, 52.50, 61.75, 62.75, 65.50, 68.25, 72.25, 74.75, 79.00], // 2: Balintawak
+	[18.00, 18.00, 18.00, 18.00, 18.00, 18.00, 19.75, 25.00, 27.00, 34.50, 41.75, 47.75, 50.25, 59.75, 60.75, 63.25, 66.00, 70.25, 72.50, 76.75], // 3: Kaingin
+	[18.00, 18.00, 18.00, 18.00, 18.00, 18.00, 22.50, 24.50, 32.00, 39.25, 45.00, 47.50, 57.00, 58.00, 60.75, 63.50, 67.50, 70.00, 74.25], // 4: FPJ / Roosevelt
+	[18.00, 18.00, 18.00, 18.00, 18.00, 19.25, 21.25, 28.75, 36.00, 41.75, 44.25, 53.75, 54.75, 57.50, 60.25, 64.25, 66.75, 71.00], // 5: SM North EDSA
+	[18.00, 18.00, 18.00, 18.00, 18.00, 19.25, 26.75, 34.00, 39.75, 42.25, 51.75, 52.75, 55.25, 58.00, 62.25, 64.75, 69.00], // 6: North Avenue
+	[18.00, 18.00, 18.00, 18.00, 18.00, 25.25, 32.50, 38.25, 41.00, 50.25, 51.25, 54.00, 56.75, 60.75, 63.25, 67.50], // 7: Philam Q.C.
+	[18.00, 18.00, 18.00, 18.00, 22.75, 30.00, 36.00, 38.50, 48.00, 49.00, 51.50, 54.25, 58.50, 60.75, 65.00], // 8: Quezon Avenue
+	[18.00, 18.00, 18.00, 20.50, 27.75, 33.75, 36.25, 45.50, 46.75, 49.25, 52.00, 56.25, 58.50, 62.75], // 9: Kamuning
+	[18.00, 18.00, 18.00, 25.25, 31.00, 33.75, 43.00, 44.00, 46.75, 49.50, 53.50, 56.00, 60.25], // 10: Nepa Q. Mart
+	[18.00, 18.00, 19.75, 25.75, 28.25, 37.75, 38.75, 41.25, 44.00, 48.25, 50.50, 54.75], // 11: Main Avenue
+	[18.00, 18.00, 23.75, 26.25, 35.75, 36.75, 39.25, 42.00, 46.25, 48.50, 52.75], // 12: Santolan
+	[18.00, 18.00, 18.75, 28.25, 29.25, 31.75, 34.50, 38.75, 41.00, 45.25], // 13: Ortigas
+	[18.00, 18.00, 21.00, 22.00, 24.50, 27.25, 31.50, 33.75, 38.00], // 14: Guadalupe
+	[18.00, 18.00, 18.00, 18.75, 21.50, 25.50, 28.00, 32.25], // 15: Buendia
+	[18.00, 18.00, 18.00, 18.75, 23.00, 25.50, 29.75], // 16: Ayala
+	[18.00, 18.00, 18.00, 18.00, 18.00, 20.25], // 17: Tramo
+	[18.00, 18.00, 18.00, 18.00, 19.25], // 18: Taft Avenue
+	[18.00, 18.00, 18.00, 18.00], // 19: Roxas Boulevard
+	[18.00, 18.00, 18.00], // 20: MOA
+	[18.00, 18.00], // 21: DFA
+	[18.00] // 22: Ayala Malls/Aseana -> PITX
+];
+
+const NORTHBOUND_STATIONS = [
+	'PITX', 'City of Dreams', 'DFA', 'SM Mall of Asia (MOA)', 'Roxas Boulevard',
+	'Taft Avenue', 'Ayala', 'Buendia', 'Guadalupe', 'Ortigas',
+	'Santolan', 'Main Avenue', 'Nepa Q. Mart', 'Kamuning', 'Quezon Avenue',
+	'Philam Q.C.', 'North Avenue', 'SM North EDSA', 'Fernando Poe Jr.',
+	'Kaingin', 'Balintawak', 'Bagong Barrio', 'Monumento'
+];
+
+const NORTHBOUND_FARES: number[][] = [
+	[18.00, 18.00, 18.00, 18.00, 19.25, 29.75, 32.25, 38.00, 45.25, 52.75, 54.75, 60.25, 62.75, 65.00, 67.50, 69.00, 71.00, 74.25, 76.75, 79.00, 81.00, 85.00], // 0: PITX
+	[18.00, 18.00, 18.00, 18.00, 25.50, 28.00, 33.75, 41.00, 48.50, 50.50, 56.00, 58.50, 60.75, 63.25, 64.75, 66.75, 70.00, 72.50, 74.75, 76.75, 80.50], // 1: City of Dreams
+	[18.00, 18.00, 18.00, 23.00, 25.50, 31.50, 38.75, 46.25, 48.25, 53.50, 56.25, 58.50, 60.75, 62.25, 64.25, 67.50, 70.25, 72.25, 74.50, 78.25], // 2: DFA
+	[18.00, 18.00, 18.75, 21.50, 27.25, 34.50, 42.00, 44.00, 49.50, 52.00, 54.25, 56.75, 58.00, 60.25, 63.50, 66.00, 68.25, 70.25, 74.00], // 3: MOA
+	[18.00, 18.00, 18.75, 24.50, 31.75, 39.25, 41.25, 46.75, 49.25, 51.50, 54.00, 55.25, 57.50, 60.75, 63.25, 65.50, 67.50, 71.25], // 4: Roxas Blvd
+	[18.00, 18.00, 18.00, 29.25, 36.75, 38.75, 44.00, 46.75, 49.00, 51.25, 52.75, 54.75, 58.00, 60.75, 62.75, 65.00, 68.75], // 5: Taft Ave
+	[18.00, 18.00, 18.75, 26.25, 28.25, 33.75, 36.25, 38.50, 41.00, 42.25, 44.25, 47.50, 50.25, 52.50, 54.50, 58.25], // 6: Ayala
+	[18.00, 18.00, 23.75, 25.75, 31.00, 33.75, 36.00, 38.25, 39.75, 41.75, 45.00, 47.75, 49.75, 52.00, 55.75], // 7: Buendia
+	[18.00, 18.00, 19.75, 25.25, 27.75, 30.00, 32.50, 34.00, 36.00, 39.25, 41.75, 44.00, 46.00, 50.00], // 8: Guadalupe
+	[18.00, 18.00, 18.00, 20.50, 22.75, 25.25, 26.75, 28.75, 32.00, 34.50, 36.75, 39.00, 42.75], // 9: Ortigas
+	[18.00, 18.00, 18.00, 18.00, 18.00, 19.25, 21.25, 24.50, 27.00, 29.25, 31.50, 35.25], // 10: Santolan
+	[18.00, 18.00, 18.00, 18.00, 18.00, 19.25, 22.50, 25.00, 27.25, 29.25, 33.25], // 11: Main Avenue
+	[18.00, 18.00, 18.00, 18.00, 18.00, 18.00, 19.75, 21.75, 24.00, 27.75], // 12: Nepa Q. Mart
+	[18.00, 18.00, 18.00, 18.00, 18.00, 18.00, 19.25, 21.50, 25.25], // 13: Kamuning
+	[18.00, 18.00, 18.00, 18.00, 18.00, 18.00, 19.25, 23.00], // 14: Quezon Avenue
+	[18.00, 18.00, 18.00, 18.00, 18.00, 18.00, 20.50], // 15: Philam Q.C.
+	[18.00, 18.00, 18.00, 18.00, 18.00, 19.00], // 16: North Avenue
+	[18.00, 18.00, 18.00, 18.00, 18.00], // 17: SM North EDSA
+	[18.00, 18.00, 18.00, 18.00], // 18: FPJ
+	[18.00, 18.00, 18.00], // 19: Kaingin
+	[18.00, 18.00], // 20: Balintawak
+	[18.00] // 21: Bagong Barrio -> Monumento
+];
+
+// Build Full 24×24 Symmetric Station-to-Station Regular Fare Matrix for BUSWAY_STOPS
+const FULL_BUSWAY_MATRIX: number[][] = BUSWAY_STOPS.map((_, i) =>
+	BUSWAY_STOPS.map((__, j) => {
+		if (i === j) return 0;
+		const minIdx = Math.min(i, j);
+		const maxIdx = Math.max(i, j);
+		return SOUTHBOUND_FARES[minIdx][maxIdx - minIdx - 1];
+	})
+);
 
 // Major Multimodal Transit Interchange Hubs along EDSA Carousel
 const INTERCHANGE_HUBS = [
@@ -314,11 +432,9 @@ const INTERCHANGE_HUBS = [
 	}
 ];
 
-const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
-	const dist = stop.km;
-	let regFare = dist <= 4.0 ? 15.0 : 15.0 + (dist - 4.0) * 2.65;
-	regFare = Math.min(75.5, Math.max(15.0, Math.round(regFare * 2) / 2));
-	const discFare = Math.round(regFare * 0.8 * 2) / 2;
+const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop, idx) => {
+	const regFare = idx === 0 ? 18.0 : FULL_BUSWAY_MATRIX[0][idx];
+	const discFare = Math.max(14.5, Math.round(regFare * 0.8 * 4) / 4);
 	return {
 		...stop,
 		regFare,
@@ -328,9 +444,9 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 ---
 
 <BaseLayout
-	title="EDSA Carousel Busway Stop-by-Stop Fare & Route Map | mapaPH Tools"
-	description="Interactive EDSA Carousel Busway (Route E) stop-by-stop fare calculator, schematic transit ribbon, and geographic route map. Computes official LTFRB distance-based fares, 20% statutory discounts, travel times, and rail interchanges between Monumento and PITX."
-	keywords="EDSA Carousel fare calculator, EDSA Busway stops, Monumento to PITX fare, EDSA Carousel map, LTFRB bus fare matrix, One Ayala busway, MRT 3 to EDSA Carousel transfer, 24/7 bus EDSA, PITX busway stops, Ayala Malls Manila Bay bus stop"
+	title="EDSA Carousel Busway Stop-by-Stop Fare Matrix & Route Map | mapaPH Tools"
+	description="Interactive EDSA Carousel Busway (Route 1) stop-by-stop fare calculator, official September 28, 2026 LTFRB Northbound & Southbound Fare Matrices, schematic transit ribbon, and geographic route map between Monumento and PITX."
+	keywords="EDSA Carousel fare calculator, EDSA Busway fare matrix 2026, Monumento to PITX fare, EDSA Carousel stops, LTFRB Route 1 EDSA Busway fare guide, One Ayala busway, MRT 3 to EDSA Carousel transfer, 24/7 bus EDSA, PITX busway stops, SM Mall of Asia EDSA Carousel"
 >
 	<!-- Leaflet Stylesheet -->
 	<link
@@ -347,11 +463,11 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 			"@graph": [
 				{
 					"@type": "WebApplication",
-					"name": "EDSA Carousel Busway Stop-by-Stop Fare & Route Map",
+					"name": "EDSA Carousel Busway Stop-by-Stop Fare Matrix & Route Map",
 					"url": "https://www.mapaph.com/tools/edsa-carousel",
 					"applicationCategory": "Public Transit & Commuter Utility",
 					"operatingSystem": "All",
-					"description": "Interactive fare calculator and dual schematic/geographic route map for the EDSA Carousel Busway (Route E) from Monumento to PITX with official LTFRB distance tariffs.",
+					"description": "Interactive fare calculator, complete Northbound/Southbound LTFRB Fare Matrix, and dual schematic/geographic route map for the EDSA Carousel Busway (Route 1) from Monumento to PITX.",
 					"provider": {
 						"@type": "Organization",
 						"name": "mapaPH",
@@ -400,45 +516,45 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 
 			<div class="flex flex-wrap items-center gap-2.5">
 				<span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-mapa-green/10 text-mapa-green border border-mapa-green/25">
-					Route E &bull; Median Bus Rapid Transit (BRT)
+					Route 1 &bull; EDSA Busway (PUB Aircon)
 				</span>
 				<span class="text-xs font-medium px-2.5 py-1 rounded-full bg-mapa-canvas-dark border border-mapa-contour text-mapa-ink/75">
-					21 Stations &bull; 28.1 Kilometers
+					24 Stations &bull; 27.5 Kilometers
 				</span>
 				<span class="text-xs font-medium px-2.5 py-1 rounded-full bg-mapa-navy/10 text-mapa-navy border border-mapa-navy/20">
-					24/7 Operating Hours
+					Effective 28 September 2026
 				</span>
 			</div>
 
 			<h1 class="text-3xl sm:text-5xl font-extrabold text-mapa-green font-serif tracking-tight mt-3">
-				EDSA Carousel Busway Fare & Route Map
+				EDSA Carousel Busway Fare Matrix &amp; Route Map
 			</h1>
 			<p class="font-sans text-base sm:text-lg text-mapa-ink/80 mt-2.5 max-w-3xl leading-relaxed">
-				Official LTFRB distance-based fare calculator, schematic transit strip, and geographic route map for Metro Manila's 24/7 inner-lane busway connecting Caloocan (Monumento) to Parañaque (PITX).
+				Official DOTr &amp; LTFRB Route 1 (EDSA Busway) stop-by-stop fare calculator, complete Northbound and Southbound Fare Matrix tables, and geographic route map connecting Caloocan (Monumento) to Parañaque (PITX).
 			</p>
 		</div>
 
 		<!-- Top Summary Stat Badges -->
 		<div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-4 mb-8 font-sans">
 			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-4 shadow-2xs">
-				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted">Base Fare</div>
-				<div class="text-2xl font-extrabold text-mapa-ink mt-1">₱15.00</div>
-				<div class="text-[11px] text-mapa-muted mt-0.5">First 4.0 km (Aircon BRT)</div>
+				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted">Minimum Fare</div>
+				<div class="text-2xl font-extrabold text-mapa-ink mt-1">₱18.00</div>
+				<div class="text-[11px] text-mapa-muted mt-0.5">First 5.0 km (₱14.50 Discounted)</div>
 			</div>
 			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-4 shadow-2xs">
 				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted">Per KM Tariff</div>
-				<div class="text-2xl font-extrabold text-mapa-ink mt-1">₱2.65 <span class="text-xs font-normal text-mapa-muted">/ km</span></div>
-				<div class="text-[11px] text-mapa-muted mt-0.5">Every succeeding kilometer</div>
+				<div class="text-2xl font-extrabold text-mapa-ink mt-1">₱2.98 <span class="text-xs font-normal text-mapa-muted">/ km</span></div>
+				<div class="text-[11px] text-mapa-muted mt-0.5">Rounded to nearest 25 centavos</div>
 			</div>
 			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-4 shadow-2xs">
-				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted">Maximum Fare</div>
-				<div class="text-2xl font-extrabold text-mapa-green mt-1">₱75.50</div>
-				<div class="text-[11px] text-mapa-muted mt-0.5">End-to-End (Monumento ↔ PITX)</div>
+				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted">End-to-End Fare</div>
+				<div class="text-2xl font-extrabold text-mapa-green mt-1">₱85.00</div>
+				<div class="text-[11px] text-mapa-muted mt-0.5">Monumento ↔ PITX (₱68.00 Disc)</div>
 			</div>
 			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-xl p-4 shadow-2xs">
 				<div class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted">Statutory Discount</div>
 				<div class="text-2xl font-extrabold text-mapa-navy mt-1">20% OFF</div>
-				<div class="text-[11px] text-mapa-muted mt-0.5">Students, Seniors, PWDs (₱60.50 max)</div>
+				<div class="text-[11px] text-mapa-muted mt-0.5">Students, Elderly, PWDs (365 Days)</div>
 			</div>
 		</div>
 
@@ -531,18 +647,18 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 						</div>
 
 						<div class="flex items-baseline gap-2">
-							<span id="computed-fare" class="text-4xl font-extrabold text-mapa-green font-serif">₱75.50</span>
-							<span id="discounted-fare-strikethrough" class="text-sm line-through text-mapa-muted hidden">₱75.50</span>
+							<span id="computed-fare" class="text-4xl font-extrabold text-mapa-green font-serif">₱85.00</span>
+							<span id="discounted-fare-strikethrough" class="text-sm line-through text-mapa-muted hidden">₱85.00</span>
 						</div>
 
 						<div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-mapa-contour/60 text-center text-xs">
 							<div>
 								<div class="text-[10px] text-mapa-muted uppercase font-bold">Corridor Distance</div>
-								<div id="stat-distance" class="font-bold text-mapa-ink mt-0.5">28.1 km</div>
+								<div id="stat-distance" class="font-bold text-mapa-ink mt-0.5">27.5 km</div>
 							</div>
 							<div>
 								<div class="text-[10px] text-mapa-muted uppercase font-bold">Stops Traversed</div>
-								<div id="stat-stops" class="font-bold text-mapa-ink mt-0.5">20 stops</div>
+								<div id="stat-stops" class="font-bold text-mapa-ink mt-0.5">23 stops</div>
 							</div>
 							<div>
 								<div class="text-[10px] text-mapa-muted uppercase font-bold">Est. Travel Time</div>
@@ -662,7 +778,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 						</div>
 						<div class="flex items-center gap-1.5">
 							<span id="busway-summary-metric" class="text-[11px] font-bold px-2.5 py-1 rounded-md bg-mapa-green text-white shadow-2xs">
-								20 stops &bull; ₱75.50
+								23 stops &bull; ₱85.00
 							</span>
 						</div>
 					</div>
@@ -870,19 +986,189 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 			</div>
 		</section>
 
+		<!-- Official LTFRB Route 1: EDSA Busway Station-to-Station Fare Matrix (Southbound & Northbound) -->
+		<section id="edsa-fare-matrix" class="mb-14 font-sans">
+			<div class="border-b border-mapa-contour/50 pb-4 mb-6 flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+				<div>
+					<div class="flex flex-wrap items-center gap-2 mb-1.5">
+						<span class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-mapa-green text-white">
+							Date of Effectivity: 28 September 2026
+						</span>
+						<span class="text-xs font-medium text-mapa-muted">
+							PUB (Aircon) Regular &amp; 20% Discounted Fare Guide
+						</span>
+					</div>
+					<h2 class="text-2xl sm:text-3xl font-serif font-extrabold text-mapa-ink">
+						Official Route 1: EDSA Busway Station-to-Station Fare Matrix
+					</h2>
+					<p class="text-xs sm:text-sm text-mapa-muted mt-1 max-w-3xl">
+						Exact DOTr &amp; LTFRB triangular fare matrix for Southbound (Monumento &rarr; PITX, 24 stations) and Northbound (PITX &rarr; Monumento, 23 stations). Minimum fare is ₱18.00 regular (₱14.50 discounted), rounded off to the nearest 25 centavos.
+					</p>
+				</div>
+
+				<!-- Matrix Direction & Fare Type Controls -->
+				<div class="flex flex-wrap items-center gap-2 shrink-0">
+					<div class="inline-flex rounded-xl bg-mapa-canvas-dark p-1 border border-mapa-contour text-xs font-bold">
+						<button
+							type="button"
+							id="matrix-dir-sb"
+							class="px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer"
+						>
+							Southbound (24 Stops)
+						</button>
+						<button
+							type="button"
+							id="matrix-dir-nb"
+							class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
+						>
+							Northbound (23 Stops)
+						</button>
+					</div>
+					<div class="inline-flex rounded-xl bg-mapa-canvas-dark p-1 border border-mapa-contour text-xs font-bold">
+						<button
+							type="button"
+							id="matrix-rate-reg"
+							class="px-3 py-1.5 rounded-lg bg-mapa-navy text-white shadow-2xs transition-all cursor-pointer"
+						>
+							Regular
+						</button>
+						<button
+							type="button"
+							id="matrix-rate-disc"
+							class="px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer"
+						>
+							20% Discount
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Southbound Triangular Matrix Table -->
+			<div id="sb-matrix-wrapper" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs">
+				<div class="px-4 py-2.5 bg-mapa-canvas border-b border-mapa-contour flex items-center justify-between text-xs">
+					<span class="font-bold text-mapa-ink">ROUTE 1: EDSA BUSWAY (SOUTHBOUND: Monumento &rarr; PITX)</span>
+					<span class="text-mapa-muted text-[11px]">Scroll horizontally to view all 24 destinations</span>
+				</div>
+				<div class="overflow-x-auto max-h-[560px] overflow-y-auto custom-scrollbar">
+					<table class="w-full text-center text-[11px] border-collapse font-mono">
+						<thead class="sticky top-0 z-20 bg-mapa-canvas border-b-2 border-mapa-contour text-mapa-ink font-sans">
+							<tr>
+								<th class="sticky left-0 z-30 bg-mapa-canvas py-2.5 px-3 text-left font-extrabold border-r-2 border-mapa-contour min-w-[155px]">
+									Origin \ Destination
+								</th>
+								{SOUTHBOUND_STATIONS.map((destName) => (
+									<th class="py-2 px-2 font-bold text-[10px] border-r border-mapa-contour/60 min-w-[68px] whitespace-nowrap bg-mapa-canvas">
+										{destName}
+									</th>
+								))}
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-mapa-contour/40">
+							{SOUTHBOUND_STATIONS.map((origName, i) => (
+								<tr class="hover:bg-mapa-green/5 transition-colors">
+									<td class="sticky left-0 z-10 bg-mapa-canvas-dark py-2 px-3 text-left font-sans font-bold text-mapa-ink border-r-2 border-mapa-contour whitespace-nowrap">
+										{i + 1}. {origName}
+									</td>
+									{SOUTHBOUND_STATIONS.map((__, j) => {
+										if (j === i) {
+											return (
+												<td class="py-2 px-2 bg-mapa-navy text-white font-sans font-bold text-[9px] border-r border-mapa-contour/50">
+													{origName.split(' ')[0]}
+												</td>
+											);
+										}
+										if (j < i) {
+											return <td class="py-2 px-2 text-mapa-muted/40 bg-mapa-canvas/40 border-r border-mapa-contour/30">-</td>;
+										}
+										const regVal = SOUTHBOUND_FARES[i][j - i - 1];
+										const discVal = Math.max(14.5, Math.round(regVal * 0.8 * 4) / 4);
+										return (
+											<td
+												class="edsa-matrix-cell py-2 px-2 font-semibold text-mapa-ink border-r border-mapa-contour/40 hover:bg-mapa-green/20 transition-colors"
+												data-reg={regVal.toFixed(2)}
+												data-disc={discVal.toFixed(2)}
+											>
+												{regVal.toFixed(2)}
+											</td>
+										);
+									})}
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- Northbound Triangular Matrix Table -->
+			<div id="nb-matrix-wrapper" class="hidden bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs">
+				<div class="px-4 py-2.5 bg-mapa-canvas border-b border-mapa-contour flex items-center justify-between text-xs">
+					<span class="font-bold text-mapa-ink">ROUTE 1: EDSA BUSWAY (NORTHBOUND: PITX &rarr; Monumento)</span>
+					<span class="text-mapa-muted text-[11px]">Includes City of Dreams stop (Tramo is Southbound only)</span>
+				</div>
+				<div class="overflow-x-auto max-h-[560px] overflow-y-auto custom-scrollbar">
+					<table class="w-full text-center text-[11px] border-collapse font-mono">
+						<thead class="sticky top-0 z-20 bg-mapa-canvas border-b-2 border-mapa-contour text-mapa-ink font-sans">
+							<tr>
+								<th class="sticky left-0 z-30 bg-mapa-canvas py-2.5 px-3 text-left font-extrabold border-r-2 border-mapa-contour min-w-[155px]">
+									Origin \ Destination
+								</th>
+								{NORTHBOUND_STATIONS.map((destName) => (
+									<th class="py-2 px-2 font-bold text-[10px] border-r border-mapa-contour/60 min-w-[68px] whitespace-nowrap bg-mapa-canvas">
+										{destName}
+									</th>
+								))}
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-mapa-contour/40">
+							{NORTHBOUND_STATIONS.map((origName, i) => (
+								<tr class="hover:bg-mapa-green/5 transition-colors">
+									<td class="sticky left-0 z-10 bg-mapa-canvas-dark py-2 px-3 text-left font-sans font-bold text-mapa-ink border-r-2 border-mapa-contour whitespace-nowrap">
+										{i + 1}. {origName}
+									</td>
+									{NORTHBOUND_STATIONS.map((__, j) => {
+										if (j === i) {
+											return (
+												<td class="py-2 px-2 bg-mapa-navy text-white font-sans font-bold text-[9px] border-r border-mapa-contour/50">
+													{origName.split(' ')[0]}
+												</td>
+											);
+										}
+										if (j < i) {
+											return <td class="py-2 px-2 text-mapa-muted/40 bg-mapa-canvas/40 border-r border-mapa-contour/30">-</td>;
+										}
+										const regVal = NORTHBOUND_FARES[i][j - i - 1];
+										const discVal = Math.max(14.5, Math.round(regVal * 0.8 * 4) / 4);
+										return (
+											<td
+												class="edsa-matrix-cell py-2 px-2 font-semibold text-mapa-ink border-r border-mapa-contour/40 hover:bg-mapa-green/20 transition-colors"
+												data-reg={regVal.toFixed(2)}
+												data-disc={discVal.toFixed(2)}
+											>
+												{regVal.toFixed(2)}
+											</td>
+										);
+									})}
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+
 		<!-- Complete Station Directory & Fare Reference Table -->
 		<section class="mb-14 font-sans">
 			<div class="border-b border-mapa-contour/50 pb-3 mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
 				<div>
 					<h2 class="text-2xl font-serif font-bold text-mapa-ink">
-						Complete 21-Station Reference Directory
+						Complete 24-Station Reference Directory
 					</h2>
 					<p class="text-sm text-mapa-muted mt-1">
-						Distance from Monumento, platform access type, and regular passenger fare schedule.
+						Distance from Monumento, platform access type, and official September 28, 2026 passenger fare schedule.
 					</p>
 				</div>
 				<span class="text-xs text-mapa-muted font-medium">
-					LTFRB Fare Matrix 2026
+					LTFRB Route 1 Fare Guide (Eff. 28 Sept 2026)
 				</span>
 			</div>
 
@@ -982,7 +1268,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 							<h3 class="font-bold text-mapa-ink text-sm">Land Transportation Franchising and Regulatory Board (LTFRB)</h3>
 						</div>
 						<p class="text-mapa-ink/75 leading-relaxed">
-							Authorized under <strong>LTFRB Route E (EDSA Carousel Busway)</strong> Fare Matrix Orders. Base commuter fare is ₱15.00 for the initial 4.0 km with a succeeding distance rate of ₱2.65/km, regulated across all consortium bus operators.
+							Authorized under <strong>LTFRB Route 1 (EDSA Busway)</strong> PUB (Aircon) Regular Fare Guide effective <strong>28 September 2026</strong>. Minimum commuter fare is ₱18.00 regular (₱14.50 discounted) for the initial 5.0 km with a succeeding distance rate of ₱2.98/km, rounded to the nearest 25 centavos.
 						</p>
 					</div>
 					<div class="mt-3 pt-2.5 border-t border-mapa-contour/50">
@@ -1035,7 +1321,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 	></script>
 
 	<!-- Interactive Client Logic -->
-	<script is:inline define:vars={{ BUSWAY_STOPS }}>
+	<script is:inline define:vars={{ BUSWAY_STOPS, FULL_BUSWAY_MATRIX }}>
 		document.addEventListener('DOMContentLoaded', () => {
 			const originSelect = document.getElementById('origin-select');
 			const destSelect = document.getElementById('dest-select');
@@ -1145,15 +1431,10 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				if (summaryOriginEl) summaryOriginEl.textContent = origin.name;
 				if (summaryDestEl) summaryDestEl.textContent = dest.name;
 
-				// LTFRB EDSA Carousel tariff:
-				// First 4.0 km = ₱15.00
-				// Succeeding = ₱2.65 / km
-				let regFare = 15.0;
-				if (distance > 4.0) {
-					regFare += (distance - 4.0) * 2.65;
-				}
-				regFare = Math.min(75.5, Math.max(15.0, Math.round(regFare * 2) / 2));
-				const discFare = Math.round(regFare * 0.8 * 2) / 2;
+				// Official LTFRB Route 1: EDSA Busway Fare Guide (Effective 28 September 2026)
+				// Lookup exact station-to-station fare from FULL_BUSWAY_MATRIX
+				const regFare = origin.index === dest.index ? 18.0 : FULL_BUSWAY_MATRIX[origin.index][dest.index];
+				const discFare = Math.max(14.5, Math.round(regFare * 0.8 * 4) / 4);
 
 				if (hasDiscount) {
 					computedFareEl.textContent = `₱${discFare.toFixed(2)}`;
@@ -1265,9 +1546,12 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				'monumento>bagong_barrio': [[14.6552, 120.9890], [14.6572, 120.9945]],
 				'bagong_barrio>balintawak': [[14.6577, 121.0005]],
 				'balintawak>kaingin': [[14.6572, 121.0095]],
-				'roosevelt>north_ave': [[14.6560, 121.0255], [14.6542, 121.0295]],
-				'north_ave>quezon_ave': [[14.6478, 121.0352]],
-				'quezon_ave>q_mart': [[14.6372, 121.0414]],
+				'roosevelt>sm_north_edsa': [[14.6568, 121.0255]],
+				'sm_north_edsa>north_ave': [[14.6542, 121.0310]],
+				'north_ave>philam_qc': [[14.6505, 121.0340]],
+				'philam_qc>quezon_ave': [[14.6455, 121.0370]],
+				'quezon_ave>kamuning': [[14.6390, 121.0410]],
+				'kamuning>q_mart': [[14.6335, 121.0436]],
 				'q_mart>main_ave': [[14.6270, 121.0475]],
 				'main_ave>santolan': [[14.6135, 121.0535]],
 				'santolan>ortigas': [[14.5995, 121.0580], [14.5935, 121.0580]],
@@ -1276,7 +1560,8 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				'ayala>tramo': [[14.5420, 121.0194], [14.5402, 121.0140]],
 				'tramo>taft_ave': [[14.5378, 121.0040]],
 				'taft_ave>roxas_blvd': [[14.5368, 120.9965]],
-				'roxas_blvd>macapagal': [[14.5280, 120.9895]]
+				'roxas_blvd>moa': [[14.5353, 120.9880]],
+				'moa>dfa_aseana': [[14.5280, 120.9875]]
 			};
 
 			// Full ordered path: every vertex is { stopId | null, ll }
@@ -1307,29 +1592,32 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				return el;
 			}
 
-			// Station coordinates on the schematic diagram
+			// Station coordinates on the schematic diagram (24 official stations)
 			const BUSWAY_DIAGRAM_STATIONS = [
-				{ id: 'monumento', name: 'Monumento', x: 180, y: 130, align: 'top', hub: 'LRT-1' },
-				{ id: 'bagong_barrio', name: 'Bagong Barrio', x: 270, y: 130, align: 'top' },
-				{ id: 'balintawak', name: 'Balintawak', x: 360, y: 130, align: 'top', hub: 'LRT-1' },
-				{ id: 'kaingin', name: 'Kaingin Road', x: 450, y: 130, align: 'top' },
-				{ id: 'roosevelt', name: 'Roosevelt / FPJ', x: 540, y: 130, align: 'top', hub: 'LRT-1' },
-				{ id: 'north_ave', name: 'North Avenue', x: 670, y: 220, align: 'right', hub: 'MRT-3' },
-				{ id: 'quezon_ave', name: 'Quezon Avenue', x: 700, y: 295, align: 'right', hub: 'MRT-3' },
-				{ id: 'q_mart', name: 'Q-Mart', x: 720, y: 370, align: 'right' },
-				{ id: 'main_ave', name: 'Main Avenue (Cubao)', x: 730, y: 445, align: 'right', hub: 'LRT-2 / MRT-3' },
-				{ id: 'santolan', name: 'Santolan-Annapolis', x: 730, y: 520, align: 'right', hub: 'MRT-3' },
-				{ id: 'ortigas', name: 'Ortigas', x: 720, y: 595, align: 'right', hub: 'MRT-3' },
-				{ id: 'guadalupe', name: 'Guadalupe', x: 690, y: 670, align: 'right', hub: 'MRT-3' },
-				{ id: 'buendia', name: 'Buendia', x: 640, y: 745, align: 'right', hub: 'MRT-3' },
-				{ id: 'ayala', name: 'Ayala (One Ayala)', x: 580, y: 815, align: 'right', hub: 'One Ayala' },
-				{ id: 'tramo', name: 'Tramo', x: 500, y: 875, align: 'bottom' },
-				{ id: 'taft_ave', name: 'Taft Avenue', x: 410, y: 910, align: 'bottom', hub: 'LRT-1 / MRT-3' },
-				{ id: 'roxas_blvd', name: 'Roxas Boulevard', x: 320, y: 920, align: 'bottom' },
-				{ id: 'macapagal', name: 'Macapagal Blvd', x: 250, y: 980, align: 'right' },
-				{ id: 'dfa_aseana', name: 'DFA Aseana', x: 250, y: 1045, align: 'right' },
-				{ id: 'ayala_manila_bay', name: 'Ayala Malls Manila Bay', x: 250, y: 1110, align: 'right' },
-				{ id: 'pitx', name: 'PITX Grand Terminal', x: 250, y: 1175, align: 'right', hub: 'PITX' }
+				{ id: 'monumento', name: 'Monumento', x: 140, y: 120, align: 'top', hub: 'LRT-1' },
+				{ id: 'bagong_barrio', name: 'Bagong Barrio', x: 230, y: 120, align: 'top' },
+				{ id: 'balintawak', name: 'Balintawak', x: 320, y: 120, align: 'top', hub: 'LRT-1' },
+				{ id: 'kaingin', name: 'Kaingin', x: 410, y: 120, align: 'top' },
+				{ id: 'roosevelt', name: 'Fernando Poe Jr.', x: 500, y: 120, align: 'top', hub: 'LRT-1' },
+				{ id: 'sm_north_edsa', name: 'SM North EDSA', x: 595, y: 120, align: 'top', hub: 'SM North' },
+				{ id: 'north_ave', name: 'North Avenue', x: 675, y: 185, align: 'right', hub: 'MRT-3' },
+				{ id: 'philam_qc', name: 'Philam Q.C.', x: 690, y: 245, align: 'right' },
+				{ id: 'quezon_ave', name: 'Quezon Avenue', x: 705, y: 305, align: 'right', hub: 'MRT-3' },
+				{ id: 'kamuning', name: 'Kamuning', x: 715, y: 365, align: 'right', hub: 'MRT-3' },
+				{ id: 'q_mart', name: 'Nepa Q. Mart', x: 725, y: 425, align: 'right' },
+				{ id: 'main_ave', name: 'Main Avenue (Cubao)', x: 730, y: 485, align: 'right', hub: 'LRT-2 / MRT-3' },
+				{ id: 'santolan', name: 'Santolan', x: 730, y: 545, align: 'right', hub: 'MRT-3' },
+				{ id: 'ortigas', name: 'Ortigas', x: 720, y: 610, align: 'right', hub: 'MRT-3' },
+				{ id: 'guadalupe', name: 'Guadalupe', x: 690, y: 675, align: 'right', hub: 'MRT-3' },
+				{ id: 'buendia', name: 'Buendia', x: 645, y: 740, align: 'right', hub: 'MRT-3' },
+				{ id: 'ayala', name: 'Ayala (One Ayala)', x: 585, y: 805, align: 'right', hub: 'One Ayala' },
+				{ id: 'tramo', name: 'Tramo (SB)', x: 505, y: 865, align: 'bottom' },
+				{ id: 'taft_ave', name: 'Taft Avenue', x: 415, y: 905, align: 'bottom', hub: 'LRT-1 / MRT-3' },
+				{ id: 'roxas_blvd', name: 'Roxas Boulevard', x: 325, y: 915, align: 'bottom' },
+				{ id: 'moa', name: 'SM Mall of Asia (MOA)', x: 250, y: 970, align: 'right', hub: 'MOA' },
+				{ id: 'dfa_aseana', name: 'DFA', x: 250, y: 1035, align: 'right' },
+				{ id: 'ayala_manila_bay', name: 'Ayala Malls / City of Dreams', x: 250, y: 1100, align: 'right' },
+				{ id: 'pitx', name: 'PITX Grand Terminal', x: 250, y: 1165, align: 'right', hub: 'PITX' }
 			];
 
 			const buswayPosMap = {};
@@ -1348,10 +1636,10 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 				for (let i = 0; i < pts.length - 1; i++) {
 					const curr = pts[i];
 					const next = pts[i + 1];
-					if (curr.id === 'roosevelt' && next.id === 'north_ave') {
-						d += ` L 620,130 Q 670,130 670,180 L ${next.x},${next.y}`;
-					} else if (curr.id === 'roxas_blvd' && next.id === 'macapagal') {
-						d += ` L 280,920 Q 250,920 250,950 L ${next.x},${next.y}`;
+					if (curr.id === 'sm_north_edsa' && next.id === 'north_ave') {
+						d += ` L 645,120 Q 675,120 675,155 L ${next.x},${next.y}`;
+					} else if (curr.id === 'roxas_blvd' && next.id === 'moa') {
+						d += ` L 280,915 Q 250,915 250,945 L ${next.x},${next.y}`;
 					} else {
 						d += ` L ${next.x},${next.y}`;
 					}
@@ -1688,6 +1976,48 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop) => {
 			btnViewList?.addEventListener('click', () => setView('list'));
 			btnViewSchematic?.addEventListener('click', () => setView('schematic'));
 			btnViewGeo?.addEventListener('click', () => setView('geo'));
+
+			// Official Triangular Fare Matrix Toggles (Southbound/Northbound & Regular/20% Discount)
+			const matrixDirSbBtn = document.getElementById('matrix-dir-sb');
+			const matrixDirNbBtn = document.getElementById('matrix-dir-nb');
+			const sbMatrixWrapper = document.getElementById('sb-matrix-wrapper');
+			const nbMatrixWrapper = document.getElementById('nb-matrix-wrapper');
+
+			const matrixRateRegBtn = document.getElementById('matrix-rate-reg');
+			const matrixRateDiscBtn = document.getElementById('matrix-rate-disc');
+
+			matrixDirSbBtn?.addEventListener('click', () => {
+				sbMatrixWrapper?.classList.remove('hidden');
+				nbMatrixWrapper?.classList.add('hidden');
+				matrixDirSbBtn.className = 'px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer';
+				if (matrixDirNbBtn) matrixDirNbBtn.className = 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
+			});
+
+			matrixDirNbBtn?.addEventListener('click', () => {
+				nbMatrixWrapper?.classList.remove('hidden');
+				sbMatrixWrapper?.classList.add('hidden');
+				matrixDirNbBtn.className = 'px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all cursor-pointer';
+				if (matrixDirSbBtn) matrixDirSbBtn.className = 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
+			});
+
+			function setMatrixRate(mode) {
+				const isDisc = mode === 'disc';
+				if (matrixRateRegBtn && matrixRateDiscBtn) {
+					matrixRateRegBtn.className = !isDisc
+						? 'px-3 py-1.5 rounded-lg bg-mapa-navy text-white shadow-2xs transition-all cursor-pointer'
+						: 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
+					matrixRateDiscBtn.className = isDisc
+						? 'px-3 py-1.5 rounded-lg bg-mapa-navy text-white shadow-2xs transition-all cursor-pointer'
+						: 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all cursor-pointer';
+				}
+				document.querySelectorAll('.edsa-matrix-cell').forEach(cell => {
+					const val = isDisc ? cell.getAttribute('data-disc') : cell.getAttribute('data-reg');
+					if (val) cell.textContent = val;
+				});
+			}
+
+			matrixRateRegBtn?.addEventListener('click', () => setMatrixRate('reg'));
+			matrixRateDiscBtn?.addEventListener('click', () => setMatrixRate('disc'));
 
 			// Initial calculation and diagram rendering
 			renderBuswayDiagram();
