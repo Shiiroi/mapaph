@@ -271,6 +271,22 @@ const TRIP_PRESETS = [
 								"@type": "Answer",
 								"text": "For a Class 1 vehicle (car/SUV), riding the entire elevated Skyway Stage 3 from Buendia/Makati to Balintawak/NLEX costs ₱264.00. The full elevated run from Alabang South Station to Balintawak costs ₱428.00."
 							}
+						},
+						{
+							"@type": "Question",
+							"name": "What is the penalty for entering an expressway RFID lane with insufficient balance?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "Under Joint Memorandum Circular No. 2024-001 by DOTr, LTO, and TRB, motorists entering an electronic toll collection (ETC) RFID lane with an unregistered tag, unreadable sticker, or insufficient account balance face fines of ₱1,000 for the first offense, ₱2,000 for the second offense, and ₱5,000 for subsequent violations. Motorists are advised to check and reload account balances before entry."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "How much is the total toll fee from Metro Manila to Baguio?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "For a standard Class 1 vehicle (car, pickup, SUV), driving from Metro Manila (Balintawak) to Baguio via NLEX, SCTEX, and TPLEX up to Rosario, La Union costs approximately ₱880 to ₱900 in total tolls (NLEX Balintawak to Sta. Ines: ₱440; SCTEX Mabalacat to Tarlac: ₱150; TPLEX Tarlac to Rosario: ₱311)."
+							}
 						}
 					]
 				}
@@ -671,6 +687,18 @@ const TRIP_PRESETS = [
 						<div class="p-2.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour text-[11px] text-mapa-ink/80 leading-relaxed">
 							<strong>100% Cashless Notice:</strong> TRB tollways enforce Electronic Toll Collection (ETC). Maintain sufficient balance on your RFID tag before entry to avoid delay at turnstiles.
 						</div>
+
+						<!-- Copy Toll Fee Button -->
+						<button
+							id="btn-copy-toll-fee"
+							type="button"
+							class="w-full mt-1 py-2 px-3 rounded-xl bg-mapa-canvas-dark border border-mapa-contour hover:border-mapa-green text-mapa-ink text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+						>
+							<svg class="w-3.5 h-3.5 text-mapa-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+							</svg>
+							<span id="btn-copy-toll-fee-text">Copy Toll Fee Summary</span>
+						</button>
 
 					</div>
 				</div>
@@ -1759,6 +1787,36 @@ const TRIP_PRESETS = [
 			tmatClass1Btn?.addEventListener('click', () => setTmatClass(1));
 			tmatClass2Btn?.addEventListener('click', () => setTmatClass(2));
 			tmatClass3Btn?.addEventListener('click', () => setTmatClass(3));
+
+			// Copy Toll Fee Button
+			const btnCopyTollFee = document.getElementById('btn-copy-toll-fee');
+			const btnCopyTollFeeText = document.getElementById('btn-copy-toll-fee-text');
+
+			btnCopyTollFee?.addEventListener('click', async () => {
+				const exp = EXPRESSWAYS.find(e => e.id === currentExpId);
+				const entryPlaza = exp?.plazas.find(p => p.id === currentEntryId);
+				const exitPlaza = exp?.plazas.find(p => p.id === currentExitId);
+				const fee = feeDisplay?.textContent.trim() || '';
+				const rfid = requiredRfid?.textContent.trim() || '';
+				const dist = metricDist?.textContent.trim() || '';
+
+				const text = `Philippine Toll Fee Summary:\n` +
+					`• Route: ${exp?.name || ''} (${entryPlaza?.name || 'Entry'} → ${exitPlaza?.name || 'Exit'})\n` +
+					`• Toll Fee: ${fee} (Class ${currentClass})\n` +
+					`• Highway Distance: ${dist}\n` +
+					`• Required RFID: ${rfid}\n` +
+					`Official TRB Toll Schedule via mapaPH: https://www.mapaph.com/tools/toll-calculator`;
+
+				try {
+					await navigator.clipboard.writeText(text);
+					if (btnCopyTollFeeText) btnCopyTollFeeText.textContent = 'Copied to Clipboard!';
+					setTimeout(() => {
+						if (btnCopyTollFeeText) btnCopyTollFeeText.textContent = 'Copy Toll Fee Summary';
+					}, 3000);
+				} catch (err) {
+					console.error('Toll copy failed:', err);
+				}
+			});
 
 			// Initialize
 			updateTargetModeUI();
