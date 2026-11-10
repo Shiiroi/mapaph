@@ -54,6 +54,35 @@ import Footer from '../../components/Footer.astro';
 							"item": "https://www.mapaph.com/tools/coordinates"
 						}
 					]
+				},
+				{
+					"@type": "FAQPage",
+					"mainEntity": [
+						{
+							"@type": "Question",
+							"name": "How do I convert PRS92 to WGS84 GPS coordinates?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "To convert Philippine Reference System 1992 (PRS92 / Clarke 1866) Easting and Northing to WGS84 Latitude and Longitude, input your coordinates into the converter, select UTM Zone 51N (or your specific Philippine zone), and run the 7-parameter Bursa-Wolf datum transformation approved by NAMRIA."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "What UTM Zone covers the Philippines?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "The Philippines is primarily covered by Universal Transverse Mercator (UTM) Zone 51 North (central meridian 123°E), spanning longitudes 120°E to 126°E. Western Palawan falls within UTM Zone 50 North, while easternmost extremities touch UTM Zone 52 North."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "Why is there a shift between PRS92 and WGS84 coordinates?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "PRS92 uses the Clarke 1866 reference ellipsoid centered on Balanacan, Marinduque, while modern GPS devices use the Earth-centered WGS84 ellipsoid. Due to the differing geodetic origins, unconverted coordinates can produce a horizontal offset of approximately 80 to 120 meters on the ground."
+							}
+						}
+					]
 				}
 			]
 		}
