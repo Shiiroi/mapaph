@@ -300,6 +300,22 @@ const LRT2_MATRIX = LRT2_STATIONS.map((stA, i) =>
 								"@type": "Answer",
 								"text": "Yes. Under DOTr, LRTA, and LRMC concessionary directives, Students, Senior Citizens (RA 9994), and Persons with Disabilities (RA 10754) are granted a 50% discount across LRT-1, LRT-2, and MRT-3 upon presenting a valid school ID, OSCA ID, or PDAO ID, or by using a personalized concessionary white beep card."
 							}
+						},
+						{
+							"@type": "Question",
+							"name": "How much is the LRT-1 fare from Fernando Poe Jr. to Dr. Santos in Sucat?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "Under the April 2, 2025 LRMC fare matrix, an end-to-end trip across all 25 stations of LRT-1 from Fernando Poe Jr. (Roosevelt) in Quezon City to Dr. Santos in Sucat, Parañaque costs ₱52.00 using a Stored Value (beep) Card and ₱55.00 for a Single Journey Ticket. Concessionary passengers (Students, Senior Citizens, and PWDs) pay ₱26.00."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "What are the daily operating hours of LRT-1, LRT-2, and MRT-3?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "LRT-1 operates from 4:30 AM to 10:15 PM on weekdays (4:30 AM to 9:45 PM on weekends). LRT-2 operates from 5:00 AM to 9:30 PM daily (last train leaves Antipolo at 9:00 PM and Recto at 9:30 PM). MRT-3 operates from 4:36 AM to 10:11 PM daily (first train departs North Ave at 4:36 AM, last train departs Taft Ave at 10:11 PM)."
+							}
 						}
 					]
 				}
@@ -808,6 +824,18 @@ const LRT2_MATRIX = LRT2_STATIONS.map((stA, i) =>
 								<!-- Populated dynamically via JS -->
 							</div>
 						</div>
+
+						<!-- Copy Rail Fare Button -->
+						<button
+							id="btn-copy-rail-fare"
+							type="button"
+							class="w-full mt-2 py-2 px-3 rounded-xl bg-mapa-canvas-dark border border-mapa-contour hover:border-mapa-green text-mapa-ink text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+						>
+							<svg class="w-3.5 h-3.5 text-mapa-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+							</svg>
+							<span id="btn-copy-rail-fare-text">Copy Train Fare Breakdown</span>
+						</button>
 					</div>
 				</div>
 
@@ -2428,6 +2456,37 @@ const LRT2_MATRIX = LRT2_STATIONS.map((stA, i) =>
 			rmatRateBeep?.addEventListener('click', () => setRmatRate('beep'));
 			rmatRateSjt?.addEventListener('click', () => setRmatRate('sjt'));
 			rmatRateDisc?.addEventListener('click', () => setRmatRate('disc'));
+
+			// Copy Rail Fare Button
+			const btnCopyRailFare = document.getElementById('btn-copy-rail-fare');
+			const btnCopyRailFareText = document.getElementById('btn-copy-rail-fare-text');
+
+			btnCopyRailFare?.addEventListener('click', async () => {
+				const origName = summaryOriginEl ? summaryOriginEl.textContent : 'Origin';
+				const destName = summaryDestEl ? summaryDestEl.textContent : 'Destination';
+				const beepFare = fareBeepEl ? fareBeepEl.textContent.trim() : '';
+				const sjtFare = fareSjtEl ? fareSjtEl.textContent.trim() : '';
+				const time = metricTimeEl ? metricTimeEl.textContent.trim() : '';
+				const stops = metricStopsEl ? metricStopsEl.textContent.trim() : '';
+				const dist = metricDistEl ? metricDistEl.textContent.trim() : '';
+				const isDisc = discountToggle?.checked;
+
+				const text = `Metro Manila Rail Route (${origName} to ${destName}):\n` +
+					`• Stored Value (beep™): ${beepFare} ${isDisc ? '(50% Concessionary)' : ''}\n` +
+					`• Single Journey Ticket: ${sjtFare}\n` +
+					`• Travel Time: ${time} (${stops}, ${dist})\n` +
+					`Official DOTr/LRMC/LRTA Fare Matrix via mapaPH: https://www.mapaph.com/tools/rail-transit`;
+
+				try {
+					await navigator.clipboard.writeText(text);
+					if (btnCopyRailFareText) btnCopyRailFareText.textContent = 'Copied to Clipboard!';
+					setTimeout(() => {
+						if (btnCopyRailFareText) btnCopyRailFareText.textContent = 'Copy Train Fare Breakdown';
+					}, 3000);
+				} catch (err) {
+					console.error('Rail fare copy failed:', err);
+				}
+			});
 
 			// Initial Calculation
 			calculateRoute();

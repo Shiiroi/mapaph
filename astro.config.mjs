@@ -12,6 +12,10 @@ import sitemap, { ChangeFreqEnum } from "@astrojs/sitemap";
 export default defineConfig({
   site: "https://www.mapaph.com",
   trailingSlash: "never",
+  redirects: {
+    "/docs/to-cubao": "/tools/fare-calculator",
+    "/docs/pet-friendly": "/tools",
+  },
   integrations: [
     sitemap({
       serialize(item) {
