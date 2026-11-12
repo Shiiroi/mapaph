@@ -1,16 +1,16 @@
 {
   "Shiiroi/mapa": {
-    "version": "v1.0.0",
-    "date": "2026-07-18T12:00:00Z",
-    "title": "Lens Production Milestone",
-    "description": "Deployed Lens v1.0.0 with full interactive choropleth rendering for all 17 Philippine administrative regions, 82 provinces, and 1,485 municipalities. Integrated 2020 PSA census demographics, COA annual municipal financial audits, 2022 presidential election tallies, and high-fidelity RFC 7946 GeoJSON vector downloads keyed by PSGC code.",
+    "version": "v1.1.0",
+    "date": "2026-11-12T15:30:00Z",
+    "title": "Cloudflare R2 Vector CDN, BGC/EMBO Boundary Realignments, and SEO Prerendering",
+    "description": "Migrated Philippine GeoJSON boundary and choropleth vector layers to Cloudflare R2 CDN with edge proxy caching, fetch timeouts, and gzip compression for high-performance rendering. Aligned geographic boundaries with 2025-2026 PSA updates including the Supreme Court transfer of BGC and the 10 EMBO barangays from Makati to Taguig City. Enhanced discovery with build-time SSR HTML prerendering, FAQ structured data, and integrated links to the mapaPH civic tools suite.",
     "url": "https://github.com/Shiiroi/mapa/releases/latest"
   },
   "Shiiroi/mapaph": {
-    "version": "v2.0.0",
-    "date": "2026-09-16T15:30:00Z",
-    "title": "Built-in Utilities, 82 Statutory Provinces, and SEO Architecture",
-    "description": "Launched mapaPH Hub v2.0 with dedicated built-in utilities: interactive 1,742 PSGC Lookup and 9-digit code decoder with 1-click copy chips, bidirectional PRS92 to WGS84 GPS coordinate converter, strict 82 statutory provinces validation, executive geographic summary sheet, and comprehensive XML sitemap indexing.",
+    "version": "v2.1.0",
+    "date": "2026-11-12T15:30:00Z",
+    "title": "10-Tool Civic Geospatial & Transit Fare Suite",
+    "description": "Expanded mapaPH Hub into a comprehensive 10-tool civic geospatial suite with full 2026 LTFRB and TRB matrices: Philippine Commute Fare Estimator, Metro Manila Rail Transit Map & Station Fare Guide, EDSA Carousel Busway Guide, Expressway Toll Calculator, and Philippine ZIP Code Lookup. Features Philippine Kilometer Post Locator with Marilaque and Manila East Road corridors, Walkability Radius Analyzer, and Great-Circle Route Calculator. Built with full SSR HTML indexing, verified statutory matrices, and civic reference guides.",
     "url": "https://github.com/Shiiroi/mapaph/releases/latest"
   }
 }
