@@ -304,6 +304,39 @@ import Footer from '../../components/Footer.astro';
 				</div>
 			</div>
 
+			<!-- Tool 7: Metro Manila Rail Schedule & Arrival Estimator -->
+			<div data-tool-card data-cat="transit" class="relative bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
+				<div>
+					<div class="flex items-center justify-between gap-2 mb-3">
+						<span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-mapa-navy/15 text-mapa-navy border border-mapa-navy/30">
+							Rail Operations
+						</span>
+						<span class="text-xs text-mapa-muted font-medium">
+							First &amp; Last Train &bull; UTC+8
+						</span>
+					</div>
+					<h2 class="font-serif text-2xl font-bold text-mapa-ink group-hover:text-mapa-green transition-colors">
+						<a href="/tools/rail-schedule" class="after:absolute after:inset-0">MRT &amp; LRT Train Schedule &amp; Arrival Estimator</a>
+					</h2>
+					<p class="text-sm text-mapa-ink/80 leading-relaxed mt-2.5">
+						Check station-specific First &amp; Last Train passing windows, scheduled peak and off-peak headway cadence, 5-minute gate cutoff warnings, and Cubao/Recto late-night transfer alerts in Philippine Standard Time.
+					</p>
+					<div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-mapa-ink/75">
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">MRT-3 Extended Hours</span>
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">Headway Cadence</span>
+						<span class="px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour/60">LRT-1 Dr. Santos</span>
+					</div>
+				</div>
+				<div class="mt-6 pt-5 border-t border-mapa-contour/50">
+					<span class="inline-flex items-center gap-1.5 text-sm font-semibold text-mapa-green group-hover:underline">
+						<span>Check Train Schedules</span>
+						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+						</svg>
+					</span>
+				</div>
+			</div>
+
 			<!-- Tool 8: Philippine Expressway Toll Calculator -->
 			<div data-tool-card data-cat="transit" class="relative bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-mapa-green/60 transition-all group shadow-xs">
 				<div>
@@ -497,6 +530,12 @@ import Footer from '../../components/Footer.astro';
 								<td class="p-3.5">DOTr, LRTA &amp; LRMC</td>
 								<td class="p-3.5">51 Stations Across LRT-1, LRT-2, MRT-3</td>
 								<td class="p-3.5">Station-to-station Single Journey vs beep card fare tables, travel time, and footbridge transfer guides.</td>
+							</tr>
+							<tr>
+								<td class="p-3.5 font-semibold text-mapa-green"><a href="/tools/rail-schedule" class="hover:underline">Rail Schedule &amp; Arrival Estimator</a></td>
+								<td class="p-3.5">DOTr, LRTA &amp; LRMC</td>
+								<td class="p-3.5">51 Stations (Weekday &amp; Weekend)</td>
+								<td class="p-3.5">First and last train station passing windows, headway wait intervals, and late-night gate cutoff warnings.</td>
 							</tr>
 							<tr>
 								<td class="p-3.5 font-semibold text-mapa-green"><a href="/tools/toll-calculator" class="hover:underline">Expressway Toll Calculator</a></td>

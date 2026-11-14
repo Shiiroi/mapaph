@@ -1,0 +1,992 @@
+---
+/**
+ * @file rail-schedule.astro
+ * @description Metro Manila Rail Schedule, Headway Arrival Estimator, and Station-by-Station First/Last Train Finder.
+ * Covers MRT-3, LRT-1 (Cavite Extension), and LRT-2 with Manila Time (UTC+8) calculations.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import {
+	RAIL_LINES,
+	STATIONS_DATA,
+	SCHEDULE_SPECS,
+	buildLineTimetable,
+	formatMinutesTo12H
+} from '../../data/rail-lines';
+
+const mrt3Timetable = buildLineTimetable('mrt3');
+const lrt1Timetable = buildLineTimetable('lrt1');
+const lrt2Timetable = buildLineTimetable('lrt2');
+
+const clientPayload = {
+	lines: RAIL_LINES,
+	stations: STATIONS_DATA,
+	specs: SCHEDULE_SPECS
+};
+---
+
+<BaseLayout
+	title="2026 MRT & LRT Schedule: First/Last Train & Arrival Estimator | mapaPH"
+	description="Check station-by-station First & Last Train times, estimated arrival headways, gate cutoff alerts, and live Manila Time status for MRT-3, LRT-1 (Dr. Santos), and LRT-2."
+	keywords="MRT last train schedule 2026, LRT-1 first train schedule, LRT-2 operating hours, MRT train arrival time estimator, North Ave last train, Taft Avenue last train, Dr. Santos LRT-1 schedule, MRT headway frequency, Metro Manila train schedule"
+>
+	<script type="application/ld+json" slot="schema" is:inline>
+		{
+			"@context": "https://schema.org",
+			"@graph": [
+				{
+					"@type": "WebApplication",
+					"name": "Metro Manila Rail Schedule & Arrival Estimator (MRT-3, LRT-1, LRT-2)",
+					"url": "https://www.mapaph.com/tools/rail-schedule",
+					"applicationCategory": "TravelApplication",
+					"operatingSystem": "Web Browser",
+					"description": "Interactive station-by-station First and Last Train calculator, headway arrival countdown, and transfer cutoff checker for MRT-3, LRT-1, and LRT-2 in Philippine Standard Time.",
+					"featureList": [
+						"Station-specific First and Last Train passing estimates across 51 stations",
+						"Weekday vs Weekend/Holiday dispatch comparison including MRT-3 extended evening hours",
+						"Scheduled headway wait-time indicator in Asia/Manila UTC+8",
+						"5-minute ticket booth and turnstile gate cutoff warnings",
+						"Cross-line interchange closure alerts at Cubao, EDSA-Taft, and Doroteo Jose-Recto"
+					],
+					"author": {
+						"@type": "Organization",
+						"name": "mapaPH",
+						"url": "https://www.mapaph.com"
+					}
+				},
+				{
+					"@type": "BreadcrumbList",
+					"itemListElement": [
+						{
+							"@type": "ListItem",
+							"position": 1,
+							"name": "Home",
+							"item": "https://www.mapaph.com/"
+						},
+						{
+							"@type": "ListItem",
+							"position": 2,
+							"name": "Tools",
+							"item": "https://www.mapaph.com/tools"
+						},
+						{
+							"@type": "ListItem",
+							"position": 3,
+							"name": "Rail Schedule & Arrival Estimator",
+							"item": "https://www.mapaph.com/tools/rail-schedule"
+						}
+					]
+				},
+				{
+					"@type": "FAQPage",
+					"mainEntity": [
+						{
+							"@type": "Question",
+							"name": "What time is the last train on MRT-3 on weekdays vs weekends?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "Under DOTr MRT-3's extended weekday schedule (Monday to Friday), the last southbound train departs North Avenue at 10:30 PM and the last northbound train departs Taft Avenue at 11:09 PM. On Saturdays, Sundays, and holidays, the last trains revert to 9:30 PM from North Avenue and 10:09 PM from Taft Avenue. Ticket booths close 5 minutes prior."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "What are the LRT-1 first and last train hours to Dr. Santos?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "On weekdays, LRT-1 starts at 4:30 AM from both Fernando Poe Jr. (FPJ) and Dr. Santos stations. The last weekday train departs Dr. Santos (northbound) at 10:30 PM and FPJ (southbound) at 10:45 PM. On weekends and holidays, first trips start at 5:00 AM and last trains depart at 9:30 PM (Dr. Santos) and 9:45 PM (FPJ)."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "Is there an official live GPS train arrival API in the Philippines?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "No. Neither DOTr MRT-3, LRMC (LRT-1), nor LRTA (LRT-2) publishes a public GTFS-Realtime feed or live track signaling API. Independent trackers use published headway intervals, timetable cadence simulations, or crowdsourced commuter reports to estimate train positions."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "What time do LRT-2 trains stop running?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "LRT-2 opens gates at 4:50 AM with first departures at 5:00 AM daily from Recto and Antipolo. On weekdays, the last train leaves Antipolo at 9:00 PM and Recto at 9:30 PM. On weekends and holidays, the last trips generally wrap up by 9:00 PM from both terminals."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "Do station entrance gates close before the last train departs?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "Yes. Across LRT-1, LRT-2, and MRT-3, ticket vending windows and security turnstiles generally close 3 to 5 minutes before the scheduled arrival of the last revenue train so passengers can safely clear the platforms."
+							}
+						}
+					]
+				}
+			]
+		}
+	</script>
+
+	<Navbar />
+
+	<main id="main-content" class="max-w-7xl mx-auto px-6 lg:px-8 py-12 text-mapa-ink">
+		<!-- Header -->
+		<div class="max-w-3xl mb-8">
+			<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs font-sans text-mapa-muted mb-3">
+				<a href="/" class="hover:text-mapa-green transition-colors">Home</a>
+				<span>/</span>
+				<a href="/tools" class="hover:text-mapa-green transition-colors">Tools</a>
+				<span>/</span>
+				<a href="/tools/rail-transit" class="hover:text-mapa-green transition-colors">Rail Transit</a>
+				<span>/</span>
+				<span class="text-mapa-ink font-semibold">Schedule & Arrival Estimator</span>
+			</nav>
+			<div class="flex flex-wrap items-center gap-2 mb-2">
+				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
+					Transit Operations & Timetables
+				</span>
+				<span class="font-sans text-xs text-mapa-muted">
+					Manila Time (UTC+8) &bull; 51 Stations
+				</span>
+			</div>
+			<h1 class="text-3xl sm:text-4xl font-extrabold text-mapa-green font-serif tracking-tight">
+				MRT &amp; LRT Train Schedule, Headway &amp; Last-Train Estimator
+			</h1>
+			<p class="font-sans text-sm sm:text-base text-mapa-ink/80 mt-2 leading-relaxed">
+				Check when the first and last trains pass your exact station along MRT-3, LRT-1 (FPJ to Dr. Santos), and LRT-2 (Recto to Antipolo). Includes live Philippine Standard Time dispatch status, headway wait estimates, gate cutoff buffers, and transfer closing warnings.
+			</p>
+		</div>
+
+		<!-- Interactive Estimator Console -->
+		<section aria-label="Live Schedule and Last Train Calculator" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-5 sm:p-7 shadow-xs font-sans mb-10">
+			<!-- Top Controls Row: Clock & Day Mode -->
+			<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-mapa-contour/60">
+				<div class="flex flex-wrap items-center gap-3">
+					<div class="px-3.5 py-2 rounded-xl bg-mapa-canvas border border-mapa-contour flex items-center gap-2.5">
+						<span id="live-clock-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+						<div>
+							<span class="block text-[10px] font-bold uppercase tracking-wider text-mapa-muted">Manila Time (UTC+8)</span>
+							<span id="manila-clock-display" class="text-sm font-bold text-mapa-ink tabular-nums">--:--:-- --</span>
+						</div>
+					</div>
+
+					<div class="flex items-center gap-1.5 bg-mapa-canvas border border-mapa-contour rounded-xl p-1">
+						<button type="button" id="day-weekday-btn" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-colors bg-mapa-green text-white">
+							Weekday (Mon-Fri)
+						</button>
+						<button type="button" id="day-weekend-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-mapa-ink/75 hover:bg-mapa-canvas-dark transition-colors">
+							Weekend / Holiday
+						</button>
+					</div>
+				</div>
+
+				<div class="flex flex-wrap items-center gap-2">
+					<button type="button" id="mode-live-btn" class="px-3 py-1.5 rounded-lg text-xs font-bold border border-mapa-green bg-mapa-green/10 text-mapa-green transition-colors">
+						Use Current Time
+					</button>
+					<div class="flex items-center gap-1.5 bg-mapa-canvas border border-mapa-contour rounded-lg px-2.5 py-1">
+						<label for="sim-time-input" class="text-[11px] font-semibold text-mapa-muted">Test Time:</label>
+						<input id="sim-time-input" type="time" class="text-xs font-bold text-mapa-ink bg-transparent focus:outline-none cursor-pointer" />
+					</div>
+				</div>
+			</div>
+
+			<!-- Line & Station Picker Row -->
+			<div class="grid grid-cols-1 lg:grid-cols-12 gap-5 py-5 border-b border-mapa-contour/60 items-end">
+				<div class="lg:col-span-5">
+					<span class="block text-xs font-bold uppercase tracking-wider text-mapa-muted mb-2">1. Select Rail Line</span>
+					<div class="grid grid-cols-3 gap-2">
+						<button type="button" data-line-tab="mrt3" class="line-tab px-3 py-2.5 rounded-xl border text-xs font-bold transition-all bg-[#0055A5] text-white border-[#0055A5] shadow-xs">
+							MRT-3 (Blue)
+						</button>
+						<button type="button" data-line-tab="lrt1" class="line-tab px-3 py-2.5 rounded-xl border text-xs font-bold transition-all bg-mapa-canvas text-mapa-ink/80 border-mapa-contour hover:border-mapa-green">
+							LRT-1 (Green)
+						</button>
+						<button type="button" data-line-tab="lrt2" class="line-tab px-3 py-2.5 rounded-xl border text-xs font-bold transition-all bg-mapa-canvas text-mapa-ink/80 border-mapa-contour hover:border-mapa-rust">
+							LRT-2 (Purple)
+						</button>
+					</div>
+				</div>
+
+				<div class="lg:col-span-4">
+					<label for="station-select" class="block text-xs font-bold uppercase tracking-wider text-mapa-muted mb-2">2. Choose Your Station</label>
+					<select id="station-select" class="w-full px-3.5 py-2.5 rounded-xl bg-mapa-canvas border border-mapa-contour text-sm font-semibold text-mapa-ink focus:outline-none focus:border-mapa-green">
+						<!-- Populated via script -->
+					</select>
+				</div>
+
+				<div class="lg:col-span-3">
+					<span class="block text-xs font-bold uppercase tracking-wider text-mapa-muted mb-2">Quick Hubs</span>
+					<div class="flex flex-wrap gap-1.5">
+						<button type="button" class="quick-station-btn px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-mapa-canvas border border-mapa-contour hover:border-mapa-navy text-mapa-ink/80 transition-colors" data-line="mrt3" data-station="mrt3_ayala">Ayala</button>
+						<button type="button" class="quick-station-btn px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-mapa-canvas border border-mapa-contour hover:border-mapa-navy text-mapa-ink/80 transition-colors" data-line="mrt3" data-station="mrt3_cubao">Cubao</button>
+						<button type="button" class="quick-station-btn px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-mapa-canvas border border-mapa-contour hover:border-mapa-green text-mapa-ink/80 transition-colors" data-line="lrt1" data-station="lrt1_edsa">EDSA-Taft</button>
+						<button type="button" class="quick-station-btn px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-mapa-canvas border border-mapa-contour hover:border-mapa-green text-mapa-ink/80 transition-colors" data-line="lrt1" data-station="lrt1_dr_santos">Dr. Santos</button>
+						<button type="button" class="quick-station-btn px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-mapa-canvas border border-mapa-contour hover:border-mapa-rust text-mapa-ink/80 transition-colors" data-line="lrt2" data-station="lrt2_katipunan">Katipunan</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Live Output Summary Banner -->
+			<div id="station-banner" class="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+				<div>
+					<div class="flex flex-wrap items-center gap-2">
+						<h2 id="selected-station-heading" class="font-serif text-xl sm:text-2xl font-bold text-mapa-ink">
+							MRT-3: Ayala Station
+						</h2>
+						<span id="service-phase-badge" class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 border border-emerald-500/30">
+							Checking Status...
+						</span>
+					</div>
+					<p id="selected-station-meta" class="text-xs text-mapa-muted mt-0.5">
+						Makati City &bull; KM 13.4 along line alignment
+					</p>
+				</div>
+				<div class="text-xs text-mapa-ink/75 bg-mapa-canvas border border-mapa-contour/70 px-3 py-2 rounded-xl">
+					<strong class="text-mapa-ink">Transparency Note:</strong> Estimates use published dispatch intervals (not train GPS). Verify live alerts at <a id="advisory-portal-link" href="https://dotrmrt3.gov.ph/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline">DOTr MRT-3 Service Portal</a>.
+				</div>
+			</div>
+
+			<!-- Direction Cards (Both Directions) -->
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+				<!-- Forward Direction Card -->
+				<div id="dir-fwd-card" class="bg-mapa-canvas border border-mapa-contour rounded-2xl p-5 flex flex-col justify-between gap-4">
+					<div>
+						<div class="flex items-start justify-between gap-2 mb-3">
+							<div>
+								<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted block">Platform Direction A</span>
+								<h3 id="fwd-dir-title" class="font-serif text-lg font-bold text-mapa-ink">Southbound (to Taft Ave)</h3>
+							</div>
+							<span id="fwd-status-pill" class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-700">
+								Open
+							</span>
+						</div>
+
+						<div class="grid grid-cols-2 gap-3 mb-4">
+							<div class="p-3 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/60">
+								<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted block">Scheduled Headway</span>
+								<span id="fwd-headway" class="text-lg font-extrabold text-mapa-green mt-0.5 block">~3.5-4.5 min</span>
+								<span id="fwd-next-est" class="text-[11px] text-mapa-ink/75 block mt-0.5">Next cadence: ~2 min</span>
+							</div>
+							<div class="p-3 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/60">
+								<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted block">Last Train Remaining</span>
+								<span id="fwd-countdown" class="text-lg font-extrabold text-mapa-ink mt-0.5 block tabular-nums">--h --m</span>
+								<span id="fwd-cutoff-note" class="text-[11px] text-mapa-ink/75 block mt-0.5">Gate cutoff: --:-- PM</span>
+							</div>
+						</div>
+
+						<div class="space-y-1.5 text-xs border-t border-mapa-contour/50 pt-3">
+							<div class="flex justify-between">
+								<span class="text-mapa-muted">First train passes this station:</span>
+								<span id="fwd-first-time" class="font-bold text-mapa-ink">--:-- AM</span>
+							</div>
+							<div class="flex justify-between">
+								<span class="text-mapa-muted">Last train passes this station:</span>
+								<span id="fwd-last-time" class="font-bold text-mapa-rust">--:-- PM</span>
+							</div>
+							<div class="flex justify-between">
+								<span class="text-mapa-muted">Origin terminal dispatch window:</span>
+								<span id="fwd-terminal-span" class="font-medium text-mapa-ink/80">--:-- AM - --:-- PM</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Reverse Direction Card -->
+				<div id="dir-rev-card" class="bg-mapa-canvas border border-mapa-contour rounded-2xl p-5 flex flex-col justify-between gap-4">
+					<div>
+						<div class="flex items-start justify-between gap-2 mb-3">
+							<div>
+								<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted block">Platform Direction B</span>
+								<h3 id="rev-dir-title" class="font-serif text-lg font-bold text-mapa-ink">Northbound (to North Ave)</h3>
+							</div>
+							<span id="rev-status-pill" class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-700">
+								Open
+							</span>
+						</div>
+
+						<div class="grid grid-cols-2 gap-3 mb-4">
+							<div class="p-3 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/60">
+								<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted block">Scheduled Headway</span>
+								<span id="rev-headway" class="text-lg font-extrabold text-mapa-green mt-0.5 block">~3.5-4.5 min</span>
+								<span id="rev-next-est" class="text-[11px] text-mapa-ink/75 block mt-0.5">Next cadence: ~3 min</span>
+							</div>
+							<div class="p-3 rounded-xl bg-mapa-canvas-dark border border-mapa-contour/60">
+								<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted block">Last Train Remaining</span>
+								<span id="rev-countdown" class="text-lg font-extrabold text-mapa-ink mt-0.5 block tabular-nums">--h --m</span>
+								<span id="rev-cutoff-note" class="text-[11px] text-mapa-ink/75 block mt-0.5">Gate cutoff: --:-- PM</span>
+							</div>
+						</div>
+
+						<div class="space-y-1.5 text-xs border-t border-mapa-contour/50 pt-3">
+							<div class="flex justify-between">
+								<span class="text-mapa-muted">First train passes this station:</span>
+								<span id="rev-first-time" class="font-bold text-mapa-ink">--:-- AM</span>
+							</div>
+							<div class="flex justify-between">
+								<span class="text-mapa-muted">Last train passes this station:</span>
+								<span id="rev-last-time" class="font-bold text-mapa-rust">--:-- PM</span>
+							</div>
+							<div class="flex justify-between">
+								<span class="text-mapa-muted">Origin terminal dispatch window:</span>
+								<span id="rev-terminal-span" class="font-medium text-mapa-ink/80">--:-- AM - --:-- PM</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Simulated Schedule Cadence Strip -->
+			<div class="mt-5 p-4 rounded-xl bg-mapa-canvas border border-mapa-contour">
+				<div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+					<span class="text-xs font-bold text-mapa-ink">Simulated Line Cadence (Schedule Model, Non-GPS)</span>
+					<span id="line-spec-note" class="text-[11px] text-mapa-muted"></span>
+				</div>
+				<div id="cadence-track" class="relative w-full py-3 px-2 overflow-x-auto">
+					<!-- Rendered by JS -->
+				</div>
+			</div>
+
+			<!-- Dynamic Transfer / Late-Night Fallback Alert -->
+			<div id="transfer-warning-box" class="hidden mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-mapa-ink leading-relaxed">
+			</div>
+
+			<!-- Related Transit Cross-Links -->
+			<div class="mt-5 pt-4 border-t border-mapa-contour/60 flex flex-wrap items-center justify-between gap-3 text-xs">
+				<div class="flex flex-wrap items-center gap-2">
+					<span class="font-bold text-mapa-muted">Need fares or 24/7 bus options?</span>
+					<a href="/tools/rail-transit" class="px-3 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green text-mapa-green font-bold transition-colors">
+						Calculate Beep &amp; SJT Fares &rarr;
+					</a>
+					<a href="/tools/edsa-carousel" class="px-3 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green text-mapa-ink font-semibold transition-colors">
+						24/7 EDSA Carousel Busway (After Last Train) &rarr;
+					</a>
+				</div>
+			</div>
+		</section>
+
+		<!-- SSR Station-by-Station Timetable Reference Tables -->
+		<section aria-label="Full Station Timetable Directory" class="mb-14 font-sans">
+			<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-5 border-b border-mapa-contour/60 pb-4">
+				<div>
+					<span class="text-xs font-bold uppercase tracking-wider text-mapa-green block mb-1">2026 Static Timetable Matrix</span>
+					<h2 class="font-serif text-2xl sm:text-3xl font-bold text-mapa-ink tracking-tight">
+						Complete Station-by-Station First &amp; Last Train Tables
+					</h2>
+					<p class="text-xs sm:text-sm text-mapa-ink/75 mt-1">
+						Estimated passing windows calculated from published terminal dispatches plus segment run times and dwell offsets. Gates typically close 5 minutes prior.
+					</p>
+				</div>
+				<div class="flex items-center gap-1.5 bg-mapa-canvas-dark p-1 rounded-xl border border-mapa-contour self-start">
+					<button type="button" data-table-tab="mrt3" class="table-tab-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0055A5] text-white transition-colors">MRT-3</button>
+					<button type="button" data-table-tab="lrt1" class="table-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-mapa-ink/80 hover:bg-mapa-canvas transition-colors">LRT-1</button>
+					<button type="button" data-table-tab="lrt2" class="table-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-mapa-ink/80 hover:bg-mapa-canvas transition-colors">LRT-2</button>
+				</div>
+			</div>
+
+			<!-- MRT-3 Timetable -->
+			<div id="table-panel-mrt3" class="table-panel overflow-x-auto bg-mapa-canvas-dark border border-mapa-contour rounded-2xl">
+				<table class="w-full text-left border-collapse text-xs">
+					<thead>
+						<tr class="border-b border-mapa-contour bg-mapa-canvas text-mapa-ink">
+							<th class="p-3 font-bold">MRT-3 Station</th>
+							<th class="p-3 font-bold">City / KM</th>
+							<th class="p-3 font-bold">Southbound (to Taft) Weekday</th>
+							<th class="p-3 font-bold">Northbound (to North Ave) Weekday</th>
+							<th class="p-3 font-bold">Weekend / Holiday Last Trains</th>
+						</tr>
+					</thead>
+					<tbody class="divide-y divide-mapa-contour/40">
+						{mrt3Timetable.map((row) => (
+							<tr class="hover:bg-mapa-canvas/60 transition-colors">
+								<td class="p-3 font-bold text-mapa-ink">{row.station.name}</td>
+								<td class="p-3 text-mapa-muted">{row.station.city} ({row.station.km.toFixed(1)} km)</td>
+								<td class="p-3 tabular-nums">
+									<span class="font-semibold text-mapa-ink">{formatMinutesTo12H(row.weekdayFirstFwd)}</span>
+									<span class="text-mapa-muted mx-1">to</span>
+									<span class="font-bold text-mapa-rust">{formatMinutesTo12H(row.weekdayLastFwd)}</span>
+								</td>
+								<td class="p-3 tabular-nums">
+									<span class="font-semibold text-mapa-ink">{formatMinutesTo12H(row.weekdayFirstRev)}</span>
+									<span class="text-mapa-muted mx-1">to</span>
+									<span class="font-bold text-mapa-rust">{formatMinutesTo12H(row.weekdayLastRev)}</span>
+								</td>
+								<td class="p-3 tabular-nums text-mapa-ink/80">
+									SB: {formatMinutesTo12H(row.weekendLastFwd)} / NB: {formatMinutesTo12H(row.weekendLastRev)}
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+
+			<!-- LRT-1 Timetable -->
+			<div id="table-panel-lrt1" class="table-panel hidden overflow-x-auto bg-mapa-canvas-dark border border-mapa-contour rounded-2xl">
+				<table class="w-full text-left border-collapse text-xs">
+					<thead>
+						<tr class="border-b border-mapa-contour bg-mapa-canvas text-mapa-ink">
+							<th class="p-3 font-bold">LRT-1 Station</th>
+							<th class="p-3 font-bold">City / KM</th>
+							<th class="p-3 font-bold">Southbound (to Dr. Santos) Weekday</th>
+							<th class="p-3 font-bold">Northbound (to FPJ) Weekday</th>
+							<th class="p-3 font-bold">Weekend / Holiday Last Trains</th>
+						</tr>
+					</thead>
+					<tbody class="divide-y divide-mapa-contour/40">
+						{lrt1Timetable.map((row) => (
+							<tr class="hover:bg-mapa-canvas/60 transition-colors">
+								<td class="p-3 font-bold text-mapa-ink">{row.station.name}</td>
+								<td class="p-3 text-mapa-muted">{row.station.city} ({row.station.km.toFixed(1)} km)</td>
+								<td class="p-3 tabular-nums">
+									<span class="font-semibold text-mapa-ink">{formatMinutesTo12H(row.weekdayFirstFwd)}</span>
+									<span class="text-mapa-muted mx-1">to</span>
+									<span class="font-bold text-mapa-rust">{formatMinutesTo12H(row.weekdayLastFwd)}</span>
+								</td>
+								<td class="p-3 tabular-nums">
+									<span class="font-semibold text-mapa-ink">{formatMinutesTo12H(row.weekdayFirstRev)}</span>
+									<span class="text-mapa-muted mx-1">to</span>
+									<span class="font-bold text-mapa-rust">{formatMinutesTo12H(row.weekdayLastRev)}</span>
+								</td>
+								<td class="p-3 tabular-nums text-mapa-ink/80">
+									SB: {formatMinutesTo12H(row.weekendLastFwd)} / NB: {formatMinutesTo12H(row.weekendLastRev)}
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+
+			<!-- LRT-2 Timetable -->
+			<div id="table-panel-lrt2" class="table-panel hidden overflow-x-auto bg-mapa-canvas-dark border border-mapa-contour rounded-2xl">
+				<table class="w-full text-left border-collapse text-xs">
+					<thead>
+						<tr class="border-b border-mapa-contour bg-mapa-canvas text-mapa-ink">
+							<th class="p-3 font-bold">LRT-2 Station</th>
+							<th class="p-3 font-bold">City / KM</th>
+							<th class="p-3 font-bold">Eastbound (to Antipolo) Weekday</th>
+							<th class="p-3 font-bold">Westbound (to Recto) Weekday</th>
+							<th class="p-3 font-bold">Weekend / Holiday Last Trains</th>
+						</tr>
+					</thead>
+					<tbody class="divide-y divide-mapa-contour/40">
+						{lrt2Timetable.map((row) => (
+							<tr class="hover:bg-mapa-canvas/60 transition-colors">
+								<td class="p-3 font-bold text-mapa-ink">{row.station.name}</td>
+								<td class="p-3 text-mapa-muted">{row.station.city} ({row.station.km.toFixed(1)} km)</td>
+								<td class="p-3 tabular-nums">
+									<span class="font-semibold text-mapa-ink">{formatMinutesTo12H(row.weekdayFirstFwd)}</span>
+									<span class="text-mapa-muted mx-1">to</span>
+									<span class="font-bold text-mapa-rust">{formatMinutesTo12H(row.weekdayLastFwd)}</span>
+								</td>
+								<td class="p-3 tabular-nums">
+									<span class="font-semibold text-mapa-ink">{formatMinutesTo12H(row.weekdayFirstRev)}</span>
+									<span class="text-mapa-muted mx-1">to</span>
+									<span class="font-bold text-mapa-rust">{formatMinutesTo12H(row.weekdayLastRev)}</span>
+								</td>
+								<td class="p-3 tabular-nums text-mapa-ink/80">
+									EB: {formatMinutesTo12H(row.weekendLastFwd)} / WB: {formatMinutesTo12H(row.weekendLastRev)}
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+		</section>
+
+		<!-- Editorial Guide & Commuter Documentation (High-value AdSense / SEO content) -->
+		<article class="max-w-4xl space-y-12 font-sans border-t border-mapa-contour/60 pt-10">
+			<section>
+				<h2 class="font-serif text-2xl font-bold text-mapa-ink tracking-tight mb-4">
+					1. How Metro Manila Train Arrival Estimates Work (And Why Track Telemetry Is Closed)
+				</h2>
+				<div class="space-y-4 text-sm text-mapa-ink/85 leading-relaxed">
+					<p>
+						Commuters often wonder why Google Maps, Sakay.ph, or local transit websites do not show exact GPS train telemetry in Metro Manila the way systems in Tokyo, Singapore, or London do. Unlike cities that publish an open GTFS-Realtime (General Transit Feed Specification) stream straight from signaling computers, the Philippines' three major urban rail operators, DOTr MRT-3, Light Rail Manila Corporation (LRMC for LRT-1), and the Light Rail Transit Authority (LRTA for LRT-2), operate closed Automatic Train Protection (ATP) track-circuit networks without a public developer API.
+					</p>
+					<p>
+						Because live train positions are kept internal to station control centers for operational safety, third-party Philippine commuter platforms use two different estimation techniques. Crowdsourced apps such as RushPH and TrainSight collect voluntary passenger location pings or manual platform check-ins to gauge train movement and congestion. Timetable engines, including this mapaPH estimator, rely on published first-train and last-train dispatch matrices combined with commercial cruise speeds (roughly 35 to 45 km/h inclusive of station braking) and dwell allowances (around 30 seconds per stop) to project when trains pass intermediate stations.
+					</p>
+					<p>
+						For transparency, mapaPH explicitly distinguishes between scheduled cadence modeling and live GPS hardware tracking. If an unannounced unloading incident, power fluctuation, or maintenance speed restriction occurs along EDSA, Aurora Boulevard, or Taft Avenue, schedule math alone cannot detect the disruption. Riders should always consult official station PA announcements and operator social media advisories during severe rainy weather or yellow-alert speed restrictions.
+					</p>
+				</div>
+			</section>
+
+			<section>
+				<h2 class="font-serif text-2xl font-bold text-mapa-ink tracking-tight mb-4">
+					2. MRT-3 Extended Weekday Hours vs. Weekend Schedules
+				</h2>
+				<div class="space-y-4 text-sm text-mapa-ink/85 leading-relaxed">
+					<p>
+						One of the most frequent sources of late-night commuter confusion along EDSA stems from the difference between MRT-3's Monday-to-Friday extended evening service and its standard weekend hours. Effective March 24, 2025, the Department of Transportation extended weekday last trips by one full hour to serve BPO shift workers, university evening classes, and late retail employees across Quezon City, Mandaluyong, Makati, and Pasay.
+					</p>
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+						<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour">
+							<h3 class="font-bold text-mapa-navy text-sm mb-2">Weekdays (Monday to Friday)</h3>
+							<ul class="space-y-1.5 text-mapa-ink/80 list-disc pl-4">
+								<li><strong>First Southbound (North Ave):</strong> Departs at 4:36 AM</li>
+								<li><strong>First Northbound (Taft Ave):</strong> Departs at 5:18 AM</li>
+								<li><strong>Last Southbound (North Ave):</strong> Departs at 10:30 PM (reaches Ayala ~10:56 PM)</li>
+								<li><strong>Last Northbound (Taft Ave):</strong> Departs at 11:09 PM (reaches Cubao ~11:33 PM)</li>
+							</ul>
+						</div>
+						<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour">
+							<h3 class="font-bold text-mapa-ink text-sm mb-2">Saturdays, Sundays &amp; Holidays</h3>
+							<ul class="space-y-1.5 text-mapa-ink/80 list-disc pl-4">
+								<li><strong>First Southbound (North Ave):</strong> Departs around 4:38 AM</li>
+								<li><strong>First Northbound (Taft Ave):</strong> Departs at 5:18 AM</li>
+								<li><strong>Last Southbound (North Ave):</strong> Reverts earlier to 9:30 PM</li>
+								<li><strong>Last Northbound (Taft Ave):</strong> Reverts earlier to 10:09 PM</li>
+							</ul>
+						</div>
+					</div>
+					<p>
+						Notice the directional asymmetry: a northbound train leaving Taft Avenue at 11:09 PM takes roughly 32 minutes to travel the 16.9 km alignment back to North Avenue. That means commuters boarding northbound from Magallanes, Ayala, Buendia, Guadalupe, or Ortigas have significantly later final train clearance than riders waiting on the southbound platform coming from Quezon City.
+					</p>
+				</div>
+			</section>
+
+			<section>
+				<h2 class="font-serif text-2xl font-bold text-mapa-ink tracking-tight mb-4">
+					3. LRT-1 Cavite Extension (FPJ to Dr. Santos) &amp; LRT-2 Early Closure Rules
+				</h2>
+				<div class="space-y-4 text-sm text-mapa-ink/85 leading-relaxed">
+					<p>
+						With the opening of Cavite Extension Phase 1 extending LRT-1 southwards past Baclaran to Redemptorist, MIA Road, Asia World (PITX), Ninoy Aquino, and Dr. Santos (Sucat), the Green Line now spans 25 stations across nearly 24.5 kilometers. An end-to-end journey takes roughly 60 minutes during normal operation. Because trains take an hour to traverse the corridor, a last southbound trip departing Fernando Poe Jr. (formerly Roosevelt) at 10:45 PM on a weekday continues passing through Manila, Pasay, and Parañaque all the way past 11:30 PM before terminating at Dr. Santos.
+					</p>
+					<p>
+						Conversely, LRT Line 2 (Purple Line from Recto to Antipolo) consistently maintains the shortest evening operating hours among Metro Manila's three rail lines. Stations open daily at 4:50 AM with initial trains rolling at 5:00 AM from both Recto and Antipolo, but the final westbound trip from Antipolo departs at <strong>9:00 PM</strong> and the final eastbound weekday trip from Recto leaves at <strong>9:30 PM</strong> (reverting to 9:00 PM on weekends and holidays).
+					</p>
+					<p>
+						<strong>The Late-Night Transfer Trap:</strong> Thousands of daily commuters switch between MRT-3 and LRT-2 at Araneta Center-Cubao, or between LRT-1 and LRT-2 via the Doroteo Jose to Recto covered footbridge. Even though MRT-3 runs past 10:30 PM on weekdays, arriving at Cubao after 9:15 PM means LRT-2 Eastbound service toward Katipunan, Marikina-Pasig, and Antipolo has likely already closed or is down to its final dispatch. Always check the connecting line's last train passing window before tapping in for a multi-line evening trip.
+					</p>
+				</div>
+			</section>
+
+			<section>
+				<h2 class="font-serif text-2xl font-bold text-mapa-ink tracking-tight mb-4">
+					4. Station Gate Closure Buffers, Peak Headways &amp; Contingency Alternatives
+				</h2>
+				<div class="space-y-4 text-sm text-mapa-ink/85 leading-relaxed">
+					<p>
+						Knowing when the last train reaches your station is only half the equation. Across DOTr MRT-3, LRMC, and LRTA policies, ticket teller windows and entrance turnstile gates close <strong>3 to 5 minutes ahead</strong> of the actual final train departure to give passengers time to pass X-ray baggage inspection, purchase a Single Journey Ticket or tap a beep card, and climb to the platform safely. Arriving right on the minute of final departure typically results in locked station roller shutters.
+					</p>
+					<p>
+						During normal weekday rush hours (6:00 AM to 9:00 AM and 5:00 PM to 8:00 PM), rail operators deploy maximum trainsets on the mainlines, yielding typical headways of <strong>3.5 to 4.5 minutes</strong> on MRT-3 and LRT-1, and <strong>4 to 5 minutes</strong> on LRT-2. Off-peak midday and weekend windows relax spacing to roughly 5 to 8 minutes as trainsets rotate for preventive inspection.
+					</p>
+					<p>
+						<strong>What if you miss the last train?</strong> Along the entire EDSA corridor from Monumento through North Avenue, Cubao, Ortigas, Ayala, Taft Avenue, and PITX, the <a href="/tools/edsa-carousel" class="text-mapa-green font-bold hover:underline">EDSA Carousel Busway</a> continues operating <strong>24 hours a day, 7 days a week</strong> in dedicated center-median lanes. Meanwhile, along the Manila-Quezon City-Rizal Aurora Boulevard corridor served by LRT-2, traditional jeepneys and modern PUVs operate through the night at lower frequencies; use the <a href="/tools/fare-calculator" class="text-mapa-green font-bold hover:underline">LTFRB Commute Fare Calculator</a> to estimate overnight bus and jeepney fares.
+					</p>
+				</div>
+			</section>
+
+			<!-- Official Sources -->
+			<section class="border-t border-mapa-contour/60 pt-8">
+				<h2 class="font-serif text-xl font-bold text-mapa-ink tracking-tight mb-3">
+					Official Transit Operator Reference Portals
+				</h2>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+					{RAIL_LINES.map((line) => (
+						<div class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour flex flex-col justify-between">
+							<div>
+								<h3 class="font-bold text-mapa-ink text-sm mb-1">{line.name}</h3>
+								<p class="text-mapa-ink/75">{line.operator}</p>
+							</div>
+							<a href={line.officialUrl} target="_blank" rel="noopener noreferrer" class="mt-3 text-mapa-green font-bold hover:underline inline-flex items-center gap-1">
+								<span>{line.advisoryLabel}</span>
+								<span>&rarr;</span>
+							</a>
+						</div>
+					))}
+				</div>
+			</section>
+		</article>
+	</main>
+
+	<Footer />
+
+	<script is:inline define:vars={{ clientPayload }}>
+		(function () {
+			const { lines, stations, specs } = clientPayload;
+			let activeLine = 'mrt3';
+			let activeStationId = 'mrt3_ayala';
+			let isWeekdayMode = true;
+			let useLiveClock = true;
+
+			const lineTabs = document.querySelectorAll('.line-tab');
+			const tableTabs = document.querySelectorAll('.table-tab-btn');
+			const tablePanels = document.querySelectorAll('.table-panel');
+			const stationSelect = document.getElementById('station-select');
+			const quickButtons = document.querySelectorAll('.quick-station-btn');
+			const dayWeekdayBtn = document.getElementById('day-weekday-btn');
+			const dayWeekendBtn = document.getElementById('day-weekend-btn');
+			const modeLiveBtn = document.getElementById('mode-live-btn');
+			const simTimeInput = document.getElementById('sim-time-input');
+			const clockDisplay = document.getElementById('manila-clock-display');
+			const clockDot = document.getElementById('live-clock-dot');
+
+			function getManilaNowParts() {
+				const now = new Date();
+				const formatter = new Intl.DateTimeFormat('en-US', {
+					timeZone: 'Asia/Manila',
+					hour12: false,
+					weekday: 'short',
+					hour: '2-digit',
+					minute: '2-digit',
+					second: '2-digit'
+				});
+				const parts = formatter.formatToParts(now);
+				const map = {};
+				parts.forEach((p) => {
+					map[p.type] = p.value;
+				});
+				const h = Number(map.hour === '24' ? '0' : map.hour);
+				const m = Number(map.minute);
+				const s = Number(map.second);
+				const isWeekend = map.weekday === 'Sat' || map.weekday === 'Sun';
+				return { h, m, s, isWeekend, totalMinutes: h * 60 + m + s / 60 };
+			}
+
+			// Auto-initialize weekday toggle from current Manila day
+			const initParts = getManilaNowParts();
+			isWeekdayMode = !initParts.isWeekend;
+
+			function format12H(totalMin) {
+				const wrapped = ((Math.round(totalMin) % 1440) + 1440) % 1440;
+				const h24 = Math.floor(wrapped / 60);
+				const mins = wrapped % 60;
+				const period = h24 >= 12 ? 'PM' : 'AM';
+				const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+				return `${h12}:${String(mins).padStart(2, '0')} ${period}`;
+			}
+
+			function formatDuration(diffMin) {
+				const rounded = Math.max(0, Math.round(diffMin));
+				const hrs = Math.floor(rounded / 60);
+				const mins = rounded % 60;
+				if (hrs === 0) return `${mins}m`;
+				return `${hrs}h ${mins}m`;
+			}
+
+			function getOffsetMinutes(lineKey, stationIndex) {
+				const spec = specs[lineKey];
+				const lineStations = stations[lineKey];
+				const st = lineStations[stationIndex];
+				const maxIdx = lineStations.length - 1;
+				const offsetFwd = Math.round(st.km * spec.minPerKm + stationIndex * spec.dwellMinPerStop);
+				const distRev = Math.max(0, spec.totalKm - st.km);
+				const offsetRev = Math.round(distRev * spec.minPerKm + (maxIdx - stationIndex) * spec.dwellMinPerStop);
+				return { offsetFwd, offsetRev };
+			}
+
+			function getCurrentHeadway(spec, currentMin) {
+				if (!isWeekdayMode) {
+					return { range: spec.weekendHeadwayMin, avg: (spec.weekendHeadwayMin[0] + spec.weekendHeadwayMin[1]) / 2, phase: 'Weekend / Holiday Cadence' };
+				}
+				const inMorningPeak = currentMin >= spec.peakMorningStartMin && currentMin <= spec.peakMorningEndMin;
+				const inEveningPeak = currentMin >= spec.peakEveningStartMin && currentMin <= spec.peakEveningEndMin;
+				if (inMorningPeak || inEveningPeak) {
+					return { range: spec.peakHeadwayMin, avg: (spec.peakHeadwayMin[0] + spec.peakHeadwayMin[1]) / 2, phase: 'Rush Hour Peak' };
+				}
+				if (currentMin >= 20 * 60 + 30 || currentMin < 5 * 60 + 30) {
+					return { range: spec.lateNightHeadwayMin, avg: (spec.lateNightHeadwayMin[0] + spec.lateNightHeadwayMin[1]) / 2, phase: 'Late / Early Window' };
+				}
+				return { range: spec.offPeakHeadwayMin, avg: (spec.offPeakHeadwayMin[0] + spec.offPeakHeadwayMin[1]) / 2, phase: 'Off-Peak Standard' };
+			}
+
+			function updateDayButtonsUI() {
+				if (isWeekdayMode) {
+					dayWeekdayBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-colors bg-mapa-green text-white';
+					dayWeekendBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-mapa-ink/75 hover:bg-mapa-canvas-dark transition-colors';
+				} else {
+					dayWeekendBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-colors bg-mapa-green text-white';
+					dayWeekdayBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-mapa-ink/75 hover:bg-mapa-canvas-dark transition-colors';
+				}
+			}
+
+			function updateLineTabsUI() {
+				const colorMap = {
+					mrt3: 'bg-[#0055A5] text-white border-[#0055A5] shadow-xs',
+					lrt1: 'bg-[#00843D] text-white border-[#00843D] shadow-xs',
+					lrt2: 'bg-[#6F2C91] text-white border-[#6F2C91] shadow-xs'
+				};
+				lineTabs.forEach((btn) => {
+					const key = btn.getAttribute('data-line-tab');
+					if (key === activeLine) {
+						btn.className = `line-tab px-3 py-2.5 rounded-xl border text-xs font-bold transition-all ${colorMap[key]}`;
+					} else {
+						btn.className = 'line-tab px-3 py-2.5 rounded-xl border text-xs font-bold transition-all bg-mapa-canvas text-mapa-ink/80 border-mapa-contour hover:border-mapa-green';
+					}
+				});
+			}
+
+			function populateStationSelect() {
+				const list = stations[activeLine];
+				stationSelect.innerHTML = '';
+				list.forEach((st) => {
+					const opt = document.createElement('option');
+					opt.value = st.id;
+					opt.textContent = st.isTransfer ? `${st.name} (Transfer)` : st.name;
+					stationSelect.appendChild(opt);
+				});
+				if (!list.some((s) => s.id === activeStationId)) {
+					activeStationId = list[Math.floor(list.length / 2)].id;
+				}
+				stationSelect.value = activeStationId;
+			}
+
+			function renderDirectionCard(prefix, dirSpec, offsetMin, currentMin, headwayInfo, gateCutoffBuffer) {
+				const firstTermMin = isWeekdayMode ? dirSpec.weekdayFirstMin : dirSpec.weekendFirstMin;
+				const lastTermMin = isWeekdayMode ? dirSpec.weekdayLastMin : dirSpec.weekendLastMin;
+				const firstPassMin = firstTermMin + offsetMin;
+				const lastPassMin = lastTermMin + offsetMin;
+				const cutoffMin = lastPassMin - gateCutoffBuffer;
+
+				document.getElementById(`${prefix}-dir-title`).textContent = dirSpec.label;
+				document.getElementById(`${prefix}-first-time`).textContent = format12H(firstPassMin);
+				document.getElementById(`${prefix}-last-time`).textContent = format12H(lastPassMin);
+				document.getElementById(`${prefix}-terminal-span`).textContent = `${format12H(firstTermMin)} - ${format12H(lastTermMin)}`;
+				document.getElementById(`${prefix}-cutoff-note`).textContent = `Gate cutoff: ${format12H(cutoffMin)}`;
+
+				const statusPill = document.getElementById(`${prefix}-status-pill`);
+				const headwayEl = document.getElementById(`${prefix}-headway`);
+				const nextEstEl = document.getElementById(`${prefix}-next-est`);
+				const countdownEl = document.getElementById(`${prefix}-countdown`);
+
+				const isRunning = currentMin >= firstPassMin && currentMin <= lastPassMin;
+				const minsUntilLast = lastPassMin - currentMin;
+				const minsUntilFirst = currentMin < firstPassMin ? firstPassMin - currentMin : 1440 - currentMin + firstPassMin;
+
+				if (!isRunning) {
+					statusPill.textContent = 'Closed';
+					statusPill.className = 'text-[11px] font-bold px-2.5 py-1 rounded-lg bg-rose-500/15 text-rose-700';
+					headwayEl.textContent = 'No Trains';
+					headwayEl.className = 'text-lg font-extrabold text-mapa-muted mt-0.5 block';
+					nextEstEl.textContent = `First train in ${formatDuration(minsUntilFirst)}`;
+					countdownEl.textContent = 'Service Ended';
+					countdownEl.className = 'text-base font-extrabold text-rose-700 mt-0.5 block';
+				} else if (minsUntilLast <= 30) {
+					statusPill.textContent = minsUntilLast <= gateCutoffBuffer ? 'Gates Closing' : 'Final 30m';
+					statusPill.className = 'text-[11px] font-bold px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-800';
+					headwayEl.textContent = `~${headwayInfo.range[0]}-${headwayInfo.range[1]} min`;
+					headwayEl.className = 'text-lg font-extrabold text-amber-700 mt-0.5 block';
+					const cyclePos = (currentMin - firstPassMin) % headwayInfo.avg;
+					const estWait = Math.max(0.5, Math.min(minsUntilLast, headwayInfo.avg - cyclePos));
+					nextEstEl.textContent = `Next cadence: ~${Math.ceil(estWait)} min`;
+					countdownEl.textContent = formatDuration(minsUntilLast);
+					countdownEl.className = 'text-lg font-extrabold text-amber-700 mt-0.5 block tabular-nums';
+				} else {
+					statusPill.textContent = 'Active';
+					statusPill.className = 'text-[11px] font-bold px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-700';
+					headwayEl.textContent = `~${headwayInfo.range[0]}-${headwayInfo.range[1]} min`;
+					headwayEl.className = 'text-lg font-extrabold text-mapa-green mt-0.5 block';
+					const cyclePos = (currentMin - firstPassMin) % headwayInfo.avg;
+					const estWait = Math.max(1, headwayInfo.avg - cyclePos);
+					nextEstEl.textContent = `Next cadence: ~${Math.ceil(estWait)} min`;
+					countdownEl.textContent = formatDuration(minsUntilLast);
+					countdownEl.className = 'text-lg font-extrabold text-mapa-ink mt-0.5 block tabular-nums';
+				}
+			}
+
+			function renderCadenceStrip(lineStations, spec, activeIdx, currentMin, headwayInfo) {
+				const container = document.getElementById('cadence-track');
+				const lineColor = activeLine === 'lrt1' ? '#00843D' : activeLine === 'lrt2' ? '#6F2C91' : '#0055A5';
+				const startMin = isWeekdayMode ? spec.forward.weekdayFirstMin : spec.forward.weekendFirstMin;
+				const endMin = isWeekdayMode ? spec.forward.weekdayLastMin : spec.forward.weekendLastMin;
+				const totalRun = Math.round(spec.totalKm * spec.minPerKm + (lineStations.length - 1) * spec.dwellMinPerStop);
+				const serviceOpen = currentMin >= startMin && currentMin <= endMin + totalRun;
+
+				let html = '<div class="min-w-[640px] relative pt-5 pb-7 px-3">';
+				html += `<div class="h-1.5 rounded-full w-full relative" style="background:${lineColor}30;">`;
+				if (serviceOpen) {
+					const numTrains = Math.max(2, Math.floor(totalRun / headwayInfo.avg));
+					for (let t = 0; t < numTrains; t++) {
+						const frac = (((currentMin * 60) / (headwayInfo.avg * 60) + t) % numTrains) / numTrains;
+						const pct = (frac * 96 + 2).toFixed(1);
+						html += `<span class="absolute -top-1 w-3.5 h-3.5 rounded-full border-2 border-white shadow-xs transition-all duration-500" style="left:${pct}%;background:${lineColor};" title="Simulated scheduled trainsets"></span>`;
+					}
+				}
+				html += '</div>';
+				html += '<div class="flex justify-between mt-2">';
+				lineStations.forEach((st, idx) => {
+					const isSelected = idx === activeIdx;
+					const showLabel = isSelected || idx === 0 || idx === lineStations.length - 1 || idx % 3 === 0;
+					html += `<button type="button" data-strip-station="${st.id}" class="flex flex-col items-center group cursor-pointer" style="width:${100 / lineStations.length}%;">`;
+					html += `<span class="w-2.5 h-2.5 -mt-[19px] rounded-full border-2 transition-transform ${isSelected ? 'scale-125 bg-mapa-rust border-white z-10' : 'bg-white border-mapa-ink/50 group-hover:scale-110'}"></span>`;
+					if (showLabel) {
+						const short = st.name.replace(/\s*\(.*\)/, '').replace('Araneta Center-', '');
+						html += `<span class="text-[9px] mt-1.5 text-center leading-tight ${isSelected ? 'font-bold text-mapa-rust' : 'text-mapa-muted'}">${short}</span>`;
+					}
+					html += '</button>';
+				});
+				html += '</div></div>';
+				container.innerHTML = html;
+
+				container.querySelectorAll('[data-strip-station]').forEach((btn) => {
+					btn.addEventListener('click', () => {
+						activeStationId = btn.getAttribute('data-strip-station');
+						stationSelect.value = activeStationId;
+						updateAll();
+					});
+				});
+			}
+
+			function updateAll() {
+				const lineMeta = lines.find((l) => l.id === activeLine);
+				const spec = specs[activeLine];
+				const lineStations = stations[activeLine];
+				const idx = Math.max(0, lineStations.findIndex((s) => s.id === activeStationId));
+				const station = lineStations[idx];
+
+				const nowParts = getManilaNowParts();
+				let evalMin = nowParts.totalMinutes;
+				let clockStr = `${format12H(nowParts.h * 60 + nowParts.m).replace(' ', `:${String(nowParts.s).padStart(2, '0')} `)} PHT`;
+				if (!useLiveClock && simTimeInput.value) {
+					const [sh, sm] = simTimeInput.value.split(':').map(Number);
+					evalMin = sh * 60 + sm;
+					clockStr = `${format12H(evalMin)} (Simulated)`;
+					clockDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-500';
+				} else {
+					const hPad = String(nowParts.h).padStart(2, '0');
+					const mPad = String(nowParts.m).padStart(2, '0');
+					if (simTimeInput.value !== `${hPad}:${mPad}` && useLiveClock) {
+						simTimeInput.value = `${hPad}:${mPad}`;
+					}
+					clockDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse';
+				}
+				clockDisplay.textContent = clockStr;
+
+				document.getElementById('selected-station-heading').textContent = `${lineMeta.shortName}: ${station.name}`;
+				document.getElementById('selected-station-meta').textContent = `${station.city} • KM ${station.km.toFixed(1)}${station.transferLabel ? ` • ${station.transferLabel}` : ''}`;
+				const advLink = document.getElementById('advisory-portal-link');
+				advLink.href = lineMeta.advisoryUrl;
+				advLink.textContent = lineMeta.advisoryLabel;
+				document.getElementById('line-spec-note').textContent = spec.scheduleNote;
+
+				const headwayInfo = getCurrentHeadway(spec, evalMin);
+				const { offsetFwd, offsetRev } = getOffsetMinutes(activeLine, idx);
+
+				// Global line phase badge
+				const badge = document.getElementById('service-phase-badge');
+				const anyOpen =
+					(evalMin >= (isWeekdayMode ? spec.forward.weekdayFirstMin : spec.forward.weekendFirstMin) + offsetFwd &&
+						evalMin <= (isWeekdayMode ? spec.forward.weekdayLastMin : spec.forward.weekendLastMin) + offsetFwd) ||
+					(evalMin >= (isWeekdayMode ? spec.reverse.weekdayFirstMin : spec.reverse.weekendFirstMin) + offsetRev &&
+						evalMin <= (isWeekdayMode ? spec.reverse.weekdayLastMin : spec.reverse.weekendLastMin) + offsetRev);
+
+				if (anyOpen) {
+					badge.textContent = `Open • ${headwayInfo.phase}`;
+					badge.className = 'text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 border border-emerald-500/30';
+				} else {
+					badge.textContent = 'Closed for Night Maintenance';
+					badge.className = 'text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-rose-500/15 text-rose-700 border border-rose-500/30';
+				}
+
+				renderDirectionCard('fwd', spec.forward, offsetFwd, evalMin, headwayInfo, spec.gateCutoffBeforeLastMin);
+				renderDirectionCard('rev', spec.reverse, offsetRev, evalMin, headwayInfo, spec.gateCutoffBeforeLastMin);
+				renderCadenceStrip(lineStations, spec, idx, evalMin, headwayInfo);
+
+				// Transfer warning box
+				const warnBox = document.getElementById('transfer-warning-box');
+				if (station.transferTo) {
+					let connMsg = '';
+					if (station.id === 'mrt3_cubao' || station.id === 'lrt2_cubao') {
+						connMsg = '<strong>Cubao Interchange Note:</strong> MRT-3 runs until 10:30 PM / 11:09 PM on weekdays, whereas connecting LRT-2 trains stop departing Antipolo at 9:00 PM and Recto at 9:30 PM (9:00 PM on weekends).';
+					} else if (station.id === 'lrt1_doroteo_jose' || station.id === 'lrt2_recto') {
+						connMsg = '<strong>Doroteo Jose / Recto Transfer Note:</strong> LRT-2 closes earlier (9:00 PM Antipolo / 9:30 PM Recto weekdays) than LRT-1 (10:30 PM / 10:45 PM weekdays). Check LRT-2 passing times before walking the footbridge after 8:45 PM.';
+					} else if (station.id === 'lrt1_edsa' || station.id === 'mrt3_taft') {
+						connMsg = '<strong>EDSA / Taft Transfer Note:</strong> Both lines run late on weekdays (~10:30 PM to 11:09 PM), and the 24/7 EDSA Carousel Busway departs right below the elevated station walkway.';
+					}
+					if (connMsg) {
+						warnBox.innerHTML = connMsg;
+						warnBox.classList.remove('hidden');
+					} else {
+						warnBox.classList.add('hidden');
+					}
+				} else {
+					warnBox.classList.add('hidden');
+				}
+			}
+
+			// Event listeners
+			lineTabs.forEach((btn) => {
+				btn.addEventListener('click', () => {
+					activeLine = btn.getAttribute('data-line-tab');
+					updateLineTabsUI();
+					populateStationSelect();
+					updateAll();
+				});
+			});
+
+			stationSelect.addEventListener('change', (e) => {
+				activeStationId = e.target.value;
+				updateAll();
+			});
+
+			quickButtons.forEach((btn) => {
+				btn.addEventListener('click', () => {
+					activeLine = btn.getAttribute('data-line');
+					activeStationId = btn.getAttribute('data-station');
+					updateLineTabsUI();
+					populateStationSelect();
+					updateAll();
+				});
+			});
+
+			dayWeekdayBtn.addEventListener('click', () => {
+				isWeekdayMode = true;
+				updateDayButtonsUI();
+				updateAll();
+			});
+
+			dayWeekendBtn.addEventListener('click', () => {
+				isWeekdayMode = false;
+				updateDayButtonsUI();
+				updateAll();
+			});
+
+			modeLiveBtn.addEventListener('click', () => {
+				useLiveClock = true;
+				modeLiveBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold border border-mapa-green bg-mapa-green/10 text-mapa-green transition-colors';
+				updateAll();
+			});
+
+			simTimeInput.addEventListener('input', () => {
+				if (simTimeInput.value) {
+					useLiveClock = false;
+					modeLiveBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold border border-mapa-contour bg-mapa-canvas text-mapa-ink/80 transition-colors';
+					updateAll();
+				}
+			});
+
+			// Timetable tabs
+			const tableColorMap = {
+				mrt3: 'bg-[#0055A5] text-white',
+				lrt1: 'bg-[#00843D] text-white',
+				lrt2: 'bg-[#6F2C91] text-white'
+			};
+			tableTabs.forEach((btn) => {
+				btn.addEventListener('click', () => {
+					const target = btn.getAttribute('data-table-tab');
+					tableTabs.forEach((b) => {
+						const k = b.getAttribute('data-table-tab');
+						b.className = `table-tab-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${k === target ? tableColorMap[k] : 'text-mapa-ink/80 hover:bg-mapa-canvas'}`;
+					});
+					tablePanels.forEach((p) => {
+						if (p.id === `table-panel-${target}`) p.classList.remove('hidden');
+						else p.classList.add('hidden');
+					});
+				});
+			});
+
+			updateDayButtonsUI();
+			updateLineTabsUI();
+			populateStationSelect();
+			updateAll();
+			setInterval(() => {
+				if (useLiveClock) updateAll();
+			}, 1000);
+		})();
+	</script>
+</BaseLayout>

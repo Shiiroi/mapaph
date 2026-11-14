@@ -79,6 +79,16 @@ const tools = [
 		badge: "51 Stations • 3 Lines"
 	},
 	{
+		id: "rail-schedule",
+		name: "MRT & LRT Schedule & Arrival Estimator",
+		status: "Active",
+		category: "Rail Operations",
+		url: "/tools/rail-schedule",
+		description: "Station-by-station First & Last Train passing times, peak/off-peak headway wait estimates, and gate cutoff alerts in Manila Time.",
+		image: null,
+		badge: "First & Last Train • UTC+8"
+	},
+	{
 		id: "toll",
 		name: "Expressway Toll & Schematic Route Calculator",
 		status: "Active",
@@ -245,6 +255,20 @@ const tools = [
 											Beep™ &amp; Single Journey Matrix
 										</div>
 										<span class="text-[10px] text-mapa-muted">{tool.badge}</span>
+									</div>
+								)}
+
+								{tool.id === "rail-schedule" && (
+									<div class="relative z-10 flex flex-col items-center gap-1.5 w-full max-w-[210px] text-[11px]">
+										<div class="w-full flex justify-between px-2.5 py-1 rounded bg-mapa-canvas border border-mapa-contour">
+											<span class="font-semibold text-mapa-ink">Last Train</span>
+											<span class="font-mono font-bold text-mapa-rust">11:09 PM</span>
+										</div>
+										<div class="w-full flex justify-between px-2.5 py-1 rounded bg-mapa-canvas border border-mapa-contour">
+											<span class="font-semibold text-mapa-ink">Peak Headway</span>
+											<span class="font-mono font-bold text-mapa-green">~3.5 min</span>
+										</div>
+										<span class="text-[10px] text-mapa-muted mt-0.5">{tool.badge}</span>
 									</div>
 								)}
 
