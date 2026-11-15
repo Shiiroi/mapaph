@@ -1,0 +1,1830 @@
+---
+/**
+ * @file train-arrival-ph.astro
+ * @description Train Arrival PH: Hybrid crowdsourced sightings + schedule cadence estimator for MRT-3, LRT-1, and LRT-2.
+ */
+
+import { loadEnv } from 'vite';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import {
+	RAIL_LINES,
+	STATIONS_DATA,
+	SCHEDULE_SPECS,
+	formatMinutesTo12H,
+	buildLineTimetable,
+	type LineKey
+} from '../../data/rail-lines';
+
+const env = loadEnv(import.meta.env.MODE, process.cwd(), '');
+
+const supabaseUrl = (
+	env.PUBLIC_SUPABASE_URL ||
+	env.VITE_SUPABASE_URL ||
+	process.env.PUBLIC_SUPABASE_URL ||
+	process.env.VITE_SUPABASE_URL ||
+	''
+)
+	.trim()
+	.replace(/\/+$/, '');
+
+const supabaseAnonKey = (
+	env.PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+	env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+	env.PUBLIC_SUPABASE_ANON_KEY ||
+	env.VITE_SUPABASE_ANON_KEY ||
+	process.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+	process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+	process.env.VITE_SUPABASE_ANON_KEY ||
+	process.env.PUBLIC_SUPABASE_ANON_KEY ||
+	''
+).trim();
+
+const timetablesByLine = {
+	mrt3: buildLineTimetable('mrt3'),
+	lrt1: buildLineTimetable('lrt1'),
+	lrt2: buildLineTimetable('lrt2')
+};
+
+const findStation = (line: LineKey, query: string) =>
+	STATIONS_DATA[line].find((s) => s.name.toLowerCase().includes(query.toLowerCase()));
+
+const quickHubs = [
+	{ label: 'North Ave', line: 'mrt3' as LineKey, st: findStation('mrt3', 'north') || STATIONS_DATA.mrt3[0] },
+	{ label: 'MRT Cubao', line: 'mrt3' as LineKey, st: findStation('mrt3', 'cubao') || STATIONS_DATA.mrt3[3] },
+	{ label: 'Ayala', line: 'mrt3' as LineKey, st: findStation('mrt3', 'ayala') || STATIONS_DATA.mrt3[9] },
+	{ label: 'Taft Ave', line: 'mrt3' as LineKey, st: findStation('mrt3', 'taft') || STATIONS_DATA.mrt3[STATIONS_DATA.mrt3.length - 1] },
+	{ label: 'D. Jose', line: 'lrt1' as LineKey, st: findStation('lrt1', 'jose') || STATIONS_DATA.lrt1[9] },
+	{ label: 'PITX', line: 'lrt1' as LineKey, st: findStation('lrt1', 'asia world') || STATIONS_DATA.lrt1[STATIONS_DATA.lrt1.length - 3] },
+	{ label: 'Recto', line: 'lrt2' as LineKey, st: findStation('lrt2', 'recto') || STATIONS_DATA.lrt2[0] },
+	{ label: 'Antipolo', line: 'lrt2' as LineKey, st: findStation('lrt2', 'antipolo') || STATIONS_DATA.lrt2[STATIONS_DATA.lrt2.length - 1] }
+].filter((h) => Boolean(h.st));
+
+const defaultMrt3Timetable = timetablesByLine.mrt3;
+const defaultLrt1Timetable = timetablesByLine.lrt1;
+const defaultLrt2Timetable = timetablesByLine.lrt2;
+---
+
+<BaseLayout
+	title="Train Arrival PH: Live Crowdsourced & Scheduled MRT-3, LRT-1, LRT-2 Tracker | mapaPH Tools"
+	description="Check live crowdsourced train sightings and scheduled arrival windows for MRT-3, LRT-1, and LRT-2 in Metro Manila. View station-by-station first and last train times, headway countdowns, opt-in GPS check-ins, and crowd reports in Manila Time."
+	keywords="train arrival ph, mrt 3 arrival time, lrt 1 arrival time, lrt 2 schedule, manila train tracker, crowdsource train location philippines, last train mrt 3, last train lrt 1, edsa carousel overnight"
+>
+	<script type="application/ld+json" slot="schema" is:inline>
+		{
+			"@context": "https://schema.org",
+			"@graph": [
+				{
+					"@type": "WebApplication",
+					"name": "Train Arrival PH: MRT-3, LRT-1 & LRT-2 Crowdsourced & Schedule Tracker",
+					"url": "https://www.mapaph.com/tools/train-arrival-ph",
+					"applicationCategory": "Public Transit & Commuter Utility",
+					"operatingSystem": "All",
+					"description": "Hybrid Metro Manila commuter tracker combining anonymous crowdsourced train sightings and opt-in station GPS snaps with deterministic dispatch schedules across all 51 MRT-3, LRT-1, and LRT-2 stations.",
+					"offers": {
+						"@type": "Offer",
+						"price": "0",
+						"priceCurrency": "PHP"
+					}
+				},
+				{
+					"@type": "BreadcrumbList",
+					"itemListElement": [
+						{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.mapaph.com" },
+						{ "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://www.mapaph.com/tools" },
+						{ "@type": "ListItem", "position": 3, "name": "Train Arrival PH", "item": "https://www.mapaph.com/tools/train-arrival-ph" }
+					]
+				},
+				{
+					"@type": "FAQPage",
+					"mainEntity": [
+						{
+							"@type": "Question",
+							"name": "Is Metro Manila train arrival tracking real-time GPS telemetry?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "Philippine rail operators (DOTr MRT-3, LRMC LRT-1, and LRTA LRT-2) do not currently publish public GTFS-RT or train GPS feeds. Train Arrival PH uses a transparent hybrid engine: when commuters tap to report a train arriving, riding on board, or station crowding (optionally snapped via browser GPS within 650 meters of a station), the page shows LIVE RIDER sightings. When no recent rider reports exist, it automatically falls back to ESTIMATED schedule cadence computed from published terminal dispatch times and segment distances."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "How does optional GPS train location sharing protect my privacy?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "Your raw latitude and longitude coordinates never leave your device. If you press Check In via GPS and grant browser permission, distance calculation runs locally in JavaScript to find the nearest rail station within 650 meters. Only the station ID, rail line, direction, and report label are shared, never your GPS coordinates or identity."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "What time is the last train on MRT-3, LRT-1, and LRT-2?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "On weekdays, MRT-3 extended operations dispatch the last southbound train from North Avenue at 10:30 PM and the last northbound train from Taft Avenue at 11:09 PM (reverting to 9:30 PM and 10:09 PM on weekends). LRT-1 weekday last trips leave Fernando Poe Jr. at 10:30 PM and Dr. Santos at 10:45 PM. LRT-2 closes earlier: 9:00 PM from Antipolo and 9:30 PM from Recto on weekdays, or 9:00 PM both ways on weekends. Station gates generally close 5 minutes prior."
+							}
+						},
+						{
+							"@type": "Question",
+							"name": "What can commuters ride after MRT-3 or LRT-1 closes for the night?",
+							"acceptedAnswer": {
+								"@type": "Answer",
+								"text": "After rail services conclude around 9:30 PM to 11:09 PM, the EDSA Carousel BRT busway runs 24/7 along the dedicated EDSA center median from Monumento to PITX, directly serving major transfer points including North Avenue, Quezon Avenue, Ortigas, Guadalupe, Ayala, and Taft Avenue."
+							}
+						}
+					]
+				}
+			]
+		}
+	</script>
+
+	<Navbar />
+
+	<main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 text-mapa-ink">
+		<!-- Header -->
+		<div class="max-w-4xl mb-6">
+			<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs font-sans text-mapa-muted mb-3">
+				<a href="/" class="hover:text-mapa-green transition-colors">Home</a>
+				<span>/</span>
+				<a href="/tools" class="hover:text-mapa-green transition-colors">Tools</a>
+				<span>/</span>
+				<span class="text-mapa-ink font-medium">Train Arrival PH</span>
+			</nav>
+			<div class="flex flex-wrap items-center gap-2 mb-2.5">
+				<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-mapa-green/15 text-mapa-green border border-mapa-green/30">
+					Crowdsourced + Schedule Cadence
+				</span>
+				<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-mapa-navy/10 text-mapa-navy border border-mapa-navy/25">
+					MRT-3 &bull; LRT-1 &bull; LRT-2
+				</span>
+			</div>
+			<h1 class="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-mapa-ink">
+				Train Arrival PH: MRT-3, LRT-1 &amp; LRT-2 Tracker
+			</h1>
+			<p class="mt-2.5 text-sm sm:text-base text-mapa-ink/80 font-sans leading-relaxed max-w-3xl">
+				Check live crowdsourced commuter train sightings alongside estimated headway arrival windows, first and last trip passing times, and 5-minute gate cutoffs across all 51 Metro Manila stations in Philippine Standard Time (UTC+8).
+			</p>
+		</div>
+
+		<!-- Transparency Banner: Honest Data Source Disclosure -->
+		<div class="mb-6 rounded-xl border border-mapa-contour bg-mapa-canvas-dark px-4 py-3 text-xs sm:text-sm font-sans flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+			<div class="flex items-start sm:items-center gap-2.5 text-mapa-ink/85">
+				<span class="mt-0.5 sm:mt-0 inline-flex shrink-0 items-center justify-center w-5 h-5 rounded-full bg-mapa-navy/15 text-mapa-navy font-bold text-[11px]">i</span>
+				<p class="leading-snug">
+					<strong>How this data works:</strong> PH rail operators do not publish public GPS or GTFS-RT train APIs. Sightings labeled <span class="font-bold text-mapa-green">LIVE RIDER</span> come from anonymous commuter check-ins in the last 15 minutes; otherwise, arrivals automatically show <span class="font-bold text-mapa-navy">ESTIMATED</span> schedule math.
+				</p>
+			</div>
+			<span id="feedConnectionPill" class="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold border border-mapa-contour bg-mapa-canvas text-mapa-muted whitespace-nowrap self-start sm:self-center">
+				<span id="feedConnectionDot" class="w-2 h-2 rounded-full bg-amber-500"></span>
+				<span id="feedConnectionText">Checking live rider feed...</span>
+			</span>
+		</div>
+
+		<!-- Interactive Tracker Application Shell -->
+		<section aria-label="Interactive Train Arrival and Crowdsource Tracker" class="rounded-2xl border border-mapa-contour bg-mapa-canvas-dark shadow-xs overflow-hidden mb-10 font-sans">
+			<!-- Top Utility Bar: Manila Clock + Day Type Toggle (Uniform Height Items) -->
+			<div class="px-4 sm:px-6 py-3.5 border-b border-mapa-contour bg-mapa-canvas flex flex-wrap items-center justify-between gap-3">
+				<div class="flex items-center gap-2.5 h-10 px-3 rounded-xl border border-mapa-contour bg-mapa-canvas-dark">
+					<span class="w-2 h-2 rounded-full bg-mapa-green animate-pulse shrink-0"></span>
+					<span class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted whitespace-nowrap">Manila Time</span>
+					<span id="manilaClock" class="font-mono text-sm sm:text-base font-bold text-mapa-ink whitespace-nowrap">--:-- --</span>
+					<span id="manilaDayTag" class="hidden sm:inline-block text-[11px] font-medium text-mapa-muted whitespace-nowrap">PHT</span>
+				</div>
+
+				<div class="flex items-center gap-1 p-1 h-10 rounded-xl border border-mapa-contour bg-mapa-canvas-dark" role="group" aria-label="Schedule day mode">
+					<button type="button" data-day-btn="auto" class="day-mode-btn h-8 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap bg-mapa-green text-white">
+						Auto
+					</button>
+					<button type="button" data-day-btn="weekday" class="day-mode-btn h-8 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap text-mapa-ink/80 hover:text-mapa-ink">
+						Weekday
+					</button>
+					<button type="button" data-day-btn="weekend" class="day-mode-btn h-8 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap text-mapa-ink/80 hover:text-mapa-ink">
+						Weekend / Holiday
+					</button>
+				</div>
+			</div>
+
+			<!-- Balanced 2-Column Line & Station Controls + Full-Width Quick Hubs -->
+			<div class="p-4 sm:p-6 border-b border-mapa-contour space-y-4">
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div>
+						<label for="lineSelect" class="block text-xs font-bold uppercase tracking-wider text-mapa-muted mb-1.5">
+							1. Select Rail Line
+						</label>
+						<select id="lineSelect" class="w-full h-11 px-3.5 rounded-xl border border-mapa-contour bg-mapa-canvas text-sm font-semibold text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/40 focus:border-mapa-green cursor-pointer">
+							{RAIL_LINES.map((line) => (
+								<option value={line.id} selected={line.id === 'mrt3'}>
+									{line.shortName} ({line.stationsCount} stations) - {line.terminals}
+								</option>
+							))}
+						</select>
+						<p id="lineOperatorMeta" class="mt-1.5 text-[11px] text-mapa-muted leading-tight">
+							DOTr MRT-3 &bull; 13 Stations along EDSA Corridor
+						</p>
+					</div>
+
+					<div>
+						<label for="stationSelect" class="block text-xs font-bold uppercase tracking-wider text-mapa-muted mb-1.5">
+							2. Select Boarding Station
+						</label>
+						<select id="stationSelect" class="w-full h-11 px-3.5 rounded-xl border border-mapa-contour bg-mapa-canvas text-sm font-semibold text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/40 focus:border-mapa-green cursor-pointer">
+							{STATIONS_DATA.mrt3.map((st, idx) => (
+								<option value={st.id} selected={idx === 0}>
+									{idx + 1}. {st.name} ({st.city})
+								</option>
+							))}
+						</select>
+						<p id="stationMetaNote" class="mt-1.5 text-[11px] text-mapa-muted leading-tight">
+							North Avenue (Quezon City) &bull; km 0.0
+						</p>
+					</div>
+				</div>
+
+				<!-- Clean Single-Row Quick Transfer Hubs -->
+				<div class="pt-3 border-t border-mapa-contour/60 flex flex-wrap items-center gap-2">
+					<span class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted mr-1 whitespace-nowrap">
+						Quick Hubs:
+					</span>
+					{quickHubs.map((hub) => (
+						<button
+							type="button"
+							data-hub-line={hub.line}
+							data-hub-station={hub.st.id}
+							class="quick-hub-btn h-8 px-3 rounded-lg text-xs font-medium border border-mapa-contour bg-mapa-canvas text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer whitespace-nowrap"
+						>
+							{hub.label}
+						</button>
+					))}
+					<button
+						type="button"
+						id="gpsLocateBtn"
+						class="sm:ml-auto h-8 px-3 rounded-lg text-xs font-semibold border border-mapa-green/40 bg-mapa-green/10 text-mapa-green hover:bg-mapa-green hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap"
+					>
+						<svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06z" />
+						</svg>
+						<span>Use My GPS</span>
+					</button>
+				</div>
+				<div id="gpsStatusBanner" class="hidden rounded-xl border px-3.5 py-2 text-xs leading-snug"></div>
+			</div>
+
+			<!-- Two Directional Arrival & Live Sighting Cards -->
+			<div class="p-4 sm:p-6 space-y-5">
+				<div id="serviceAlertBanner" class="hidden rounded-xl border px-4 py-3 text-xs sm:text-sm font-medium"></div>
+
+				<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+					<!-- Direction 1: Forward (Southbound / Eastbound) -->
+					<div id="cardFwd" class="rounded-xl border border-mapa-contour bg-mapa-canvas p-4 sm:p-5 flex flex-col justify-between gap-4">
+						<div>
+							<div class="flex items-start justify-between gap-2 mb-3">
+								<div class="min-w-0">
+									<div class="flex items-center gap-2 flex-wrap">
+										<span id="fwdDirPill" class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-mapa-navy text-white whitespace-nowrap">
+											Southbound
+										</span>
+										<span id="fwdSourceBadge" class="px-2 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wide border border-mapa-contour bg-mapa-canvas-dark text-mapa-navy whitespace-nowrap">
+											ESTIMATED &bull; SCHEDULE
+										</span>
+									</div>
+									<p id="fwdDestLabel" class="text-xs font-medium text-mapa-muted mt-1.5 truncate">
+										Towards Taft Avenue
+									</p>
+								</div>
+								<span id="fwdStatusChip" class="shrink-0 px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap bg-mapa-green/15 text-mapa-green border border-mapa-green/30">
+									Operating
+								</span>
+							</div>
+
+							<div class="rounded-lg bg-mapa-canvas-dark border border-mapa-contour/80 p-3.5">
+								<div id="fwdPrimaryHeadline" class="text-xs font-semibold uppercase tracking-wider text-mapa-muted">
+									Next Expected Train
+								</div>
+								<div class="mt-1 flex items-baseline justify-between gap-2 flex-wrap">
+									<div id="fwdCountdown" class="font-mono text-2xl sm:text-3xl font-extrabold text-mapa-ink">
+										~4 min
+									</div>
+									<div id="fwdExactTime" class="font-mono text-xs sm:text-sm font-semibold text-mapa-green">
+										Est. --:-- --
+									</div>
+								</div>
+								<p id="fwdLiveDetail" class="mt-1.5 text-xs text-mapa-ink/80 leading-snug">
+									Loading schedule baseline...
+								</p>
+							</div>
+						</div>
+
+						<div class="grid grid-cols-3 gap-2 pt-3 border-t border-mapa-contour/70 text-xs">
+							<div>
+								<span class="block text-[10px] uppercase font-bold tracking-wider text-mapa-muted">First Train</span>
+								<span id="fwdFirstTime" class="font-mono font-bold text-mapa-ink">--:--</span>
+							</div>
+							<div>
+								<span class="block text-[10px] uppercase font-bold tracking-wider text-mapa-muted">Last Train</span>
+								<span id="fwdLastTime" class="font-mono font-bold text-mapa-rust">--:--</span>
+							</div>
+							<div>
+								<span class="block text-[10px] uppercase font-bold tracking-wider text-mapa-muted">Gate Cutoff</span>
+								<span id="fwdCutoffTime" class="font-mono font-bold text-mapa-ink">--:--</span>
+							</div>
+						</div>
+					</div>
+
+					<!-- Direction 2: Reverse (Northbound / Westbound) -->
+					<div id="cardRev" class="rounded-xl border border-mapa-contour bg-mapa-canvas p-4 sm:p-5 flex flex-col justify-between gap-4">
+						<div>
+							<div class="flex items-start justify-between gap-2 mb-3">
+								<div class="min-w-0">
+									<div class="flex items-center gap-2 flex-wrap">
+										<span id="revDirPill" class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-mapa-green text-white whitespace-nowrap">
+											Northbound
+										</span>
+										<span id="revSourceBadge" class="px-2 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wide border border-mapa-contour bg-mapa-canvas-dark text-mapa-navy whitespace-nowrap">
+											ESTIMATED &bull; SCHEDULE
+										</span>
+									</div>
+									<p id="revDestLabel" class="text-xs font-medium text-mapa-muted mt-1.5 truncate">
+										Towards North Avenue
+									</p>
+								</div>
+								<span id="revStatusChip" class="shrink-0 px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap bg-mapa-green/15 text-mapa-green border border-mapa-green/30">
+									Operating
+								</span>
+							</div>
+
+							<div class="rounded-lg bg-mapa-canvas-dark border border-mapa-contour/80 p-3.5">
+								<div id="revPrimaryHeadline" class="text-xs font-semibold uppercase tracking-wider text-mapa-muted">
+									Next Expected Train
+								</div>
+								<div class="mt-1 flex items-baseline justify-between gap-2 flex-wrap">
+									<div id="revCountdown" class="font-mono text-2xl sm:text-3xl font-extrabold text-mapa-ink">
+										~5 min
+									</div>
+									<div id="revExactTime" class="font-mono text-xs sm:text-sm font-semibold text-mapa-green">
+										Est. --:-- --
+									</div>
+								</div>
+								<p id="revLiveDetail" class="mt-1.5 text-xs text-mapa-ink/80 leading-snug">
+									Loading schedule baseline...
+								</p>
+							</div>
+						</div>
+
+						<div class="grid grid-cols-3 gap-2 pt-3 border-t border-mapa-contour/70 text-xs">
+							<div>
+								<span class="block text-[10px] uppercase font-bold tracking-wider text-mapa-muted">First Train</span>
+								<span id="revFirstTime" class="font-mono font-bold text-mapa-ink">--:--</span>
+							</div>
+							<div>
+								<span class="block text-[10px] uppercase font-bold tracking-wider text-mapa-muted">Last Train</span>
+								<span id="revLastTime" class="font-mono font-bold text-mapa-rust">--:--</span>
+							</div>
+							<div>
+								<span class="block text-[10px] uppercase font-bold tracking-wider text-mapa-muted">Gate Cutoff</span>
+								<span id="revCutoffTime" class="font-mono font-bold text-mapa-ink">--:--</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Corridor Cadence & Live Pin Track Strip (Zero Vertical Offset Architecture) -->
+				<div class="rounded-xl border border-mapa-contour bg-mapa-canvas p-4">
+					<div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+						<div>
+							<h2 class="text-sm font-bold text-mapa-ink">
+								Line Corridor Strip: Live Rider Sightings vs Estimated Cadence
+							</h2>
+							<p class="text-[11px] text-mapa-muted">
+								Pulsing green dots mark real commuter check-ins (last 15 min). Outlined markers show schedule cadence estimates.
+							</p>
+						</div>
+						<div class="flex items-center gap-3 text-[11px] font-medium text-mapa-muted">
+							<span class="inline-flex items-center gap-1.5">
+								<span class="w-2.5 h-2.5 rounded-full bg-emerald-600 ring-2 ring-emerald-500/30"></span>
+								Live Rider Pin
+							</span>
+							<span class="inline-flex items-center gap-1.5">
+								<span class="w-2.5 h-2.5 rounded-sm border border-mapa-navy bg-mapa-canvas-dark"></span>
+								Est. Train
+							</span>
+						</div>
+					</div>
+
+					<div class="flex sm:hidden items-center justify-between text-[11px] text-mapa-muted mb-1.5">
+						<span>Station corridor view</span>
+						<span class="font-semibold text-mapa-green">Swipe left / right &harr;</span>
+					</div>
+
+					<div class="overflow-x-auto pb-1">
+						<div class="min-w-[680px] sm:min-w-full">
+							<div class="flex items-center justify-between text-[11px] font-mono text-mapa-muted px-2 mb-1">
+								<span id="stripLeftLabel">North Ave</span>
+								<span id="stripMidLabel" class="font-sans text-[10px] uppercase tracking-wider">Click any station dot to inspect</span>
+								<span id="stripRightLabel">Taft Ave</span>
+							</div>
+
+							<!-- Unified Track Stage: Bar, Station Dots, Est Trains, and Live Pins ALL center at top-1/2 -translate-y-1/2 -->
+							<div id="trackStage" class="relative h-12 w-full select-none">
+								<div
+									id="trackBar"
+									class="absolute top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-mapa-contour/70"
+									style="left: 2%; right: 2%;"
+								></div>
+								<div id="trackStationsLayer" class="absolute inset-0"></div>
+								<div id="trackEstTrainsLayer" class="absolute inset-0 pointer-events-none"></div>
+								<div id="trackLivePinsLayer" class="absolute inset-0 pointer-events-none"></div>
+							</div>
+
+							<!-- Dedicated Selected & Terminal Label Row beneath TrackStage -->
+							<div id="trackLabelsLayer" class="relative h-6 w-full mt-0.5 text-[11px]"></div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Commuter Check-In Panel (Crowdsourcing Controls) -->
+				<div class="rounded-xl border border-mapa-contour bg-mapa-canvas p-4 sm:p-5">
+					<div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-mapa-contour/70">
+						<div>
+							<h2 class="text-base font-bold text-mapa-ink flex items-center gap-2">
+								<span>Report Live Train Location or Station Crowd</span>
+								<span id="gpsVerifiedTag" class="hidden px-2 py-0.5 rounded-md text-[10px] font-bold uppercase bg-emerald-600/15 text-emerald-700 border border-emerald-600/30">
+									GPS Station Verified
+								</span>
+							</h2>
+							<p class="text-xs text-mapa-muted mt-0.5">
+								At <strong id="checkInStationLabel" class="text-mapa-ink">North Avenue</strong>? Pick your bound direction and crowd level, then tap a live status below.
+							</p>
+						</div>
+
+						<!-- Check-In Direction & Crowd Selectors -->
+						<div class="flex flex-wrap items-center gap-2">
+							<div class="inline-flex rounded-lg border border-mapa-contour bg-mapa-canvas-dark p-0.5" role="group" aria-label="Check-in direction">
+								<button type="button" data-checkin-dir="fwd" class="checkin-dir-btn h-8 px-2.5 rounded-md text-xs font-semibold cursor-pointer transition-colors bg-mapa-navy text-white whitespace-nowrap">
+									Southbound
+								</button>
+								<button type="button" data-checkin-dir="rev" class="checkin-dir-btn h-8 px-2.5 rounded-md text-xs font-semibold cursor-pointer transition-colors text-mapa-ink/80 hover:text-mapa-ink whitespace-nowrap">
+									Northbound
+								</button>
+							</div>
+
+							<div class="inline-flex rounded-lg border border-mapa-contour bg-mapa-canvas-dark p-0.5" role="group" aria-label="Platform crowd level">
+								<button type="button" data-crowd="light" class="crowd-btn h-8 px-2.5 rounded-md text-xs font-medium cursor-pointer transition-colors text-mapa-ink/80">
+									Light
+								</button>
+								<button type="button" data-crowd="moderate" class="crowd-btn h-8 px-2.5 rounded-md text-xs font-semibold cursor-pointer transition-colors bg-mapa-canvas text-mapa-ink shadow-2xs">
+									Moderate
+								</button>
+								<button type="button" data-crowd="packed" class="crowd-btn h-8 px-2.5 rounded-md text-xs font-medium cursor-pointer transition-colors text-mapa-ink/80">
+									Packed
+								</button>
+							</div>
+						</div>
+					</div>
+
+					<!-- 1-Tap Check-In Buttons -->
+					<div class="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+						<button type="button" data-report="arriving" class="report-btn min-h-[44px] px-3 py-2.5 rounded-xl border border-emerald-600/40 bg-emerald-600/10 hover:bg-emerald-600 hover:text-white text-emerald-800 text-xs font-bold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-left flex items-center justify-between gap-2">
+							<span>Train Arriving Here</span>
+							<span class="text-[10px] font-mono uppercase opacity-75">Live Pin</span>
+						</button>
+						<button type="button" data-report="on_board" class="report-btn min-h-[44px] px-3 py-2.5 rounded-xl border border-mapa-navy/35 bg-mapa-navy/10 hover:bg-mapa-navy hover:text-white text-mapa-navy text-xs font-bold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-left flex items-center justify-between gap-2">
+							<span>I Am On Board Now</span>
+							<span class="text-[10px] font-mono uppercase opacity-75">Moving</span>
+						</button>
+						<button type="button" data-report="crowded" class="report-btn min-h-[44px] px-3 py-2.5 rounded-xl border border-amber-600/40 bg-amber-500/10 hover:bg-amber-600 hover:text-white text-amber-800 text-xs font-bold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-left flex items-center justify-between gap-2">
+							<span>Long Queue / Packed</span>
+							<span class="text-[10px] font-mono uppercase opacity-75">Crowd</span>
+						</button>
+						<button type="button" data-report="delayed" class="report-btn min-h-[44px] px-3 py-2.5 rounded-xl border border-mapa-rust/40 bg-mapa-rust/10 hover:bg-mapa-rust hover:text-white text-mapa-rust text-xs font-bold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-left flex items-center justify-between gap-2">
+							<span>Hold / Technical Delay</span>
+							<span class="text-[10px] font-mono uppercase opacity-75">Alert</span>
+						</button>
+					</div>
+
+					<div id="checkInFeedback" class="hidden mt-3 rounded-lg border px-3 py-2 text-xs font-medium"></div>
+
+					<!-- Recent Commuter Sightings Stream -->
+					<div class="mt-5 pt-4 border-t border-mapa-contour/70">
+						<div class="flex items-center justify-between gap-2 mb-2.5">
+							<h3 class="text-xs font-bold uppercase tracking-wider text-mapa-muted">
+								Recent Rider Check-Ins (Last 15 Minutes)
+							</h3>
+							<button type="button" id="refreshFeedBtn" class="text-xs font-semibold text-mapa-green hover:underline cursor-pointer">
+								Refresh Feed
+							</button>
+						</div>
+						<div id="liveSightingsList" class="space-y-2 text-xs text-mapa-muted">
+							<div class="rounded-lg border border-dashed border-mapa-contour px-3 py-2.5">
+								Checking recent sightings on this line...
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Pre-Rendered Complete Station Timetable Matrix (SSR for SEO + Instant Inspection) -->
+		<section class="mb-12 font-sans" aria-label="Complete First and Last Train Station Timetable">
+			<div class="max-w-3xl mb-5">
+				<span class="text-xs font-bold uppercase tracking-wider text-mapa-green">
+					Station-by-Station Schedule Reference
+				</span>
+				<h2 class="font-serif text-2xl sm:text-3xl font-bold text-mapa-ink mt-1">
+					Estimated First &amp; Last Train Windows Across All 51 Stations
+				</h2>
+				<p class="mt-2 text-sm text-mapa-ink/80 leading-relaxed">
+					Use the reference tables below to verify approximate first and last train passing times along MRT-3, LRT-1, and LRT-2. Always arrive at station concourses at least 5 to 10 minutes before the final trip to clear baggage inspection and Stored Value or Single Journey ticket gates.
+				</p>
+			</div>
+
+			<div class="space-y-8">
+				<!-- MRT-3 SSR Table -->
+				<div class="rounded-2xl border border-mapa-contour bg-mapa-canvas-dark overflow-hidden">
+					<div class="px-5 py-3.5 border-b border-mapa-contour bg-mapa-canvas flex flex-wrap items-center justify-between gap-2">
+						<div>
+							<h3 class="font-serif text-lg font-bold text-mapa-ink">MRT-3 Station Timetable (North Ave &harr; Taft Ave)</h3>
+							<p class="text-xs text-mapa-muted">{SCHEDULE_SPECS.mrt3.scheduleNote}</p>
+						</div>
+						<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-mapa-navy text-white">13 Stations</span>
+					</div>
+					<div class="overflow-x-auto">
+						<table class="w-full text-left text-xs border-collapse">
+							<thead class="bg-mapa-canvas border-b border-mapa-contour text-mapa-muted uppercase text-[10px] font-bold">
+								<tr>
+									<th class="p-3">Station</th>
+									<th class="p-3">KM</th>
+									<th class="p-3">Weekday First (SB / NB)</th>
+									<th class="p-3">Weekday Last (SB / NB)</th>
+									<th class="p-3">Weekend Last (SB / NB)</th>
+								</tr>
+							</thead>
+							<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85">
+								{defaultMrt3Timetable.map((row) => (
+									<tr class="hover:bg-mapa-canvas/60">
+										<td class="p-3 font-semibold text-mapa-ink">{row.station.name}</td>
+										<td class="p-3 font-mono text-mapa-muted">{row.station.km.toFixed(1)}</td>
+										<td class="p-3 font-mono">{formatMinutesTo12H(row.weekdayFirstFwd)} / {formatMinutesTo12H(row.weekdayFirstRev)}</td>
+										<td class="p-3 font-mono font-bold text-mapa-rust">{formatMinutesTo12H(row.weekdayLastFwd)} / {formatMinutesTo12H(row.weekdayLastRev)}</td>
+										<td class="p-3 font-mono text-mapa-muted">{formatMinutesTo12H(row.weekendLastFwd)} / {formatMinutesTo12H(row.weekendLastRev)}</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<!-- LRT-1 SSR Table -->
+				<div class="rounded-2xl border border-mapa-contour bg-mapa-canvas-dark overflow-hidden">
+					<div class="px-5 py-3.5 border-b border-mapa-contour bg-mapa-canvas flex flex-wrap items-center justify-between gap-2">
+						<div>
+							<h3 class="font-serif text-lg font-bold text-mapa-ink">LRT-1 Station Timetable (FPJ &harr; Dr. Santos Cavite Extension)</h3>
+							<p class="text-xs text-mapa-muted">{SCHEDULE_SPECS.lrt1.scheduleNote}</p>
+						</div>
+						<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-mapa-green text-white">25 Stations</span>
+					</div>
+					<div class="overflow-x-auto">
+						<table class="w-full text-left text-xs border-collapse">
+							<thead class="bg-mapa-canvas border-b border-mapa-contour text-mapa-muted uppercase text-[10px] font-bold">
+								<tr>
+									<th class="p-3">Station</th>
+									<th class="p-3">KM</th>
+									<th class="p-3">Weekday First (SB / NB)</th>
+									<th class="p-3">Weekday Last (SB / NB)</th>
+									<th class="p-3">Weekend Last (SB / NB)</th>
+								</tr>
+							</thead>
+							<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85">
+								{defaultLrt1Timetable.map((row) => (
+									<tr class="hover:bg-mapa-canvas/60">
+										<td class="p-3 font-semibold text-mapa-ink">{row.station.name}</td>
+										<td class="p-3 font-mono text-mapa-muted">{row.station.km.toFixed(1)}</td>
+										<td class="p-3 font-mono">{formatMinutesTo12H(row.weekdayFirstFwd)} / {formatMinutesTo12H(row.weekdayFirstRev)}</td>
+										<td class="p-3 font-mono font-bold text-mapa-rust">{formatMinutesTo12H(row.weekdayLastFwd)} / {formatMinutesTo12H(row.weekdayLastRev)}</td>
+										<td class="p-3 font-mono text-mapa-muted">{formatMinutesTo12H(row.weekendLastFwd)} / {formatMinutesTo12H(row.weekendLastRev)}</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<!-- LRT-2 SSR Table -->
+				<div class="rounded-2xl border border-mapa-contour bg-mapa-canvas-dark overflow-hidden">
+					<div class="px-5 py-3.5 border-b border-mapa-contour bg-mapa-canvas flex flex-wrap items-center justify-between gap-2">
+						<div>
+							<h3 class="font-serif text-lg font-bold text-mapa-ink">LRT-2 Station Timetable (Recto &harr; Antipolo)</h3>
+							<p class="text-xs text-mapa-muted">{SCHEDULE_SPECS.lrt2.scheduleNote}</p>
+						</div>
+						<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-800 text-white">13 Stations</span>
+					</div>
+					<div class="overflow-x-auto">
+						<table class="w-full text-left text-xs border-collapse">
+							<thead class="bg-mapa-canvas border-b border-mapa-contour text-mapa-muted uppercase text-[10px] font-bold">
+								<tr>
+									<th class="p-3">Station</th>
+									<th class="p-3">KM</th>
+									<th class="p-3">Weekday First (EB / WB)</th>
+									<th class="p-3">Weekday Last (EB / WB)</th>
+									<th class="p-3">Weekend Last (EB / WB)</th>
+								</tr>
+							</thead>
+							<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85">
+								{defaultLrt2Timetable.map((row) => (
+									<tr class="hover:bg-mapa-canvas/60">
+										<td class="p-3 font-semibold text-mapa-ink">{row.station.name}</td>
+										<td class="p-3 font-mono text-mapa-muted">{row.station.km.toFixed(1)}</td>
+										<td class="p-3 font-mono">{formatMinutesTo12H(row.weekdayFirstFwd)} / {formatMinutesTo12H(row.weekdayFirstRev)}</td>
+										<td class="p-3 font-mono font-bold text-mapa-rust">{formatMinutesTo12H(row.weekdayLastFwd)} / {formatMinutesTo12H(row.weekdayLastRev)}</td>
+										<td class="p-3 font-mono text-mapa-muted">{formatMinutesTo12H(row.weekendLastFwd)} / {formatMinutesTo12H(row.weekendLastRev)}</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Long-form Philippine Commuter Guide & Methodology Article (>1,000 prose words, zero emdashes) -->
+		<article class="max-w-4xl space-y-8 font-sans border-t border-mapa-contour pt-10">
+			<section>
+				<h2 class="font-serif text-2xl sm:text-3xl font-bold text-mapa-ink mb-3">
+					Why Metro Manila Train Tracking Uses Both Crowdsourcing and Dispatch Math
+				</h2>
+				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed mb-3">
+					Unlike transit authorities in Singapore, Tokyo, or London that publish open GTFS Realtime feeds every few seconds, Metro Manila rail operators currently run closed signaling systems without public API endpoints. Neither DOTr MRT-3, Light Rail Manila Corporation (LRMC) for LRT-1, nor LRTA for LRT-2 streams automated train telemetry directly to third-party commuter websites. When a transit app in the Philippines displays an estimated wait time on its own, that figure comes from deterministic schedule intervals rather than transponder hardware mounted inside the trainset.
+				</p>
+				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed">
+					Train Arrival PH bridges that data gap honestly. Whenever active passengers tap a check-in button on this page (such as reporting an arriving train, riding on board between stops, or flagging platform congestion), the directional cards surface that crowdsourced observation first under a clearly marked LIVE RIDER badge. When no recent rider reports exist within the trailing 15-minute window, the tracker never fabricates fake live pings: it openly displays ESTIMATED status backed by published terminal dispatches, station-to-station kilometer offsets, average commercial speeds, and typical dwell times.
+				</p>
+			</section>
+
+			<section>
+				<h2 class="font-serif text-2xl font-bold text-mapa-ink mb-3">
+					How Opt-In GPS Station Snapping Works Without Storing Your Location
+				</h2>
+				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed mb-3">
+					Pressing the Use My GPS button lets commuters snap straight to their current platform without scrolling through 51 station names during rush hour. Your browser requests high-accuracy device coordinates strictly inside client-side memory and runs a Haversine distance check against the known coordinates of every MRT-3, LRT-1, and LRT-2 platform. If your phone is within 650 meters of a station entrance or viaduct, the tracker locks onto that station automatically and tags your next report as a GPS-verified station sighting.
+				</p>
+				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed">
+					Privacy remains enforced by design: your raw latitude and longitude never leave your browser and are never transmitted or written to any server or database column. Only the matched station identifier, rail line code, bound direction, report category, and an anonymous per-browser spam-control token are stored for a short 20-minute public display window before automatic cleanup removes older rows after two hours. If your device is farther than 650 meters from any rail station, GPS auto-snap declines to mark a live pin so remote users cannot accidentally skew platform wait estimates.
+				</p>
+			</section>
+
+			<section>
+				<h2 class="font-serif text-2xl font-bold text-mapa-ink mb-3">
+					Peak Rush Hours, Skip-Stop Mechanics, and Evening Gate Cutoffs
+				</h2>
+				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed mb-3">
+					Headways across Metro Manila shift substantially between peak weekday commuter windows and midday or weekend operations. During morning rush hours (6:00 AM to 9:00 AM) and evening rush hours (5:00 PM to 8:00 PM), MRT-3 and LRT-1 typically insert extra trainsets to sustain 3.5 to 4.5 minute average headways. During off-peak hours (9:00 AM to 5:00 PM), headways widen to roughly 5 to 6.5 minutes on MRT-3 and LRT-1, and 6 to 7.5 minutes along LRT-2 between Recto and Antipolo.
+				</p>
+				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed">
+					Commuters catching late evening transfers should always check station passing windows carefully rather than relying only on origin terminal times. For example, although the extended weekday MRT-3 schedule dispatches its final northbound train from Taft Avenue at 11:09 PM, that train takes nearly 30 minutes to reach Cubao or Quezon Avenue, while southbound trains departing North Avenue leave as early as 10:30 PM. Concourse ticket gates close approximately 5 minutes prior to the final train arrival in each direction so station staff can sweep platforms safely.
+				</p>
+			</section>
+
+			<section>
+				<h2 class="font-serif text-2xl font-bold text-mapa-ink mb-3">
+					Planning Late-Night Transfers Across Cubao, Recto, and EDSA Taft
+				</h2>
+				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed mb-3">
+					Because LRT-2 closes earlier than both MRT-3 and LRT-1 (final trains leave Antipolo at 9:00 PM daily, and Recto at 9:30 PM on weekdays or 9:00 PM on weekends), travelers heading home past 9:15 PM through Araneta Center-Cubao or Doroteo Jose often misjudge their transfer buffer. A passenger boarding MRT-3 at Ayala at 9:15 PM will arrive at Cubao around 9:35 PM, too late for the final westbound LRT-2 trip toward Recto and only barely catching or missing late eastbound trips passing through Cubao toward Marikina-Pasig and Antipolo.
+				</p>
+				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed">
+					Similarly, commuters transferring at EDSA Taft (southbound MRT-3 into LRT-1 toward PITX and Dr. Santos) need an extra 4 to 6 minutes to walk the elevated covered footbridge and queue at the LRT-1 stored-value tap gates. If the last LRT-1 trip has already passed your transfer station, the EDSA Carousel busway operating 24 hours a day directly beneath MRT-3 serves Monumento through PITX at regulated LTFRB fares.
+				</p>
+			</section>
+
+			<!-- Cross-links to Companion mapaPH Tools -->
+			<section class="p-5 rounded-2xl bg-mapa-canvas-dark border border-mapa-contour">
+				<h2 class="font-serif text-lg font-bold text-mapa-ink mb-3">
+					Companion Philippine Transit &amp; Fare Utilities
+				</h2>
+				<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+					<a href="/tools/rail-transit" class="p-3.5 rounded-xl bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-colors block">
+						<span class="font-bold text-mapa-green block mb-0.5">MRT &amp; LRT Fare Matrix &rarr;</span>
+						<span class="text-mapa-ink/75">Station-to-station beep vs SJT prices and interactive route map.</span>
+					</a>
+					<a href="/tools/edsa-carousel" class="p-3.5 rounded-xl bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-colors block">
+						<span class="font-bold text-mapa-green block mb-0.5">24/7 EDSA Carousel Guide &rarr;</span>
+						<span class="text-mapa-ink/75">Overnight center-median BRT stops from Monumento to PITX.</span>
+					</a>
+					<a href="/tools/fare-calculator" class="p-3.5 rounded-xl bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-colors block">
+						<span class="font-bold text-mapa-green block mb-0.5">LTFRB Jeepney &amp; Bus Fares &rarr;</span>
+						<span class="text-mapa-ink/75">Calculate jeepney, modern PUV, and provincial bus distances.</span>
+					</a>
+				</div>
+			</section>
+		</article>
+	</main>
+
+	<Footer />
+
+	<script
+		is:inline
+		define:vars={{
+			linesData: RAIL_LINES,
+			stationsData: STATIONS_DATA,
+			specsData: SCHEDULE_SPECS,
+			timetablesByLine,
+			supabaseUrl,
+			supabaseAnonKey
+		}}
+	>
+		(function () {
+			const LOCAL_PREVIEW_KEY = 'mapaph_rail_sightings_local_preview_v1';
+			const CLIENT_TOKEN_KEY = 'mapaph_rail_client_token_v1';
+			const LIVE_WINDOW_MS = 15 * 60 * 1000;
+			const GPS_MAX_RADIUS_METERS = 650;
+			const COOLDOWN_MS = 20000;
+
+			let currentLine = 'mrt3';
+			let currentStationId = stationsData.mrt3[0].id;
+			let dayMode = 'auto';
+			let checkInDir = 'fwd';
+			let crowdLevel = 'moderate';
+			let gpsSnapState = { active: false, lineKey: null, stationId: null, distMeters: null };
+			let remoteSightings = [];
+			let localPreviewSightings = loadLocalPreviewSightings();
+			let feedStatus = { state: 'checking', message: 'Checking live rider feed...' };
+			let cooldownUntilMs = 0;
+			let cooldownInterval = null;
+
+			const lineSelect = document.getElementById('lineSelect');
+			const stationSelect = document.getElementById('stationSelect');
+			const lineOperatorMeta = document.getElementById('lineOperatorMeta');
+			const stationMetaNote = document.getElementById('stationMetaNote');
+			const manilaClockEl = document.getElementById('manilaClock');
+			const manilaDayTagEl = document.getElementById('manilaDayTag');
+			const feedConnectionPill = document.getElementById('feedConnectionPill');
+			const feedConnectionDot = document.getElementById('feedConnectionDot');
+			const feedConnectionText = document.getElementById('feedConnectionText');
+			const gpsLocateBtn = document.getElementById('gpsLocateBtn');
+			const gpsStatusBanner = document.getElementById('gpsStatusBanner');
+			const gpsVerifiedTag = document.getElementById('gpsVerifiedTag');
+			const serviceAlertBanner = document.getElementById('serviceAlertBanner');
+			const checkInStationLabel = document.getElementById('checkInStationLabel');
+			const checkInFeedback = document.getElementById('checkInFeedback');
+			const liveSightingsList = document.getElementById('liveSightingsList');
+			const refreshFeedBtn = document.getElementById('refreshFeedBtn');
+
+			const stripLeftLabel = document.getElementById('stripLeftLabel');
+			const stripRightLabel = document.getElementById('stripRightLabel');
+			const trackStationsLayer = document.getElementById('trackStationsLayer');
+			const trackEstTrainsLayer = document.getElementById('trackEstTrainsLayer');
+			const trackLivePinsLayer = document.getElementById('trackLivePinsLayer');
+			const trackLabelsLayer = document.getElementById('trackLabelsLayer');
+
+			function getOrCreateClientToken() {
+				try {
+					let existing = window.localStorage.getItem(CLIENT_TOKEN_KEY);
+					if (existing && existing.length >= 12) return existing;
+					const rand =
+						typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+							? crypto.randomUUID().replace(/-/g, '')
+							: String(Date.now()) + Math.random().toString(36).slice(2, 14);
+					window.localStorage.setItem(CLIENT_TOKEN_KEY, rand);
+					return rand;
+				} catch (_err) {
+					return 'anon_' + Math.random().toString(36).slice(2, 14);
+				}
+			}
+
+			function loadLocalPreviewSightings() {
+				try {
+					const raw = window.localStorage.getItem(LOCAL_PREVIEW_KEY);
+					if (!raw) return [];
+					const parsed = JSON.parse(raw);
+					if (!Array.isArray(parsed)) return [];
+					const now = Date.now();
+					return parsed.filter((item) => item && item.created_at && now - Date.parse(item.created_at) <= LIVE_WINDOW_MS);
+				} catch (_err) {
+					return [];
+				}
+			}
+
+			function saveLocalPreviewSightings(items) {
+				try {
+					const now = Date.now();
+					const fresh = items.filter((item) => item && item.created_at && now - Date.parse(item.created_at) <= LIVE_WINDOW_MS);
+					window.localStorage.setItem(LOCAL_PREVIEW_KEY, JSON.stringify(fresh.slice(0, 25)));
+				} catch (_err) {
+					// Non-fatal if storage quota is disabled in private mode
+				}
+			}
+
+			function getManilaClock() {
+				const now = new Date();
+				const fmt = new Intl.DateTimeFormat('en-US', {
+					timeZone: 'Asia/Manila',
+					weekday: 'short',
+					hour: 'numeric',
+					minute: '2-digit',
+					second: '2-digit',
+					hour12: true
+				});
+				const numFmt = new Intl.DateTimeFormat('en-US', {
+					timeZone: 'Asia/Manila',
+					weekday: 'short',
+					hour: '2-digit',
+					minute: '2-digit',
+					hour12: false
+				});
+				const parts = numFmt.formatToParts(now);
+				const map = {};
+				parts.forEach((p) => {
+					map[p.type] = p.value;
+				});
+				const wd = (map.weekday || '').toLowerCase();
+				const hour = Number(map.hour || 0) % 24;
+				const minute = Number(map.minute || 0);
+				const isWeekendAuto = wd.startsWith('sat') || wd.startsWith('sun');
+				const timeStr = fmt.format(now);
+				return {
+					nowMs: now.getTime(),
+					totalMin: hour * 60 + minute,
+					isWeekendAuto,
+					weekdayLabel: map.weekday || 'Today',
+					formatted: timeStr
+				};
+			}
+
+			function fmt12h(totalMinutes) {
+				const wrapped = ((Math.round(totalMinutes) % 1440) + 1440) % 1440;
+				const h24 = Math.floor(wrapped / 60);
+				const m = wrapped % 60;
+				const ampm = h24 >= 12 ? 'PM' : 'AM';
+				const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+				return h12 + ':' + String(m).padStart(2, '0') + ' ' + ampm;
+			}
+
+			function formatAgeMinutes(createdAtIso, nowMs) {
+				const createdMs = Date.parse(createdAtIso);
+				if (Number.isNaN(createdMs)) return 'recent';
+				const diffSec = Math.max(0, Math.round((nowMs - createdMs) / 1000));
+				if (diffSec < 60) return 'just now';
+				const mins = Math.floor(diffSec / 60);
+				return mins + 'm ago';
+			}
+
+			function getEffectiveIsWeekend(clock) {
+				if (dayMode === 'weekend') return true;
+				if (dayMode === 'weekday') return false;
+				return clock.isWeekendAuto;
+			}
+
+			function getHeadwayRange(spec, nowMin, isWeekend) {
+				if (nowMin >= 20 * 60 + 30 || nowMin < 5 * 60 + 30) {
+					return spec.lateNightHeadwayMin;
+				}
+				if (isWeekend) {
+					return spec.weekendHeadwayMin;
+				}
+				const inMorningPeak = nowMin >= spec.peakMorningStartMin && nowMin <= spec.peakMorningEndMin;
+				const inEveningPeak = nowMin >= spec.peakEveningStartMin && nowMin <= spec.peakEveningEndMin;
+				if (inMorningPeak || inEveningPeak) {
+					return spec.peakHeadwayMin;
+				}
+				return spec.offPeakHeadwayMin;
+			}
+
+			function findStationById(lineKey, stationId) {
+				const list = stationsData[lineKey] || [];
+				return list.find((s) => s.id === stationId) || list[0];
+			}
+
+			function getTimetableEntry(lineKey, stationId) {
+				const table = timetablesByLine[lineKey] || [];
+				return table.find((row) => row.station.id === stationId) || table[0];
+			}
+
+			function haversineMeters(lat1, lon1, lat2, lon2) {
+				const R = 6371000;
+				const toRad = (d) => (d * Math.PI) / 180;
+				const dLat = toRad(lat2 - lat1);
+				const dLon = toRad(lon2 - lon1);
+				const a =
+					Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+					Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+				return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+			}
+
+			function getAllCombinedSightings(nowMs) {
+				const isFresh = (s) => {
+					if (!s || !s.created_at) return false;
+					const ts = Date.parse(s.created_at);
+					return !Number.isNaN(ts) && nowMs - ts <= LIVE_WINDOW_MS;
+				};
+				const freshRemote = remoteSightings.filter(isFresh);
+				const freshLocal = localPreviewSightings.filter(isFresh);
+				const merged = freshRemote.concat(freshLocal);
+				merged.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at));
+				return merged;
+			}
+
+			function setFeedBadge(state, text) {
+				feedStatus = { state, message: text };
+				feedConnectionText.textContent = text;
+				feedConnectionDot.className = 'w-2 h-2 rounded-full shrink-0';
+				if (state === 'connected') {
+					feedConnectionDot.classList.add('bg-emerald-500');
+					feedConnectionPill.className =
+						'shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold border border-emerald-600/30 bg-emerald-600/10 text-emerald-800 whitespace-nowrap self-start sm:self-center';
+				} else if (state === 'checking') {
+					feedConnectionDot.classList.add('bg-amber-500', 'animate-pulse');
+					feedConnectionPill.className =
+						'shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold border border-mapa-contour bg-mapa-canvas text-mapa-muted whitespace-nowrap self-start sm:self-center';
+				} else {
+					feedConnectionDot.classList.add('bg-amber-600');
+					feedConnectionPill.className =
+						'shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold border border-amber-600/35 bg-amber-500/10 text-amber-800 whitespace-nowrap self-start sm:self-center';
+				}
+			}
+
+			async function fetchLiveSightings() {
+				if (!supabaseUrl || !supabaseAnonKey) {
+					remoteSightings = [];
+					setFeedBadge('unconfigured', 'Schedule Mode (Public Supabase Env Missing)');
+					renderAll();
+					return;
+				}
+
+				const sinceIso = new Date(Date.now() - LIVE_WINDOW_MS).toISOString();
+				const endpoint =
+					supabaseUrl +
+					'/rest/v1/rail_sightings?select=id,line_key,station_id,direction,report_type,source_kind,crowd_level,created_at' +
+					'&line_key=eq.' +
+					encodeURIComponent(currentLine) +
+					'&created_at=gte.' +
+					encodeURIComponent(sinceIso) +
+					'&order=created_at.desc&limit=50';
+
+				try {
+					const res = await fetch(endpoint, {
+						headers: {
+							apikey: supabaseAnonKey,
+							Authorization: 'Bearer ' + supabaseAnonKey,
+							Accept: 'application/json'
+						}
+					});
+
+					if (!res.ok) {
+						let errDetail = 'HTTP ' + res.status;
+						try {
+							const body = await res.json();
+							if (body && body.message) errDetail += ' - ' + body.message;
+							if (res.status === 404 || (body && body.code === 'PGRST205')) {
+								setFeedBadge('migration_pending', 'Schedule Mode (Run SQL Migration for Shared Feed)');
+								remoteSightings = [];
+								renderAll();
+								return;
+							}
+						} catch (_parseErr) {
+							// keep HTTP status fallback
+						}
+						setFeedBadge('error', 'Live Feed Offline (' + errDetail + ')');
+						remoteSightings = [];
+						renderAll();
+						return;
+					}
+
+					const rows = await res.json();
+					remoteSightings = Array.isArray(rows) ? rows : [];
+					const count = remoteSightings.length;
+					setFeedBadge(
+						'connected',
+						count > 0 ? 'Shared Feed Connected (' + count + ' recent)' : 'Shared Feed Connected (0 sightings)'
+					);
+					renderAll();
+				} catch (err) {
+					const msg = err && err.message ? err.message : 'Network error';
+					setFeedBadge('error', 'Live Feed Unreachable (' + msg + ')');
+					remoteSightings = [];
+					renderAll();
+				}
+			}
+
+			function computeDirectionModel(dirKey, clock, isWeekend, lineSightings) {
+				const spec = specsData[currentLine];
+				const dirSpec = dirKey === 'fwd' ? spec.forward : spec.reverse;
+				const entry = getTimetableEntry(currentLine, currentStationId);
+				const firstMin =
+					dirKey === 'fwd'
+						? isWeekend
+							? entry.weekendFirstFwd
+							: entry.weekdayFirstFwd
+						: isWeekend
+						? entry.weekendFirstRev
+						: entry.weekdayFirstRev;
+				const lastMin =
+					dirKey === 'fwd'
+						? isWeekend
+							? entry.weekendLastFwd
+							: entry.weekdayLastFwd
+						: isWeekend
+						? entry.weekendLastRev
+						: entry.weekdayLastRev;
+				const termFirst = isWeekend ? dirSpec.weekendFirstMin : dirSpec.weekdayFirstMin;
+				const termLast = isWeekend ? dirSpec.weekendLastMin : dirSpec.weekdayLastMin;
+				const offset = dirKey === 'fwd' ? entry.offsetForwardMin : entry.offsetReverseMin;
+				const cutoffMin = lastMin - spec.gateCutoffBeforeLastMin;
+
+				const headwayRange = getHeadwayRange(spec, clock.totalMin, isWeekend);
+				const avgHeadway = (headwayRange[0] + headwayRange[1]) / 2;
+
+				let statusText = 'Operating';
+				let statusTone = 'open';
+				let estWaitMin = null;
+				let estArrivalStr = 'Ended';
+				let nextScheduledArrMin = null;
+
+				if (clock.totalMin < spec.gateOpenMin) {
+					statusText = 'Closed';
+					statusTone = 'closed';
+					estWaitMin = firstMin - clock.totalMin;
+					estArrivalStr = 'First: ' + fmt12h(firstMin);
+					nextScheduledArrMin = firstMin;
+				} else if (clock.totalMin < firstMin) {
+					statusText = 'Opening Soon';
+					statusTone = 'warn';
+					estWaitMin = firstMin - clock.totalMin;
+					estArrivalStr = 'First: ' + fmt12h(firstMin);
+					nextScheduledArrMin = firstMin;
+				} else if (clock.totalMin > lastMin) {
+					statusText = 'Service Ended';
+					statusTone = 'closed';
+					estWaitMin = null;
+					estArrivalStr = 'Use EDSA Carousel (24/7)';
+				} else {
+					if (clock.totalMin >= cutoffMin) {
+						statusText = 'Last Train / Gate Cutoff';
+						statusTone = 'warn';
+					}
+					// Walk deterministic departures spaced by avgHeadway from terminal
+					const elapsedSinceFirst = Math.max(0, clock.totalMin - firstMin);
+					const k = Math.ceil(elapsedSinceFirst / avgHeadway);
+					let candidate = Math.round(firstMin + k * avgHeadway);
+					if (candidate < clock.totalMin) candidate = clock.totalMin + 1;
+					if (candidate > lastMin) candidate = lastMin;
+					nextScheduledArrMin = candidate;
+					estWaitMin = Math.max(0, candidate - clock.totalMin);
+					estArrivalStr = 'Est. ' + fmt12h(candidate);
+				}
+
+				// Check live crowdsourced sightings for this direction
+				const selIdx = entry.index;
+				const dirReports = lineSightings.filter((s) => s.direction === dirKey);
+
+				let liveMatch = null;
+				let liveDelayed = null;
+				let latestCrowd = null;
+
+				for (let i = 0; i < dirReports.length; i++) {
+					const rep = dirReports[i];
+					if (!latestCrowd && rep.crowd_level) {
+						latestCrowd = rep;
+					}
+					if (rep.report_type === 'delayed' && !liveDelayed) {
+						liveDelayed = rep;
+					}
+					if (rep.report_type === 'arriving' || rep.report_type === 'on_board') {
+						const repEntry = getTimetableEntry(currentLine, rep.station_id);
+						const ageMin = Math.max(0, (clock.nowMs - Date.parse(rep.created_at)) / 60000);
+						if (rep.station_id === currentStationId && ageMin <= 5) {
+							liveMatch = {
+								kind: 'at_station',
+								report: rep,
+								stationName: repEntry.station.name,
+								ageStr: formatAgeMinutes(rep.created_at, clock.nowMs),
+								etaMin: 0
+							};
+							break;
+						}
+						const isUpstream = dirKey === 'fwd' ? repEntry.index < selIdx : repEntry.index > selIdx;
+						if (isUpstream && ageMin <= 14) {
+							const repOffset = dirKey === 'fwd' ? repEntry.offsetForwardMin : repEntry.offsetReverseMin;
+							const segDelta = Math.max(1, offset - repOffset);
+							const eta = Math.round(segDelta - ageMin);
+							if (eta >= -1 && eta <= 18) {
+								liveMatch = {
+									kind: 'approaching',
+									report: rep,
+									stationName: repEntry.station.name,
+									ageStr: formatAgeMinutes(rep.created_at, clock.nowMs),
+									etaMin: Math.max(0, eta)
+								};
+								break;
+							}
+						}
+					}
+				}
+
+				return {
+					dirSpec,
+					firstMin,
+					lastMin,
+					cutoffMin,
+					avgHeadway,
+					headwayRange,
+					statusText,
+					statusTone,
+					estWaitMin,
+					estArrivalStr,
+					nextScheduledArrMin,
+					liveMatch,
+					liveDelayed,
+					latestCrowd,
+					termFirst,
+					termLast
+				};
+			}
+
+			function renderDirectionCard(prefix, model) {
+				const dirPill = document.getElementById(prefix + 'DirPill');
+				const sourceBadge = document.getElementById(prefix + 'SourceBadge');
+				const destLabel = document.getElementById(prefix + 'DestLabel');
+				const statusChip = document.getElementById(prefix + 'StatusChip');
+				const headline = document.getElementById(prefix + 'PrimaryHeadline');
+				const countdown = document.getElementById(prefix + 'Countdown');
+				const exactTime = document.getElementById(prefix + 'ExactTime');
+				const liveDetail = document.getElementById(prefix + 'LiveDetail');
+				const firstEl = document.getElementById(prefix + 'FirstTime');
+				const lastEl = document.getElementById(prefix + 'LastTime');
+				const cutoffEl = document.getElementById(prefix + 'CutoffTime');
+
+				dirPill.textContent = model.dirSpec.shortDir;
+				destLabel.textContent = 'Towards ' + model.dirSpec.destinationTerminal;
+
+				statusChip.textContent = model.statusText;
+				statusChip.className = 'shrink-0 px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap border';
+				if (model.statusTone === 'open') {
+					statusChip.classList.add('bg-mapa-green/15', 'text-mapa-green', 'border-mapa-green/30');
+				} else if (model.statusTone === 'warn') {
+					statusChip.classList.add('bg-amber-500/15', 'text-amber-800', 'border-amber-600/35');
+				} else {
+					statusChip.classList.add('bg-mapa-rust/15', 'text-mapa-rust', 'border-mapa-rust/35');
+				}
+
+				firstEl.textContent = fmt12h(model.firstMin);
+				lastEl.textContent = fmt12h(model.lastMin);
+				cutoffEl.textContent = fmt12h(model.cutoffMin);
+
+				const estWaitLabel =
+					model.estWaitMin === null
+						? 'Ended'
+						: model.estWaitMin === 0
+						? 'Due now'
+						: '~' + model.estWaitMin + ' min';
+
+				if (model.liveMatch) {
+					const lm = model.liveMatch;
+					const isLocalOnly = Boolean(lm.report.isLocalOnly);
+					sourceBadge.textContent = isLocalOnly ? 'LOCAL PREVIEW PIN' : 'LIVE RIDER SIGHTING';
+					sourceBadge.className =
+						'px-2 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wide border whitespace-nowrap ' +
+						(isLocalOnly
+							? 'border-amber-600/40 bg-amber-500/15 text-amber-800'
+							: 'border-emerald-600/40 bg-emerald-600/15 text-emerald-800');
+					headline.textContent =
+						lm.kind === 'at_station' ? 'Live Commuter Report (On Platform)' : 'Live Commuter Train Approaching';
+					countdown.textContent =
+						lm.etaMin === 0 ? 'Arriving / Boarding' : '~' + lm.etaMin + ' min away';
+					exactTime.textContent = 'Reported ' + lm.ageStr + (lm.report.source_kind === 'gps_snap' ? ' (GPS)' : '');
+
+					let msg =
+						lm.kind === 'at_station'
+							? 'Passenger reported train at ' + lm.stationName + ' ' + lm.ageStr + '.'
+							: 'Spotted at ' + lm.stationName + ' (' + lm.ageStr + ').';
+					msg += ' Schedule baseline: ' + estWaitLabel + ' (' + model.estArrivalStr + ').';
+					if (model.liveDelayed) {
+						msg += ' Caution: Delay reported recently.';
+					}
+					liveDetail.textContent = msg;
+				} else {
+					sourceBadge.textContent = 'ESTIMATED • SCHEDULE';
+					sourceBadge.className =
+						'px-2 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wide border border-mapa-contour bg-mapa-canvas-dark text-mapa-navy whitespace-nowrap';
+					headline.textContent = model.estWaitMin === null ? 'Service Window' : 'Estimated Next Train (No Live Reports)';
+					countdown.textContent = estWaitLabel;
+					exactTime.textContent = model.estArrivalStr;
+
+					let fallbackNote =
+						model.estWaitMin === null
+							? 'Outside operating hours. Night riders use 24/7 EDSA Carousel.'
+							: 'Headway cadence: every ' + model.headwayRange[0] + '-' + model.headwayRange[1] + ' mins. Be the first on platform to check in.';
+					if (model.liveDelayed) {
+						fallbackNote = 'Delay alert reported recently on this direction. ' + fallbackNote;
+					} else if (model.latestCrowd) {
+						fallbackNote += ' Crowd reported: ' + model.latestCrowd.crowd_level.toUpperCase() + '.';
+					}
+					liveDetail.textContent = fallbackNote;
+				}
+			}
+
+			function renderCorridorTrack(clock, isWeekend, lineSightings) {
+				const stations = stationsData[currentLine];
+				const spec = specsData[currentLine];
+				const maxIdx = stations.length - 1;
+				const lineMeta = linesData.find((l) => l.id === currentLine) || linesData[0];
+
+				stripLeftLabel.textContent = stations[0].name;
+				stripRightLabel.textContent = stations[maxIdx].name;
+
+				trackStationsLayer.innerHTML = '';
+				trackEstTrainsLayer.innerHTML = '';
+				trackLivePinsLayer.innerHTML = '';
+				trackLabelsLayer.innerHTML = '';
+
+				// Index live sightings by station
+				const sightingsByStation = {};
+				lineSightings.forEach((s) => {
+					if (!sightingsByStation[s.station_id]) sightingsByStation[s.station_id] = [];
+					sightingsByStation[s.station_id].push(s);
+				});
+
+				stations.forEach((st, idx) => {
+					const pct = (2 + (idx / maxIdx) * 96).toFixed(3);
+					const isSelected = st.id === currentStationId;
+					const hasLive = Boolean(sightingsByStation[st.id] && sightingsByStation[st.id].length > 0);
+
+					// Station touch wrapper centered directly on top-1/2 -translate-y-1/2
+					const btn = document.createElement('button');
+					btn.type = 'button';
+					btn.className =
+						'absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center cursor-pointer group focus:outline-none ' +
+						(isSelected ? 'z-30' : 'z-10 hover:z-20');
+					btn.style.left = pct + '%';
+					btn.title = st.name + ' (' + st.city + ')';
+					btn.setAttribute('aria-label', 'Select ' + st.name);
+
+					const dot = document.createElement('span');
+					dot.className = 'block rounded-full border-2 border-mapa-canvas transition-transform shadow-2xs';
+					if (isSelected) {
+						dot.classList.add('w-4', 'h-4', 'scale-110');
+						dot.style.backgroundColor = lineMeta.color;
+						dot.style.boxShadow = '0 0 0 3px rgba(61, 90, 69, 0.28)';
+					} else if (hasLive) {
+						dot.classList.add('w-3.5', 'h-3.5', 'bg-emerald-600');
+					} else if (st.isTransfer) {
+						dot.classList.add('w-3', 'h-3', 'bg-mapa-navy');
+					} else {
+						dot.classList.add('w-2.5', 'h-2.5', 'bg-mapa-contour');
+					}
+
+					btn.appendChild(dot);
+					btn.addEventListener('click', () => {
+						currentStationId = st.id;
+						stationSelect.value = st.id;
+						updateUrlParams();
+						renderAll();
+					});
+					trackStationsLayer.appendChild(btn);
+
+					// Label only selected station inside trackLabelsLayer to guarantee zero overlapping text across 25 stops
+					if (isSelected) {
+						const lbl = document.createElement('span');
+						lbl.className = 'absolute top-0 font-bold text-mapa-ink bg-mapa-canvas-dark px-2 py-0.5 rounded border border-mapa-contour whitespace-nowrap shadow-2xs';
+						lbl.style.left = pct + '%';
+						if (idx <= 1) {
+							lbl.style.transform = 'translateX(-10%)';
+						} else if (idx >= maxIdx - 1) {
+							lbl.style.transform = 'translateX(-90%)';
+						} else {
+							lbl.style.transform = 'translateX(-50%)';
+						}
+						lbl.textContent = st.name;
+						trackLabelsLayer.appendChild(lbl);
+					}
+
+					// Plot pulsing LIVE rider pin above/on track centered on top-1/2 -translate-y-1/2
+					if (hasLive) {
+						const rep = sightingsByStation[st.id][0];
+						const pin = document.createElement('span');
+						pin.className =
+							'absolute top-1/2 -translate-x-1/2 -translate-y-1/2 z-40 inline-flex items-center justify-center w-6 h-6 rounded-full ' +
+							(rep.report_type === 'delayed' ? 'bg-mapa-rust/25' : 'bg-emerald-500/30') +
+							' animate-ping';
+						pin.style.left = pct + '%';
+						trackLivePinsLayer.appendChild(pin);
+					}
+				});
+
+				// Plot estimated schedule cadence trains (deterministic from terminal dispatch & headway)
+				const endTable = timetablesByLine[currentLine];
+				const totalFwdTrip = endTable[maxIdx].offsetForwardMin;
+				const totalRevTrip = endTable[0].offsetReverseMin;
+				const headwayRange = getHeadwayRange(spec, clock.totalMin, isWeekend);
+				const avgHeadway = (headwayRange[0] + headwayRange[1]) / 2;
+
+				const fwdFirst = isWeekend ? spec.forward.weekendFirstMin : spec.forward.weekdayFirstMin;
+				const fwdLast = isWeekend ? spec.forward.weekendLastMin : spec.forward.weekdayLastMin;
+				const revFirst = isWeekend ? spec.reverse.weekendFirstMin : spec.reverse.weekdayFirstMin;
+				const revLast = isWeekend ? spec.reverse.weekendLastMin : spec.reverse.weekdayLastMin;
+
+				// Forward estimated markers
+				for (let d = fwdFirst; d <= fwdLast; d += avgHeadway) {
+					const elapsed = clock.totalMin - d;
+					if (elapsed >= 0 && elapsed <= totalFwdTrip) {
+						const progress = elapsed / Math.max(1, totalFwdTrip);
+						const xPct = (2 + progress * 96).toFixed(2);
+						const marker = document.createElement('span');
+						marker.className =
+							'absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-sm border border-mapa-navy bg-mapa-canvas text-[8px] font-bold text-mapa-navy flex items-center justify-center shadow-2xs z-20';
+						marker.style.left = xPct + '%';
+						marker.textContent = '>';
+						trackEstTrainsLayer.appendChild(marker);
+					}
+				}
+
+				// Reverse estimated markers
+				for (let d = revFirst; d <= revLast; d += avgHeadway) {
+					const elapsed = clock.totalMin - d;
+					if (elapsed >= 0 && elapsed <= totalRevTrip) {
+						const progress = 1 - elapsed / Math.max(1, totalRevTrip);
+						const xPct = (2 + progress * 96).toFixed(2);
+						const marker = document.createElement('span');
+						marker.className =
+							'absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-sm border border-mapa-green bg-mapa-canvas text-[8px] font-bold text-mapa-green flex items-center justify-center shadow-2xs z-20';
+						marker.style.left = xPct + '%';
+						marker.textContent = '<';
+						trackEstTrainsLayer.appendChild(marker);
+					}
+				}
+			}
+
+			function renderSightingsList(clock, lineSightings) {
+				if (!lineSightings.length) {
+					liveSightingsList.innerHTML = '';
+					const emptyBox = document.createElement('div');
+					const isOfflineState =
+						feedStatus.state === 'error' ||
+						feedStatus.state === 'migration_pending' ||
+						feedStatus.state === 'unconfigured';
+					emptyBox.className = isOfflineState
+						? 'rounded-lg border border-amber-600/35 bg-amber-500/10 px-3.5 py-2.5 text-amber-900'
+						: 'rounded-lg border border-dashed border-mapa-contour px-3.5 py-2.5 text-mapa-muted';
+					emptyBox.textContent = isOfflineState
+						? feedStatus.message + '. Directional arrivals above are using published schedule cadence math.'
+						: 'No rider sightings reported on this line in the past 15 minutes. Directional arrivals above are using published schedule cadence math.';
+					liveSightingsList.appendChild(emptyBox);
+					return;
+				}
+
+				const spec = specsData[currentLine];
+				liveSightingsList.innerHTML = '';
+				lineSightings.slice(0, 8).forEach((item) => {
+					const st = findStationById(currentLine, item.station_id);
+					const dirName = item.direction === 'fwd' ? spec.forward.shortDir : spec.reverse.shortDir;
+					const reportLabels = {
+						arriving: 'Train Arriving / Boarding',
+						on_board: 'Rider On Board',
+						crowded: 'Platform Packed / Long Queue',
+						delayed: 'Delay / Train Hold Reported'
+					};
+					const row = document.createElement('div');
+					row.className =
+						'flex flex-wrap items-center justify-between gap-2 rounded-lg border border-mapa-contour/80 bg-mapa-canvas-dark px-3 py-2';
+
+					const left = document.createElement('div');
+					left.className = 'flex items-center gap-2 flex-wrap';
+
+					const badge = document.createElement('span');
+					badge.className =
+						'px-2 py-0.5 rounded text-[10px] font-bold uppercase ' +
+						(item.isLocalOnly
+							? 'bg-amber-500/15 text-amber-800 border border-amber-600/30'
+							: 'bg-emerald-600/15 text-emerald-800 border border-emerald-600/30');
+					badge.textContent = item.isLocalOnly ? 'Local Preview' : item.source_kind === 'gps_snap' ? 'GPS Verified' : 'Live Rider';
+
+					const desc = document.createElement('span');
+					desc.className = 'font-medium text-mapa-ink';
+					desc.textContent =
+						(reportLabels[item.report_type] || item.report_type) +
+						' at ' +
+						st.name +
+						' (' +
+						dirName +
+						')';
+
+					left.appendChild(badge);
+					left.appendChild(desc);
+
+					if (item.crowd_level) {
+						const crowd = document.createElement('span');
+						crowd.className = 'px-1.5 py-0.5 rounded bg-mapa-canvas border border-mapa-contour text-[10px] text-mapa-muted uppercase font-semibold';
+						crowd.textContent = item.crowd_level;
+						left.appendChild(crowd);
+					}
+
+					const right = document.createElement('span');
+					right.className = 'font-mono text-[11px] text-mapa-muted';
+					right.textContent = formatAgeMinutes(item.created_at, clock.nowMs);
+
+					row.appendChild(left);
+					row.appendChild(right);
+					liveSightingsList.appendChild(row);
+				});
+			}
+
+			function renderAll() {
+				const clock = getManilaClock();
+				const isWeekend = getEffectiveIsWeekend(clock);
+				const spec = specsData[currentLine];
+				const lineMeta = linesData.find((l) => l.id === currentLine) || linesData[0];
+				const station = findStationById(currentLine, currentStationId);
+
+				manilaClockEl.textContent = clock.formatted;
+				manilaDayTagEl.textContent = clock.weekdayLabel + ' (' + (isWeekend ? 'Weekend/Holiday' : 'Weekday') + ')';
+
+				lineOperatorMeta.textContent = lineMeta.operator + ' • ' + lineMeta.stationsCount + ' Stations';
+				stationMetaNote.textContent =
+					station.name + ' (' + station.city + ') • km ' + station.km.toFixed(1) + (station.transferLabel ? ' • ' + station.transferLabel : '');
+				checkInStationLabel.textContent = station.name;
+
+				// Update GPS verified pill visibility
+				if (gpsSnapState.active && gpsSnapState.lineKey === currentLine && gpsSnapState.stationId === currentStationId) {
+					gpsVerifiedTag.classList.remove('hidden');
+				} else {
+					gpsVerifiedTag.classList.add('hidden');
+				}
+
+				// Update Check-In direction labels to match active line (e.g. Eastbound/Westbound for LRT-2)
+				document.querySelectorAll('.checkin-dir-btn').forEach((btn) => {
+					const dir = btn.getAttribute('data-checkin-dir');
+					btn.textContent = dir === 'fwd' ? spec.forward.shortDir : spec.reverse.shortDir;
+					if (dir === checkInDir) {
+						btn.className = 'checkin-dir-btn h-8 px-2.5 rounded-md text-xs font-semibold cursor-pointer transition-colors bg-mapa-navy text-white whitespace-nowrap';
+					} else {
+						btn.className = 'checkin-dir-btn h-8 px-2.5 rounded-md text-xs font-semibold cursor-pointer transition-colors text-mapa-ink/80 hover:text-mapa-ink whitespace-nowrap';
+					}
+				});
+
+				const allSightings = getAllCombinedSightings(clock.nowMs);
+				const lineSightings = allSightings.filter((s) => s.line_key === currentLine);
+
+				const fwdModel = computeDirectionModel('fwd', clock, isWeekend, lineSightings);
+				const revModel = computeDirectionModel('rev', clock, isWeekend, lineSightings);
+
+				renderDirectionCard('fwd', fwdModel);
+				renderDirectionCard('rev', revModel);
+				renderCorridorTrack(clock, isWeekend, lineSightings);
+				renderSightingsList(clock, lineSightings);
+
+				// Service Alert Banner for late-night gate cutoff or overnight transition
+				const activeFwdWarn = fwdModel.statusTone === 'warn';
+				const activeRevWarn = revModel.statusTone === 'warn';
+				const bothClosed = fwdModel.statusTone === 'closed' && revModel.statusTone === 'closed';
+				if (bothClosed) {
+					serviceAlertBanner.classList.remove('hidden');
+					serviceAlertBanner.className =
+						'rounded-xl border border-mapa-rust/40 bg-mapa-rust/10 text-mapa-rust px-4 py-3 text-xs sm:text-sm font-medium';
+					serviceAlertBanner.textContent =
+						lineMeta.shortName +
+						' service at ' +
+						station.name +
+						' is currently outside passenger hours. Overnight commuters along EDSA can take the 24/7 EDSA Carousel busway.';
+				} else if (activeFwdWarn || activeRevWarn) {
+					serviceAlertBanner.classList.remove('hidden');
+					serviceAlertBanner.className =
+						'rounded-xl border border-amber-600/40 bg-amber-500/10 text-amber-900 px-4 py-3 text-xs sm:text-sm font-medium';
+					serviceAlertBanner.textContent =
+						'Closing Warning: Last train gate cutoff is active or approaching within minutes. Proceed directly to platform gates now.';
+				} else {
+					serviceAlertBanner.classList.add('hidden');
+				}
+			}
+
+			function populateStationSelect(preferredStationId) {
+				const list = stationsData[currentLine] || [];
+				stationSelect.innerHTML = '';
+				list.forEach((st, idx) => {
+					const opt = document.createElement('option');
+					opt.value = st.id;
+					opt.textContent = idx + 1 + '. ' + st.name + ' (' + st.city + ')';
+					stationSelect.appendChild(opt);
+				});
+				const matched = list.find((s) => s.id === preferredStationId) || list[0];
+				currentStationId = matched.id;
+				stationSelect.value = currentStationId;
+			}
+
+			function updateUrlParams() {
+				try {
+					const url = new URL(window.location.href);
+					url.searchParams.set('line', currentLine);
+					url.searchParams.set('station', currentStationId);
+					window.history.replaceState({}, '', url.toString());
+				} catch (_err) {
+					// safe ignore in restricted frames
+				}
+			}
+
+			function showCheckInMessage(tone, text) {
+				checkInFeedback.classList.remove('hidden');
+				if (tone === 'success') {
+					checkInFeedback.className =
+						'mt-3 rounded-lg border border-emerald-600/35 bg-emerald-600/10 text-emerald-900 px-3 py-2 text-xs font-medium';
+				} else if (tone === 'warn') {
+					checkInFeedback.className =
+						'mt-3 rounded-lg border border-amber-600/40 bg-amber-500/10 text-amber-900 px-3 py-2 text-xs font-medium';
+				} else {
+					checkInFeedback.className =
+						'mt-3 rounded-lg border border-mapa-rust/40 bg-mapa-rust/10 text-mapa-rust px-3 py-2 text-xs font-medium';
+				}
+				checkInFeedback.textContent = text;
+			}
+
+			function startCooldownTimer() {
+				cooldownUntilMs = Date.now() + COOLDOWN_MS;
+				const reportBtns = document.querySelectorAll('.report-btn');
+				if (cooldownInterval) clearInterval(cooldownInterval);
+
+				function tick() {
+					const rem = Math.ceil((cooldownUntilMs - Date.now()) / 1000);
+					if (rem <= 0) {
+						clearInterval(cooldownInterval);
+						cooldownInterval = null;
+						reportBtns.forEach((b) => b.removeAttribute('disabled'));
+						return;
+					}
+					reportBtns.forEach((b) => b.setAttribute('disabled', 'true'));
+				}
+				tick();
+				cooldownInterval = setInterval(tick, 500);
+			}
+
+			async function submitSighting(reportType) {
+				const nowMs = Date.now();
+				if (nowMs < cooldownUntilMs) {
+					const waitSec = Math.ceil((cooldownUntilMs - nowMs) / 1000);
+					showCheckInMessage('warn', 'Cooldown active: wait ' + waitSec + 's before submitting another rider report.');
+					return;
+				}
+
+				const payload = {
+					line_key: currentLine,
+					station_id: currentStationId,
+					direction: checkInDir,
+					report_type: reportType,
+					source_kind:
+						gpsSnapState.active && gpsSnapState.lineKey === currentLine && gpsSnapState.stationId === currentStationId
+							? 'gps_snap'
+							: 'manual',
+					crowd_level: crowdLevel,
+					client_token: getOrCreateClientToken()
+				};
+
+				const station = findStationById(currentLine, currentStationId);
+
+				// Explicit fallback handling when shared DB is not configured or unmigrated
+				if (!supabaseUrl || !supabaseAnonKey) {
+					const localItem = Object.assign({ id: 'local_' + Date.now(), created_at: new Date().toISOString(), isLocalOnly: true }, payload);
+					localPreviewSightings.unshift(localItem);
+					saveLocalPreviewSightings(localPreviewSightings);
+					showCheckInMessage(
+						'warn',
+						'Saved locally in your browser preview for ' + station.name + ' (public Supabase env vars are not configured for cross-user broadcast).'
+					);
+					startCooldownTimer();
+					renderAll();
+					return;
+				}
+
+				try {
+					const res = await fetch(supabaseUrl + '/rest/v1/rail_sightings', {
+						method: 'POST',
+						headers: {
+							apikey: supabaseAnonKey,
+							Authorization: 'Bearer ' + supabaseAnonKey,
+							'Content-Type': 'application/json',
+							Prefer: 'return=representation'
+						},
+						body: JSON.stringify(payload)
+					});
+
+					if (!res.ok) {
+						let detail = 'HTTP ' + res.status;
+						let code = '';
+						try {
+							const errBody = await res.json();
+							if (errBody && errBody.message) detail = errBody.message;
+							if (errBody && errBody.code) code = errBody.code;
+						} catch (_e) {
+							// ignore body parse failure
+						}
+
+						if (res.status === 404 || code === 'PGRST205') {
+							const localItem = Object.assign(
+								{ id: 'local_' + Date.now(), created_at: new Date().toISOString(), isLocalOnly: true },
+								payload
+							);
+							localPreviewSightings.unshift(localItem);
+							saveLocalPreviewSightings(localPreviewSightings);
+							showCheckInMessage(
+								'warn',
+								'Shared rail_sightings table is not created yet in Supabase. Saved locally in your browser preview so you can see how live pins render.'
+							);
+							startCooldownTimer();
+							renderAll();
+							return;
+						}
+
+						if (res.status === 401 || res.status === 403 || code === '42501') {
+							showCheckInMessage('warn', 'Rate limit or policy check triggered: please wait 20 seconds between check-ins (' + detail + ').');
+							startCooldownTimer();
+							return;
+						}
+
+						showCheckInMessage('error', 'Failed to broadcast check-in: ' + detail);
+						return;
+					}
+
+					const inserted = await res.json();
+					const row = Array.isArray(inserted) && inserted[0] ? inserted[0] : Object.assign({ id: 'ok_' + Date.now(), created_at: new Date().toISOString() }, payload);
+					remoteSightings.unshift(row);
+					showCheckInMessage('success', 'Thank you! Live rider check-in posted for ' + station.name + '.');
+					startCooldownTimer();
+					renderAll();
+				} catch (err) {
+					const msg = err && err.message ? err.message : 'Network error';
+					showCheckInMessage('error', 'Network error sending rider check-in: ' + msg);
+				}
+			}
+
+			function handleGpsLocate() {
+				if (!navigator.geolocation) {
+					gpsStatusBanner.classList.remove('hidden');
+					gpsStatusBanner.className = 'rounded-xl border border-mapa-rust/40 bg-mapa-rust/10 text-mapa-rust px-3.5 py-2 text-xs';
+					gpsStatusBanner.textContent = 'Geolocation is not supported by this browser. Select your line and station manually.';
+					return;
+				}
+
+				gpsLocateBtn.disabled = true;
+				const origSpan = gpsLocateBtn.querySelector('span');
+				if (origSpan) origSpan.textContent = 'Locating...';
+
+				navigator.geolocation.getCurrentPosition(
+					(pos) => {
+						gpsLocateBtn.disabled = false;
+						if (origSpan) origSpan.textContent = 'Use My GPS';
+
+						const userLat = pos.coords.latitude;
+						const userLon = pos.coords.longitude;
+						let best = null;
+
+						['mrt3', 'lrt1', 'lrt2'].forEach((lk) => {
+							stationsData[lk].forEach((st) => {
+								const d = haversineMeters(userLat, userLon, st.lat, st.lon);
+								if (!best || d < best.distMeters) {
+									best = { lineKey: lk, station: st, distMeters: Math.round(d) };
+								}
+							});
+						});
+
+						gpsStatusBanner.classList.remove('hidden');
+						if (best && best.distMeters <= GPS_MAX_RADIUS_METERS) {
+							gpsSnapState = {
+								active: true,
+								lineKey: best.lineKey,
+								stationId: best.station.id,
+								distMeters: best.distMeters
+							};
+							currentLine = best.lineKey;
+							lineSelect.value = best.lineKey;
+							populateStationSelect(best.station.id);
+							updateUrlParams();
+							gpsStatusBanner.className =
+								'rounded-xl border border-emerald-600/35 bg-emerald-600/10 text-emerald-900 px-3.5 py-2 text-xs';
+							gpsStatusBanner.textContent =
+								'Snapped via GPS to ' +
+								best.station.name +
+								' (' +
+								best.lineKey.toUpperCase() +
+								', ~' +
+								best.distMeters +
+								'm away). Raw coordinates stay private in your browser.';
+							fetchLiveSightings();
+						} else if (best) {
+							gpsSnapState = { active: false, lineKey: null, stationId: null, distMeters: best.distMeters };
+							gpsStatusBanner.className =
+								'rounded-xl border border-amber-600/40 bg-amber-500/10 text-amber-900 px-3.5 py-2 text-xs';
+							gpsStatusBanner.textContent =
+								'Nearest rail station is ' +
+								best.station.name +
+								' (~' +
+								(best.distMeters / 1000).toFixed(1) +
+								' km away, outside the 650m platform fence). Manual selection stays enabled.';
+							renderAll();
+						}
+					},
+					(geoErr) => {
+						gpsLocateBtn.disabled = false;
+						if (origSpan) origSpan.textContent = 'Use My GPS';
+						gpsStatusBanner.classList.remove('hidden');
+						gpsStatusBanner.className = 'rounded-xl border border-mapa-rust/40 bg-mapa-rust/10 text-mapa-rust px-3.5 py-2 text-xs';
+						gpsStatusBanner.textContent =
+							'GPS permission declined or unavailable (' + (geoErr && geoErr.message ? geoErr.message : 'location blocked') + '). Manual selection remains active.';
+					},
+					{ enableHighAccuracy: true, timeout: 10000, maximumAge: 15000 }
+				);
+			}
+
+			// Event listeners
+			lineSelect.addEventListener('change', () => {
+				currentLine = lineSelect.value;
+				populateStationSelect(null);
+				updateUrlParams();
+				fetchLiveSightings();
+			});
+
+			stationSelect.addEventListener('change', () => {
+				currentStationId = stationSelect.value;
+				updateUrlParams();
+				renderAll();
+			});
+
+			document.querySelectorAll('.day-mode-btn').forEach((btn) => {
+				btn.addEventListener('click', () => {
+					dayMode = btn.getAttribute('data-day-btn') || 'auto';
+					document.querySelectorAll('.day-mode-btn').forEach((b) => {
+						if (b.getAttribute('data-day-btn') === dayMode) {
+							b.className = 'day-mode-btn h-8 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap bg-mapa-green text-white';
+						} else {
+							b.className = 'day-mode-btn h-8 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap text-mapa-ink/80 hover:text-mapa-ink';
+						}
+					});
+					renderAll();
+				});
+			});
+
+			document.querySelectorAll('.quick-hub-btn').forEach((btn) => {
+				btn.addEventListener('click', () => {
+					const hubLine = btn.getAttribute('data-hub-line');
+					const hubStation = btn.getAttribute('data-hub-station');
+					if (!hubLine || !hubStation) return;
+					const changedLine = hubLine !== currentLine;
+					currentLine = hubLine;
+					lineSelect.value = hubLine;
+					populateStationSelect(hubStation);
+					updateUrlParams();
+					if (changedLine) {
+						fetchLiveSightings();
+					} else {
+						renderAll();
+					}
+				});
+			});
+
+			document.querySelectorAll('.checkin-dir-btn').forEach((btn) => {
+				btn.addEventListener('click', () => {
+					checkInDir = btn.getAttribute('data-checkin-dir') || 'fwd';
+					renderAll();
+				});
+			});
+
+			document.querySelectorAll('.crowd-btn').forEach((btn) => {
+				btn.addEventListener('click', () => {
+					crowdLevel = btn.getAttribute('data-crowd') || 'moderate';
+					document.querySelectorAll('.crowd-btn').forEach((b) => {
+						if (b.getAttribute('data-crowd') === crowdLevel) {
+							b.className = 'crowd-btn h-8 px-2.5 rounded-md text-xs font-semibold cursor-pointer transition-colors bg-mapa-canvas text-mapa-ink shadow-2xs';
+						} else {
+							b.className = 'crowd-btn h-8 px-2.5 rounded-md text-xs font-medium cursor-pointer transition-colors text-mapa-ink/80';
+						}
+					});
+				});
+			});
+
+			document.querySelectorAll('.report-btn').forEach((btn) => {
+				btn.addEventListener('click', () => {
+					const rType = btn.getAttribute('data-report');
+					if (rType) submitSighting(rType);
+				});
+			});
+
+			gpsLocateBtn.addEventListener('click', handleGpsLocate);
+			refreshFeedBtn.addEventListener('click', fetchLiveSightings);
+
+			// Init from URL query params if present
+			try {
+				const params = new URLSearchParams(window.location.search);
+				const qLine = params.get('line');
+				const qStation = params.get('station');
+				if (qLine && stationsData[qLine]) {
+					currentLine = qLine;
+					lineSelect.value = qLine;
+				}
+				populateStationSelect(qStation);
+			} catch (_err) {
+				populateStationSelect(null);
+			}
+
+			fetchLiveSightings();
+			setInterval(() => {
+				if (!document.hidden) renderAll();
+			}, 1000);
+			setInterval(() => {
+				if (!document.hidden) fetchLiveSightings();
+			}, 30000);
+		})();
+	</script>
+</BaseLayout>

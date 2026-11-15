@@ -79,14 +79,14 @@ const tools = [
 		badge: "51 Stations • 3 Lines"
 	},
 	{
-		id: "rail-schedule",
-		name: "MRT & LRT Schedule & Arrival Estimator",
+		id: "train-arrival-ph",
+		name: "Train Arrival PH (MRT & LRT Tracker)",
 		status: "Active",
 		category: "Rail Operations",
-		url: "/tools/rail-schedule",
-		description: "Station-by-station First & Last Train passing times, peak/off-peak headway wait estimates, and gate cutoff alerts in Manila Time.",
+		url: "/tools/train-arrival-ph",
+		description: "Crowdsourced train sightings + First & Last Train passing times, headway countdowns, and gate cutoff alerts in Manila Time.",
 		image: null,
-		badge: "First & Last Train • UTC+8"
+		badge: "Crowdsourced + Schedule"
 	},
 	{
 		id: "toll",
@@ -146,7 +146,7 @@ const tools = [
 			const isExternal = tool.url.startsWith("http");
 			return (
 				<div
-					class="flex flex-col bg-mapa-canvas border border-mapa-contour/80 rounded-xl overflow-hidden transition-all duration-300 group relative hover:border-mapa-green/60 hover:-translate-y-1 cursor-pointer shadow-xs"
+					class={`flex flex-col bg-mapa-canvas border border-mapa-contour/80 rounded-xl overflow-hidden transition-all duration-300 group relative hover:border-mapa-green/60 hover:-translate-y-1 cursor-pointer shadow-xs ${tool.id === "lens" ? "md:col-span-2 lg:col-span-2" : ""}`}
 				>
 					{/* Overlay anchor covering container */}
 					<a
@@ -258,15 +258,15 @@ const tools = [
 									</div>
 								)}
 
-								{tool.id === "rail-schedule" && (
+								{tool.id === "train-arrival-ph" && (
 									<div class="relative z-10 flex flex-col items-center gap-1.5 w-full max-w-[210px] text-[11px]">
 										<div class="w-full flex justify-between px-2.5 py-1 rounded bg-mapa-canvas border border-mapa-contour">
-											<span class="font-semibold text-mapa-ink">Last Train</span>
-											<span class="font-mono font-bold text-mapa-rust">11:09 PM</span>
+											<span class="font-semibold text-mapa-ink">Live Rider</span>
+											<span class="font-mono font-bold text-mapa-green">Check-In Pin</span>
 										</div>
 										<div class="w-full flex justify-between px-2.5 py-1 rounded bg-mapa-canvas border border-mapa-contour">
-											<span class="font-semibold text-mapa-ink">Peak Headway</span>
-											<span class="font-mono font-bold text-mapa-green">~3.5 min</span>
+											<span class="font-semibold text-mapa-ink">Peak Cadence</span>
+											<span class="font-mono font-bold text-mapa-navy">~3.5 min</span>
 										</div>
 										<span class="text-[10px] text-mapa-muted mt-0.5">{tool.badge}</span>
 									</div>
