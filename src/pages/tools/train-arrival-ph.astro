@@ -1,10 +1,11 @@
 ---
 /**
  * @file train-arrival-ph.astro
- * @description Train Arrival PH: Prominent line switcher + connected station corridor (upgraded from rail-transit.astro) + hybrid crowdsourced & scheduled arrival tracker.
+ * @description Train Arrival PH (Phase 1 Hub): Metro Manila MRT-3, LRT-1, and LRT-2
+ * wait estimator, next-3-trains headway cadence, first/last train & transfer cutoff planner,
+ * and interactive simulated corridor visualizer.
  */
 
-import { loadEnv } from 'vite';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
@@ -18,37 +19,12 @@ import {
 	type LineKey
 } from '../../data/rail-lines';
 
-const env = loadEnv(import.meta.env.MODE, process.cwd(), '');
-
-const supabaseUrl = (
-	env.PUBLIC_SUPABASE_URL ||
-	env.VITE_SUPABASE_URL ||
-	process.env.PUBLIC_SUPABASE_URL ||
-	process.env.VITE_SUPABASE_URL ||
-	''
-)
-	.trim()
-	.replace(/\/+$/, '');
-
-const supabaseAnonKey = (
-	env.PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-	env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-	env.PUBLIC_SUPABASE_ANON_KEY ||
-	env.VITE_SUPABASE_ANON_KEY ||
-	process.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-	process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-	process.env.PUBLIC_SUPABASE_ANON_KEY ||
-	process.env.VITE_SUPABASE_ANON_KEY ||
-	''
-).trim();
-
 const timetablesByLine = {
 	mrt3: buildLineTimetable('mrt3'),
 	lrt1: buildLineTimetable('lrt1'),
 	lrt2: buildLineTimetable('lrt2')
 };
 
-// Display MRT-3 first alongside LRT-1 and LRT-2 for commuter frequency
 const orderedLines = (['mrt3', 'lrt1', 'lrt2'] as LineKey[])
 	.map((id) => RAIL_LINES.find((l) => l.id === id)!)
 	.filter(Boolean);
@@ -70,12 +46,13 @@ const quickHubs = [
 const defaultMrt3Timetable = timetablesByLine.mrt3;
 const defaultLrt1Timetable = timetablesByLine.lrt1;
 const defaultLrt2Timetable = timetablesByLine.lrt2;
+const defaultDestMrt3 = 'mrt3_ayala';
 ---
 
 <BaseLayout
-	title="Train Arrival PH: Live Crowdsourced & Scheduled MRT-3, LRT-1, LRT-2 Tracker | mapaPH Tools"
-	description="Check live crowdsourced train sightings and scheduled arrival windows for MRT-3, LRT-1, and LRT-2 in Metro Manila. View station-by-station first and last train times, headway countdowns, opt-in GPS check-ins, and crowd reports in Manila Time."
-	keywords="train arrival ph, mrt 3 arrival time, lrt 1 arrival time, lrt 2 schedule, manila train tracker, crowdsource train location philippines, last train mrt 3, last train lrt 1, edsa carousel overnight"
+	title="Train Arrival PH: MRT-3, LRT-1 & LRT-2 Wait Times, Schedules & Last Train Tracker | mapaPH Tools"
+	description="Check real-time Manila clock train wait estimates, next-3-trains headway cadence, first and last train windows, and interchange transfer cutoffs across all 51 MRT-3, LRT-1, and LRT-2 stations."
+	keywords="train arrival ph, mrt 3 arrival time, lrt 1 arrival time, lrt 2 schedule, manila train schedule, last train mrt 3, last train lrt 1, lrt 2 last trip, edsa carousel overnight"
 >
 	<script type="application/ld+json" slot="schema" is:inline>
 		{
@@ -83,11 +60,11 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 			"@graph": [
 				{
 					"@type": "WebApplication",
-					"name": "Train Arrival PH: MRT-3, LRT-1 & LRT-2 Crowdsourced & Schedule Tracker",
+					"name": "Train Arrival PH: MRT-3, LRT-1 & LRT-2 Wait Time & Schedule Tracker",
 					"url": "https://www.mapaph.com/tools/train-arrival-ph",
 					"applicationCategory": "Public Transit & Commuter Utility",
 					"operatingSystem": "All",
-					"description": "Hybrid Metro Manila commuter tracker combining anonymous crowdsourced train sightings and opt-in station GPS snaps with deterministic dispatch schedules across all 51 MRT-3, LRT-1, and LRT-2 stations.",
+					"description": "Metro Manila rail schedule estimator providing real-time Manila clock wait windows, next-3-trains headway cadence, origin-to-destination transfer cutoff checks, and interactive corridor maps across MRT-3, LRT-1, and LRT-2.",
 					"offers": {
 						"@type": "Offer",
 						"price": "0",
@@ -107,18 +84,18 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 					"mainEntity": [
 						{
 							"@type": "Question",
-							"name": "Is Metro Manila train arrival tracking real-time GPS telemetry?",
+							"name": "How are train wait times and map positions estimated in Manila?",
 							"acceptedAnswer": {
 								"@type": "Answer",
-								"text": "Philippine rail operators (DOTr MRT-3, LRMC LRT-1, and LRTA LRT-2) do not currently publish public GTFS-RT or train GPS feeds. Train Arrival PH uses a transparent hybrid engine: when commuters tap to report a train arriving, riding on board, or station crowding (optionally snapped via browser GPS within 650 meters of a station), the page shows Rider Report sightings. When no recent rider reports exist, it automatically falls back to Scheduled cadence computed from published terminal dispatch times and segment distances."
+								"text": "Philippine rail operators (DOTr MRT-3, LRMC LRT-1, and LRTA LRT-2) do not publish public live GTFS-RT train GPS feeds. Train Arrival PH computes estimated wait windows, next-3-trains cadence, and corridor map positions transparently from published weekday/weekend first and last terminal dispatches, rush-hour versus off-peak headway intervals, and kilometer-based segment travel offsets in Philippine Standard Time."
 							}
 						},
 						{
 							"@type": "Question",
-							"name": "How does optional GPS train location sharing protect my privacy?",
+							"name": "How does Use My GPS nearest-station snapping protect my privacy?",
 							"acceptedAnswer": {
 								"@type": "Answer",
-								"text": "Your raw latitude and longitude coordinates never leave your device. If you press Use My GPS and grant browser permission, distance calculation runs locally in JavaScript to find the nearest rail station within 650 meters. Only the station ID, rail line, direction, and report label are shared, never your GPS coordinates or identity."
+								"text": "Your device coordinates never leave your browser. When you press Use My GPS, client-side JavaScript computes Haversine distance locally against all 51 rail station coordinates and automatically selects your nearest platform within 650 meters."
 							}
 						},
 						{
@@ -126,7 +103,7 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 							"name": "What time is the last train on MRT-3, LRT-1, and LRT-2?",
 							"acceptedAnswer": {
 								"@type": "Answer",
-								"text": "On weekdays, MRT-3 extended operations dispatch the last southbound train from North Avenue at 10:30 PM and the last northbound train from Taft Avenue at 11:09 PM (reverting to 9:30 PM and 10:09 PM on weekends). LRT-1 weekday last trips leave Fernando Poe Jr. at 10:30 PM and Dr. Santos at 10:45 PM. LRT-2 closes earlier: 9:00 PM from Antipolo and 9:30 PM from Recto on weekdays, or 9:00 PM both ways on weekends. Station gates generally close 5 minutes prior."
+								"text": "On weekdays, MRT-3 extended operations dispatch the last southbound train from North Avenue at 10:30 PM and the last northbound train from Taft Avenue at 11:09 PM (9:30 PM and 10:09 PM on weekends). LRT-1 weekday last trips leave Fernando Poe Jr. at 10:30 PM and Dr. Santos at 10:45 PM. LRT-2 closes earlier: 9:00 PM from Antipolo and 9:30 PM from Recto on weekdays, or 9:00 PM both ways on weekends. Concourse gates close roughly 5 minutes prior."
 							}
 						},
 						{
@@ -134,7 +111,7 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 							"name": "What can commuters ride after MRT-3 or LRT-1 closes for the night?",
 							"acceptedAnswer": {
 								"@type": "Answer",
-								"text": "After rail services conclude around 9:30 PM to 11:09 PM, the EDSA Carousel BRT busway runs 24/7 along the dedicated EDSA center median from Monumento to PITX, directly serving major transfer points including North Avenue, Quezon Avenue, Ortigas, Guadalupe, Ayala, and Taft Avenue."
+								"text": "After rail services conclude around 9:30 PM to 11:09 PM, the EDSA Carousel BRT busway operates 24/7 along the dedicated EDSA center median from Monumento to PITX, directly serving major transfer points including North Avenue, Quezon Avenue, Ortigas, Guadalupe, Ayala, and Taft Avenue."
 							}
 						}
 					]
@@ -175,28 +152,12 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 			box-shadow: 0 1px 3px rgba(33, 29, 22, 0.16);
 			font-weight: 700;
 		}
-		.rail-train-live {
-			color: #ffffff;
-			border: 2px solid #ffffff;
-			box-shadow: 0 3px 10px rgba(33, 29, 22, 0.34);
-			font-weight: 800;
-			font-size: 11px;
-			padding: 3px 8px;
-		}
-		.rail-station-dot {
-			border-radius: 9999px;
-			transform: translate(-50%, -50%);
-			transition: transform 0.15s ease;
-		}
-		.rail-station-dot:hover {
-			transform: translate(-50%, -50%) scale(1.25);
-		}
 	</style>
 
 	<Navbar />
 
 	<main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 text-mapa-ink">
-		<!-- Clean Editorial Page Header (Matching rail-transit.astro) -->
+		<!-- Clean Editorial Page Header -->
 		<div class="max-w-4xl mb-6">
 			<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs font-sans text-mapa-muted mb-3">
 				<a href="/" class="hover:text-mapa-green transition-colors">Home</a>
@@ -207,29 +168,28 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 			</nav>
 			<div class="flex flex-wrap items-center gap-2 mb-2 text-xs font-sans">
 				<span class="font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
-					Transit &amp; Operations Utility
+					Rail Wait &amp; Schedule Utility
 				</span>
 				<span class="text-mapa-muted">
-					Schedules + Anonymous Commuter Sightings
+					51 Stations &bull; Next-3 Cadence &bull; Transfer Cutoff Checker
 				</span>
 			</div>
 			<h1 class="font-serif text-3xl sm:text-4xl font-extrabold tracking-tight text-mapa-ink">
-				Train Arrival PH: MRT-3, LRT-1 &amp; LRT-2 Tracker
+				Train Arrival PH: MRT-3, LRT-1 &amp; LRT-2 Wait &amp; Schedule Estimator
 			</h1>
 			<p class="mt-2 text-sm sm:text-base text-mapa-ink/80 font-sans leading-relaxed max-w-3xl">
-				Operators in Metro Manila do not publish public train GPS feeds. This tracker surfaces anonymous commuter sightings from the past 15 minutes when available and falls back transparently to official dispatch cadence, first and last trips, and gate cutoffs in Philippine Standard Time.
+				Operators in Metro Manila do not publish public live train GPS telemetry. This tool calculates next-3-trains wait windows, peak versus off-peak headway intervals, last-train gate cutoffs, and interchange transfer buffers directly from official weekday and weekend dispatch timetables in Philippine Standard Time.
 			</p>
 		</div>
 
-		<!-- Step 1: Prominent Rail Line Switcher (Primary Hero Control) -->
+		<!-- Step 1: Prominent Rail Line Switcher -->
 		<section aria-label="Select Metro Manila Rail Line" class="mb-5 font-sans">
-			<div class="flex items-center justify-between gap-2 mb-2">
+			<div class="flex items-center justify-between gap-2 mb-2 flex-wrap">
 				<span class="text-xs font-bold uppercase tracking-wider text-mapa-muted">
 					1. Select Rail Line
 				</span>
-				<span id="feedConnectionPill" class="inline-flex items-center gap-1.5 text-[11px] font-medium text-mapa-muted">
-					<span id="feedConnectionDot" class="w-2 h-2 rounded-full bg-mapa-clay shrink-0"></span>
-					<span id="feedConnectionText">Checking rider feed...</span>
+				<span id="activeCadenceChip" class="inline-flex items-center gap-1.5 text-[11px] font-medium text-mapa-muted">
+					Checking Manila headway window...
 				</span>
 			</div>
 
@@ -290,13 +250,12 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 			</div>
 		</section>
 
-		<!-- Step 2: Station Bar, Manila Clock & Day Mode -->
-		<section aria-label="Station Selection and Clock Controls" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 sm:p-5 mb-6 font-sans shadow-xs space-y-3.5">
+		<!-- Step 2: Origin Station, Manila Clock & Day Mode -->
+		<section aria-label="Station Selection and Clock Controls" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 sm:p-5 mb-5 font-sans shadow-xs space-y-3.5">
 			<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-				<!-- Station Dropdown + GPS button -->
 				<div class="flex-1 flex flex-col sm:flex-row sm:items-center gap-2.5">
 					<label for="stationSelect" class="text-xs font-bold uppercase tracking-wider text-mapa-muted shrink-0 whitespace-nowrap">
-						2. Station
+						2. Origin Station
 					</label>
 					<div class="flex-1 flex items-center gap-2">
 						<select
@@ -369,44 +328,44 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 			<div id="serviceAlertBanner" class="hidden rounded-xl border px-3.5 py-2.5 text-xs font-medium"></div>
 		</section>
 
-		<!-- Unmistakable Live Tracked vs. Estimated Simulation Banner -->
-		<section aria-label="Telemetry Source Status" class="mb-5 font-sans">
+		<!-- Clear Operating Cadence & Schedule Simulation Banner -->
+		<section aria-label="Schedule Cadence Status" class="mb-5 font-sans">
 			<div
-				id="liveVsEstBanner"
+				id="scheduleModeBanner"
 				class="rounded-2xl border border-mapa-contour bg-mapa-canvas px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-2xs"
 			>
 				<div class="flex items-start sm:items-center gap-2.5 min-w-0">
 					<span
-						id="liveVsEstPill"
+						id="scheduleModePill"
 						class="shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-md font-mono text-[11px] font-bold uppercase tracking-wider bg-mapa-ink text-white"
 					>
-						ESTIMATED SIMULATION
+						ESTIMATED SCHEDULE
 					</span>
-					<p id="liveVsEstText" class="text-xs text-mapa-ink/85 leading-snug">
-						Trains moving on the map are simulated from official schedules and segment travel times (0 active rider check-ins in the last 15 min).
+					<p id="scheduleModeText" class="text-xs text-mapa-ink/85 leading-snug">
+						Computing headway period and simulated train positions from official DOTr, LRMC, and LRTA schedules in Manila Time.
 					</p>
 				</div>
 				<button
 					type="button"
-					id="liveVsEstActionBtn"
+					id="scheduleModeActionBtn"
 					class="shrink-0 self-start sm:self-auto h-8 px-3 rounded-lg text-xs font-semibold border border-mapa-contour bg-mapa-canvas-dark text-mapa-ink hover:border-mapa-ink transition-colors cursor-pointer whitespace-nowrap"
 				>
-					Spot a Train
+					Check Transfer Cutoff
 				</button>
 			</div>
 		</section>
 
-		<!-- Main 2-Column Map-First Workspace -->
-		<section aria-label="Live Rail Map, Arrival Times, and Commuter Reporting" class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start mb-12 font-sans">
-			<!-- Left Column (7 cols): Interactive Geo Map, 2D Schematic Diagram & Station List -->
+		<!-- Main 2-Column Map + Wait & Transfer Workspace -->
+		<section aria-label="Corridor Visualizer, Wait Cadence, and Transfer Cutoff Planner" class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start mb-12 font-sans">
+			<!-- Left Column (7 cols): Interactive Corridor Map / 2D Schematic / Station Spine -->
 			<div class="lg:col-span-7 bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs">
 				<div class="p-4 border-b border-mapa-contour bg-mapa-canvas flex flex-col sm:flex-row sm:items-center justify-between gap-3">
 					<div class="min-w-0">
 						<h2 id="corridorHeading" class="font-serif text-lg font-bold text-mapa-ink truncate">
-							MRT Line 3 Live Map
+							MRT Line 3 Corridor Map
 						</h2>
 						<p id="lineOperatorMeta" class="text-[11px] text-mapa-muted truncate">
-							Department of Transportation (DOTr MRT-3) &bull; Click any station marker for ETAs
+							Department of Transportation (DOTr MRT-3) &bull; Tap any station marker to inspect schedules
 						</p>
 					</div>
 
@@ -446,7 +405,7 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 					</div>
 				</div>
 
-				<!-- Sub-toolbar: Map/Diagram Scope vs Station Filter + Unmistakable Pin Key -->
+				<!-- Sub-toolbar: Map Scope vs Station Filter + Legend -->
 				<div class="px-4 py-2 border-b border-mapa-contour/70 bg-mapa-canvas-dark flex flex-wrap items-center justify-between gap-2 text-[11px]">
 					<div id="mapScopeControls" class="flex items-center gap-1.5 flex-wrap">
 						<div class="inline-flex items-center p-0.5 rounded-lg border border-mapa-contour bg-mapa-canvas" role="group" aria-label="Map line scope">
@@ -484,22 +443,26 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 						/>
 					</div>
 
-					<div class="flex items-center gap-3 flex-wrap ml-auto">
+					<div class="flex items-center gap-2.5 flex-wrap ml-auto">
+						<span class="inline-flex items-center gap-1 text-mapa-muted">
+							<span class="w-2.5 h-2.5 rounded-full border-2 border-mapa-ink bg-mapa-navy inline-block"></span>
+							<span>Origin</span>
+						</span>
+						<span class="inline-flex items-center gap-1 text-mapa-muted">
+							<span class="w-2.5 h-2.5 rounded-full border-2 border-mapa-rust bg-mapa-canvas inline-block"></span>
+							<span>Dest.</span>
+						</span>
 						<span class="inline-flex items-center gap-1 text-mapa-muted">
 							<span class="px-1.5 py-0.5 leading-none rounded-full border border-dashed border-mapa-ink/70 bg-mapa-canvas font-mono text-[9px] font-bold text-mapa-ink">EST</span>
-							<span>Schedule</span>
-						</span>
-						<span class="inline-flex items-center gap-1 text-mapa-muted">
-							<span class="px-1.5 py-0.5 leading-none rounded-full bg-mapa-green font-mono text-[9px] font-bold text-white">LIVE</span>
-							<span>Rider Pin</span>
+							<span>Scheduled</span>
 						</span>
 						<span id="mapTrainCountBadge" class="font-mono font-bold text-[10px] text-mapa-ink px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour">
-							-- EST &bull; 0 LIVE
+							-- EST TRAINS
 						</span>
 					</div>
 				</div>
 
-				<!-- Panel 1: Leaflet Real-World Map (Default View) -->
+				<!-- Panel 1: Leaflet OpenStreetMap View (Default) -->
 				<div id="mapViewPanel" class="relative w-full h-[350px] sm:h-[460px] lg:h-[520px] bg-mapa-canvas-dark">
 					<div id="live-rail-map" class="w-full h-full z-10"></div>
 					<div
@@ -508,11 +471,11 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 					>
 						<p class="font-serif font-bold text-base text-mapa-ink">Street map tiles unavailable offline</p>
 						<p class="text-xs text-mapa-muted mt-1 max-w-sm">
-							Use the 2D Network Diagram or Station List tabs above to inspect trains and ETAs.
+							Use the 2D Network Diagram or Station List tabs above to inspect trains and schedules.
 						</p>
 					</div>
 					<div class="pointer-events-none hidden sm:flex items-center gap-2 absolute bottom-3 left-3 z-[400] px-2.5 py-1 rounded-lg bg-mapa-canvas/95 border border-mapa-contour text-[10px] text-mapa-ink/80 shadow-xs">
-						<span>Click any station dot to inspect platform arrivals</span>
+						<span>Bold track segment highlights your Origin to Destination trip</span>
 					</div>
 				</div>
 
@@ -530,15 +493,15 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 				<!-- Panel 3: Connected Station Timeline List -->
 				<div id="listViewPanel" class="hidden">
 					<div id="stationSpineScroll" class="relative pl-8 pr-3 sm:pr-4 py-3 max-h-[460px] lg:max-h-[520px] overflow-y-auto space-y-2 custom-scrollbar bg-mapa-canvas-dark">
-						<!-- Rendered cleanly via script for active line -->
+						<!-- Populated cleanly via train-arrival-client.ts -->
 					</div>
 				</div>
 			</div>
 
-			<!-- Right Column (5 cols): Compact Arrival Departure Cards + Commuter Check-In -->
+			<!-- Right Column (5 cols): Wait & Cadence Boards + Trip Runtime & Last-Train Transfer Checker -->
 			<div class="lg:col-span-5 flex flex-col gap-4">
-				<!-- Directional Arrival Departure Boards -->
-				<section aria-label="Next Train Arrival Estimates" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3">
+				<!-- Directional Wait & Next-3-Trains Cadence Boards -->
+				<section aria-label="Next 3 Trains Wait Cadence" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3">
 					<!-- Forward Bound Card -->
 					<div id="cardFwd" class="rounded-2xl border border-mapa-contour bg-mapa-canvas-dark p-3.5 flex flex-col justify-between gap-2.5 shadow-2xs">
 						<div>
@@ -559,7 +522,7 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 								</span>
 							</div>
 
-							<div id="fwdInnerBox" class="rounded-xl bg-mapa-canvas border border-mapa-contour p-3">
+							<div class="rounded-xl bg-mapa-canvas border border-mapa-contour p-3 space-y-2">
 								<div class="flex items-baseline justify-between gap-1.5 flex-wrap">
 									<div id="fwdCountdown" class="font-mono text-xl sm:text-2xl font-extrabold text-mapa-ink">
 										~4 min
@@ -568,13 +531,15 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 										Est. --:--
 									</div>
 								</div>
-								<div class="mt-1.5 flex items-center gap-1.5 flex-wrap text-[11px]">
-									<span id="fwdSourceBadge" class="inline-block px-1.5 py-0.5 rounded font-mono text-[10px] font-bold uppercase tracking-wider bg-mapa-canvas-dark text-mapa-muted border border-mapa-contour">
-										ESTIMATED
+								<div class="flex items-center gap-1.5 flex-wrap text-[11px]">
+									<span id="fwdSourceBadge" class="inline-block px-1.5 py-0.5 rounded font-mono text-[10px] font-bold uppercase tracking-wider bg-mapa-canvas-dark text-mapa-ink border border-mapa-contour">
+										HEADWAY
 									</span>
 								</div>
-								<p id="fwdLiveDetail" class="mt-1.5 text-[11px] text-mapa-ink/75 leading-snug">
-									Loading schedule baseline...
+								<!-- Next 3 Trains Cadence Strip -->
+								<div id="fwdNextSlots" class="grid grid-cols-3 gap-1.5 pt-1" aria-label="Next 3 forward trains"></div>
+								<p id="fwdLiveDetail" class="text-[11px] text-mapa-ink/75 leading-snug">
+									Computing headway cadence...
 								</p>
 							</div>
 						</div>
@@ -615,7 +580,7 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 								</span>
 							</div>
 
-							<div id="revInnerBox" class="rounded-xl bg-mapa-canvas border border-mapa-contour p-3">
+							<div class="rounded-xl bg-mapa-canvas border border-mapa-contour p-3 space-y-2">
 								<div class="flex items-baseline justify-between gap-1.5 flex-wrap">
 									<div id="revCountdown" class="font-mono text-xl sm:text-2xl font-extrabold text-mapa-ink">
 										~5 min
@@ -624,13 +589,15 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 										Est. --:--
 									</div>
 								</div>
-								<div class="mt-1.5 flex items-center gap-1.5 flex-wrap text-[11px]">
-									<span id="revSourceBadge" class="inline-block px-1.5 py-0.5 rounded font-mono text-[10px] font-bold uppercase tracking-wider bg-mapa-canvas-dark text-mapa-muted border border-mapa-contour">
-										ESTIMATED
+								<div class="flex items-center gap-1.5 flex-wrap text-[11px]">
+									<span id="revSourceBadge" class="inline-block px-1.5 py-0.5 rounded font-mono text-[10px] font-bold uppercase tracking-wider bg-mapa-canvas-dark text-mapa-ink border border-mapa-contour">
+										HEADWAY
 									</span>
 								</div>
-								<p id="revLiveDetail" class="mt-1.5 text-[11px] text-mapa-ink/75 leading-snug">
-									Loading schedule baseline...
+								<!-- Next 3 Trains Cadence Strip -->
+								<div id="revNextSlots" class="grid grid-cols-3 gap-1.5 pt-1" aria-label="Next 3 reverse trains"></div>
+								<p id="revLiveDetail" class="text-[11px] text-mapa-ink/75 leading-snug">
+									Computing headway cadence...
 								</p>
 							</div>
 						</div>
@@ -652,94 +619,116 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 					</div>
 				</section>
 
-				<!-- Commuter Report Check-In & Live Sightings Feed -->
-				<div id="checkInPanel" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 sm:p-5 shadow-xs space-y-3.5">
+				<!-- Interactive Trip Runtime & Last-Train Transfer Cutoff Checker -->
+				<div id="tripPlannerCard" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 sm:p-5 shadow-xs space-y-3.5">
 					<div class="border-b border-mapa-contour/60 pb-2.5">
 						<div class="flex items-center justify-between gap-2">
-							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted">
-								Broadcast Live Pin
+							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-green">
+								3. Trip &amp; Transfer Cutoff Check
 							</span>
-							<span id="gpsVerifiedTag" class="hidden text-[11px] font-bold text-mapa-green">
-								GPS Verified Station
+							<span id="tripDirectionBadge" class="font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour text-mapa-ink">
+								Southbound
 							</span>
 						</div>
 						<h2 class="font-serif text-lg font-bold text-mapa-ink mt-0.5">
-							Check In at <span id="checkInStationLabel">North Avenue</span>
+							Ride From <span id="tripOriginLabel">North Avenue</span>
 						</h2>
 						<p class="text-xs text-mapa-muted mt-0.5">
-							Tap to pin a verified commuter train sighting onto the map.
+							Check estimated arrival time at your destination and whether late-evening rail transfers remain open.
 						</p>
 					</div>
 
-					<!-- Direction & Crowd Selectors Side-by-Side on wider screens -->
-					<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-						<div>
-							<span class="block text-[10px] font-bold uppercase tracking-wider text-mapa-muted mb-1">
-								Bound Direction
+					<!-- Destination Picker + Swap -->
+					<div class="space-y-2">
+						<div class="flex items-center justify-between gap-2">
+							<label for="destStationSelect" class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted">
+								Destination / Transfer Stop
+							</label>
+							<span id="tripStopsDist" class="font-mono text-[11px] text-mapa-muted">
+								9 stops &bull; 12.6 km
 							</span>
-							<div class="grid grid-cols-2 rounded-xl bg-mapa-canvas p-1 border border-mapa-contour gap-1" role="group" aria-label="Check-in direction">
-								<button type="button" data-checkin-dir="fwd" class="checkin-dir-btn h-8 px-2 rounded-lg text-xs font-bold cursor-pointer transition-colors bg-mapa-navy text-white whitespace-nowrap truncate">
-									Southbound
-								</button>
-								<button type="button" data-checkin-dir="rev" class="checkin-dir-btn h-8 px-2 rounded-lg text-xs font-semibold cursor-pointer transition-colors text-mapa-ink/75 hover:text-mapa-ink whitespace-nowrap truncate">
-									Northbound
-								</button>
-							</div>
 						</div>
-
-						<div>
-							<span class="block text-[10px] font-bold uppercase tracking-wider text-mapa-muted mb-1">
-								Platform Crowd
-							</span>
-							<div class="grid grid-cols-3 rounded-xl bg-mapa-canvas p-1 border border-mapa-contour gap-1" role="group" aria-label="Platform crowd level">
-								<button type="button" data-crowd="light" class="crowd-btn h-8 px-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors text-mapa-ink/75">
-									Light
-								</button>
-								<button type="button" data-crowd="moderate" class="crowd-btn h-8 px-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors bg-mapa-canvas-dark text-mapa-ink border border-mapa-contour/70">
-									Mod.
-								</button>
-								<button type="button" data-crowd="packed" class="crowd-btn h-8 px-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors text-mapa-ink/75">
-									Packed
-								</button>
-							</div>
-						</div>
-					</div>
-
-					<!-- Action Buttons -->
-					<div class="grid grid-cols-2 gap-2 pt-0.5">
-						<button type="button" data-report="arriving" class="report-btn col-span-2 min-h-[40px] px-4 py-2 rounded-xl bg-mapa-green hover:bg-mapa-green/90 text-white text-xs font-bold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-between">
-							<span>Report Train Arriving Now</span>
-							<span class="text-[10px] font-mono uppercase opacity-85">Live Pin</span>
-						</button>
-						<button type="button" data-report="on_board" class="report-btn min-h-[38px] px-3 py-2 rounded-xl border border-mapa-contour bg-mapa-canvas hover:border-mapa-ink text-mapa-ink text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-left">
-							I Am On Board
-						</button>
-						<button type="button" data-report="crowded" class="report-btn min-h-[38px] px-3 py-2 rounded-xl border border-mapa-contour bg-mapa-canvas hover:border-mapa-ink text-mapa-ink text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-left">
-							Platform Packed
-						</button>
-						<button type="button" data-report="delayed" class="report-btn col-span-2 min-h-[36px] px-3 py-2 rounded-xl border border-mapa-contour bg-mapa-canvas hover:border-mapa-rust text-mapa-rust text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-left flex items-center justify-between">
-							<span>Hold or Technical Delay</span>
-							<span class="text-[10px] font-mono text-mapa-muted">Advisory</span>
-						</button>
-					</div>
-
-					<div id="checkInFeedback" class="hidden rounded-lg border px-3 py-2 text-xs font-medium"></div>
-
-					<!-- Recent Sightings Feed -->
-					<div class="pt-3 border-t border-mapa-contour/70">
-						<div class="flex items-center justify-between gap-2 mb-2">
-							<h3 class="text-xs font-bold uppercase tracking-wider text-mapa-muted">
-								Recent Sightings (Last 15 Min)
-							</h3>
-							<button type="button" id="refreshFeedBtn" class="text-xs font-semibold text-mapa-green hover:underline cursor-pointer">
-								Refresh
+						<div class="flex items-center gap-2">
+							<select
+								id="destStationSelect"
+								class="w-full h-10 px-3 rounded-xl border border-mapa-contour bg-mapa-canvas text-xs sm:text-sm font-semibold text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/40 cursor-pointer"
+							>
+								{STATIONS_DATA.mrt3.map((st, idx) => (
+									<option value={st.id} selected={st.id === defaultDestMrt3}>
+										{idx + 1}. {st.name} ({st.city}){st.isTransfer ? ' · Transfer' : ''}
+									</option>
+								))}
+							</select>
+							<button
+								type="button"
+								id="swapStationsBtn"
+								class="shrink-0 h-10 px-3 rounded-xl border border-mapa-contour bg-mapa-canvas text-xs font-bold text-mapa-ink hover:border-mapa-ink transition-colors cursor-pointer whitespace-nowrap"
+								title="Swap Origin and Destination stations"
+							>
+								Swap
 							</button>
 						</div>
-						<div id="liveSightingsList" class="space-y-1.5 text-xs text-mapa-muted max-h-[168px] overflow-y-auto custom-scrollbar pr-0.5">
-							<div class="rounded-lg border border-mapa-contour bg-mapa-canvas px-3 py-2">
-								Checking recent sightings on this line...
-							</div>
+
+						<!-- One-Click Interchange Transfer Presets -->
+						<div class="flex flex-wrap items-center gap-1.5 pt-0.5">
+							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted mr-0.5">
+								Interchanges:
+							</span>
+							<button
+								type="button"
+								data-preset-line="mrt3"
+								data-preset-origin=""
+								data-preset-dest="mrt3_cubao"
+								class="transfer-preset-btn px-2 py-1 rounded-md border border-mapa-contour bg-mapa-canvas text-[11px] font-medium text-mapa-ink hover:border-mapa-green cursor-pointer transition-colors"
+							>
+								Cubao (LRT-2)
+							</button>
+							<button
+								type="button"
+								data-preset-line="lrt1"
+								data-preset-origin=""
+								data-preset-dest="lrt1_doroteo_jose"
+								class="transfer-preset-btn px-2 py-1 rounded-md border border-mapa-contour bg-mapa-canvas text-[11px] font-medium text-mapa-ink hover:border-mapa-green cursor-pointer transition-colors"
+							>
+								D. Jose (LRT-2)
+							</button>
+							<button
+								type="button"
+								data-preset-line="mrt3"
+								data-preset-origin=""
+								data-preset-dest="mrt3_taft"
+								class="transfer-preset-btn px-2 py-1 rounded-md border border-mapa-contour bg-mapa-canvas text-[11px] font-medium text-mapa-ink hover:border-mapa-green cursor-pointer transition-colors"
+							>
+								Taft Ave (LRT-1)
+							</button>
 						</div>
+					</div>
+
+					<!-- 3-Metric Journey Output Strip -->
+					<div class="grid grid-cols-3 gap-2">
+						<div class="rounded-xl border border-mapa-contour bg-mapa-canvas p-2.5 text-center">
+							<span class="block text-[9px] font-bold uppercase tracking-wider text-mapa-muted">Next Wait</span>
+							<span id="tripWaitMin" class="font-mono text-sm sm:text-base font-extrabold text-mapa-ink block mt-0.5">-- min</span>
+						</div>
+						<div class="rounded-xl border border-mapa-contour bg-mapa-canvas p-2.5 text-center">
+							<span class="block text-[9px] font-bold uppercase tracking-wider text-mapa-muted">In-Train Ride</span>
+							<span id="tripRideMin" class="font-mono text-sm sm:text-base font-extrabold text-mapa-ink block mt-0.5">-- min</span>
+						</div>
+						<div class="rounded-xl border border-mapa-contour bg-mapa-canvas p-2.5 text-center">
+							<span class="block text-[9px] font-bold uppercase tracking-wider text-mapa-muted">Est. Arrival</span>
+							<span id="tripArrivalClock" class="font-mono text-sm sm:text-base font-extrabold text-mapa-green block mt-0.5">--:--</span>
+						</div>
+					</div>
+
+					<!-- Origin Gate Cutoff Status + Connecting Interchange Buffer -->
+					<div id="tripOriginCutoffBox" class="rounded-xl border border-mapa-contour bg-mapa-canvas px-3 py-2.5 text-xs text-mapa-ink">
+						<p id="tripOriginCutoffVerdict" class="leading-snug">
+							Calculating origin gate cutoff and destination arrival...
+						</p>
+					</div>
+
+					<div id="tripInterchangeBox" class="rounded-xl border border-mapa-contour/70 bg-mapa-canvas px-3 py-2 text-[11px] text-mapa-muted">
+						Select a transfer hub to verify connecting line last-train cutoffs.
 					</div>
 				</div>
 			</div>
@@ -871,13 +860,13 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 		<article class="max-w-4xl space-y-8 font-sans border-t border-mapa-contour pt-10">
 			<section>
 				<h2 class="font-serif text-2xl sm:text-3xl font-bold text-mapa-ink mb-3">
-					Why Metro Manila Train Tracking Uses Both Crowdsourcing and Dispatch Math
+					How Metro Manila Train Wait Estimation and Headway Cadence Work
 				</h2>
 				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed mb-3">
 					Unlike transit authorities in Singapore, Tokyo, or London that publish open GTFS Realtime feeds every few seconds, Metro Manila rail operators currently run closed signaling systems without public API endpoints. Neither DOTr MRT-3, Light Rail Manila Corporation (LRMC) for LRT-1, nor LRTA for LRT-2 streams automated train telemetry directly to third-party commuter websites. When a transit app in the Philippines displays an estimated wait time on its own, that figure comes from deterministic schedule intervals rather than transponder hardware mounted inside the trainset.
 				</p>
 				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed">
-					Train Arrival PH bridges that data gap honestly. Whenever active passengers tap a check-in button on this page (such as reporting an arriving train, riding on board between stops, or flagging platform congestion), the directional cards surface that crowdsourced observation first under a clearly marked Rider Report indicator. When no recent rider reports exist within the trailing 15-minute window, the tracker never fabricates fake live pings: it openly displays Schedule estimate status backed by published terminal dispatches, station-to-station kilometer offsets, average commercial speeds, and typical dwell times.
+					Train Arrival PH is transparent about how these numbers work. Using published terminal departure schedules, weekday versus weekend timetable extensions, peak versus off-peak dispatch cadences, and exact kilometer post offsets across all 51 stations, the calculator projects the next three arriving trains in each direction. Rather than showing vague averages, the directional cards list the immediate next trip alongside the second and third following trips so you can judge whether to board a packed trainset or wait 4 to 6 minutes for the next car.
 				</p>
 			</section>
 
@@ -886,10 +875,10 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 					How Opt-In GPS Station Snapping Works Without Storing Your Location
 				</h2>
 				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed mb-3">
-					Pressing the Use My GPS button lets commuters snap straight to their current platform without scrolling through 51 station names during rush hour. Your browser requests high-accuracy device coordinates strictly inside client-side memory and runs a Haversine distance check against the known coordinates of every MRT-3, LRT-1, and LRT-2 platform. If your phone is within 650 meters of a station entrance or viaduct, the tracker locks onto that station automatically and tags your next report as a GPS-verified station sighting.
+					Pressing the Use My GPS button lets commuters snap straight to their current platform without scrolling through 51 station names during rush hour. Your browser requests device coordinates strictly inside client-side memory and runs a Haversine distance check against the known coordinates of every MRT-3, LRT-1, and LRT-2 platform. If your phone is within 650 meters of a station entrance or viaduct, the estimator locks onto that station automatically.
 				</p>
 				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed">
-					Privacy remains enforced by design: your raw latitude and longitude never leave your browser and are never transmitted or written to any server or database column. Only the matched station identifier, rail line code, bound direction, report category, and an anonymous per-browser spam-control token are stored for a short 20-minute public display window before automatic cleanup removes older rows after two hours. If your device is farther than 650 meters from any rail station, GPS auto-snap declines to mark a live pin so remote users cannot accidentally skew platform wait estimates.
+					Privacy remains enforced by design: your raw latitude and longitude never leave your browser and are never transmitted or written to any external logging service or database table. If your device is farther than 650 meters from any rail station, GPS auto-snap reports your nearest rail station distance without forcing a wrong selection.
 				</p>
 			</section>
 
@@ -898,22 +887,22 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 					Peak Rush Hours, Skip-Stop Mechanics, and Evening Gate Cutoffs
 				</h2>
 				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed mb-3">
-					Headways across Metro Manila shift substantially between peak weekday commuter windows and midday or weekend operations. During morning rush hours (6:00 AM to 9:00 AM) and evening rush hours (5:00 PM to 8:00 PM), MRT-3 and LRT-1 typically insert extra trainsets to sustain 3.5 to 4.5 minute average headways. During off-peak hours (9:00 AM to 5:00 PM), headways widen to roughly 5 to 6.5 minutes on MRT-3 and LRT-1, and 6 to 7.5 minutes along LRT-2 between Recto and Antipolo.
+					Headways across Metro Manila shift substantially between peak weekday commuter windows and midday or weekend operations. During morning rush hours (6:00 AM to 9:00 AM) and evening rush hours (5:00 PM to 8:00 PM), MRT-3 and LRT-1 typically deploy extra trainsets to sustain 3.5 to 4.5 minute average headways. During off-peak hours (9:00 AM to 5:00 PM), headways widen to roughly 5 to 6.5 minutes on MRT-3 and LRT-1, and 6 to 7.5 minutes along LRT-2 between Recto and Antipolo.
 				</p>
 				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed">
-					Commuters catching late evening transfers should always check station passing windows carefully rather than relying only on origin terminal times. For example, although the extended weekday MRT-3 schedule dispatches its final northbound train from Taft Avenue at 11:09 PM, that train takes nearly 30 minutes to reach Cubao or Quezon Avenue, while southbound trains departing North Avenue leave as early as 10:30 PM. Concourse ticket gates close approximately 5 minutes prior to the final train arrival in each direction so station staff can sweep platforms safely.
+					Commuters catching late evening transfers should always check station passing windows carefully rather than relying only on origin terminal times. For example, although the extended weekday MRT-3 schedule dispatches its final northbound train from Taft Avenue at 11:09 PM, that train takes nearly 30 minutes to reach Cubao or Quezon Avenue, while southbound trains departing North Avenue leave earlier at 10:30 PM. Concourse ticket gates close approximately 5 minutes prior to the final train arrival in each direction so station staff can sweep platforms safely.
 				</p>
 			</section>
 
 			<section>
 				<h2 class="font-serif text-2xl font-bold text-mapa-ink mb-3">
-					Planning Late-Night Transfers Across Cubao, Recto, and EDSA Taft
+					Using the Transfer Cutoff Buffer Checker Across Cubao, Recto, and Taft Ave
 				</h2>
 				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed mb-3">
-					Because LRT-2 closes earlier than both MRT-3 and LRT-1 (final trains leave Antipolo at 9:00 PM daily, and Recto at 9:30 PM on weekdays or 9:00 PM on weekends), travelers heading home past 9:15 PM through Araneta Center-Cubao or Doroteo Jose often misjudge their transfer buffer. A passenger boarding MRT-3 at Ayala at 9:15 PM will arrive at Cubao around 9:35 PM, too late for the final westbound LRT-2 trip toward Recto and only barely catching or missing late eastbound trips passing through Cubao toward Marikina-Pasig and Antipolo.
+					Because LRT-2 closes earlier than both MRT-3 and LRT-1 (final trains leave Antipolo at 9:00 PM daily, and Recto at 9:30 PM on weekdays or 9:00 PM on weekends), travelers heading home past 9:15 PM through Araneta Center-Cubao or Doroteo Jose often misjudge their transfer buffer. A passenger boarding MRT-3 at Ayala at 9:15 PM will arrive at Cubao around 9:35 PM, too late for the final westbound LRT-2 trip toward Recto and barely catching or missing late eastbound trips passing through Cubao toward Marikina-Pasig and Antipolo.
 				</p>
 				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed">
-					Similarly, commuters transferring at EDSA Taft (southbound MRT-3 into LRT-1 toward PITX and Dr. Santos) need an extra 4 to 6 minutes to walk the elevated covered footbridge and queue at the LRT-1 stored-value tap gates. If the last LRT-1 trip has already passed your transfer station, the EDSA Carousel busway operating 24 hours a day directly beneath MRT-3 serves Monumento through PITX at regulated LTFRB fares.
+					Similarly, commuters transferring at EDSA Taft (southbound MRT-3 into LRT-1 toward PITX and Dr. Santos) need an extra 5 minutes to walk the elevated covered footbridge and tap in at the LRT-1 gates. The Trip and Transfer Cutoff Checker above automatically adds realistic footbridge transfer time (5 minutes at Doroteo Jose or Taft, 6 minutes at Araneta Center-Cubao) and warns you in advance whenever connecting lines are tight or closed. If your connecting train has departed, the 24/7 EDSA Carousel busway directly beneath MRT-3 continues serving Monumento through PITX overnight.
 				</p>
 			</section>
 
@@ -949,2288 +938,7 @@ const defaultLrt2Timetable = timetablesByLine.lrt2;
 		crossorigin=""
 	></script>
 
-	<script
-		is:inline
-		define:vars={{
-			linesData: RAIL_LINES,
-			stationsData: STATIONS_DATA,
-			lineColors: LINE_COLORS,
-			specsData: SCHEDULE_SPECS,
-			timetablesByLine,
-			supabaseUrl,
-			supabaseAnonKey
-		}}
-	>
-		(function () {
-			const LOCAL_PREVIEW_KEY = 'mapaph_rail_sightings_local_preview_v1';
-			const CLIENT_TOKEN_KEY = 'mapaph_rail_client_token_v1';
-			const LIVE_WINDOW_MS = 15 * 60 * 1000;
-			const GPS_MAX_RADIUS_METERS = 650;
-			const COOLDOWN_MS = 20000;
-
-			// Shared road/viaduct curve waypoints for smooth geographic interpolation
-			const GEO_WAYPOINTS = {
-				'lrt1_fpj>lrt1_balintawak': [[14.6572, 121.013]],
-				'lrt1_balintawak>lrt1_monumento': [[14.6565, 120.9945]],
-				'lrt1_central>lrt1_un_ave': [
-					[14.5895, 120.981],
-					[14.586, 120.9825]
-				],
-				'mrt3_north>mrt3_q_ave': [[14.6478, 121.0352]],
-				'mrt3_q_ave>mrt3_kamuning': [[14.6385, 121.0412]],
-				'mrt3_kamuning>mrt3_cubao': [[14.627, 121.0475]],
-				'mrt3_cubao>mrt3_santolan': [[14.6135, 121.0535]],
-				'mrt3_santolan>mrt3_ortigas': [
-					[14.5995, 121.058],
-					[14.5935, 121.058]
-				],
-				'mrt3_guadalupe>mrt3_buendia': [
-					[14.5622, 121.042],
-					[14.5582, 121.0382]
-				],
-				'mrt3_magallanes>mrt3_taft': [
-					[14.5405, 121.0145],
-					[14.5385, 121.006]
-				],
-				'lrt2_katipunan>lrt2_santolan': [
-					[14.6335, 121.0775],
-					[14.6285, 121.082]
-				]
-			};
-
-			// Schematic 2D network diagram topology (viewBox 0 0 1260 1280)
-			const DIAGRAM_LINES = {
-				lrt1: [
-					['lrt1_fpj', 460, 108],
-					['lrt1_balintawak', 347, 108],
-					[null, 220, 108],
-					['lrt1_monumento', 220, 128],
-					['lrt1_5th_ave', 220, 200],
-					['lrt1_r_papa', 220, 260],
-					['lrt1_abad_santos', 220, 300],
-					['lrt1_blumentritt', 220, 358],
-					['lrt1_tayuman', 220, 398],
-					['lrt1_bambang', 220, 438],
-					['lrt1_doroteo_jose', 220, 480],
-					['lrt1_carriedo', 220, 524],
-					['lrt1_central', 220, 571],
-					['lrt1_un_ave', 232, 643],
-					['lrt1_pedro_gil', 255, 688],
-					['lrt1_quirino', 279, 733],
-					['lrt1_vito_cruz', 303, 779],
-					['lrt1_gil_puyat', 320, 847],
-					['lrt1_libertad', 332, 891],
-					['lrt1_edsa', 345, 954],
-					['lrt1_baclaran', 332, 992],
-					['lrt1_redemptorist', 326, 1037],
-					['lrt1_mia_road', 320, 1082],
-					['lrt1_asia_world', 314, 1127],
-					['lrt1_ninoy_aquino', 308, 1172],
-					['lrt1_dr_santos', 302, 1217]
-				],
-				mrt3: [
-					['mrt3_north', 548, 127],
-					['mrt3_q_ave', 604, 213],
-					['mrt3_kamuning', 636, 263],
-					['mrt3_cubao', 689, 374],
-					['mrt3_santolan', 727, 456],
-					[null, 752, 515],
-					['mrt3_ortigas', 732, 603],
-					['mrt3_shaw', 710, 647],
-					['mrt3_boni', 679, 705],
-					['mrt3_guadalupe', 654, 751],
-					[null, 640, 790],
-					['mrt3_buendia', 575, 845],
-					['mrt3_ayala', 533, 882],
-					['mrt3_magallanes', 475, 933],
-					[null, 440, 952],
-					['mrt3_taft', 357, 964]
-				],
-				lrt2: [
-					['lrt2_recto', 227, 496],
-					['lrt2_legarda', 285, 516],
-					['lrt2_pureza', 373, 506],
-					[null, 447, 497],
-					['lrt2_v_mapa', 457, 487],
-					[null, 495, 451],
-					['lrt2_j_ruiz', 519, 438],
-					['lrt2_gilmore', 573, 414],
-					['lrt2_betty_go', 633, 387],
-					['lrt2_cubao', 703, 355],
-					['lrt2_anonas', 789, 317],
-					['lrt2_katipunan', 843, 293],
-					[null, 870, 280],
-					['lrt2_santolan', 934, 356],
-					['lrt2_marikina', 985, 420],
-					['lrt2_antipolo', 1035, 490]
-				]
-			};
-
-			const DIAGRAM_LINKS = [
-				['lrt1_doroteo_jose', 'lrt2_recto'],
-				['lrt2_cubao', 'mrt3_cubao'],
-				['lrt1_edsa', 'mrt3_taft']
-			];
-
-			const diagramPts = {};
-			const diagramPos = {};
-			const diagramIndexByStation = {};
-			Object.keys(DIAGRAM_LINES).forEach((k) => {
-				diagramIndexByStation[k] = {};
-				diagramPts[k] = DIAGRAM_LINES[k].map(([id, x, y], idx) => {
-					const pt = { id, x, y, corner: !id };
-					if (id) {
-						diagramPos[id] = pt;
-						diagramIndexByStation[k][id] = idx;
-					}
-					return pt;
-				});
-			});
-
-			let currentLine = 'mrt3';
-			let currentStationId = stationsData.mrt3[0].id;
-			let dayMode = 'auto';
-			let viewMode = 'map'; // 'map' | 'diagram' | 'list'
-			let mapScope = 'focus'; // 'focus' | 'all'
-			let checkInDir = 'fwd';
-			let crowdLevel = 'moderate';
-			let stationFilterQuery = '';
-			let gpsSnapState = { active: false, lineKey: null, stationId: null, distMeters: null };
-			let remoteSightings = [];
-			let localPreviewSightings = loadLocalPreviewSightings();
-			let feedStatus = { state: 'checking', message: 'Checking rider feed...' };
-			let cooldownUntilMs = 0;
-			let cooldownInterval = null;
-			let lastRenderedMinute = -1;
-			let lastLiveBannerTarget = null;
-
-			// Leaflet state
-			let leafletMap = null;
-			let trackLayerGroup = null;
-			let stationLayerGroup = null;
-			let trainLayerGroup = null;
-			let leafletUnavailable = false;
-			let lastTrackSignature = '';
-
-			const stationSelect = document.getElementById('stationSelect');
-			const stationFilterInput = document.getElementById('stationFilterInput');
-			const stationSpineScroll = document.getElementById('stationSpineScroll');
-			const corridorHeading = document.getElementById('corridorHeading');
-			const lineOperatorMeta = document.getElementById('lineOperatorMeta');
-			const stationMetaNote = document.getElementById('stationMetaNote');
-			const manilaClockEl = document.getElementById('manilaClock');
-			const manilaDayTagEl = document.getElementById('manilaDayTag');
-			const feedConnectionDot = document.getElementById('feedConnectionDot');
-			const feedConnectionText = document.getElementById('feedConnectionText');
-			const gpsLocateBtn = document.getElementById('gpsLocateBtn');
-			const gpsStatusBanner = document.getElementById('gpsStatusBanner');
-			const gpsVerifiedTag = document.getElementById('gpsVerifiedTag');
-			const serviceAlertBanner = document.getElementById('serviceAlertBanner');
-			const checkInStationLabel = document.getElementById('checkInStationLabel');
-			const checkInFeedback = document.getElementById('checkInFeedback');
-			const liveSightingsList = document.getElementById('liveSightingsList');
-			const refreshFeedBtn = document.getElementById('refreshFeedBtn');
-			const liveVsEstBanner = document.getElementById('liveVsEstBanner');
-			const liveVsEstPill = document.getElementById('liveVsEstPill');
-			const liveVsEstText = document.getElementById('liveVsEstText');
-			const liveVsEstActionBtn = document.getElementById('liveVsEstActionBtn');
-			const mapViewPanel = document.getElementById('mapViewPanel');
-			const diagramViewPanel = document.getElementById('diagramViewPanel');
-			const listViewPanel = document.getElementById('listViewPanel');
-			const mapScopeControls = document.getElementById('mapScopeControls');
-			const listFilterControl = document.getElementById('listFilterControl');
-			const resetMapViewBtn = document.getElementById('resetMapViewBtn');
-			const mapTrainCountBadge = document.getElementById('mapTrainCountBadge');
-			const mapFallbackBanner = document.getElementById('mapFallbackBanner');
-			const railDiagramSvg = document.getElementById('railDiagramSvg');
-
-			function getOrCreateClientToken() {
-				try {
-					const existing = window.localStorage.getItem(CLIENT_TOKEN_KEY);
-					if (existing && existing.length >= 12) return existing;
-					const rand =
-						typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
-							? crypto.randomUUID().replace(/-/g, '')
-							: String(Date.now()) + Math.random().toString(36).slice(2, 14);
-					window.localStorage.setItem(CLIENT_TOKEN_KEY, rand);
-					return rand;
-				} catch (_err) {
-					return 'anon_' + Math.random().toString(36).slice(2, 14);
-				}
-			}
-
-			function loadLocalPreviewSightings() {
-				try {
-					const raw = window.localStorage.getItem(LOCAL_PREVIEW_KEY);
-					if (!raw) return [];
-					const parsed = JSON.parse(raw);
-					if (!Array.isArray(parsed)) return [];
-					const now = Date.now();
-					return parsed.filter((item) => item && item.created_at && now - Date.parse(item.created_at) <= LIVE_WINDOW_MS);
-				} catch (_err) {
-					return [];
-				}
-			}
-
-			function saveLocalPreviewSightings(items) {
-				try {
-					const now = Date.now();
-					const fresh = items.filter((item) => item && item.created_at && now - Date.parse(item.created_at) <= LIVE_WINDOW_MS);
-					window.localStorage.setItem(LOCAL_PREVIEW_KEY, JSON.stringify(fresh.slice(0, 25)));
-				} catch (_err) {
-					// Ignore storage quota restrictions in private browsing
-				}
-			}
-
-			function getManilaClock() {
-				const now = new Date();
-				const fmt = new Intl.DateTimeFormat('en-US', {
-					timeZone: 'Asia/Manila',
-					hour: 'numeric',
-					minute: '2-digit',
-					second: '2-digit',
-					hour12: true
-				});
-				const numFmt = new Intl.DateTimeFormat('en-US', {
-					timeZone: 'Asia/Manila',
-					weekday: 'short',
-					hour: '2-digit',
-					minute: '2-digit',
-					second: '2-digit',
-					hour12: false
-				});
-				const parts = numFmt.formatToParts(now);
-				const map = {};
-				parts.forEach((p) => {
-					map[p.type] = p.value;
-				});
-				const wd = (map.weekday || '').toLowerCase();
-				const hour = Number(map.hour || 0) % 24;
-				const minute = Number(map.minute || 0);
-				const second = Number(map.second || 0);
-				const isWeekendAuto = wd.startsWith('sat') || wd.startsWith('sun');
-				const totalMin = hour * 60 + minute;
-				return {
-					nowMs: now.getTime(),
-					totalMin,
-					exactMin: totalMin + second / 60,
-					isWeekendAuto,
-					weekdayLabel: map.weekday || 'Today',
-					formatted: fmt.format(now)
-				};
-			}
-
-			function fmt12h(totalMinutes) {
-				const wrapped = ((Math.round(totalMinutes) % 1440) + 1440) % 1440;
-				const h24 = Math.floor(wrapped / 60);
-				const m = wrapped % 60;
-				const ampm = h24 >= 12 ? 'PM' : 'AM';
-				const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
-				return h12 + ':' + String(m).padStart(2, '0') + ' ' + ampm;
-			}
-
-			function formatAgeMinutes(createdAtIso, nowMs) {
-				const createdMs = Date.parse(createdAtIso);
-				if (Number.isNaN(createdMs)) return 'recent';
-				const diffSec = Math.max(0, Math.round((nowMs - createdMs) / 1000));
-				if (diffSec < 60) return 'just now';
-				const mins = Math.floor(diffSec / 60);
-				return mins + 'm ago';
-			}
-
-			function formatAgeShort(createdAtIso, nowMs) {
-				const createdMs = Date.parse(createdAtIso);
-				if (Number.isNaN(createdMs)) return 'now';
-				const diffSec = Math.max(0, Math.round((nowMs - createdMs) / 1000));
-				if (diffSec < 60) return 'now';
-				return Math.floor(diffSec / 60) + 'm';
-			}
-
-			function getEffectiveIsWeekend(clock) {
-				if (dayMode === 'weekend') return true;
-				if (dayMode === 'weekday') return false;
-				return clock.isWeekendAuto;
-			}
-
-			function getHeadwayRange(spec, nowMin, isWeekend) {
-				if (nowMin >= 20 * 60 + 30 || nowMin < 5 * 60 + 30) {
-					return spec.lateNightHeadwayMin;
-				}
-				if (isWeekend) {
-					return spec.weekendHeadwayMin;
-				}
-				const inMorningPeak = nowMin >= spec.peakMorningStartMin && nowMin <= spec.peakMorningEndMin;
-				const inEveningPeak = nowMin >= spec.peakEveningStartMin && nowMin <= spec.peakEveningEndMin;
-				if (inMorningPeak || inEveningPeak) {
-					return spec.peakHeadwayMin;
-				}
-				return spec.offPeakHeadwayMin;
-			}
-
-			function findStationById(lineKey, stationId) {
-				const list = stationsData[lineKey] || [];
-				return list.find((s) => s.id === stationId) || list[0];
-			}
-
-			function getTimetableEntry(lineKey, stationId) {
-				const table = timetablesByLine[lineKey] || [];
-				return table.find((row) => row.station.id === stationId) || table[0];
-			}
-
-			function haversineMeters(lat1, lon1, lat2, lon2) {
-				const R = 6371000;
-				const toRad = (d) => (d * Math.PI) / 180;
-				const dLat = toRad(lat2 - lat1);
-				const dLon = toRad(lon2 - lon1);
-				const a =
-					Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-					Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-				return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-			}
-
-			function getAllCombinedSightings(nowMs) {
-				const isFresh = (s) => {
-					if (!s || !s.created_at) return false;
-					const ts = Date.parse(s.created_at);
-					return !Number.isNaN(ts) && nowMs - ts <= LIVE_WINDOW_MS;
-				};
-				const freshRemote = remoteSightings.filter(isFresh);
-				const freshLocal = localPreviewSightings.filter(isFresh);
-				const merged = freshRemote.concat(freshLocal);
-				merged.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at));
-				return merged;
-			}
-
-			function setFeedBadge(state, text) {
-				feedStatus = { state, message: text };
-				feedConnectionText.textContent = text;
-				feedConnectionDot.className = 'w-2 h-2 rounded-full shrink-0';
-				if (state === 'connected') {
-					feedConnectionDot.classList.add('bg-mapa-green');
-				} else if (state === 'checking') {
-					feedConnectionDot.classList.add('bg-mapa-clay');
-				} else {
-					feedConnectionDot.classList.add('bg-mapa-navy');
-				}
-			}
-
-			// Polyline geometry helpers shared across Leaflet geographic map and 2D SVG diagram
-			function getGeoVerticesForLine(lineKey) {
-				const sts = stationsData[lineKey] || [];
-				const verts = [];
-				for (let i = 0; i < sts.length; i++) {
-					verts.push([sts[i].lat, sts[i].lon]);
-					if (i < sts.length - 1) {
-						const wp = GEO_WAYPOINTS[sts[i].id + '>' + sts[i + 1].id];
-						if (wp && wp.length) {
-							wp.forEach((p) => verts.push(p));
-						}
-					}
-				}
-				return verts;
-			}
-
-			function interpolatePolyPoints(pts, tNorm, isGeo, reverseTangent) {
-				if (!pts.length) return { pos: [0, 0], angleDeg: 0 };
-				if (pts.length === 1) return { pos: pts[0], angleDeg: reverseTangent ? 180 : 0 };
-
-				const t = Math.max(0, Math.min(1, tNorm));
-				const lens = [];
-				let total = 0;
-				for (let i = 0; i < pts.length - 1; i++) {
-					const a = pts[i];
-					const b = pts[i + 1];
-					const dx = isGeo ? (b[1] - a[1]) * Math.cos((a[0] * Math.PI) / 180) : b[0] - a[0];
-					const dy = isGeo ? b[0] - a[0] : b[1] - a[1];
-					const len = Math.hypot(dx, dy) || 0.00001;
-					lens.push(len);
-					total += len;
-				}
-
-				let targetDist = t * total;
-				for (let i = 0; i < lens.length; i++) {
-					if (targetDist <= lens[i] || i === lens.length - 1) {
-						const frac = lens[i] > 0 ? Math.max(0, Math.min(1, targetDist / lens[i])) : 0;
-						const a = pts[i];
-						const b = pts[i + 1];
-						const p0 = a[0] + (b[0] - a[0]) * frac;
-						const p1 = a[1] + (b[1] - a[1]) * frac;
-						let dx;
-						let dy;
-						if (isGeo) {
-							dx = (b[1] - a[1]) * Math.cos((p0 * Math.PI) / 180);
-							dy = b[0] - a[0];
-						} else {
-							dx = b[0] - a[0];
-							dy = -(b[1] - a[1]);
-						}
-						if (reverseTangent) {
-							dx = -dx;
-							dy = -dy;
-						}
-						const angleDeg = (Math.atan2(dx, dy) * 180) / Math.PI;
-						return { pos: [p0, p1], angleDeg };
-					}
-					targetDist -= lens[i];
-				}
-				return { pos: pts[0], angleDeg: 0 };
-			}
-
-			function getTrackPositionAtFloatIndex(lineKey, stationFloatIdx, isReverse) {
-				const sts = stationsData[lineKey] || [];
-				if (!sts.length) return { lat: 14.5995, lon: 120.9842, bearingDeg: 0, svgX: 600, svgY: 600, svgAngleDeg: 0 };
-				const clamped = Math.max(0, Math.min(sts.length - 1, stationFloatIdx));
-				const segIdx = clamped >= sts.length - 1 ? Math.max(0, sts.length - 2) : Math.floor(clamped);
-				const segT = clamped >= sts.length - 1 ? 1 : clamped - segIdx;
-				const stA = sts[segIdx];
-				const stB = sts[Math.min(sts.length - 1, segIdx + 1)];
-
-				const geoPts = [[stA.lat, stA.lon]];
-				const wp = GEO_WAYPOINTS[stA.id + '>' + stB.id];
-				if (wp && wp.length) wp.forEach((p) => geoPts.push(p));
-				geoPts.push([stB.lat, stB.lon]);
-				const geoRes = interpolatePolyPoints(geoPts, segT, true, isReverse);
-
-				const dLine = diagramPts[lineKey] || [];
-				const iA = diagramIndexByStation[lineKey][stA.id] ?? 0;
-				const iB = diagramIndexByStation[lineKey][stB.id] ?? dLine.length - 1;
-				const lo = Math.min(iA, iB);
-				const hi = Math.max(iA, iB);
-				const svgPts = dLine.slice(lo, hi + 1).map((p) => [p.x, p.y]);
-				const svgRes = interpolatePolyPoints(svgPts, segT, false, isReverse);
-
-				return {
-					lat: geoRes.pos[0],
-					lon: geoRes.pos[1],
-					bearingDeg: geoRes.angleDeg,
-					svgX: svgRes.pos[0],
-					svgY: svgRes.pos[1],
-					svgAngleDeg: svgRes.angleDeg
-				};
-			}
-
-			function offsetToStationFloatIndex(lineKey, elapsedMin, dirKey) {
-				const table = timetablesByLine[lineKey] || [];
-				const maxIdx = table.length - 1;
-				if (dirKey === 'fwd') {
-					if (elapsedMin <= 0) return 0;
-					for (let i = 0; i < maxIdx; i++) {
-						const oA = table[i].offsetForwardMin;
-						const oB = table[i + 1].offsetForwardMin;
-						if (elapsedMin <= oB) {
-							const t = oB > oA ? (elapsedMin - oA) / (oB - oA) : 0;
-							return i + Math.max(0, Math.min(1, t));
-						}
-					}
-					return maxIdx;
-				}
-				if (elapsedMin <= 0) return maxIdx;
-				for (let i = maxIdx - 1; i >= 0; i--) {
-					const oStart = table[i + 1].offsetReverseMin;
-					const oEnd = table[i].offsetReverseMin;
-					if (elapsedMin <= oEnd) {
-						const t = oEnd > oStart ? (elapsedMin - oStart) / (oEnd - oStart) : 0;
-						return i + 1 - Math.max(0, Math.min(1, t));
-					}
-				}
-				return 0;
-			}
-
-			function computeLineTrainsSnapshot(lineKey, clock, isWeekend, allSightings) {
-				const spec = specsData[lineKey];
-				const table = timetablesByLine[lineKey];
-				const maxIdx = table.length - 1;
-				const dirCodeFwd = spec.forward.shortDir === 'Eastbound' ? 'EB' : 'SB';
-				const dirCodeRev = spec.reverse.shortDir === 'Westbound' ? 'WB' : 'NB';
-				const hw = getHeadwayRange(spec, clock.totalMin, isWeekend);
-				const avgHeadway = (hw[0] + hw[1]) / 2;
-
-				const fwdFirst = isWeekend ? spec.forward.weekendFirstMin : spec.forward.weekdayFirstMin;
-				const fwdLast = isWeekend ? spec.forward.weekendLastMin : spec.forward.weekdayLastMin;
-				const revFirst = isWeekend ? spec.reverse.weekendFirstMin : spec.reverse.weekdayFirstMin;
-				const revLast = isWeekend ? spec.reverse.weekendLastMin : spec.reverse.weekdayLastMin;
-				const totalFwdTrip = table[maxIdx].offsetForwardMin;
-				const totalRevTrip = table[0].offsetReverseMin;
-
-				const estTrains = [];
-				const estByIndex = {};
-
-				for (let d = fwdFirst; d <= fwdLast + 0.001; d += avgHeadway) {
-					const elapsed = clock.exactMin - d;
-					if (elapsed >= 0 && elapsed <= totalFwdTrip) {
-						const floatIdx = offsetToStationFloatIndex(lineKey, elapsed, 'fwd');
-						const geom = getTrackPositionAtFloatIndex(lineKey, floatIdx, false);
-						const iFrom = Math.min(maxIdx - 1, Math.floor(floatIdx));
-						const iTo = Math.min(maxIdx, iFrom + 1);
-						const nearIdx = Math.round(floatIdx);
-						if (!estByIndex[nearIdx]) estByIndex[nearIdx] = { fwd: false, rev: false };
-						estByIndex[nearIdx].fwd = true;
-						estTrains.push({
-							id: 'est_' + lineKey + '_fwd_' + d.toFixed(2),
-							kind: 'est',
-							lineKey,
-							dirKey: 'fwd',
-							dirShort: dirCodeFwd,
-							dirName: spec.forward.shortDir,
-							fromName: table[iFrom].station.name,
-							toName: table[iTo].station.name,
-							lat: geom.lat,
-							lon: geom.lon,
-							bearingDeg: geom.bearingDeg,
-							svgX: geom.svgX,
-							svgY: geom.svgY,
-							svgAngleDeg: geom.svgAngleDeg
-						});
-					}
-				}
-
-				for (let d = revFirst; d <= revLast + 0.001; d += avgHeadway) {
-					const elapsed = clock.exactMin - d;
-					if (elapsed >= 0 && elapsed <= totalRevTrip) {
-						const floatIdx = offsetToStationFloatIndex(lineKey, elapsed, 'rev');
-						const geom = getTrackPositionAtFloatIndex(lineKey, floatIdx, true);
-						const iFrom = Math.min(maxIdx, Math.ceil(floatIdx));
-						const iTo = Math.max(0, iFrom - 1);
-						const nearIdx = Math.round(floatIdx);
-						if (!estByIndex[nearIdx]) estByIndex[nearIdx] = { fwd: false, rev: false };
-						estByIndex[nearIdx].rev = true;
-						estTrains.push({
-							id: 'est_' + lineKey + '_rev_' + d.toFixed(2),
-							kind: 'est',
-							lineKey,
-							dirKey: 'rev',
-							dirShort: dirCodeRev,
-							dirName: spec.reverse.shortDir,
-							fromName: table[iFrom].station.name,
-							toName: table[iTo].station.name,
-							lat: geom.lat,
-							lon: geom.lon,
-							bearingDeg: geom.bearingDeg,
-							svgX: geom.svgX,
-							svgY: geom.svgY,
-							svgAngleDeg: geom.svgAngleDeg
-						});
-					}
-				}
-
-				const liveTrains = [];
-				const seenKeys = new Set();
-				const packedStations = new Set();
-				const lineSightings = allSightings.filter((s) => s.line_key === lineKey);
-
-				lineSightings.forEach((rep) => {
-					if (rep.report_type === 'crowded') {
-						packedStations.add(rep.station_id);
-						return;
-					}
-					if (rep.report_type !== 'arriving' && rep.report_type !== 'on_board' && rep.report_type !== 'delayed') {
-						return;
-					}
-					const dedupKey = rep.direction + '|' + rep.station_id + '|' + (rep.report_type === 'delayed' ? 'delay' : 'train');
-					if (seenKeys.has(dedupKey)) return;
-					seenKeys.add(dedupKey);
-
-					const repEntry = getTimetableEntry(lineKey, rep.station_id);
-					const ageMin = Math.max(0, (clock.nowMs - Date.parse(rep.created_at)) / 60000);
-					const isFwd = rep.direction === 'fwd';
-					const isDelayed = rep.report_type === 'delayed';
-					const maxTrip = isFwd ? totalFwdTrip : totalRevTrip;
-					const baseOffset = isFwd ? repEntry.offsetForwardMin : repEntry.offsetReverseMin;
-
-					let floatIdx = repEntry.index;
-					let isProjected = false;
-					if (!isDelayed && ageMin > 0.75 && ageMin <= 10) {
-						const projOffset = Math.min(maxTrip, baseOffset + ageMin);
-						floatIdx = offsetToStationFloatIndex(lineKey, projOffset, rep.direction);
-						isProjected = Math.round(floatIdx) !== repEntry.index;
-					}
-
-					const geom = getTrackPositionAtFloatIndex(lineKey, floatIdx, !isFwd);
-					const nearEntry = table[Math.max(0, Math.min(maxIdx, Math.round(floatIdx)))];
-
-					liveTrains.push({
-						id: 'live_' + rep.id,
-						kind: isDelayed ? 'live_delay' : 'live',
-						lineKey,
-						dirKey: rep.direction,
-						dirShort: isFwd ? dirCodeFwd : dirCodeRev,
-						dirName: isFwd ? spec.forward.shortDir : spec.reverse.shortDir,
-						stationId: rep.station_id,
-						reportedStationName: repEntry.station.name,
-						projectedStationName: nearEntry.station.name,
-						isProjected,
-						ageMin,
-						ageStr: formatAgeMinutes(rep.created_at, clock.nowMs),
-						ageStrShort: formatAgeShort(rep.created_at, clock.nowMs),
-						isLocalOnly: Boolean(rep.isLocalOnly),
-						lat: geom.lat,
-						lon: geom.lon,
-						bearingDeg: geom.bearingDeg,
-						svgX: geom.svgX,
-						svgY: geom.svgY,
-						svgAngleDeg: geom.svgAngleDeg,
-						report: rep
-					});
-				});
-
-				return { estTrains, estByIndex, liveTrains, packedStations };
-			}
-
-			async function fetchLiveSightings() {
-				if (!supabaseUrl || !supabaseAnonKey) {
-					remoteSightings = [];
-					setFeedBadge('unconfigured', 'Schedule simulation (public DB env missing)');
-					renderAll();
-					return;
-				}
-
-				const sinceIso = new Date(Date.now() - LIVE_WINDOW_MS).toISOString();
-				const endpoint =
-					supabaseUrl +
-					'/rest/v1/rail_sightings?select=id,line_key,station_id,direction,report_type,source_kind,crowd_level,created_at' +
-					'&created_at=gte.' +
-					encodeURIComponent(sinceIso) +
-					'&order=created_at.desc&limit=80';
-
-				try {
-					const res = await fetch(endpoint, {
-						headers: {
-							apikey: supabaseAnonKey,
-							Authorization: 'Bearer ' + supabaseAnonKey,
-							Accept: 'application/json'
-						}
-					});
-
-					if (!res.ok) {
-						let errDetail = 'HTTP ' + res.status;
-						try {
-							const body = await res.json();
-							if (body && body.message) errDetail += ' - ' + body.message;
-							if (res.status === 404 || (body && body.code === 'PGRST205')) {
-								setFeedBadge('migration_pending', 'Schedule fallback (run SQL migration for live feed)');
-								remoteSightings = [];
-								renderAll();
-								return;
-							}
-						} catch (_parseErr) {
-							// Keep HTTP error status message
-						}
-						setFeedBadge('error', 'Live feed offline (' + errDetail + ')');
-						remoteSightings = [];
-						renderAll();
-						return;
-					}
-
-					const rows = await res.json();
-					remoteSightings = Array.isArray(rows) ? rows : [];
-					const count = remoteSightings.length;
-					setFeedBadge(
-						'connected',
-						count > 0 ? 'Shared live feed (' + count + ' across Manila)' : 'Shared live feed connected'
-					);
-					renderAll();
-				} catch (err) {
-					const msg = err && err.message ? err.message : 'Network error';
-					setFeedBadge('error', 'Live feed unreachable (' + msg + ')');
-					remoteSightings = [];
-					renderAll();
-				}
-			}
-
-			function computeDirectionModel(dirKey, clock, isWeekend, lineSightings) {
-				const spec = specsData[currentLine];
-				const dirSpec = dirKey === 'fwd' ? spec.forward : spec.reverse;
-				const entry = getTimetableEntry(currentLine, currentStationId);
-				const firstMin =
-					dirKey === 'fwd'
-						? isWeekend
-							? entry.weekendFirstFwd
-							: entry.weekdayFirstFwd
-						: isWeekend
-						? entry.weekendFirstRev
-						: entry.weekdayFirstRev;
-				const lastMin =
-					dirKey === 'fwd'
-						? isWeekend
-							? entry.weekendLastFwd
-							: entry.weekdayLastFwd
-						: isWeekend
-						? entry.weekendLastRev
-						: entry.weekdayLastRev;
-				const offset = dirKey === 'fwd' ? entry.offsetForwardMin : entry.offsetReverseMin;
-				const cutoffMin = lastMin - spec.gateCutoffBeforeLastMin;
-
-				const headwayRange = getHeadwayRange(spec, clock.totalMin, isWeekend);
-				const avgHeadway = (headwayRange[0] + headwayRange[1]) / 2;
-
-				let statusText = 'Operating';
-				let statusTone = 'open';
-				let estWaitMin = null;
-				let estArrivalStr = 'Ended';
-
-				if (clock.totalMin < spec.gateOpenMin) {
-					statusText = 'Closed';
-					statusTone = 'closed';
-					estWaitMin = firstMin - clock.totalMin;
-					estArrivalStr = 'First: ' + fmt12h(firstMin);
-				} else if (clock.totalMin < firstMin) {
-					statusText = 'Opening Soon';
-					statusTone = 'warn';
-					estWaitMin = firstMin - clock.totalMin;
-					estArrivalStr = 'First: ' + fmt12h(firstMin);
-				} else if (clock.totalMin > lastMin) {
-					statusText = 'Service Ended';
-					statusTone = 'closed';
-					estWaitMin = null;
-					estArrivalStr = 'Use EDSA Carousel (24/7)';
-				} else {
-					if (clock.totalMin >= cutoffMin) {
-						statusText = 'Gate Cutoff Window';
-						statusTone = 'warn';
-					}
-					const elapsedSinceFirst = Math.max(0, clock.totalMin - firstMin);
-					const k = Math.ceil(elapsedSinceFirst / avgHeadway);
-					let candidate = Math.round(firstMin + k * avgHeadway);
-					if (candidate < clock.totalMin) candidate = clock.totalMin + 1;
-					if (candidate > lastMin) candidate = lastMin;
-					estWaitMin = Math.max(0, candidate - clock.totalMin);
-					estArrivalStr = 'Est. ' + fmt12h(candidate);
-				}
-
-				const selIdx = entry.index;
-				const dirReports = lineSightings.filter((s) => s.direction === dirKey);
-
-				let liveMatch = null;
-				let liveDelayed = null;
-				let latestCrowd = null;
-
-				for (let i = 0; i < dirReports.length; i++) {
-					const rep = dirReports[i];
-					if (!latestCrowd && rep.crowd_level) latestCrowd = rep;
-					if (rep.report_type === 'delayed' && !liveDelayed) liveDelayed = rep;
-
-					if (rep.report_type === 'arriving' || rep.report_type === 'on_board') {
-						const repEntry = getTimetableEntry(currentLine, rep.station_id);
-						const ageMin = Math.max(0, (clock.nowMs - Date.parse(rep.created_at)) / 60000);
-						if (rep.station_id === currentStationId && ageMin <= 5) {
-							liveMatch = {
-								kind: 'at_station',
-								report: rep,
-								stationName: repEntry.station.name,
-								ageStr: formatAgeMinutes(rep.created_at, clock.nowMs),
-								etaMin: 0
-							};
-							break;
-						}
-						const isUpstream = dirKey === 'fwd' ? repEntry.index < selIdx : repEntry.index > selIdx;
-						if (isUpstream && ageMin <= 14) {
-							const repOffset = dirKey === 'fwd' ? repEntry.offsetForwardMin : repEntry.offsetReverseMin;
-							const segDelta = Math.max(1, offset - repOffset);
-							const eta = Math.round(segDelta - ageMin);
-							if (eta >= -1 && eta <= 18) {
-								liveMatch = {
-									kind: 'approaching',
-									report: rep,
-									stationName: repEntry.station.name,
-									ageStr: formatAgeMinutes(rep.created_at, clock.nowMs),
-									etaMin: Math.max(0, eta)
-								};
-								break;
-							}
-						}
-					}
-				}
-
-				return {
-					dirSpec,
-					firstMin,
-					lastMin,
-					cutoffMin,
-					headwayRange,
-					statusText,
-					statusTone,
-					estWaitMin,
-					estArrivalStr,
-					liveMatch,
-					liveDelayed,
-					latestCrowd
-				};
-			}
-
-			function renderDirectionCard(prefix, model) {
-				const dirPill = document.getElementById(prefix + 'DirPill');
-				const lineDot = document.getElementById(prefix + 'LineDot');
-				const innerBox = document.getElementById(prefix + 'InnerBox');
-				const sourceBadge = document.getElementById(prefix + 'SourceBadge');
-				const destLabel = document.getElementById(prefix + 'DestLabel');
-				const statusChip = document.getElementById(prefix + 'StatusChip');
-				const countdown = document.getElementById(prefix + 'Countdown');
-				const exactTime = document.getElementById(prefix + 'ExactTime');
-				const liveDetail = document.getElementById(prefix + 'LiveDetail');
-				const firstEl = document.getElementById(prefix + 'FirstTime');
-				const lastEl = document.getElementById(prefix + 'LastTime');
-				const cutoffEl = document.getElementById(prefix + 'CutoffTime');
-
-				const lineHex = lineColors[currentLine] || '#3D5A45';
-				lineDot.style.backgroundColor = lineHex;
-
-				dirPill.textContent = model.dirSpec.shortDir;
-				destLabel.textContent = 'Towards ' + model.dirSpec.destinationTerminal;
-
-				statusChip.textContent = model.statusText;
-				statusChip.className = 'shrink-0 text-[11px] font-semibold whitespace-nowrap';
-				if (model.statusTone === 'open') {
-					statusChip.classList.add('text-mapa-green');
-				} else if (model.statusTone === 'warn') {
-					statusChip.classList.add('text-mapa-rust');
-				} else {
-					statusChip.classList.add('text-mapa-muted');
-				}
-
-				firstEl.textContent = fmt12h(model.firstMin);
-				lastEl.textContent = fmt12h(model.lastMin);
-				cutoffEl.textContent = fmt12h(model.cutoffMin);
-
-				const estWaitLabel =
-					model.estWaitMin === null
-						? 'Ended'
-						: model.estWaitMin === 0
-						? 'Due now'
-						: '~' + model.estWaitMin + ' min';
-
-				if (model.liveMatch) {
-					const lm = model.liveMatch;
-					const isLocalOnly = Boolean(lm.report.isLocalOnly);
-					innerBox.className = isLocalOnly
-						? 'rounded-xl bg-mapa-canvas border-2 border-mapa-navy p-3'
-						: 'rounded-xl bg-mapa-canvas border-2 border-mapa-green p-3';
-					sourceBadge.textContent = isLocalOnly
-						? 'LOCAL PREVIEW · ' + lm.ageStr
-						: 'LIVE TRACKED · ' + lm.ageStr;
-					sourceBadge.className = isLocalOnly
-						? 'inline-block px-1.5 py-0.5 rounded font-mono text-[10px] font-bold uppercase tracking-wider bg-mapa-navy text-white'
-						: 'inline-block px-1.5 py-0.5 rounded font-mono text-[10px] font-bold uppercase tracking-wider bg-mapa-green text-white';
-
-					countdown.textContent = lm.etaMin === 0 ? 'Arriving' : '~' + lm.etaMin + ' min';
-					exactTime.textContent = 'Sched: ' + estWaitLabel;
-
-					let msg =
-						lm.kind === 'at_station'
-							? 'Rider at ' + lm.stationName + ' (' + lm.ageStr + ').'
-							: 'Upstream @ ' + lm.stationName + ' (' + lm.ageStr + ').';
-					if (model.liveDelayed) msg += ' Caution: delay reported.';
-					liveDetail.textContent = msg;
-				} else {
-					innerBox.className = 'rounded-xl bg-mapa-canvas border border-mapa-contour p-3';
-					sourceBadge.textContent =
-						model.estWaitMin === null
-							? 'CLOSED'
-							: 'ESTIMATED · ' + model.headwayRange[0] + '-' + model.headwayRange[1] + 'm';
-					sourceBadge.className =
-						'inline-block px-1.5 py-0.5 rounded font-mono text-[10px] font-bold uppercase tracking-wider bg-mapa-canvas-dark text-mapa-muted border border-mapa-contour';
-
-					countdown.textContent = estWaitLabel;
-					exactTime.textContent = model.estArrivalStr;
-
-					let fallbackNote =
-						model.estWaitMin === null
-							? 'Closed now. Use 24/7 EDSA Carousel along EDSA.'
-							: 'Schedule math (0 live upstream sightings).';
-					if (model.liveDelayed) {
-						fallbackNote = 'Delay reported recently on this bound.';
-					} else if (model.latestCrowd) {
-						fallbackNote += ' Crowd: ' + model.latestCrowd.crowd_level + '.';
-					}
-					liveDetail.textContent = fallbackNote;
-				}
-			}
-
-			function updateLiveVsEstBanner(liveTrains) {
-				const visibleScopeLines = mapScope === 'all' ? ['mrt3', 'lrt1', 'lrt2'] : [currentLine];
-				const lineMeta = linesData.find((l) => l.id === currentLine) || linesData[0];
-
-				const sharedLive = liveTrains.filter((t) => !t.isLocalOnly);
-				const localLive = liveTrains.filter((t) => t.isLocalOnly);
-
-				if (sharedLive.length > 0) {
-					const top = sharedLive[0];
-					const topLineMeta = linesData.find((l) => l.id === top.lineKey) || lineMeta;
-					lastLiveBannerTarget = { type: 'pin', train: top };
-
-					liveVsEstBanner.className =
-						'rounded-2xl border border-mapa-green bg-mapa-green text-white px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-xs';
-					liveVsEstPill.className =
-						'shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-md font-mono text-[11px] font-extrabold uppercase tracking-wider bg-white text-mapa-green';
-					liveVsEstPill.textContent = 'LIVE TRACKED';
-
-					const countWord = sharedLive.length === 1 ? '1 active rider pin' : sharedLive.length + ' active rider pins';
-					liveVsEstText.className = 'text-xs text-white/95 leading-snug';
-					liveVsEstText.textContent =
-						countWord +
-						' (' +
-						topLineMeta.shortName +
-						' ' +
-						top.dirName +
-						' near ' +
-						top.reportedStationName +
-						', ' +
-						top.ageStr +
-						'). Solid green map pins are live rider reports; dashed EST chevrons remain schedule simulations.';
-
-					liveVsEstActionBtn.className =
-						'shrink-0 self-start sm:self-auto h-8 px-3 rounded-lg text-xs font-bold bg-white text-mapa-green hover:bg-mapa-canvas transition-colors cursor-pointer whitespace-nowrap';
-					liveVsEstActionBtn.textContent = 'Focus Live Train';
-				} else if (localLive.length > 0) {
-					const top = localLive[0];
-					lastLiveBannerTarget = { type: 'pin', train: top };
-
-					liveVsEstBanner.className =
-						'rounded-2xl border border-mapa-navy bg-mapa-navy text-white px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-xs';
-					liveVsEstPill.className =
-						'shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-md font-mono text-[11px] font-extrabold uppercase tracking-wider bg-white text-mapa-navy';
-					liveVsEstPill.textContent = 'LOCAL PREVIEW PIN';
-					liveVsEstText.className = 'text-xs text-white/95 leading-snug';
-					liveVsEstText.textContent =
-						'Showing your local check-in pin (' +
-						top.reportedStationName +
-						', ' +
-						top.ageStr +
-						') on top of estimated schedule trains. Other users see shared sightings once DB migration is live.';
-					liveVsEstActionBtn.className =
-						'shrink-0 self-start sm:self-auto h-8 px-3 rounded-lg text-xs font-bold bg-white text-mapa-navy hover:bg-mapa-canvas transition-colors cursor-pointer whitespace-nowrap';
-					liveVsEstActionBtn.textContent = 'Focus Preview Pin';
-				} else {
-					lastLiveBannerTarget = { type: 'checkin' };
-					liveVsEstBanner.className =
-						'rounded-2xl border border-mapa-contour bg-mapa-canvas text-mapa-ink px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-2xs';
-					liveVsEstPill.className =
-						'shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-md font-mono text-[11px] font-bold uppercase tracking-wider bg-mapa-ink text-white';
-					liveVsEstPill.textContent = 'ESTIMATED SIMULATION';
-					liveVsEstText.className = 'text-xs text-mapa-ink/85 leading-snug';
-					const scopeLabel = visibleScopeLines.length > 1 ? 'all 3 lines' : lineMeta.shortName;
-					liveVsEstText.textContent =
-						'Moving train markers on ' +
-						scopeLabel +
-						' are simulated from official headway schedules and segment runtimes (0 live rider check-ins in the past 15m).';
-					liveVsEstActionBtn.className =
-						'shrink-0 self-start sm:self-auto h-8 px-3 rounded-lg text-xs font-semibold border border-mapa-contour bg-mapa-canvas-dark text-mapa-ink hover:border-mapa-ink transition-colors cursor-pointer whitespace-nowrap';
-					liveVsEstActionBtn.textContent = 'Spot a Train (Check In)';
-				}
-			}
-
-			// Leaflet real-world map initialization and incremental pin rendering
-			function ensureLeafletMap() {
-				if (leafletMap || leafletUnavailable) return;
-				if (typeof L === 'undefined') {
-					leafletUnavailable = true;
-					mapFallbackBanner.classList.remove('hidden');
-					return;
-				}
-
-				const container = document.getElementById('live-rail-map');
-				if (!container) return;
-
-				leafletMap = L.map('live-rail-map', {
-					center: [14.5995, 121.02],
-					zoom: 12,
-					zoomControl: true
-				});
-
-				L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-					attribution: '&copy; OpenStreetMap contributors',
-					maxZoom: 19
-				}).addTo(leafletMap);
-
-				trackLayerGroup = L.layerGroup().addTo(leafletMap);
-				stationLayerGroup = L.layerGroup().addTo(leafletMap);
-				trainLayerGroup = L.layerGroup().addTo(leafletMap);
-			}
-
-			function fitActiveLeafletBounds() {
-				if (!leafletMap || typeof L === 'undefined') return;
-				const pts = [];
-				const scopeKeys = mapScope === 'all' ? ['mrt3', 'lrt1', 'lrt2'] : [currentLine];
-				scopeKeys.forEach((lk) => {
-					(stationsData[lk] || []).forEach((st) => pts.push([st.lat, st.lon]));
-				});
-				if (pts.length) {
-					leafletMap.fitBounds(L.latLngBounds(pts), {
-						paddingTopLeft: [34, 34],
-						paddingBottomRight: [34, 46],
-						maxZoom: mapScope === 'all' ? 12 : 14
-					});
-				}
-			}
-
-			function renderLeafletTracksAndStations(packedSet) {
-				ensureLeafletMap();
-				if (!leafletMap || !trackLayerGroup || !stationLayerGroup) return;
-
-				trackLayerGroup.clearLayers();
-				stationLayerGroup.clearLayers();
-
-				const scopeKeys = mapScope === 'all' ? ['mrt3', 'lrt1', 'lrt2'] : [currentLine];
-				const packedSignature = currentLine + '|' + mapScope + '|' + currentStationId + '|' + Array.from(packedSet).join(',');
-
-				const drawOrder = scopeKeys.slice().sort((a, b) => (a === currentLine ? 1 : b === currentLine ? -1 : 0));
-
-				drawOrder.forEach((lk) => {
-					const isActiveLine = lk === currentLine;
-					const color = lineColors[lk] || '#3d5a45';
-					const verts = getGeoVerticesForLine(lk);
-					L.polyline(verts, {
-						color,
-						weight: isActiveLine ? 5.5 : 3.5,
-						opacity: isActiveLine ? 0.9 : 0.45,
-						lineJoin: 'round',
-						lineCap: 'round'
-					}).addTo(trackLayerGroup);
-				});
-
-				drawOrder.forEach((lk) => {
-					const isActiveLine = lk === currentLine;
-					const color = lineColors[lk] || '#3d5a45';
-					(stationsData[lk] || []).forEach((st) => {
-						const isSelected = lk === currentLine && st.id === currentStationId;
-						const isPacked = packedSet.has(lk + '|' + st.id);
-
-						if (isPacked) {
-							L.circleMarker([st.lat, st.lon], {
-								radius: isSelected ? 12 : 9,
-								color: '#9e391a',
-								weight: 2,
-								fillColor: '#9e391a',
-								fillOpacity: 0.18,
-								interactive: false
-							}).addTo(stationLayerGroup);
-						}
-
-						const marker = L.circleMarker([st.lat, st.lon], {
-							radius: isSelected ? 8 : st.isTransfer ? 5.5 : isActiveLine ? 4.5 : 3.5,
-							color: isSelected ? '#211d16' : color,
-							weight: isSelected ? 2.5 : 2,
-							fillColor: isSelected ? color : '#f7f3e9',
-							fillOpacity: 1
-						});
-
-						marker.bindTooltip(
-							'<strong>' + st.name + '</strong> (' + lk.toUpperCase() + ')' + (isPacked ? ' · Crowd alert' : ''),
-							{ direction: 'top', offset: [0, -6] }
-						);
-
-						marker.on('click', () => {
-							if (lk !== currentLine) {
-								currentLine = lk;
-								populateStationSelect(st.id);
-							} else {
-								currentStationId = st.id;
-								stationSelect.value = st.id;
-							}
-							updateUrlParams();
-							renderAll();
-						});
-
-						marker.addTo(stationLayerGroup);
-					});
-				});
-
-				const prevScopeParts = lastTrackSignature.split('|');
-				const scopeChanged = prevScopeParts[0] + '|' + prevScopeParts[1] !== currentLine + '|' + mapScope;
-				lastTrackSignature = packedSignature;
-				if (scopeChanged) {
-					fitActiveLeafletBounds();
-				}
-			}
-
-			function buildTrainIconHtml(train) {
-				const lineHex = lineColors[train.lineKey] || '#3d5a45';
-				if (train.kind === 'est') {
-					const angle = Math.round(train.bearingDeg);
-					return (
-						'<div class="rail-train-pill rail-train-est" style="border-color:' +
-						lineHex +
-						';">' +
-						'<svg width="9" height="9" viewBox="0 0 12 12" style="transform:rotate(' +
-						angle +
-						'deg);display:block;flex-shrink:0;" aria-hidden="true"><path d="M6 1L11 11L6 8.5L1 11Z" fill="' +
-						lineHex +
-						'"/></svg>' +
-						'<span>EST·' +
-						train.dirShort +
-						'</span></div>'
-					);
-				}
-
-				const bgHex =
-					train.kind === 'live_delay'
-						? '#9e391a'
-						: train.isLocalOnly
-						? '#1b2a4a'
-						: '#3d5a45';
-				const label =
-					train.kind === 'live_delay'
-						? 'DELAY'
-						: (train.isLocalOnly ? 'PREVIEW' : 'LIVE') + ' · ' + train.ageStrShort;
-				const angle = Math.round(train.bearingDeg);
-				return (
-					'<div class="rail-train-pill rail-train-live" style="background-color:' +
-					bgHex +
-					';">' +
-					'<svg width="10" height="10" viewBox="0 0 12 12" style="transform:rotate(' +
-					angle +
-					'deg);display:block;flex-shrink:0;" aria-hidden="true"><path d="M6 1L11 11L6 8.5L1 11Z" fill="#ffffff"/></svg>' +
-					'<span>' +
-					label +
-					'</span></div>'
-				);
-			}
-
-			function renderLeafletTrains(estTrains, liveTrains) {
-				ensureLeafletMap();
-				if (!leafletMap || !trainLayerGroup || typeof L === 'undefined') return;
-				trainLayerGroup.clearLayers();
-
-				estTrains.forEach((t) => {
-					const icon = L.divIcon({
-						className: 'rail-est-icon',
-						html: buildTrainIconHtml(t),
-						iconSize: [0, 0],
-						iconAnchor: [0, 0]
-					});
-					const marker = L.marker([t.lat, t.lon], {
-						icon,
-						zIndexOffset: t.lineKey === currentLine ? 250 : 120
-					});
-					const lineMeta = linesData.find((l) => l.id === t.lineKey) || linesData[0];
-					marker.bindPopup(
-						'<div style="font-size:12px;line-height:1.35;">' +
-							'<strong>' +
-							lineMeta.shortName +
-							' ' +
-							t.dirName +
-							' (Estimated Simulation)</strong><br/>' +
-							'Between ' +
-							t.fromName +
-							' and ' +
-							t.toName +
-							'.<br/>' +
-							'<span style="color:#5c5343;">Simulated from official schedule cadence, not operator GPS.</span>' +
-							'</div>'
-					);
-					marker.addTo(trainLayerGroup);
-				});
-
-				liveTrains.forEach((t) => {
-					const icon = L.divIcon({
-						className: 'rail-live-icon',
-						html: buildTrainIconHtml(t),
-						iconSize: [0, 0],
-						iconAnchor: [0, 0]
-					});
-					const marker = L.marker([t.lat, t.lon], {
-						icon,
-						zIndexOffset: 1000
-					});
-					const lineMeta = linesData.find((l) => l.id === t.lineKey) || linesData[0];
-					const projNote = t.isProjected ? '<br/>Projected near: <strong>' + t.projectedStationName + '</strong>' : '';
-					const tagText = t.kind === 'live_delay' ? 'Delay Advisory' : t.isLocalOnly ? 'Local Browser Preview' : 'Live Rider Sighting';
-					marker.bindPopup(
-						'<div style="font-size:12px;line-height:1.35;">' +
-							'<strong style="color:#3d5a45;">' +
-							tagText +
-							' (' +
-							lineMeta.shortName +
-							' ' +
-							t.dirName +
-							')</strong><br/>' +
-							'Reported at <strong>' +
-							t.reportedStationName +
-							'</strong> (' +
-							t.ageStr +
-							')' +
-							projNote +
-							'</div>'
-					);
-					marker.addTo(trainLayerGroup);
-				});
-			}
-
-			// 2D Schematic Network Diagram SVG helpers and rendering
-			function svgEl(tag, attrs) {
-				const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
-				Object.keys(attrs || {}).forEach((k) => {
-					el.setAttribute(k, String(attrs[k]));
-				});
-				return el;
-			}
-
-			function towardsPt(from, to, dist) {
-				const dx = to.x - from.x;
-				const dy = to.y - from.y;
-				const len = Math.hypot(dx, dy) || 1;
-				const k = Math.min(dist, len / 2) / len;
-				return { x: from.x + dx * k, y: from.y + dy * k };
-			}
-
-			function roundedSvgPath(pts, radius) {
-				const r = radius || 26;
-				let d = 'M' + pts[0].x + ',' + pts[0].y;
-				for (let i = 1; i < pts.length; i++) {
-					const p = pts[i];
-					if (p.corner && i < pts.length - 1) {
-						const t1 = towardsPt(p, pts[i - 1], r);
-						const t2 = towardsPt(p, pts[i + 1], r);
-						d += ' L' + t1.x + ',' + t1.y + ' Q' + p.x + ',' + p.y + ' ' + t2.x + ',' + t2.y;
-					} else {
-						d += ' L' + p.x + ',' + p.y;
-					}
-				}
-				return d;
-			}
-
-			function shortDiagramName(st) {
-				if (st.id === 'lrt1_asia_world') return 'Asia World / PITX';
-				return st.name.replace(/\s*\(.*\)/, '');
-			}
-
-			function getDiagramLabelPos(lineKey, stId, x, y, idx) {
-				if (lineKey === 'lrt1') {
-					if (stId === 'lrt1_fpj' || stId === 'lrt1_balintawak') {
-						return { lx: x, ly: y - 16, anchor: 'middle' };
-					}
-					return { lx: x - 14, ly: y + 4, anchor: 'end' };
-				}
-				if (lineKey === 'mrt3') {
-					if (stId === 'mrt3_taft') return { lx: x, ly: y + 22, anchor: 'middle' };
-					return { lx: x + 14, ly: y + 4, anchor: 'start' };
-				}
-				if (stId === 'lrt2_santolan' || stId === 'lrt2_marikina' || stId === 'lrt2_antipolo') {
-					return { lx: x + 14, ly: y + 4, anchor: 'start' };
-				}
-				if (stId === 'lrt2_recto') return { lx: x + 12, ly: y + 18, anchor: 'start' };
-				if (stId === 'lrt2_cubao') return { lx: x, ly: y - 15, anchor: 'middle' };
-				const isAbove = idx % 2 === 0;
-				return { lx: x, ly: isAbove ? y - 14 : y + 21, anchor: 'middle' };
-			}
-
-			function renderDiagramView(estTrains, liveTrains, packedSet) {
-				if (!railDiagramSvg) return;
-				railDiagramSvg.innerHTML = '';
-
-				const scopeKeys = mapScope === 'all' ? ['mrt3', 'lrt1', 'lrt2'] : [currentLine];
-				if (mapScope === 'all') {
-					railDiagramSvg.setAttribute('viewBox', '0 0 1260 1280');
-				} else {
-					const pts = diagramPts[currentLine] || [];
-					let minX = Infinity;
-					let maxX = -Infinity;
-					let minY = Infinity;
-					let maxY = -Infinity;
-					pts.forEach((p) => {
-						if (p.x < minX) minX = p.x;
-						if (p.x > maxX) maxX = p.x;
-						if (p.y < minY) minY = p.y;
-						if (p.y > maxY) maxY = p.y;
-					});
-					const padL = currentLine === 'lrt1' ? 190 : 120;
-					const padR = currentLine === 'lrt1' ? 120 : 210;
-					const vbX = Math.max(0, Math.round(minX - padL));
-					const vbY = Math.max(0, Math.round(minY - 70));
-					const vbW = Math.max(420, Math.round(maxX - minX + padL + padR));
-					const vbH = Math.max(420, Math.round(maxY - minY + 150));
-					railDiagramSvg.setAttribute('viewBox', vbX + ' ' + vbY + ' ' + vbW + ' ' + vbH);
-				}
-
-				const gLines = svgEl('g', { id: 'dg-lines' });
-				scopeKeys.forEach((lk) => {
-					const isActive = lk === currentLine;
-					gLines.appendChild(
-						svgEl('path', {
-							d: roundedSvgPath(diagramPts[lk], 26),
-							fill: 'none',
-							stroke: lineColors[lk] || '#3d5a45',
-							'stroke-width': isActive ? 10 : 7,
-							'stroke-opacity': isActive ? 0.92 : 0.4,
-							'stroke-linecap': 'round',
-							'stroke-linejoin': 'round'
-						})
-					);
-				});
-				railDiagramSvg.appendChild(gLines);
-
-				if (mapScope === 'all') {
-					const gLinks = svgEl('g', { id: 'dg-links' });
-					DIAGRAM_LINKS.forEach(([a, b]) => {
-						const pa = diagramPos[a];
-						const pb = diagramPos[b];
-						if (pa && pb) {
-							gLinks.appendChild(
-								svgEl('line', {
-									x1: pa.x,
-									y1: pa.y,
-									x2: pb.x,
-									y2: pb.y,
-									stroke: '#211d16',
-									'stroke-width': 4,
-									'stroke-dasharray': '6 5',
-									'stroke-linecap': 'round'
-								})
-							);
-						}
-					});
-					railDiagramSvg.appendChild(gLinks);
-				}
-
-				const gStations = svgEl('g', { id: 'dg-stations' });
-				const gLabels = svgEl('g', {
-					id: 'dg-labels',
-					'font-family': 'ui-sans-serif, system-ui, -apple-system, sans-serif',
-					'font-size': mapScope === 'all' ? '14' : '16',
-					'font-weight': '700',
-					fill: '#211d16',
-					'paint-order': 'stroke fill',
-					stroke: '#F7F3E9',
-					'stroke-width': '5px',
-					'stroke-linejoin': 'round',
-					'pointer-events': 'none'
-				});
-
-				scopeKeys.forEach((lk) => {
-					const lineHex = lineColors[lk] || '#3d5a45';
-					const stations = stationsData[lk] || [];
-					stations.forEach((st, idx) => {
-						const pos = diagramPos[st.id];
-						if (!pos) return;
-						const isSelected = lk === currentLine && st.id === currentStationId;
-						const isPacked = packedSet.has(lk + '|' + st.id);
-
-						if (isPacked) {
-							gStations.appendChild(
-								svgEl('circle', {
-									cx: pos.x,
-									cy: pos.y,
-									r: 14,
-									fill: 'rgba(158, 57, 26, 0.16)',
-									stroke: '#9e391a',
-									'stroke-width': 2.5
-								})
-							);
-						}
-
-						const c = svgEl('circle', {
-							cx: pos.x,
-							cy: pos.y,
-							r: isSelected ? 11 : st.isTransfer ? 8 : 6.5,
-							fill: isSelected ? lineHex : '#f7f3e9',
-							stroke: isSelected ? '#211d16' : lineHex,
-							'stroke-width': isSelected ? 4 : 3,
-							style: 'cursor:pointer;'
-						});
-
-						c.addEventListener('click', () => {
-							if (lk !== currentLine) {
-								currentLine = lk;
-								populateStationSelect(st.id);
-							} else {
-								currentStationId = st.id;
-								stationSelect.value = st.id;
-							}
-							updateUrlParams();
-							renderAll();
-						});
-
-						gStations.appendChild(c);
-
-						const lbl = getDiagramLabelPos(lk, st.id, pos.x, pos.y, idx);
-						const txt = svgEl('text', {
-							x: lbl.lx,
-							y: lbl.ly,
-							'text-anchor': lbl.anchor,
-							fill: isSelected ? '#211d16' : '#3a3428'
-						});
-						txt.textContent = shortDiagramName(st);
-						gLabels.appendChild(txt);
-					});
-				});
-
-				railDiagramSvg.appendChild(gStations);
-				railDiagramSvg.appendChild(gLabels);
-
-				const gTrains = svgEl('g', { id: 'dg-trains' });
-				estTrains.forEach((t) => {
-					const g = svgEl('g', { transform: 'translate(' + t.svgX.toFixed(1) + ',' + t.svgY.toFixed(1) + ')' });
-					const halo = svgEl('circle', {
-						r: 12,
-						fill: '#f7f3e9',
-						stroke: lineColors[t.lineKey] || '#3d5a45',
-						'stroke-width': 2.5,
-						'stroke-dasharray': '4 3'
-					});
-					const tri = svgEl('path', {
-						d: 'M0,-7 L6,5 L0,2.5 L-6,5 Z',
-						fill: lineColors[t.lineKey] || '#3d5a45',
-						transform: 'rotate(' + Math.round(t.svgAngleDeg) + ')'
-					});
-					g.appendChild(halo);
-					g.appendChild(tri);
-					gTrains.appendChild(g);
-				});
-
-				liveTrains.forEach((t) => {
-					const bg = t.kind === 'live_delay' ? '#9e391a' : t.isLocalOnly ? '#1b2a4a' : '#3d5a45';
-					const g = svgEl('g', { transform: 'translate(' + t.svgX.toFixed(1) + ',' + t.svgY.toFixed(1) + ')' });
-					const pill = svgEl('rect', {
-						x: -36,
-						y: -14,
-						width: 72,
-						height: 28,
-						rx: 14,
-						fill: bg,
-						stroke: '#ffffff',
-						'stroke-width': 3
-					});
-					const txt = svgEl('text', {
-						x: 0,
-						y: 4,
-						'text-anchor': 'middle',
-						fill: '#ffffff',
-						'font-family': 'ui-monospace, monospace',
-						'font-size': '11',
-						'font-weight': '800'
-					});
-					txt.textContent = t.kind === 'live_delay' ? 'DELAY' : 'LIVE · ' + t.ageStrShort;
-					g.appendChild(pill);
-					g.appendChild(txt);
-					gTrains.appendChild(g);
-				});
-
-				railDiagramSvg.appendChild(gTrains);
-			}
-
-			function renderStationSpine(clock, isWeekend, lineSightings, estByIndex) {
-				const table = timetablesByLine[currentLine];
-				const lineHex = lineColors[currentLine] || '#3D5A45';
-				const spec = specsData[currentLine];
-				const lineMeta = linesData.find((l) => l.id === currentLine) || linesData[0];
-
-				const sightingsByStation = {};
-				lineSightings.forEach((s) => {
-					if (!sightingsByStation[s.station_id]) sightingsByStation[s.station_id] = [];
-					sightingsByStation[s.station_id].push(s);
-				});
-
-				const q = stationFilterQuery.trim().toLowerCase();
-				const visibleRows = table.filter((row) => {
-					if (!q) return true;
-					return (
-						row.station.name.toLowerCase().includes(q) ||
-						row.station.city.toLowerCase().includes(q) ||
-						(row.station.transferLabel && row.station.transferLabel.toLowerCase().includes(q))
-					);
-				});
-
-				const prevScrollTop = stationSpineScroll.scrollTop;
-				stationSpineScroll.innerHTML = '';
-
-				if (!visibleRows.length) {
-					const empty = document.createElement('div');
-					empty.className = 'p-4 text-xs text-mapa-muted bg-mapa-canvas border border-mapa-contour rounded-xl';
-					empty.textContent = 'No stations on ' + lineMeta.shortName + ' match "' + stationFilterQuery + '".';
-					stationSpineScroll.appendChild(empty);
-					return;
-				}
-
-				const dirCodeFwd = spec.forward.shortDir === 'Eastbound' ? 'EB' : 'SB';
-				const dirCodeRev = spec.reverse.shortDir === 'Westbound' ? 'WB' : 'NB';
-
-				visibleRows.forEach((row, visibleIdx) => {
-					const st = row.station;
-					const isSelected = st.id === currentStationId;
-					const isFirstVisible = visibleIdx === 0;
-					const isLastVisible = visibleIdx === visibleRows.length - 1;
-					const firstTime = isWeekend ? row.weekendFirstFwd : row.weekdayFirstFwd;
-					const lastTime = isWeekend ? row.weekendLastFwd : row.weekdayLastFwd;
-					const liveList = sightingsByStation[st.id] || [];
-					const estTrain = estByIndex[row.index];
-
-					const btn = document.createElement('button');
-					btn.type = 'button';
-					btn.className =
-						'relative w-full text-left flex items-center justify-between gap-3 p-3 rounded-xl transition-colors cursor-pointer group ' +
-						(isSelected
-							? 'bg-mapa-canvas border-2 border-mapa-ink shadow-2xs'
-							: 'bg-mapa-canvas-dark border border-transparent hover:border-mapa-contour hover:bg-mapa-canvas');
-
-					if (!isFirstVisible) {
-						const segTop = document.createElement('span');
-						segTop.className = 'absolute left-[-16px] top-[-10px] bottom-1/2 w-1.5 z-0 pointer-events-none';
-						segTop.style.backgroundColor = lineHex;
-						segTop.style.opacity = '0.35';
-						btn.appendChild(segTop);
-					}
-					if (!isLastVisible) {
-						const segBot = document.createElement('span');
-						segBot.className = 'absolute left-[-16px] top-1/2 bottom-[-10px] w-1.5 z-0 pointer-events-none';
-						segBot.style.backgroundColor = lineHex;
-						segBot.style.opacity = '0.35';
-						btn.appendChild(segBot);
-					}
-
-					const node = document.createElement('span');
-					node.className =
-						'absolute left-[-23px] top-1/2 -translate-y-1/2 w-5 h-5 rounded-full border-2 flex items-center justify-center z-10 pointer-events-none';
-					node.style.borderColor = lineHex;
-					node.style.backgroundColor = isSelected ? lineHex : '#f7f3e9';
-					if (!isSelected && st.isTransfer) {
-						const inner = document.createElement('span');
-						inner.className = 'w-1.5 h-1.5 rounded-full';
-						inner.style.backgroundColor = lineHex;
-						node.appendChild(inner);
-					}
-					btn.appendChild(node);
-
-					const left = document.createElement('div');
-					left.className = 'min-w-0 flex-1';
-
-					const titleRow = document.createElement('div');
-					titleRow.className = 'flex items-center gap-2 flex-wrap';
-					const nameEl = document.createElement('span');
-					nameEl.className = 'font-serif font-bold text-sm text-mapa-ink group-hover:text-mapa-green transition-colors';
-					nameEl.textContent = st.name;
-					titleRow.appendChild(nameEl);
-
-					if (isSelected) {
-						const selTag = document.createElement('span');
-						selTag.className = 'text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-mapa-ink text-white';
-						selTag.textContent = 'Selected';
-						titleRow.appendChild(selTag);
-					}
-
-					const metaRow = document.createElement('div');
-					metaRow.className = 'text-[11px] text-mapa-muted mt-0.5';
-					metaRow.textContent =
-						st.city + ' · km ' + st.km.toFixed(1) + ' · First ' + fmt12h(firstTime) + ' / Last ' + fmt12h(lastTime);
-
-					left.appendChild(titleRow);
-					left.appendChild(metaRow);
-
-					if (st.isTransfer && st.transferLabel) {
-						const xfer = document.createElement('div');
-						xfer.className = 'mt-1';
-						const xferTag = document.createElement('span');
-						xferTag.className = 'inline-block px-1.5 py-0.5 rounded border border-mapa-contour bg-mapa-canvas text-[10px] font-medium text-mapa-ink/80';
-						xferTag.textContent = st.transferLabel;
-						xfer.appendChild(xferTag);
-						left.appendChild(xfer);
-					}
-
-					const right = document.createElement('div');
-					right.className = 'shrink-0 flex flex-col items-end gap-1';
-
-					if (liveList.length > 0) {
-						const topRep = liveList[0];
-						const livePill = document.createElement('span');
-						livePill.className =
-							'px-2 py-0.5 rounded text-[10px] font-bold ' +
-							(topRep.report_type === 'delayed' ? 'bg-mapa-rust text-white' : 'bg-mapa-green text-white');
-						const repTypeMap = {
-							arriving: 'LIVE Arriving',
-							on_board: 'LIVE On board',
-							crowded: 'Packed',
-							delayed: 'Delay'
-						};
-						livePill.textContent =
-							(repTypeMap[topRep.report_type] || 'Report') + ' · ' + formatAgeMinutes(topRep.created_at, clock.nowMs);
-						right.appendChild(livePill);
-					}
-
-					if (estTrain && (estTrain.fwd || estTrain.rev)) {
-						const estTag = document.createElement('span');
-						estTag.className = 'px-1.5 py-0.5 rounded border border-dashed border-mapa-contour bg-mapa-canvas font-mono text-[10px] font-semibold text-mapa-ink/75';
-						const parts = [];
-						if (estTrain.fwd) parts.push('EST ' + dirCodeFwd);
-						if (estTrain.rev) parts.push('EST ' + dirCodeRev);
-						estTag.textContent = parts.join(' | ');
-						right.appendChild(estTag);
-					}
-
-					btn.appendChild(left);
-					btn.appendChild(right);
-					btn.addEventListener('click', () => {
-						currentStationId = st.id;
-						stationSelect.value = st.id;
-						updateUrlParams();
-						renderAll();
-					});
-
-					stationSpineScroll.appendChild(btn);
-				});
-				stationSpineScroll.scrollTop = prevScrollTop;
-			}
-
-			function renderSightingsList(clock, lineSightings) {
-				if (!lineSightings.length) {
-					liveSightingsList.innerHTML = '';
-					const emptyBox = document.createElement('div');
-					const isOfflineState =
-						feedStatus.state === 'error' ||
-						feedStatus.state === 'migration_pending' ||
-						feedStatus.state === 'unconfigured';
-					emptyBox.className = 'rounded-lg border border-mapa-contour bg-mapa-canvas px-3 py-2.5 text-mapa-muted leading-snug';
-					emptyBox.textContent = isOfflineState
-						? feedStatus.message + '. Directional arrival cards above are using published schedule cadence.'
-						: 'No rider sightings reported on this line in the past 15 minutes. Directional arrivals above use published schedule cadence.';
-					liveSightingsList.appendChild(emptyBox);
-					return;
-				}
-
-				const spec = specsData[currentLine];
-				liveSightingsList.innerHTML = '';
-				lineSightings.slice(0, 8).forEach((item) => {
-					const st = findStationById(currentLine, item.station_id);
-					const dirName = item.direction === 'fwd' ? spec.forward.shortDir : spec.reverse.shortDir;
-					const reportLabels = {
-						arriving: 'Train arriving / boarding',
-						on_board: 'Rider on board',
-						crowded: 'Platform packed',
-						delayed: 'Delay / hold reported'
-					};
-					const row = document.createElement('div');
-					row.className =
-						'flex items-center justify-between gap-2 rounded-lg border border-mapa-contour bg-mapa-canvas px-3 py-2';
-
-					const left = document.createElement('div');
-					left.className = 'min-w-0 flex-1';
-
-					const topText = document.createElement('div');
-					topText.className = 'font-semibold text-mapa-ink truncate';
-					topText.textContent = (reportLabels[item.report_type] || item.report_type) + ' · ' + st.name;
-
-					const subText = document.createElement('div');
-					subText.className = 'text-[11px] text-mapa-muted';
-					const originLabel = item.isLocalOnly
-						? 'Local preview'
-						: item.source_kind === 'gps_snap'
-						? 'GPS verified'
-						: 'Manual check-in';
-					subText.textContent = dirName + ' · ' + (item.crowd_level ? item.crowd_level + ' crowd · ' : '') + originLabel;
-
-					left.appendChild(topText);
-					left.appendChild(subText);
-
-					const right = document.createElement('span');
-					right.className = 'shrink-0 font-mono text-[11px] text-mapa-muted';
-					right.textContent = formatAgeMinutes(item.created_at, clock.nowMs);
-
-					row.appendChild(left);
-					row.appendChild(right);
-					liveSightingsList.appendChild(row);
-				});
-			}
-
-			function updateLineTabsUI() {
-				document.querySelectorAll('.line-tab-btn').forEach((btn) => {
-					const tabLine = btn.getAttribute('data-line-tab');
-					const isActive = tabLine === currentLine;
-					const lineHex = lineColors[tabLine] || '#3D5A45';
-					const meta = linesData.find((l) => l.id === tabLine);
-					btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
-
-					// Uniform 4-sided border highlight (zero crooked left-border AI slop slivers)
-					btn.className = isActive
-						? 'line-tab-btn text-left rounded-xl px-4 py-3 transition-colors cursor-pointer flex items-center justify-between gap-3 bg-mapa-canvas border-2 border-mapa-ink shadow-xs'
-						: 'line-tab-btn text-left rounded-xl px-4 py-3 transition-colors cursor-pointer flex items-center justify-between gap-3 bg-mapa-canvas-dark border border-mapa-contour hover:border-mapa-ink/45';
-
-					const pill = btn.querySelector('[data-line-pill]');
-					if (pill && meta) {
-						pill.innerHTML = '';
-						if (isActive) {
-							pill.className =
-								'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-mono font-bold shrink-0 text-white';
-							pill.style.backgroundColor = lineHex;
-						} else {
-							pill.className =
-								'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-mono font-bold shrink-0 border border-mapa-contour bg-mapa-canvas text-mapa-ink';
-							pill.style.backgroundColor = '';
-							const dot = document.createElement('span');
-							dot.className = 'w-2 h-2 rounded-full shrink-0';
-							dot.style.backgroundColor = lineHex;
-							pill.appendChild(dot);
-						}
-						const labelSpan = document.createElement('span');
-						labelSpan.textContent = meta.shortName;
-						pill.appendChild(labelSpan);
-					}
-
-					const stateTag = btn.querySelector('[data-line-state-tag]');
-					if (stateTag) {
-						const stopsLabel = stateTag.getAttribute('data-line-stops') || '';
-						if (isActive) {
-							stateTag.className =
-								'shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded whitespace-nowrap bg-mapa-ink text-white';
-							stateTag.textContent = 'Active';
-						} else {
-							stateTag.className =
-								'shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded whitespace-nowrap bg-mapa-canvas text-mapa-muted border border-mapa-contour/80';
-							stateTag.textContent = stopsLabel;
-						}
-					}
-				});
-			}
-
-			function updateViewModeUI() {
-				document.querySelectorAll('.view-mode-btn').forEach((btn) => {
-					const m = btn.getAttribute('data-view-mode');
-					const active = m === viewMode;
-					btn.setAttribute('aria-selected', active ? 'true' : 'false');
-					btn.className = active
-						? 'view-mode-btn h-8 px-2.5 sm:px-3 rounded-lg text-xs font-bold transition-colors cursor-pointer whitespace-nowrap bg-mapa-green text-white'
-						: 'view-mode-btn h-8 px-2.5 sm:px-3 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap text-mapa-ink/75 hover:text-mapa-ink';
-				});
-
-				mapViewPanel.classList.toggle('hidden', viewMode !== 'map');
-				diagramViewPanel.classList.toggle('hidden', viewMode !== 'diagram');
-				listViewPanel.classList.toggle('hidden', viewMode !== 'list');
-
-				mapScopeControls.classList.toggle('hidden', viewMode === 'list');
-				listFilterControl.classList.toggle('hidden', viewMode !== 'list');
-
-				if (viewMode === 'map') {
-					ensureLeafletMap();
-					if (leafletMap) {
-						setTimeout(() => {
-							leafletMap.invalidateSize();
-						}, 40);
-					}
-				}
-			}
-
-			function updateMapScopeUI() {
-				document.querySelectorAll('.map-scope-btn').forEach((btn) => {
-					const sc = btn.getAttribute('data-map-scope');
-					const active = sc === mapScope;
-					btn.className = active
-						? 'map-scope-btn px-2.5 py-1 rounded-md text-[11px] font-bold bg-mapa-ink text-white cursor-pointer transition-colors'
-						: 'map-scope-btn px-2.5 py-1 rounded-md text-[11px] font-semibold text-mapa-ink/75 hover:text-mapa-ink cursor-pointer transition-colors';
-				});
-			}
-
-			function computeScopedTrains(clock, isWeekend, allSightings) {
-				const scopeKeys = mapScope === 'all' ? ['mrt3', 'lrt1', 'lrt2'] : [currentLine];
-				let scopedEst = [];
-				let scopedLive = [];
-				const packedSet = new Set();
-				let activeLineEstByIndex = {};
-
-				['mrt3', 'lrt1', 'lrt2'].forEach((lk) => {
-					const snap = computeLineTrainsSnapshot(lk, clock, isWeekend, allSightings);
-					if (lk === currentLine) {
-						activeLineEstByIndex = snap.estByIndex;
-					}
-					if (scopeKeys.includes(lk)) {
-						scopedEst = scopedEst.concat(snap.estTrains);
-						scopedLive = scopedLive.concat(snap.liveTrains);
-						snap.packedStations.forEach((stId) => packedSet.add(lk + '|' + stId));
-					}
-				});
-
-				scopedLive.sort((a, b) => a.ageMin - b.ageMin);
-				return { scopedEst, scopedLive, packedSet, activeLineEstByIndex };
-			}
-
-			function refreshVisualizersOnly() {
-				const clock = getManilaClock();
-				const isWeekend = getEffectiveIsWeekend(clock);
-				const allSightings = getAllCombinedSightings(clock.nowMs);
-				const { scopedEst, scopedLive, packedSet } = computeScopedTrains(clock, isWeekend, allSightings);
-
-				mapTrainCountBadge.textContent = scopedEst.length + ' EST · ' + scopedLive.length + ' LIVE';
-				updateLiveVsEstBanner(scopedLive);
-
-				if (viewMode === 'map') {
-					renderLeafletTrains(scopedEst, scopedLive);
-				} else if (viewMode === 'diagram') {
-					renderDiagramView(scopedEst, scopedLive, packedSet);
-				}
-			}
-
-			function renderAll() {
-				const clock = getManilaClock();
-				lastRenderedMinute = clock.totalMin;
-				const isWeekend = getEffectiveIsWeekend(clock);
-				const spec = specsData[currentLine];
-				const lineMeta = linesData.find((l) => l.id === currentLine) || linesData[0];
-				const station = findStationById(currentLine, currentStationId);
-
-				updateLineTabsUI();
-				updateViewModeUI();
-				updateMapScopeUI();
-
-				manilaClockEl.textContent = clock.formatted;
-				manilaDayTagEl.textContent = clock.weekdayLabel + ' · ' + (isWeekend ? 'Weekend' : 'Weekday');
-
-				corridorHeading.textContent =
-					viewMode === 'list'
-						? lineMeta.name + ' Station List'
-						: mapScope === 'all'
-						? 'Metro Manila 3-Line Rail Tracker'
-						: lineMeta.name + (viewMode === 'diagram' ? ' Schematic Network' : ' Live Map');
-
-				lineOperatorMeta.textContent =
-					lineMeta.operator + ' · ' + lineMeta.stationsCount + ' stations · Tap any station pin to inspect';
-				stationMetaNote.textContent = station.name + ' (' + station.city + ') · km ' + station.km.toFixed(1);
-				checkInStationLabel.textContent = station.name;
-
-				if (gpsSnapState.active && gpsSnapState.lineKey === currentLine && gpsSnapState.stationId === currentStationId) {
-					gpsVerifiedTag.classList.remove('hidden');
-				} else {
-					gpsVerifiedTag.classList.add('hidden');
-				}
-
-				document.querySelectorAll('.checkin-dir-btn').forEach((btn) => {
-					const dir = btn.getAttribute('data-checkin-dir');
-					btn.textContent = dir === 'fwd' ? spec.forward.shortDir : spec.reverse.shortDir;
-					btn.className =
-						dir === checkInDir
-							? 'checkin-dir-btn h-8 px-2 rounded-lg text-xs font-bold cursor-pointer transition-colors bg-mapa-navy text-white whitespace-nowrap truncate'
-							: 'checkin-dir-btn h-8 px-2 rounded-lg text-xs font-semibold cursor-pointer transition-colors text-mapa-ink/75 hover:text-mapa-ink whitespace-nowrap truncate';
-				});
-
-				const allSightings = getAllCombinedSightings(clock.nowMs);
-				const lineSightings = allSightings.filter((s) => s.line_key === currentLine);
-				const { scopedEst, scopedLive, packedSet, activeLineEstByIndex } = computeScopedTrains(
-					clock,
-					isWeekend,
-					allSightings
-				);
-
-				mapTrainCountBadge.textContent = scopedEst.length + ' EST · ' + scopedLive.length + ' LIVE';
-				updateLiveVsEstBanner(scopedLive);
-
-				const fwdModel = computeDirectionModel('fwd', clock, isWeekend, lineSightings);
-				const revModel = computeDirectionModel('rev', clock, isWeekend, lineSightings);
-				renderDirectionCard('fwd', fwdModel);
-				renderDirectionCard('rev', revModel);
-
-				renderLeafletTracksAndStations(packedSet);
-				renderLeafletTrains(scopedEst, scopedLive);
-				renderDiagramView(scopedEst, scopedLive, packedSet);
-				renderStationSpine(clock, isWeekend, lineSightings, activeLineEstByIndex);
-				renderSightingsList(clock, lineSightings);
-
-				const activeFwdWarn = fwdModel.statusTone === 'warn';
-				const activeRevWarn = revModel.statusTone === 'warn';
-				const bothClosed = fwdModel.statusTone === 'closed' && revModel.statusTone === 'closed';
-				if (bothClosed) {
-					serviceAlertBanner.classList.remove('hidden');
-					serviceAlertBanner.className =
-						'rounded-xl border border-mapa-rust/35 bg-mapa-canvas text-mapa-rust px-3.5 py-2.5 text-xs font-medium';
-					serviceAlertBanner.textContent =
-						lineMeta.shortName +
-						' passenger service at ' +
-						station.name +
-						' is currently closed. Overnight riders along EDSA can use the 24/7 EDSA Carousel.';
-				} else if (activeFwdWarn || activeRevWarn) {
-					serviceAlertBanner.classList.remove('hidden');
-					serviceAlertBanner.className =
-						'rounded-xl border border-mapa-rust/35 bg-mapa-canvas text-mapa-rust px-3.5 py-2.5 text-xs font-medium';
-					serviceAlertBanner.textContent =
-						'Closing notice: final train gate cutoff is active or approaching within minutes.';
-				} else {
-					serviceAlertBanner.classList.add('hidden');
-				}
-			}
-
-			function populateStationSelect(preferredStationId) {
-				const list = stationsData[currentLine] || [];
-				stationSelect.innerHTML = '';
-				list.forEach((st, idx) => {
-					const opt = document.createElement('option');
-					opt.value = st.id;
-					opt.textContent = idx + 1 + '. ' + st.name + ' (' + st.city + ')';
-					stationSelect.appendChild(opt);
-				});
-				const matched = list.find((s) => s.id === preferredStationId) || list[0];
-				currentStationId = matched.id;
-				stationSelect.value = currentStationId;
-			}
-
-			function switchLine(newLine, preferredStationId) {
-				if (!stationsData[newLine]) return;
-				currentLine = newLine;
-				stationFilterQuery = '';
-				if (stationFilterInput) stationFilterInput.value = '';
-				populateStationSelect(preferredStationId || null);
-				updateUrlParams();
-				renderAll();
-			}
-
-			function updateUrlParams() {
-				try {
-					const url = new URL(window.location.href);
-					url.searchParams.set('line', currentLine);
-					url.searchParams.set('station', currentStationId);
-					window.history.replaceState({}, '', url.toString());
-				} catch (_err) {
-					// Ignore in restricted frames
-				}
-			}
-
-			function showCheckInMessage(tone, text) {
-				checkInFeedback.classList.remove('hidden');
-				if (tone === 'success') {
-					checkInFeedback.className =
-						'rounded-lg border border-mapa-green/40 bg-mapa-canvas text-mapa-green px-3 py-2 text-xs font-medium';
-				} else if (tone === 'warn') {
-					checkInFeedback.className =
-						'rounded-lg border border-mapa-contour bg-mapa-canvas text-mapa-ink px-3 py-2 text-xs font-medium';
-				} else {
-					checkInFeedback.className =
-						'rounded-lg border border-mapa-rust/40 bg-mapa-canvas text-mapa-rust px-3 py-2 text-xs font-medium';
-				}
-				checkInFeedback.textContent = text;
-			}
-
-			function startCooldownTimer() {
-				cooldownUntilMs = Date.now() + COOLDOWN_MS;
-				const reportBtns = document.querySelectorAll('.report-btn');
-				if (cooldownInterval) clearInterval(cooldownInterval);
-
-				function tick() {
-					const rem = Math.ceil((cooldownUntilMs - Date.now()) / 1000);
-					if (rem <= 0) {
-						clearInterval(cooldownInterval);
-						cooldownInterval = null;
-						reportBtns.forEach((b) => b.removeAttribute('disabled'));
-						return;
-					}
-					reportBtns.forEach((b) => b.setAttribute('disabled', 'true'));
-				}
-				tick();
-				cooldownInterval = setInterval(tick, 500);
-			}
-
-			async function submitSighting(reportType) {
-				const nowMs = Date.now();
-				if (nowMs < cooldownUntilMs) {
-					const waitSec = Math.ceil((cooldownUntilMs - nowMs) / 1000);
-					showCheckInMessage('warn', 'Cooldown active: wait ' + waitSec + 's before submitting another report.');
-					return;
-				}
-
-				const payload = {
-					line_key: currentLine,
-					station_id: currentStationId,
-					direction: checkInDir,
-					report_type: reportType,
-					source_kind:
-						gpsSnapState.active && gpsSnapState.lineKey === currentLine && gpsSnapState.stationId === currentStationId
-							? 'gps_snap'
-							: 'manual',
-					crowd_level: crowdLevel,
-					client_token: getOrCreateClientToken()
-				};
-
-				const station = findStationById(currentLine, currentStationId);
-
-				if (!supabaseUrl || !supabaseAnonKey) {
-					const localItem = Object.assign(
-						{ id: 'local_' + Date.now(), created_at: new Date().toISOString(), isLocalOnly: true },
-						payload
-					);
-					localPreviewSightings.unshift(localItem);
-					saveLocalPreviewSightings(localPreviewSightings);
-					showCheckInMessage(
-						'warn',
-						'Saved locally in browser preview for ' + station.name + ' (public Supabase env vars not configured).'
-					);
-					startCooldownTimer();
-					renderAll();
-					return;
-				}
-
-				try {
-					const res = await fetch(supabaseUrl + '/rest/v1/rail_sightings', {
-						method: 'POST',
-						headers: {
-							apikey: supabaseAnonKey,
-							Authorization: 'Bearer ' + supabaseAnonKey,
-							'Content-Type': 'application/json',
-							Prefer: 'return=representation'
-						},
-						body: JSON.stringify(payload)
-					});
-
-					if (!res.ok) {
-						let detail = 'HTTP ' + res.status;
-						let code = '';
-						try {
-							const errBody = await res.json();
-							if (errBody && errBody.message) detail = errBody.message;
-							if (errBody && errBody.code) code = errBody.code;
-						} catch (_e) {
-							// Ignore parse error
-						}
-
-						if (res.status === 404 || code === 'PGRST205') {
-							const localItem = Object.assign(
-								{ id: 'local_' + Date.now(), created_at: new Date().toISOString(), isLocalOnly: true },
-								payload
-							);
-							localPreviewSightings.unshift(localItem);
-							saveLocalPreviewSightings(localPreviewSightings);
-							showCheckInMessage(
-								'warn',
-								'Shared rail_sightings table is not created yet in Supabase. Saved locally as browser preview for ' + station.name + '.'
-							);
-							startCooldownTimer();
-							renderAll();
-							return;
-						}
-
-						if (res.status === 401 || res.status === 403 || code === '42501') {
-							showCheckInMessage('warn', 'Rate limit: please wait 20 seconds between check-ins (' + detail + ').');
-							startCooldownTimer();
-							return;
-						}
-
-						showCheckInMessage('error', 'Failed to broadcast check-in: ' + detail);
-						return;
-					}
-
-					const inserted = await res.json();
-					const row =
-						Array.isArray(inserted) && inserted[0]
-							? inserted[0]
-							: Object.assign({ id: 'ok_' + Date.now(), created_at: new Date().toISOString() }, payload);
-					remoteSightings.unshift(row);
-					showCheckInMessage('success', 'Shared rider sighting posted for ' + station.name + '.');
-					startCooldownTimer();
-					renderAll();
-				} catch (err) {
-					const msg = err && err.message ? err.message : 'Network error';
-					showCheckInMessage('error', 'Network error sending check-in: ' + msg);
-				}
-			}
-
-			function handleGpsLocate() {
-				if (!navigator.geolocation) {
-					gpsStatusBanner.classList.remove('hidden');
-					gpsStatusBanner.className = 'rounded-xl border border-mapa-rust/40 bg-mapa-canvas text-mapa-rust px-3.5 py-2 text-xs';
-					gpsStatusBanner.textContent = 'Geolocation is not supported in this browser. Please select your station manually.';
-					return;
-				}
-
-				gpsLocateBtn.disabled = true;
-				const origSpan = gpsLocateBtn.querySelector('span');
-				if (origSpan) origSpan.textContent = 'Locating...';
-
-				navigator.geolocation.getCurrentPosition(
-					(pos) => {
-						gpsLocateBtn.disabled = false;
-						if (origSpan) origSpan.textContent = 'Use My GPS';
-
-						const userLat = pos.coords.latitude;
-						const userLon = pos.coords.longitude;
-						let best = null;
-
-						['mrt3', 'lrt1', 'lrt2'].forEach((lk) => {
-							stationsData[lk].forEach((st) => {
-								const d = haversineMeters(userLat, userLon, st.lat, st.lon);
-								if (!best || d < best.distMeters) {
-									best = { lineKey: lk, station: st, distMeters: Math.round(d) };
-								}
-							});
-						});
-
-						gpsStatusBanner.classList.remove('hidden');
-						if (best && best.distMeters <= GPS_MAX_RADIUS_METERS) {
-							gpsSnapState = {
-								active: true,
-								lineKey: best.lineKey,
-								stationId: best.station.id,
-								distMeters: best.distMeters
-							};
-							gpsStatusBanner.className =
-								'rounded-xl border border-mapa-green/40 bg-mapa-canvas text-mapa-green px-3.5 py-2 text-xs';
-							gpsStatusBanner.textContent =
-								'Snapped locally to ' +
-								best.station.name +
-								' (' +
-								best.lineKey.toUpperCase() +
-								', ~' +
-								best.distMeters +
-								'm away). Coordinates stay in your browser.';
-							switchLine(best.lineKey, best.station.id);
-						} else if (best) {
-							gpsSnapState = { active: false, lineKey: null, stationId: null, distMeters: best.distMeters };
-							gpsStatusBanner.className =
-								'rounded-xl border border-mapa-contour bg-mapa-canvas text-mapa-ink px-3.5 py-2 text-xs';
-							gpsStatusBanner.textContent =
-								'Nearest rail station is ' +
-								best.station.name +
-								' (~' +
-								(best.distMeters / 1000).toFixed(1) +
-								' km away, outside 650m station radius). Manual selection stays enabled.';
-							renderAll();
-						}
-					},
-					(geoErr) => {
-						gpsLocateBtn.disabled = false;
-						if (origSpan) origSpan.textContent = 'Use My GPS';
-						gpsStatusBanner.classList.remove('hidden');
-						gpsStatusBanner.className = 'rounded-xl border border-mapa-rust/40 bg-mapa-canvas text-mapa-rust px-3.5 py-2 text-xs';
-						gpsStatusBanner.textContent =
-							'Location permission unavailable (' + (geoErr && geoErr.message ? geoErr.message : 'blocked') + ').';
-					},
-					{ enableHighAccuracy: true, timeout: 10000, maximumAge: 15000 }
-				);
-			}
-
-			// Event listeners
-			document.querySelectorAll('.line-tab-btn').forEach((btn) => {
-				btn.addEventListener('click', () => {
-					const line = btn.getAttribute('data-line-tab');
-					if (line) switchLine(line, null);
-				});
-			});
-
-			document.querySelectorAll('.view-mode-btn').forEach((btn) => {
-				btn.addEventListener('click', () => {
-					const m = btn.getAttribute('data-view-mode');
-					if (m) {
-						viewMode = m;
-						renderAll();
-					}
-				});
-			});
-
-			document.querySelectorAll('.map-scope-btn').forEach((btn) => {
-				btn.addEventListener('click', () => {
-					const sc = btn.getAttribute('data-map-scope');
-					if (sc) {
-						mapScope = sc;
-						renderAll();
-					}
-				});
-			});
-
-			resetMapViewBtn.addEventListener('click', () => {
-				fitActiveLeafletBounds();
-			});
-
-			liveVsEstActionBtn.addEventListener('click', () => {
-				if (lastLiveBannerTarget && lastLiveBannerTarget.type === 'pin' && lastLiveBannerTarget.train) {
-					const t = lastLiveBannerTarget.train;
-					viewMode = 'map';
-					renderAll();
-					if (leafletMap) {
-						leafletMap.setView([t.lat, t.lon], 14, { animate: true });
-					}
-				} else {
-					const panel = document.getElementById('checkInPanel');
-					if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
-				}
-			});
-
-			stationSelect.addEventListener('change', () => {
-				currentStationId = stationSelect.value;
-				updateUrlParams();
-				renderAll();
-			});
-
-			if (stationFilterInput) {
-				stationFilterInput.addEventListener('input', () => {
-					stationFilterQuery = stationFilterInput.value || '';
-					const clock = getManilaClock();
-					const isWeekend = getEffectiveIsWeekend(clock);
-					const allSightings = getAllCombinedSightings(clock.nowMs);
-					const lineSightings = allSightings.filter((s) => s.line_key === currentLine);
-					const { activeLineEstByIndex } = computeScopedTrains(clock, isWeekend, allSightings);
-					renderStationSpine(clock, isWeekend, lineSightings, activeLineEstByIndex);
-				});
-			}
-
-			document.querySelectorAll('.day-mode-btn').forEach((btn) => {
-				btn.addEventListener('click', () => {
-					dayMode = btn.getAttribute('data-day-btn') || 'auto';
-					document.querySelectorAll('.day-mode-btn').forEach((b) => {
-						if (b.getAttribute('data-day-btn') === dayMode) {
-							b.className = 'day-mode-btn h-8 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap bg-mapa-green text-white';
-						} else {
-							b.className = 'day-mode-btn h-8 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap text-mapa-ink/75 hover:text-mapa-ink';
-						}
-					});
-					renderAll();
-				});
-			});
-
-			document.querySelectorAll('.quick-hub-btn').forEach((btn) => {
-				btn.addEventListener('click', () => {
-					const hubLine = btn.getAttribute('data-hub-line');
-					const hubStation = btn.getAttribute('data-hub-station');
-					if (hubLine && hubStation) switchLine(hubLine, hubStation);
-				});
-			});
-
-			document.querySelectorAll('.checkin-dir-btn').forEach((btn) => {
-				btn.addEventListener('click', () => {
-					checkInDir = btn.getAttribute('data-checkin-dir') || 'fwd';
-					renderAll();
-				});
-			});
-
-			document.querySelectorAll('.crowd-btn').forEach((btn) => {
-				btn.addEventListener('click', () => {
-					crowdLevel = btn.getAttribute('data-crowd') || 'moderate';
-					document.querySelectorAll('.crowd-btn').forEach((b) => {
-						if (b.getAttribute('data-crowd') === crowdLevel) {
-							b.className = 'crowd-btn h-8 px-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors bg-mapa-canvas-dark text-mapa-ink border border-mapa-contour/70';
-						} else {
-							b.className = 'crowd-btn h-8 px-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors text-mapa-ink/75';
-						}
-					});
-				});
-			});
-
-			document.querySelectorAll('.report-btn').forEach((btn) => {
-				btn.addEventListener('click', () => {
-					const rType = btn.getAttribute('data-report');
-					if (rType) submitSighting(rType);
-				});
-			});
-
-			gpsLocateBtn.addEventListener('click', handleGpsLocate);
-			refreshFeedBtn.addEventListener('click', fetchLiveSightings);
-
-			try {
-				const params = new URLSearchParams(window.location.search);
-				const qLine = params.get('line');
-				const qStation = params.get('station');
-				if (qLine && stationsData[qLine]) currentLine = qLine;
-				populateStationSelect(qStation);
-			} catch (_err) {
-				populateStationSelect(null);
-			}
-
-			fetchLiveSightings();
-			setInterval(() => {
-				if (document.hidden) return;
-				const clock = getManilaClock();
-				manilaClockEl.textContent = clock.formatted;
-				if (lastRenderedMinute !== clock.totalMin) {
-					lastRenderedMinute = clock.totalMin;
-					renderAll();
-				}
-			}, 1000);
-			// Smooth 5-second motion tick along Geo Map & Diagram without re-rendering Leaflet tiles
-			setInterval(() => {
-				if (document.hidden) return;
-				refreshVisualizersOnly();
-			}, 5000);
-			setInterval(() => {
-				if (!document.hidden) fetchLiveSightings();
-			}, 30000);
-		})();
+	<script>
+		import '../../scripts/train-arrival-client';
 	</script>
 </BaseLayout>

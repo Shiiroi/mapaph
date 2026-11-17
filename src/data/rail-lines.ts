@@ -894,3 +894,505 @@ export function buildLineTimetable(
     };
   });
 }
+
+export type HeadwayPeriodId =
+  "morning_peak" | "evening_peak" | "off_peak" | "late_night" | "weekend";
+
+export interface HeadwayPeriodInfo {
+  periodId: HeadwayPeriodId;
+  label: string;
+  shortLabel: string;
+  rangeMin: [number, number];
+  avgMin: number;
+}
+
+export interface UpcomingTrainSlot {
+  slotIndex: number;
+  waitMin: number;
+  arrivalMin: number;
+  formattedTime: string;
+  isLastTrain: boolean;
+}
+
+export interface DirectionScheduleDeck {
+  dirKey: "fwd" | "rev";
+  dirSpec: DirectionSchedule;
+  status: "open" | "opening_soon" | "cutoff_window" | "closed";
+  statusLabel: string;
+  headway: HeadwayPeriodInfo;
+  firstMin: number;
+  lastMin: number;
+  cutoffMin: number;
+  minutesUntilCutoff: number | null;
+  upcomingTrains: UpcomingTrainSlot[];
+  summaryNote: string;
+}
+
+export interface InterchangeTransferCheck {
+  hasInterchange: boolean;
+  hubLabel: string;
+  connectingLineKey: LineKey;
+  connectingLineName: string;
+  walkTransferMin: number;
+  arrivalPlusWalkMin: number;
+  connectingFwdDirLabel: string;
+  connectingFwdCutoffMin: number;
+  connectingRevDirLabel: string;
+  connectingRevCutoffMin: number;
+  verdict: "safe" | "tight" | "missed";
+  verdictLabel: string;
+  detailText: string;
+}
+
+export interface TripAndTransferPlan {
+  lineKey: LineKey;
+  originStation: RawStation;
+  destStation: RawStation;
+  isSameStation: boolean;
+  dirKey: "fwd" | "rev";
+  dirLabel: string;
+  stopsCount: number;
+  distanceKm: number;
+  nextWaitMin: number | null;
+  inTrainMin: number;
+  totalJourneyMin: number | null;
+  departureMin: number | null;
+  arrivalMin: number | null;
+  originCutoffMin: number;
+  destLastTrainMin: number;
+  originStatus: "safe" | "tight" | "closed";
+  originStatusLabel: string;
+  interchange: InterchangeTransferCheck | null;
+}
+
+const INTERCHANGE_PARTNERS: Record<
+  string,
+  {
+    connectingLineKey: LineKey;
+    partnerStationId: string;
+    hubLabel: string;
+    walkMin: number;
+  }
+> = {
+  mrt3_cubao: {
+    connectingLineKey: "lrt2",
+    partnerStationId: "lrt2_cubao",
+    hubLabel: "Araneta Center-Cubao (MRT-3 to LRT-2)",
+    walkMin: 6,
+  },
+  lrt2_cubao: {
+    connectingLineKey: "mrt3",
+    partnerStationId: "mrt3_cubao",
+    hubLabel: "Araneta Center-Cubao (LRT-2 to MRT-3)",
+    walkMin: 6,
+  },
+  lrt1_doroteo_jose: {
+    connectingLineKey: "lrt2",
+    partnerStationId: "lrt2_recto",
+    hubLabel: "Doroteo Jose to Recto (LRT-1 to LRT-2)",
+    walkMin: 5,
+  },
+  lrt2_recto: {
+    connectingLineKey: "lrt1",
+    partnerStationId: "lrt1_doroteo_jose",
+    hubLabel: "Recto to Doroteo Jose (LRT-2 to LRT-1)",
+    walkMin: 5,
+  },
+  mrt3_taft: {
+    connectingLineKey: "lrt1",
+    partnerStationId: "lrt1_edsa",
+    hubLabel: "Taft Ave to EDSA (MRT-3 to LRT-1)",
+    walkMin: 5,
+  },
+  lrt1_edsa: {
+    connectingLineKey: "mrt3",
+    partnerStationId: "mrt3_taft",
+    hubLabel: "EDSA to Taft Ave (LRT-1 to MRT-3)",
+    walkMin: 5,
+  },
+};
+
+export function getHeadwayPeriod(
+  lineKey: LineKey,
+  totalMin: number,
+  isWeekend: boolean,
+): HeadwayPeriodInfo {
+  const spec = SCHEDULE_SPECS[lineKey];
+  if (totalMin >= 20 * 60 + 30 || totalMin < 5 * 60 + 30) {
+    const [minH, maxH] = spec.lateNightHeadwayMin;
+    return {
+      periodId: "late_night",
+      label: "Late Night Cadence",
+      shortLabel: "Late Night",
+      rangeMin: [minH, maxH],
+      avgMin: (minH + maxH) / 2,
+    };
+  }
+  if (isWeekend) {
+    const [minH, maxH] = spec.weekendHeadwayMin;
+    return {
+      periodId: "weekend",
+      label: "Weekend Schedule",
+      shortLabel: "Weekend",
+      rangeMin: [minH, maxH],
+      avgMin: (minH + maxH) / 2,
+    };
+  }
+  if (
+    totalMin >= spec.peakMorningStartMin &&
+    totalMin <= spec.peakMorningEndMin
+  ) {
+    const [minH, maxH] = spec.peakHeadwayMin;
+    return {
+      periodId: "morning_peak",
+      label: "Morning Rush (6:00-9:00 AM)",
+      shortLabel: "AM Peak",
+      rangeMin: [minH, maxH],
+      avgMin: (minH + maxH) / 2,
+    };
+  }
+  if (
+    totalMin >= spec.peakEveningStartMin &&
+    totalMin <= spec.peakEveningEndMin
+  ) {
+    const [minH, maxH] = spec.peakHeadwayMin;
+    return {
+      periodId: "evening_peak",
+      label: "Evening Rush (5:00-8:00 PM)",
+      shortLabel: "PM Peak",
+      rangeMin: [minH, maxH],
+      avgMin: (minH + maxH) / 2,
+    };
+  }
+  const [minH, maxH] = spec.offPeakHeadwayMin;
+  return {
+    periodId: "off_peak",
+    label: "Midday Off-Peak",
+    shortLabel: "Off-Peak",
+    rangeMin: [minH, maxH],
+    avgMin: (minH + maxH) / 2,
+  };
+}
+
+export function computeDirectionScheduleDeck(
+  lineKey: LineKey,
+  stationId: string,
+  dirKey: "fwd" | "rev",
+  exactMin: number,
+  isWeekend: boolean,
+  prebuiltTable?: ComputedStationSchedule[],
+): DirectionScheduleDeck {
+  const spec = SCHEDULE_SPECS[lineKey];
+  const dirSpec = dirKey === "fwd" ? spec.forward : spec.reverse;
+  const table = prebuiltTable || buildLineTimetable(lineKey);
+  const entry = table.find((r) => r.station.id === stationId) || table[0];
+
+  const firstMin =
+    dirKey === "fwd"
+      ? isWeekend
+        ? entry.weekendFirstFwd
+        : entry.weekdayFirstFwd
+      : isWeekend
+        ? entry.weekendFirstRev
+        : entry.weekdayFirstRev;
+  const lastMin =
+    dirKey === "fwd"
+      ? isWeekend
+        ? entry.weekendLastFwd
+        : entry.weekdayLastFwd
+      : isWeekend
+        ? entry.weekendLastRev
+        : entry.weekdayLastRev;
+  const cutoffMin = lastMin - spec.gateCutoffBeforeLastMin;
+  const headway = getHeadwayPeriod(lineKey, Math.floor(exactMin), isWeekend);
+  const upcomingTrains: UpcomingTrainSlot[] = [];
+
+  let status: DirectionScheduleDeck["status"] = "open";
+  let statusLabel = "Operating";
+  let minutesUntilCutoff: number | null = null;
+  let summaryNote = "";
+
+  if (exactMin > lastMin) {
+    status = "closed";
+    statusLabel = "Service Closed";
+    summaryNote =
+      "Last trip has departed for today. Overnight commuters along EDSA can ride the 24/7 EDSA Carousel.";
+  } else if (exactMin < firstMin) {
+    status = exactMin < spec.gateOpenMin ? "closed" : "opening_soon";
+    statusLabel = exactMin < spec.gateOpenMin ? "Gates Closed" : "Opening Soon";
+    for (let slot = 0; slot < 3; slot++) {
+      const candidate = Math.round(firstMin + slot * headway.avgMin);
+      if (candidate > lastMin) break;
+      upcomingTrains.push({
+        slotIndex: slot,
+        waitMin: Math.max(0, Math.round(candidate - exactMin)),
+        arrivalMin: candidate,
+        formattedTime: formatMinutesTo12H(candidate),
+        isLastTrain:
+          candidate >= lastMin || candidate + headway.avgMin > lastMin,
+      });
+    }
+    summaryNote =
+      "Station concourse opens around " +
+      formatMinutesTo12H(spec.gateOpenMin) +
+      "; first trip arrives near " +
+      formatMinutesTo12H(firstMin) +
+      ".";
+  } else {
+    const minsToCutoff = cutoffMin - exactMin;
+    if (minsToCutoff <= 60) {
+      minutesUntilCutoff = Math.max(0, Math.ceil(minsToCutoff));
+    }
+    if (exactMin >= cutoffMin) {
+      status = "cutoff_window";
+      statusLabel = "Gate Cutoff Window";
+      summaryNote =
+        "Ticket gates close ~5 min before last trip (" +
+        formatMinutesTo12H(cutoffMin) +
+        "). Proceed directly to platform.";
+    } else if (minutesUntilCutoff !== null) {
+      summaryNote =
+        "Concourse gate closes in ~" +
+        minutesUntilCutoff +
+        " min (" +
+        formatMinutesTo12H(cutoffMin) +
+        ").";
+    } else {
+      summaryNote =
+        headway.label +
+        " · trains spaced roughly every " +
+        headway.rangeMin[0] +
+        "-" +
+        headway.rangeMin[1] +
+        " min.";
+    }
+
+    const elapsedSinceFirst = Math.max(0, exactMin - firstMin);
+    const baseK = Math.ceil(elapsedSinceFirst / headway.avgMin);
+    let lastPushedMin = -1;
+
+    for (let slot = 0; slot < 3; slot++) {
+      let candidate = Math.round(firstMin + (baseK + slot) * headway.avgMin);
+      if (slot === 0 && candidate < Math.floor(exactMin)) {
+        candidate = Math.ceil(exactMin);
+      }
+      if (candidate > lastMin) {
+        if (slot === 0 && exactMin <= lastMin && lastMin !== lastPushedMin) {
+          candidate = lastMin;
+        } else {
+          break;
+        }
+      }
+      if (candidate === lastPushedMin) continue;
+      lastPushedMin = candidate;
+      upcomingTrains.push({
+        slotIndex: upcomingTrains.length,
+        waitMin: Math.max(0, Math.round(candidate - exactMin)),
+        arrivalMin: candidate,
+        formattedTime: formatMinutesTo12H(candidate),
+        isLastTrain:
+          candidate >= lastMin || candidate + headway.avgMin > lastMin,
+      });
+      if (candidate >= lastMin) break;
+    }
+  }
+
+  return {
+    dirKey,
+    dirSpec,
+    status,
+    statusLabel,
+    headway,
+    firstMin,
+    lastMin,
+    cutoffMin,
+    minutesUntilCutoff,
+    upcomingTrains,
+    summaryNote,
+  };
+}
+
+export function computeTripAndTransferPlan(
+  lineKey: LineKey,
+  originId: string,
+  destId: string,
+  exactMin: number,
+  isWeekend: boolean,
+): TripAndTransferPlan {
+  const table = buildLineTimetable(lineKey);
+  const spec = SCHEDULE_SPECS[lineKey];
+  const origEntry = table.find((r) => r.station.id === originId) || table[0];
+  const destEntry =
+    table.find((r) => r.station.id === destId) || table[table.length - 1];
+
+  const isSameStation = origEntry.index === destEntry.index;
+  const dirKey: "fwd" | "rev" =
+    destEntry.index >= origEntry.index ? "fwd" : "rev";
+  const dirSpec = dirKey === "fwd" ? spec.forward : spec.reverse;
+
+  const stopsCount = Math.abs(destEntry.index - origEntry.index);
+  const distanceKm = Math.abs(destEntry.station.km - origEntry.station.km);
+  const inTrainMin = isSameStation
+    ? 0
+    : Math.max(
+        1,
+        dirKey === "fwd"
+          ? destEntry.offsetForwardMin - origEntry.offsetForwardMin
+          : destEntry.offsetReverseMin - origEntry.offsetReverseMin,
+      );
+
+  const originDeck = computeDirectionScheduleDeck(
+    lineKey,
+    origEntry.station.id,
+    dirKey,
+    exactMin,
+    isWeekend,
+    table,
+  );
+  const destLastTrainMin =
+    dirKey === "fwd"
+      ? isWeekend
+        ? destEntry.weekendLastFwd
+        : destEntry.weekdayLastFwd
+      : isWeekend
+        ? destEntry.weekendLastRev
+        : destEntry.weekdayLastRev;
+
+  const nextSlot = originDeck.upcomingTrains[0] || null;
+  const nextWaitMin = nextSlot ? nextSlot.waitMin : null;
+  const departureMin = nextSlot ? nextSlot.arrivalMin : null;
+  const arrivalMin = departureMin !== null ? departureMin + inTrainMin : null;
+  const totalJourneyMin =
+    nextWaitMin !== null ? nextWaitMin + inTrainMin : null;
+
+  let originStatus: TripAndTransferPlan["originStatus"] = "safe";
+  let originStatusLabel =
+    "Open (" + formatMinutesTo12H(originDeck.cutoffMin) + " gate cutoff)";
+  if (originDeck.status === "closed" || nextWaitMin === null) {
+    originStatus = "closed";
+    originStatusLabel =
+      exactMin < spec.gateOpenMin
+        ? "Gates closed until " + formatMinutesTo12H(spec.gateOpenMin)
+        : "Last train departed for today";
+  } else if (
+    exactMin >= originDeck.cutoffMin ||
+    originDeck.cutoffMin - exactMin <= 15
+  ) {
+    originStatus = "tight";
+    originStatusLabel =
+      exactMin >= originDeck.cutoffMin
+        ? "Inside 5-min gate cutoff window"
+        : "Closing soon (" +
+          Math.max(1, Math.ceil(originDeck.cutoffMin - exactMin)) +
+          "m to cutoff)";
+  }
+
+  let interchange: InterchangeTransferCheck | null = null;
+  const partner = INTERCHANGE_PARTNERS[destEntry.station.id];
+  if (partner) {
+    const connMeta = RAIL_LINES.find((l) => l.id === partner.connectingLineKey);
+    const connTable = buildLineTimetable(partner.connectingLineKey);
+    const connSpec = SCHEDULE_SPECS[partner.connectingLineKey];
+    const connEntry =
+      connTable.find((r) => r.station.id === partner.partnerStationId) ||
+      connTable[0];
+
+    const connectingFwdCutoffMin =
+      (isWeekend ? connEntry.weekendLastFwd : connEntry.weekdayLastFwd) -
+      connSpec.gateCutoffBeforeLastMin;
+    const connectingRevCutoffMin =
+      (isWeekend ? connEntry.weekendLastRev : connEntry.weekdayLastRev) -
+      connSpec.gateCutoffBeforeLastMin;
+
+    const arrivalPlusWalkMin =
+      arrivalMin !== null
+        ? arrivalMin + partner.walkMin
+        : Math.round(exactMin) + inTrainMin + partner.walkMin;
+
+    const bufferFwd = connectingFwdCutoffMin - arrivalPlusWalkMin;
+    const bufferRev = connectingRevCutoffMin - arrivalPlusWalkMin;
+    const maxBuffer = Math.max(bufferFwd, bufferRev);
+    const minBuffer = Math.min(bufferFwd, bufferRev);
+
+    let verdict: InterchangeTransferCheck["verdict"] = "safe";
+    let verdictLabel = "Safe Transfer Buffer";
+    let detailText = "";
+
+    if (originStatus === "closed") {
+      verdict = "missed";
+      verdictLabel = "Origin Line Closed";
+      detailText =
+        "Current line is closed at this hour. Check connecting schedules or use the 24/7 EDSA Carousel busway.";
+    } else if (maxBuffer < 0) {
+      verdict = "missed";
+      verdictLabel = "Past Connecting Cutoff";
+      detailText =
+        "Reaching transfer gate around " +
+        formatMinutesTo12H(arrivalPlusWalkMin) +
+        " is after both connecting cutoffs (" +
+        formatMinutesTo12H(
+          Math.max(connectingFwdCutoffMin, connectingRevCutoffMin),
+        ) +
+        "). Plan on the 24/7 EDSA Carousel.";
+    } else if (minBuffer < 0 || maxBuffer < 15) {
+      verdict = "tight";
+      verdictLabel = "Tight Transfer (<15m or 1 Bound Closed)";
+      detailText =
+        "Estimated transfer gate arrival: " +
+        formatMinutesTo12H(arrivalPlusWalkMin) +
+        " (incl. " +
+        partner.walkMin +
+        "m walk). Check bound-specific cutoff below before heading up.";
+    } else {
+      verdict = "safe";
+      verdictLabel = "Safe Buffer (Both Bounds Open)";
+      detailText =
+        "Reaches connecting gate around " +
+        formatMinutesTo12H(arrivalPlusWalkMin) +
+        " (incl. " +
+        partner.walkMin +
+        "m footbridge walk) with >= " +
+        Math.floor(minBuffer) +
+        " min margin.";
+    }
+
+    interchange = {
+      hasInterchange: true,
+      hubLabel: partner.hubLabel,
+      connectingLineKey: partner.connectingLineKey,
+      connectingLineName: connMeta
+        ? connMeta.shortName
+        : partner.connectingLineKey.toUpperCase(),
+      walkTransferMin: partner.walkMin,
+      arrivalPlusWalkMin,
+      connectingFwdDirLabel: connSpec.forward.shortDir,
+      connectingFwdCutoffMin,
+      connectingRevDirLabel: connSpec.reverse.shortDir,
+      connectingRevCutoffMin,
+      verdict,
+      verdictLabel,
+      detailText,
+    };
+  }
+
+  return {
+    lineKey,
+    originStation: origEntry.station,
+    destStation: destEntry.station,
+    isSameStation,
+    dirKey,
+    dirLabel: dirSpec.shortDir,
+    stopsCount,
+    distanceKm,
+    nextWaitMin,
+    inTrainMin,
+    totalJourneyMin,
+    departureMin,
+    arrivalMin,
+    originCutoffMin: originDeck.cutoffMin,
+    destLastTrainMin,
+    originStatus,
+    originStatusLabel,
+    interchange,
+  };
+}
