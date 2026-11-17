@@ -10,19 +10,19 @@ mapaPH is an open-source civic cartography platform for the Philippines. This re
 
 All built-in utilities run client-side with complete server-side HTML pre-rendering:
 
-| Tool                              | Route                                                                      | Description                                                                          |
-| :-------------------------------- | :------------------------------------------------------------------------- | :----------------------------------------------------------------------------------- |
-| **PSGC Lookup & Decoder**         | [`/tools/psgc-lookup`](https://www.mapaph.com/tools/psgc-lookup)           | Search 1,742 geographic divisions and decode 9-digit PSGC codes.                     |
-| **PRS92 / WGS84 Converter**       | [`/tools/coordinates`](https://www.mapaph.com/tools/coordinates)           | Convert coordinates between WGS84 GPS and Philippine Reference System 1992.          |
-| **ZIP Code Lookup**               | [`/tools/zip-codes`](https://www.mapaph.com/tools/zip-codes)               | Search 2,139 Philippine postal delivery codes across all provinces and cities.       |
-| **Commute Fare Estimator**        | [`/tools/fare-calculator`](https://www.mapaph.com/tools/fare-calculator)   | Calculate official LTFRB fares for jeepneys, buses, UV Express, and taxis.           |
-| **Walkability Analyzer**          | [`/tools/walkability`](https://www.mapaph.com/tools/walkability)           | Measure 15-minute walking radii and pedestrian catchment areas.                      |
-| **Rail Transit Map & Fare Guide** | [`/tools/rail-transit`](https://www.mapaph.com/tools/rail-transit)         | View station fare matrices for LRT-1, LRT-2, and MRT-3 with transfer guides.         |
-| **Train Arrival PH**              | [`/tools/train-arrival-ph`](https://www.mapaph.com/tools/train-arrival-ph) | Live crowdsourced sightings + estimated arrival windows for MRT-3, LRT-1, and LRT-2. |
-| **Expressway Toll Calculator**    | [`/tools/toll-calculator`](https://www.mapaph.com/tools/toll-calculator)   | Calculate toll rates for NLEX, SLEX, SCTEX, TPLEX, CALAX, and Skyway.                |
-| **EDSA Carousel Busway Guide**    | [`/tools/edsa-carousel`](https://www.mapaph.com/tools/edsa-carousel)       | Plan station-to-station journeys and calculate fares along the EDSA bus corridor.    |
-| **Kilometer Post Locator**        | [`/tools/kilometer-posts`](https://www.mapaph.com/tools/kilometer-posts)   | Locate highway milestones along national highways from regional KM 0 benchmarks.     |
-| **All Tools Directory**           | [`/tools`](https://www.mapaph.com/tools)                                   | Complete directory and searchable catalog for all civic mapping tools.               |
+| Tool                              | Route                                                                      | Description                                                                                                             |
+| :-------------------------------- | :------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------- |
+| **PSGC Lookup & Decoder**         | [`/tools/psgc-lookup`](https://www.mapaph.com/tools/psgc-lookup)           | Search 1,742 geographic divisions and decode 9-digit PSGC codes.                                                        |
+| **PRS92 / WGS84 Converter**       | [`/tools/coordinates`](https://www.mapaph.com/tools/coordinates)           | Convert coordinates between WGS84 GPS and Philippine Reference System 1992.                                             |
+| **ZIP Code Lookup**               | [`/tools/zip-codes`](https://www.mapaph.com/tools/zip-codes)               | Search 2,139 Philippine postal delivery codes across all provinces and cities.                                          |
+| **Commute Fare Estimator**        | [`/tools/fare-calculator`](https://www.mapaph.com/tools/fare-calculator)   | Calculate official LTFRB fares for jeepneys, buses, UV Express, and taxis.                                              |
+| **Walkability Analyzer**          | [`/tools/walkability`](https://www.mapaph.com/tools/walkability)           | Measure 15-minute walking radii and pedestrian catchment areas.                                                         |
+| **Rail Transit Map & Fare Guide** | [`/tools/rail-transit`](https://www.mapaph.com/tools/rail-transit)         | View station fare matrices for LRT-1, LRT-2, and MRT-3 with transfer guides.                                            |
+| **Train Arrival PH**              | [`/tools/train-arrival-ph`](https://www.mapaph.com/tools/train-arrival-ph) | Next-3-trains wait windows, headway cadence, corridor simulation map, and transfer cutoffs for MRT-3, LRT-1, and LRT-2. |
+| **Expressway Toll Calculator**    | [`/tools/toll-calculator`](https://www.mapaph.com/tools/toll-calculator)   | Calculate toll rates for NLEX, SLEX, SCTEX, TPLEX, CALAX, and Skyway.                                                   |
+| **EDSA Carousel Busway Guide**    | [`/tools/edsa-carousel`](https://www.mapaph.com/tools/edsa-carousel)       | Plan station-to-station journeys and calculate fares along the EDSA bus corridor.                                       |
+| **Kilometer Post Locator**        | [`/tools/kilometer-posts`](https://www.mapaph.com/tools/kilometer-posts)   | Locate highway milestones along national highways from regional KM 0 benchmarks.                                        |
+| **All Tools Directory**           | [`/tools`](https://www.mapaph.com/tools)                                   | Complete directory and searchable catalog for all civic mapping tools.                                                  |
 
 ## External Ecosystem Tools
 
@@ -67,9 +67,9 @@ cd mapaph
 pnpm install
 ```
 
-### Environment Setup (Optional Live Crowdsourcing)
+### Environment Setup (Optional / Phase 2 Live Telemetry Staging)
 
-To enable shared crowdsourced train sightings on `/tools/train-arrival-ph`, copy `.env.example` to `.env`, configure your public Supabase project values, and apply `supabase/migrations/20261115_create_rail_sightings.sql` in your Supabase SQL Editor:
+`supabase/migrations/20261115_create_rail_sightings.sql` is staged in this repository for the Phase 2 live crowdsourced companion tracker. When setting up local environment variables, copy `.env.example` to `.env`:
 
 ```bash
 cp .env.example .env
