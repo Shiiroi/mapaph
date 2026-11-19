@@ -17,26 +17,26 @@ const isDocs = pathname.startsWith('/docs');
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<div class="flex items-center justify-between h-16">
 			<!-- Left: Logo & Wordmark -->
-			<a href="/" class="flex items-center gap-2 sm:gap-2.5 py-2 pr-2 group">
+			<a href="/" class="flex items-center gap-2 sm:gap-2.5 py-2 pr-2 group shrink-0">
 				<Image
 					src={logoImg}
 					alt="mapaPH Logo"
-					class="w-8 h-8 object-contain transition-transform duration-200 group-hover:scale-105"
+					class="w-7 h-7 sm:w-8 sm:h-8 object-contain transition-transform duration-200 group-hover:scale-105 shrink-0"
 					loading="eager"
 				/>
 				<span
-					class="font-serif font-bold text-lg tracking-tight text-mapa-ink group-hover:text-mapa-green transition-colors duration-200"
+					class="font-serif font-bold text-base sm:text-lg tracking-tight text-mapa-ink group-hover:text-mapa-green transition-colors duration-200 whitespace-nowrap"
 				>
 					mapaPH
 				</span>
 			</a>
 
 			<!-- Right: Nav Links & Socials -->
-			<nav aria-label="Main Navigation" class="flex items-center gap-1 sm:gap-2 md:gap-3">
+			<nav aria-label="Main Navigation" class="flex items-center gap-1 sm:gap-2 md:gap-3 shrink-0">
 				<a
 					href="/tools"
 					aria-current={isTools ? 'page' : undefined}
-					class={`font-sans text-sm px-3 py-2 rounded-lg transition-colors duration-200 inline-flex items-center min-h-[40px] ${
+					class={`font-sans text-sm px-2.5 sm:px-3 py-2 rounded-lg transition-colors duration-200 inline-flex items-center min-h-[40px] ${
 						isTools
 							? 'font-bold text-mapa-green bg-mapa-green/10'
 							: 'font-medium text-mapa-ink hover:text-mapa-green hover:bg-mapa-canvas-dark/70'
@@ -47,7 +47,7 @@ const isDocs = pathname.startsWith('/docs');
 				<a
 					href="/about"
 					aria-current={isAbout ? 'page' : undefined}
-					class={`font-sans text-sm px-3 py-2 rounded-lg transition-colors duration-200 inline-flex items-center min-h-[40px] ${
+					class={`font-sans text-sm px-2.5 sm:px-3 py-2 rounded-lg transition-colors duration-200 inline-flex items-center min-h-[40px] ${
 						isAbout
 							? 'font-bold text-mapa-green bg-mapa-green/10'
 							: 'font-medium text-mapa-ink hover:text-mapa-green hover:bg-mapa-canvas-dark/70'
@@ -58,7 +58,7 @@ const isDocs = pathname.startsWith('/docs');
 				<a
 					href="/docs"
 					aria-current={isDocs ? 'page' : undefined}
-					class={`font-sans text-sm px-3 py-2 rounded-lg transition-colors duration-200 inline-flex items-center min-h-[40px] ${
+					class={`font-sans text-sm px-2.5 sm:px-3 py-2 rounded-lg transition-colors duration-200 inline-flex items-center min-h-[40px] ${
 						isDocs
 							? 'font-bold text-mapa-green bg-mapa-green/10'
 							: 'font-medium text-mapa-ink hover:text-mapa-green hover:bg-mapa-canvas-dark/70'
@@ -69,8 +69,8 @@ const isDocs = pathname.startsWith('/docs');
 
 				<div class="h-4 w-px bg-mapa-contour mx-1 hidden sm:block" aria-hidden="true"></div>
 
-				<!-- Social Links -->
-				<div class="flex items-center gap-1">
+				<!-- Social Links (Desktop/Tablet) -->
+				<div class="hidden sm:flex items-center gap-1">
 					<a
 						href="https://www.facebook.com/share/16LuySJAGLA/?mibextid=wwXIfr"
 						target="_blank"
