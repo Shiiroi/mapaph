@@ -9,12 +9,24 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 import zipData from '../../data/philippine-zip-codes.json';
+import {
+	ZIP_LOCATIONS,
+	ZIP_LOCATIONS_BY_REGION,
+	getLocationSlug
+} from '../../data/zip-locations';
 
 const totalCount = zipData.meta.total;
 const entries = zipData.entries;
 
 // Extract unique regions for the filter dropdown
 const uniqueRegions = Array.from(new Set(entries.map((e) => e.region))).sort();
+
+// Precompute raw location string -> canonical directory slug for client and SSR table links
+const locationSlugMap: Record<string, string> = {};
+for (const entry of entries) {
+	const slug = getLocationSlug(entry.location);
+	if (slug) locationSlugMap[entry.location] = slug;
+}
 ---
 
 <BaseLayout
@@ -311,7 +323,16 @@ const uniqueRegions = Array.from(new Set(entries.map((e) => e.region))).sort();
 											{item.name}
 										</td>
 										<td class="py-3 px-4 text-mapa-ink/80">
-											{item.location}
+											{locationSlugMap[item.location] ? (
+												<a
+													href={`/tools/zip-codes/${locationSlugMap[item.location]}`}
+													class="hover:text-mapa-green hover:underline font-medium"
+												>
+													{item.location}
+												</a>
+											) : (
+												item.location
+											)}
 										</td>
 										<td class="py-3 px-4">
 											<span class="font-sans text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-canvas-dark border border-mapa-contour/80 text-mapa-ink/75">
@@ -336,6 +357,56 @@ const uniqueRegions = Array.from(new Set(entries.map((e) => e.region))).sort();
 				</div>
 			</div>
 		</div>
+
+		<!-- Regional Directory of 98 Dedicated Province & Metro Manila City Pages -->
+		<section aria-labelledby="zip-directory-heading" class="mb-12">
+			<div class="mb-6">
+				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green">
+					Dedicated Regional Directories
+				</span>
+				<h2 id="zip-directory-heading" class="text-2xl sm:text-3xl font-extrabold text-mapa-green font-serif tracking-tight mt-1">
+					Browse ZIP Codes by Province &amp; Metro Manila City ({ZIP_LOCATIONS.length} Directories)
+				</h2>
+				<p class="font-sans text-sm text-mapa-ink/80 mt-1.5 leading-relaxed max-w-3xl">
+					Open any provincial or Metro Manila city directory below for complete PHLPost tables, 10-digit PSA PSGC cross-references, and 2024 census demographics.
+				</p>
+			</div>
+
+			<div class="space-y-6 font-sans">
+				{ZIP_LOCATIONS_BY_REGION.map((group) => (
+					<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-5">
+						<div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-2 border-b border-mapa-contour/70">
+							<h3 class="font-serif text-lg font-bold text-mapa-ink">
+								{group.regionFull}
+							</h3>
+							<span class="text-xs font-medium text-mapa-muted">
+								{group.locations.length} {group.locations.length === 1 ? 'directory' : 'directories'}
+							</span>
+						</div>
+						<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
+							{group.locations.map((loc) => (
+								<a
+									href={`/tools/zip-codes/${loc.slug}`}
+									class="flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl bg-mapa-canvas border border-mapa-contour hover:border-mapa-green hover:bg-mapa-green/5 transition-colors group"
+								>
+									<div class="min-w-0">
+										<span class="block text-xs font-semibold text-mapa-ink group-hover:text-mapa-green truncate">
+											{loc.displayName}
+										</span>
+										<span class="block text-[11px] text-mapa-muted">
+											{loc.entries.length} {loc.entries.length === 1 ? 'zone' : 'zones'}
+										</span>
+									</div>
+									<span class="font-mono text-[11px] font-bold text-mapa-green shrink-0">
+										{loc.minZip === loc.maxZip ? loc.minZip : `${loc.minZip}-${loc.maxZip}`}
+									</span>
+								</a>
+							))}
+						</div>
+					</div>
+				))}
+			</div>
+		</section>
 
 		<!-- COMPREHENSIVE EDITORIAL ARTICLE (phtools.me Style) -->
 		<article class="prose prose-stone max-w-4xl mx-auto font-serif text-mapa-ink pt-6 border-t border-mapa-contour/60">
@@ -524,7 +595,7 @@ const uniqueRegions = Array.from(new Set(entries.map((e) => e.region))).sort();
 	<Footer />
 
 	<!-- Client Search & Interaction Logic -->
-	<script is:inline define:vars={{ entries, totalCount }}>
+	<script is:inline define:vars={{ entries, totalCount, locationSlugMap }}>
 		(function () {
 			const searchInput = document.getElementById('zip-search-input');
 			const clearBtn = document.getElementById('clear-search-btn');
@@ -695,6 +766,10 @@ const uniqueRegions = Array.from(new Set(entries.map((e) => e.region))).sort();
 
 				resultsTbody.innerHTML = slice
 					.map((item) => {
+						const locSlug = locationSlugMap[item.location];
+						const locCell = locSlug
+							? `<a href="/tools/zip-codes/${locSlug}" class="hover:text-mapa-green hover:underline font-medium" onclick="event.stopPropagation()">${item.location}</a>`
+							: item.location;
 						return `
 							<tr class="hover:bg-mapa-green/5 transition-colors cursor-pointer group" data-id="${item.id}">
 								<td class="py-3 px-4 font-mono font-bold text-mapa-green text-sm">
@@ -706,7 +781,7 @@ const uniqueRegions = Array.from(new Set(entries.map((e) => e.region))).sort();
 									${item.name}
 								</td>
 								<td class="py-3 px-4 text-mapa-ink/80">
-									${item.location}
+									${locCell}
 								</td>
 								<td class="py-3 px-4">
 									<span class="font-sans text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-canvas-dark border border-mapa-contour/80 text-mapa-ink/75">

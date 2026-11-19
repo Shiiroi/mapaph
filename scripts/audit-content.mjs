@@ -21,7 +21,7 @@ const SUPPORT_MIN_WORDS = 600;
 // Hold all tools/docs (including directory hubs), home, about, and privacy to MIN_WORDS,
 // and support/legal pages (terms, contact) to SUPPORT_MIN_WORDS.
 const PRIMARY_AUDITED =
-  /^(index\.html|(tools|docs)(\/[^/]+)?\/index\.html|(about|privacy)\/index\.html)$/;
+  /^(index\.html|(tools|docs)(\/[^/]+){0,2}\/index\.html|(about|privacy)\/index\.html)$/;
 const SUPPORT_AUDITED = /^(terms|contact)\/index\.html$/;
 
 async function* walk(dir) {
@@ -95,6 +95,7 @@ if (failing.length || emdashFailing.length) {
   }
   process.exit(1);
 }
+const auditedCount = rows.filter((r) => r.audited).length;
 console.log(
-  "\nAll 22 audited pages meet content-depth and anti-slop thresholds.",
+  `\nAll ${auditedCount} audited pages meet content-depth and anti-slop thresholds.`,
 );
