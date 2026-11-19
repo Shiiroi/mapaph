@@ -677,6 +677,7 @@ export function initTrainArrivalTracker(): void {
   let currentLine: LineKey = "mrt3";
   let currentStationId: string = STATIONS_DATA.mrt3[0].id;
   let destStationId: string = getDefaultDestForOrigin("mrt3", currentStationId);
+  let pickTarget: "origin" | "dest" = "origin";
   let dayMode: "auto" | "weekday" | "weekend" = "auto";
   let viewMode: "map" | "diagram" | "list" = "map";
   let mapScope: "focus" | "all" = "focus";
@@ -690,6 +691,60 @@ export function initTrainArrivalTracker(): void {
   let trainLayerGroup: any = null;
   let leafletUnavailable = false;
   let lastFitScopeSignature = "";
+
+  function hideGpsBanner(): void {
+    if (!gpsStatusBanner) return;
+    gpsStatusBanner.classList.add("hidden");
+    gpsStatusBanner.innerHTML = "";
+  }
+
+  function showGpsBanner(
+    tone: "green" | "rust" | "neutral",
+    message: string,
+    actionBtn?: { label: string; onClick: () => void },
+  ): void {
+    if (!gpsStatusBanner) return;
+    gpsStatusBanner.classList.remove("hidden");
+    const toneClass =
+      tone === "green"
+        ? "border-mapa-green/40 text-mapa-green"
+        : tone === "rust"
+          ? "border-mapa-rust/40 text-mapa-rust"
+          : "border-mapa-contour text-mapa-ink";
+    gpsStatusBanner.className =
+      "rounded-xl border bg-mapa-canvas px-3.5 py-2 text-xs leading-snug flex items-center justify-between gap-2.5 flex-wrap " +
+      toneClass;
+    gpsStatusBanner.innerHTML = "";
+
+    const msgSpan = document.createElement("span");
+    msgSpan.className = "flex-1 min-w-[200px]";
+    msgSpan.textContent = message;
+    gpsStatusBanner.appendChild(msgSpan);
+
+    const actionsWrap = document.createElement("div");
+    actionsWrap.className = "flex items-center gap-2 shrink-0";
+
+    if (actionBtn) {
+      const act = document.createElement("button");
+      act.type = "button";
+      act.className =
+        "px-2.5 py-1 rounded-lg bg-mapa-green text-white text-[11px] font-semibold hover:bg-mapa-green/90 transition-colors cursor-pointer";
+      act.textContent = actionBtn.label;
+      act.addEventListener("click", actionBtn.onClick);
+      actionsWrap.appendChild(act);
+    }
+
+    const dismissBtn = document.createElement("button");
+    dismissBtn.type = "button";
+    dismissBtn.className =
+      "px-2 py-0.5 rounded-md border border-mapa-contour text-[11px] font-semibold text-mapa-muted hover:text-mapa-ink transition-colors cursor-pointer";
+    dismissBtn.setAttribute("aria-label", "Dismiss location message");
+    dismissBtn.textContent = "Dismiss";
+    dismissBtn.addEventListener("click", hideGpsBanner);
+    actionsWrap.appendChild(dismissBtn);
+
+    gpsStatusBanner.appendChild(actionsWrap);
+  }
 
   function getEffectiveIsWeekend(clock: ManilaClock): boolean {
     if (dayMode === "weekend") return true;
@@ -730,7 +785,10 @@ export function initTrainArrivalTracker(): void {
       destStationSelect!.appendChild(optDest);
     });
 
-    const matchedOrig = list.find((s) => s.id === preferredOrigin) || list[0];
+    let matchedOrig = list.find((s) => s.id === preferredOrigin) || list[0];
+    if (!preferredOrigin && preferredDest && matchedOrig.id === preferredDest) {
+      matchedOrig = list[list.length - 1] || list[0];
+    }
     currentStationId = matchedOrig.id;
     stationSelect!.value = currentStationId;
 
@@ -741,6 +799,60 @@ export function initTrainArrivalTracker(): void {
       list[list.length - 1];
     destStationId = matchedDest.id;
     destStationSelect!.value = destStationId;
+  }
+
+  function updatePickTargetUI(): void {
+    document
+      .querySelectorAll<HTMLButtonElement>(".pick-target-btn")
+      .forEach((btn) => {
+        const target = btn.getAttribute("data-pick-target") as
+          "origin" | "dest" | null;
+        const active = target === pickTarget;
+        btn.setAttribute("aria-pressed", active ? "true" : "false");
+        if (active) {
+          btn.className =
+            "pick-target-btn px-2 py-1 rounded-md text-[11px] font-bold text-white cursor-pointer transition-colors inline-flex items-center gap-1 " +
+            (target === "dest" ? "bg-mapa-rust" : "bg-mapa-ink");
+        } else {
+          btn.className =
+            "pick-target-btn px-2 py-1 rounded-md text-[11px] font-semibold text-mapa-ink/75 hover:text-mapa-ink cursor-pointer transition-colors inline-flex items-center gap-1";
+        }
+      });
+  }
+
+  function selectStationFromVisualizer(
+    lineKey: LineKey,
+    stationId: string,
+    overrideTarget?: "origin" | "dest",
+  ): void {
+    const target = overrideTarget ?? pickTarget;
+    hideGpsBanner();
+
+    if (lineKey !== currentLine) {
+      if (target === "dest") {
+        switchLine(lineKey, null, stationId);
+      } else {
+        switchLine(lineKey, stationId, null);
+      }
+      return;
+    }
+
+    if (target === "origin") {
+      if (stationId === destStationId) {
+        destStationId = currentStationId;
+      }
+      currentStationId = stationId;
+    } else {
+      if (stationId === currentStationId) {
+        currentStationId = destStationId;
+      }
+      destStationId = stationId;
+    }
+
+    stationSelect!.value = currentStationId;
+    destStationSelect!.value = destStationId;
+    updateUrlParams();
+    renderAll();
   }
 
   function updateLineTabsUI(): void {
@@ -1036,6 +1148,7 @@ export function initTrainArrivalTracker(): void {
 
   function renderTripPlannerCard(plan: TripAndTransferPlan): void {
     const tripOriginLabel = getEl<HTMLElement>("tripOriginLabel");
+    const tripDestLabel = getEl<HTMLElement>("tripDestLabel");
     const tripDirectionBadge = getEl<HTMLElement>("tripDirectionBadge");
     const tripStopsDist = getEl<HTMLElement>("tripStopsDist");
     const tripWaitMin = getEl<HTMLElement>("tripWaitMin");
@@ -1062,6 +1175,7 @@ export function initTrainArrivalTracker(): void {
     }
 
     tripOriginLabel.textContent = plan.originStation.name;
+    if (tripDestLabel) tripDestLabel.textContent = plan.destStation.name;
 
     if (plan.isSameStation) {
       tripDirectionBadge.textContent = "Select Different Stop";
@@ -1310,26 +1424,34 @@ export function initTrainArrivalTracker(): void {
           : isDest
             ? " · Destination"
             : "";
+        const clickHint =
+          pickTarget === "dest"
+            ? '<br/><span style="color:#9e391a;font-size:11px;">Click: set Destination</span>'
+            : '<br/><span style="color:#5c5343;font-size:11px;">Click: set Origin (right-click: Dest.)</span>';
         marker.bindTooltip(
           "<strong>" +
             st.name +
             "</strong> (" +
             lk.toUpperCase() +
             ")" +
-            roleNote,
+            roleNote +
+            clickHint,
           { direction: "top", offset: [0, -6] },
         );
 
         marker.on("click", () => {
-          if (lk !== currentLine) {
-            currentLine = lk;
-            populateStationDropdowns(st.id, null);
-          } else {
-            currentStationId = st.id;
-            stationSelect!.value = st.id;
+          selectStationFromVisualizer(lk, st.id);
+        });
+
+        marker.on("contextmenu", (e: any) => {
+          if (
+            e &&
+            e.originalEvent &&
+            typeof e.originalEvent.preventDefault === "function"
+          ) {
+            e.originalEvent.preventDefault();
           }
-          updateUrlParams();
-          renderAll();
+          selectStationFromVisualizer(lk, st.id, "dest");
         });
 
         marker.addTo(stationLayerGroup);
@@ -1539,15 +1661,12 @@ export function initTrainArrivalTracker(): void {
         });
 
         c.addEventListener("click", () => {
-          if (lk !== currentLine) {
-            currentLine = lk;
-            populateStationDropdowns(st.id, null);
-          } else {
-            currentStationId = st.id;
-            stationSelect!.value = st.id;
-          }
-          updateUrlParams();
-          renderAll();
+          selectStationFromVisualizer(lk, st.id);
+        });
+
+        c.addEventListener("contextmenu", (e) => {
+          e.preventDefault();
+          selectStationFromVisualizer(lk, st.id, "dest");
         });
 
         gStations.appendChild(c);
@@ -1642,8 +1761,9 @@ export function initTrainArrivalTracker(): void {
       const lastTime = isWeekend ? row.weekendLastFwd : row.weekdayLastFwd;
       const estTrain = estByIndex[row.index];
 
-      const btn = document.createElement("button");
-      btn.type = "button";
+      const btn = document.createElement("div");
+      btn.setAttribute("role", "button");
+      btn.tabIndex = 0;
       btn.className =
         "relative w-full text-left flex items-center justify-between gap-3 p-3 rounded-xl transition-colors cursor-pointer group " +
         (isOrigin
@@ -1738,7 +1858,7 @@ export function initTrainArrivalTracker(): void {
       }
 
       const right = document.createElement("div");
-      right.className = "shrink-0 flex flex-col items-end gap-1";
+      right.className = "shrink-0 flex flex-col items-end gap-1.5";
       if (estTrain && (estTrain.fwd || estTrain.rev)) {
         const estTag = document.createElement("span");
         estTag.className =
@@ -1750,13 +1870,51 @@ export function initTrainArrivalTracker(): void {
         right.appendChild(estTag);
       }
 
+      const pickActions = document.createElement("div");
+      pickActions.className = "flex items-center gap-1";
+
+      const fromBtn = document.createElement("button");
+      fromBtn.type = "button";
+      fromBtn.className =
+        "px-2 py-0.5 rounded border text-[10px] font-bold transition-colors cursor-pointer " +
+        (isOrigin
+          ? "bg-mapa-ink text-white border-mapa-ink"
+          : "bg-mapa-canvas border-mapa-contour text-mapa-ink/80 hover:border-mapa-ink hover:text-mapa-ink");
+      fromBtn.textContent = "From";
+      fromBtn.title = "Set " + st.name + " as Origin";
+      fromBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        selectStationFromVisualizer(currentLine, st.id, "origin");
+      });
+
+      const toBtn = document.createElement("button");
+      toBtn.type = "button";
+      toBtn.className =
+        "px-2 py-0.5 rounded border text-[10px] font-bold transition-colors cursor-pointer " +
+        (isDest
+          ? "bg-mapa-rust text-white border-mapa-rust"
+          : "bg-mapa-canvas border-mapa-contour text-mapa-rust hover:border-mapa-rust");
+      toBtn.textContent = "To";
+      toBtn.title = "Set " + st.name + " as Destination";
+      toBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        selectStationFromVisualizer(currentLine, st.id, "dest");
+      });
+
+      pickActions.appendChild(fromBtn);
+      pickActions.appendChild(toBtn);
+      right.appendChild(pickActions);
+
       btn.appendChild(left);
       btn.appendChild(right);
       btn.addEventListener("click", () => {
-        currentStationId = st.id;
-        stationSelect!.value = st.id;
-        updateUrlParams();
-        renderAll();
+        selectStationFromVisualizer(currentLine, st.id);
+      });
+      btn.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          selectStationFromVisualizer(currentLine, st.id);
+        }
       });
 
       stationSpineScroll!.appendChild(btn);
@@ -1813,6 +1971,7 @@ export function initTrainArrivalTracker(): void {
       STATIONS_DATA[currentLine][0];
 
     updateLineTabsUI();
+    updatePickTargetUI();
     updateViewModeUI();
     updateMapScopeUI();
 
@@ -1833,11 +1992,13 @@ export function initTrainArrivalTracker(): void {
     }
 
     if (lineOperatorMeta) {
+      const targetWord = pickTarget === "dest" ? "Destination" : "Origin";
       lineOperatorMeta.textContent =
         lineMeta.operator +
         " · " +
         lineMeta.stationsCount +
-        " stations · Tap any stop to inspect schedules";
+        " stations · Tap any stop to set " +
+        targetWord;
     }
 
     if (stationMetaNote) {
@@ -1930,87 +2091,143 @@ export function initTrainArrivalTracker(): void {
     renderAll();
   }
 
-  function handleGpsLocate(): void {
+  async function handleGpsLocate(): Promise<void> {
     if (!gpsLocateBtn || !gpsStatusBanner) return;
+
     if (!navigator.geolocation) {
-      gpsStatusBanner.classList.remove("hidden");
-      gpsStatusBanner.className =
-        "rounded-xl border border-mapa-rust/40 bg-mapa-canvas text-mapa-rust px-3.5 py-2 text-xs";
-      gpsStatusBanner.textContent =
-        "Geolocation is not supported in this browser. Please select your station manually.";
+      showGpsBanner(
+        "rust",
+        "Geolocation is not supported in this browser. Pick your station from the dropdown or map below.",
+      );
       return;
+    }
+
+    if (!window.isSecureContext) {
+      showGpsBanner(
+        "rust",
+        "Browser location requires a secure HTTPS connection. Pick your station manually below.",
+      );
+      return;
+    }
+
+    if (
+      navigator.permissions &&
+      typeof navigator.permissions.query === "function"
+    ) {
+      try {
+        const perm = await navigator.permissions.query({
+          name: "geolocation" as PermissionName,
+        });
+        if (perm.state === "denied") {
+          showGpsBanner(
+            "rust",
+            "Location access is blocked for this site. Open your browser's site settings (lock or settings icon in the address bar), allow Location, and try again, or pick your station directly below.",
+          );
+          return;
+        }
+      } catch {
+        // Ignore Permissions API restriction and continue with getCurrentPosition
+      }
     }
 
     gpsLocateBtn.disabled = true;
     const origSpan = gpsLocateBtn.querySelector("span");
     if (origSpan) origSpan.textContent = "Locating...";
 
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        gpsLocateBtn.disabled = false;
-        if (origSpan) origSpan.textContent = "Use My GPS";
+    const onSuccess = (pos: GeolocationPosition) => {
+      gpsLocateBtn.disabled = false;
+      if (origSpan) origSpan.textContent = "Use My GPS";
 
-        const userLat = pos.coords.latitude;
-        const userLon = pos.coords.longitude;
-        interface GpsStationMatch {
-          lineKey: LineKey;
-          stationId: string;
-          stationName: string;
-          distMeters: number;
-        }
-        let best: GpsStationMatch | null = null;
+      const userLat = pos.coords.latitude;
+      const userLon = pos.coords.longitude;
+      interface GpsStationMatch {
+        lineKey: LineKey;
+        stationId: string;
+        stationName: string;
+        distMeters: number;
+      }
+      let best: GpsStationMatch | null = null;
 
-        for (const lk of ["mrt3", "lrt1", "lrt2"] as LineKey[]) {
-          for (const st of STATIONS_DATA[lk]) {
-            const d = haversineMeters(userLat, userLon, st.lat, st.lon);
-            if (!best || d < best.distMeters) {
-              best = {
-                lineKey: lk,
-                stationId: st.id,
-                stationName: st.name,
-                distMeters: Math.round(d),
-              };
-            }
+      for (const lk of ["mrt3", "lrt1", "lrt2"] as LineKey[]) {
+        for (const st of STATIONS_DATA[lk]) {
+          const d = haversineMeters(userLat, userLon, st.lat, st.lon);
+          if (!best || d < best.distMeters) {
+            best = {
+              lineKey: lk,
+              stationId: st.id,
+              stationName: st.name,
+              distMeters: Math.round(d),
+            };
           }
         }
+      }
 
-        gpsStatusBanner.classList.remove("hidden");
-        if (best && best.distMeters <= GPS_MAX_RADIUS_METERS) {
-          gpsStatusBanner.className =
-            "rounded-xl border border-mapa-green/40 bg-mapa-canvas text-mapa-green px-3.5 py-2 text-xs";
-          gpsStatusBanner.textContent =
-            "Snapped locally to " +
+      if (best && best.distMeters <= GPS_MAX_RADIUS_METERS) {
+        showGpsBanner(
+          "green",
+          "Snapped locally to " +
             best.stationName +
             " (" +
             best.lineKey.toUpperCase() +
             ", ~" +
             best.distMeters +
-            "m away). Coordinates never leave your browser.";
-          switchLine(best.lineKey, best.stationId);
-        } else if (best) {
-          gpsStatusBanner.className =
-            "rounded-xl border border-mapa-contour bg-mapa-canvas text-mapa-ink px-3.5 py-2 text-xs";
-          gpsStatusBanner.textContent =
-            "Nearest rail station is " +
-            best.stationName +
+            "m away). Coordinates never leave your browser.",
+        );
+        switchLine(best.lineKey, best.stationId, null);
+      } else if (best) {
+        const chosen = best;
+        showGpsBanner(
+          "neutral",
+          "Nearest rail station is " +
+            chosen.stationName +
             " (~" +
-            (best.distMeters / 1000).toFixed(1) +
-            " km away, outside 650m station radius). Manual selection stays active.";
-          renderAll();
-        }
-      },
+            (chosen.distMeters / 1000).toFixed(1) +
+            " km away, outside 650m station radius).",
+          {
+            label: "Use " + chosen.stationName,
+            onClick: () => {
+              selectStationFromVisualizer(
+                chosen.lineKey,
+                chosen.stationId,
+                "origin",
+              );
+            },
+          },
+        );
+        renderAll();
+      }
+    };
+
+    const onFinalError = (geoErr: GeolocationPositionError) => {
+      gpsLocateBtn.disabled = false;
+      if (origSpan) origSpan.textContent = "Use My GPS";
+
+      let msg =
+        "Your device could not get a location fix right now. Pick your station from the dropdown, map, or quick hubs below.";
+      if (geoErr && geoErr.code === 1) {
+        msg =
+          "Location access is blocked for this site. Open your browser's site settings (lock or settings icon in the address bar), allow Location, and try again, or pick your station directly below.";
+      } else if (geoErr && geoErr.code === 3) {
+        msg =
+          "Location lookup timed out. Check your signal and retry, or select your station manually.";
+      }
+      showGpsBanner("rust", msg);
+    };
+
+    navigator.geolocation.getCurrentPosition(
+      onSuccess,
       (geoErr) => {
-        gpsLocateBtn.disabled = false;
-        if (origSpan) origSpan.textContent = "Use My GPS";
-        gpsStatusBanner.classList.remove("hidden");
-        gpsStatusBanner.className =
-          "rounded-xl border border-mapa-rust/40 bg-mapa-canvas text-mapa-rust px-3.5 py-2 text-xs";
-        gpsStatusBanner.textContent =
-          "Location permission unavailable (" +
-          (geoErr && geoErr.message ? geoErr.message : "blocked") +
-          ").";
+        if (geoErr && (geoErr.code === 2 || geoErr.code === 3)) {
+          navigator.geolocation.getCurrentPosition(onSuccess, onFinalError, {
+            enableHighAccuracy: false,
+            timeout: 10000,
+            maximumAge: 60000,
+          });
+          return;
+        }
+        onFinalError(geoErr);
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 15000 },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 },
     );
   }
 
@@ -2019,18 +2236,35 @@ export function initTrainArrivalTracker(): void {
     .querySelectorAll<HTMLButtonElement>(".line-tab-btn")
     .forEach((btn) => {
       btn.addEventListener("click", () => {
+        hideGpsBanner();
         const line = btn.getAttribute("data-line-tab") as LineKey | null;
         if (line) switchLine(line);
       });
     });
 
+  document
+    .querySelectorAll<HTMLButtonElement>(".pick-target-btn")
+    .forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const target = btn.getAttribute("data-pick-target") as
+          "origin" | "dest" | null;
+        if (target) {
+          pickTarget = target;
+          updatePickTargetUI();
+          renderAll();
+        }
+      });
+    });
+
   stationSelect.addEventListener("change", () => {
+    hideGpsBanner();
     currentStationId = stationSelect.value;
     updateUrlParams();
     renderAll();
   });
 
   destStationSelect.addEventListener("change", () => {
+    hideGpsBanner();
     destStationId = destStationSelect.value;
     updateUrlParams();
     renderAll();
@@ -2038,6 +2272,7 @@ export function initTrainArrivalTracker(): void {
 
   if (swapStationsBtn) {
     swapStationsBtn.addEventListener("click", () => {
+      hideGpsBanner();
       const prevOrig = currentStationId;
       currentStationId = destStationId;
       destStationId = prevOrig;
@@ -2052,6 +2287,7 @@ export function initTrainArrivalTracker(): void {
     .querySelectorAll<HTMLButtonElement>(".transfer-preset-btn")
     .forEach((btn) => {
       btn.addEventListener("click", () => {
+        hideGpsBanner();
         const line = btn.getAttribute("data-preset-line") as LineKey | null;
         const orig = btn.getAttribute("data-preset-origin");
         const dest = btn.getAttribute("data-preset-dest");
@@ -2136,7 +2372,9 @@ export function initTrainArrivalTracker(): void {
       btn.addEventListener("click", () => {
         const hubLine = btn.getAttribute("data-hub-line") as LineKey | null;
         const hubStation = btn.getAttribute("data-hub-station");
-        if (hubLine && hubStation) switchLine(hubLine, hubStation);
+        if (hubLine && hubStation) {
+          selectStationFromVisualizer(hubLine, hubStation);
+        }
       });
     });
 

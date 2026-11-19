@@ -250,14 +250,43 @@ const defaultDestMrt3 = 'mrt3_ayala';
 			</div>
 		</section>
 
-		<!-- Step 2: Origin Station, Manila Clock & Day Mode -->
+		<!-- Step 2: Origin & Destination Stations, Manila Clock & Day Mode -->
 		<section aria-label="Station Selection and Clock Controls" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 sm:p-5 mb-5 font-sans shadow-xs space-y-3.5">
-			<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-				<div class="flex-1 flex flex-col sm:flex-row sm:items-center gap-2.5">
-					<label for="stationSelect" class="text-xs font-bold uppercase tracking-wider text-mapa-muted shrink-0 whitespace-nowrap">
-						2. Origin Station
+			<div class="flex flex-wrap items-center justify-between gap-2.5">
+				<span class="text-xs font-bold uppercase tracking-wider text-mapa-muted">
+					2. Origin &amp; Destination Stations
+				</span>
+
+				<!-- Manila Clock & Day Type Segmented Toggle -->
+				<div class="flex flex-wrap items-center gap-2.5">
+					<div class="inline-flex items-center gap-2 h-9 px-3 rounded-xl border border-mapa-contour bg-mapa-canvas text-xs">
+						<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted whitespace-nowrap">PHT</span>
+						<span id="manilaClock" class="font-mono text-sm font-bold text-mapa-ink whitespace-nowrap">--:-- --</span>
+						<span id="manilaDayTag" class="hidden sm:inline text-[11px] text-mapa-muted whitespace-nowrap">Manila</span>
+					</div>
+
+					<div class="inline-flex items-center gap-0.5 p-1 h-9 rounded-xl border border-mapa-contour bg-mapa-canvas" role="group" aria-label="Schedule day mode">
+						<button type="button" data-day-btn="auto" class="day-mode-btn h-7 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap bg-mapa-green text-white">
+							Auto
+						</button>
+						<button type="button" data-day-btn="weekday" class="day-mode-btn h-7 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap text-mapa-ink/75 hover:text-mapa-ink">
+							Weekday
+						</button>
+						<button type="button" data-day-btn="weekend" class="day-mode-btn h-7 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap text-mapa-ink/75 hover:text-mapa-ink">
+							Weekend
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Side-by-Side From (Origin) + Swap + To (Destination) -->
+			<div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-2.5 items-end">
+				<div class="space-y-1">
+					<label for="stationSelect" class="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-mapa-navy">
+						<span class="w-2 h-2 rounded-full bg-mapa-navy inline-block"></span>
+						<span>From (Origin)</span>
 					</label>
-					<div class="flex-1 flex items-center gap-2">
+					<div class="flex items-center gap-2">
 						<select
 							id="stationSelect"
 							class="w-full h-10 px-3 rounded-xl border border-mapa-contour bg-mapa-canvas text-sm font-semibold text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/40 cursor-pointer"
@@ -282,25 +311,33 @@ const defaultDestMrt3 = 'mrt3_ayala';
 					</div>
 				</div>
 
-				<!-- Manila Clock & Day Type Segmented Toggle -->
-				<div class="flex flex-wrap items-center justify-between lg:justify-end gap-2.5">
-					<div class="inline-flex items-center gap-2 h-10 px-3 rounded-xl border border-mapa-contour bg-mapa-canvas text-xs">
-						<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted whitespace-nowrap">PHT</span>
-						<span id="manilaClock" class="font-mono text-sm font-bold text-mapa-ink whitespace-nowrap">--:-- --</span>
-						<span id="manilaDayTag" class="hidden sm:inline text-[11px] text-mapa-muted whitespace-nowrap">Manila</span>
-					</div>
+				<button
+					type="button"
+					id="swapStationsBtn"
+					class="h-10 px-3 rounded-xl border border-mapa-contour bg-mapa-canvas text-xs font-bold text-mapa-ink hover:border-mapa-ink transition-colors cursor-pointer inline-flex items-center justify-center gap-1.5 whitespace-nowrap"
+					title="Swap Origin and Destination stations"
+				>
+					<svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+					</svg>
+					<span>Swap</span>
+				</button>
 
-					<div class="inline-flex items-center gap-0.5 p-1 h-10 rounded-xl border border-mapa-contour bg-mapa-canvas" role="group" aria-label="Schedule day mode">
-						<button type="button" data-day-btn="auto" class="day-mode-btn h-8 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap bg-mapa-green text-white">
-							Auto
-						</button>
-						<button type="button" data-day-btn="weekday" class="day-mode-btn h-8 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap text-mapa-ink/75 hover:text-mapa-ink">
-							Weekday
-						</button>
-						<button type="button" data-day-btn="weekend" class="day-mode-btn h-8 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap text-mapa-ink/75 hover:text-mapa-ink">
-							Weekend
-						</button>
-					</div>
+				<div class="space-y-1">
+					<label for="destStationSelect" class="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-mapa-rust">
+						<span class="w-2 h-2 rounded-full bg-mapa-rust inline-block"></span>
+						<span>To (Destination)</span>
+					</label>
+					<select
+						id="destStationSelect"
+						class="w-full h-10 px-3 rounded-xl border border-mapa-contour bg-mapa-canvas text-sm font-semibold text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/40 cursor-pointer"
+					>
+						{STATIONS_DATA.mrt3.map((st, idx) => (
+							<option value={st.id} selected={st.id === defaultDestMrt3}>
+								{idx + 1}. {st.name} ({st.city}){st.isTransfer ? ' · Transfer' : ''}
+							</option>
+						))}
+					</select>
 				</div>
 			</div>
 
@@ -405,42 +442,68 @@ const defaultDestMrt3 = 'mrt3_ayala';
 					</div>
 				</div>
 
-				<!-- Sub-toolbar: Map Scope vs Station Filter + Legend -->
+				<!-- Sub-toolbar: Tap Target Picker + Map Scope vs Station Filter + Legend -->
 				<div class="px-4 py-2 border-b border-mapa-contour/70 bg-mapa-canvas-dark flex flex-wrap items-center justify-between gap-2 text-[11px]">
-					<div id="mapScopeControls" class="flex items-center gap-1.5 flex-wrap">
-						<div class="inline-flex items-center p-0.5 rounded-lg border border-mapa-contour bg-mapa-canvas" role="group" aria-label="Map line scope">
+					<div class="flex items-center gap-2 flex-wrap">
+						<div class="inline-flex items-center gap-1.5">
+							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted whitespace-nowrap">Tap sets:</span>
+							<div class="inline-flex items-center p-0.5 rounded-lg border border-mapa-contour bg-mapa-canvas" role="group" aria-label="Station click target">
+								<button
+									type="button"
+									data-pick-target="origin"
+									aria-pressed="true"
+									class="pick-target-btn px-2 py-1 rounded-md text-[11px] font-bold bg-mapa-ink text-white cursor-pointer transition-colors inline-flex items-center gap-1"
+								>
+									<span class="w-1.5 h-1.5 rounded-full bg-white inline-block"></span>
+									<span>Origin</span>
+								</button>
+								<button
+									type="button"
+									data-pick-target="dest"
+									aria-pressed="false"
+									class="pick-target-btn px-2 py-1 rounded-md text-[11px] font-semibold text-mapa-ink/75 hover:text-mapa-ink cursor-pointer transition-colors inline-flex items-center gap-1"
+								>
+									<span class="w-1.5 h-1.5 rounded-full bg-mapa-rust inline-block"></span>
+									<span>Dest.</span>
+								</button>
+							</div>
+						</div>
+
+						<div id="mapScopeControls" class="flex items-center gap-1.5 flex-wrap">
+							<div class="inline-flex items-center p-0.5 rounded-lg border border-mapa-contour bg-mapa-canvas" role="group" aria-label="Map line scope">
+								<button
+									type="button"
+									data-map-scope="focus"
+									class="map-scope-btn px-2.5 py-1 rounded-md text-[11px] font-bold bg-mapa-ink text-white cursor-pointer transition-colors"
+								>
+									Active Line
+								</button>
+								<button
+									type="button"
+									data-map-scope="all"
+									class="map-scope-btn px-2.5 py-1 rounded-md text-[11px] font-semibold text-mapa-ink/75 hover:text-mapa-ink cursor-pointer transition-colors"
+								>
+									All 3 Lines
+								</button>
+							</div>
 							<button
 								type="button"
-								data-map-scope="focus"
-								class="map-scope-btn px-2.5 py-1 rounded-md text-[11px] font-bold bg-mapa-ink text-white cursor-pointer transition-colors"
+								id="resetMapViewBtn"
+								class="px-2.5 py-1 rounded-lg border border-mapa-contour bg-mapa-canvas text-[11px] font-semibold text-mapa-ink hover:border-mapa-ink transition-colors cursor-pointer"
 							>
-								Active Line
-							</button>
-							<button
-								type="button"
-								data-map-scope="all"
-								class="map-scope-btn px-2.5 py-1 rounded-md text-[11px] font-semibold text-mapa-ink/75 hover:text-mapa-ink cursor-pointer transition-colors"
-							>
-								All 3 Lines
+								Fit View
 							</button>
 						</div>
-						<button
-							type="button"
-							id="resetMapViewBtn"
-							class="px-2.5 py-1 rounded-lg border border-mapa-contour bg-mapa-canvas text-[11px] font-semibold text-mapa-ink hover:border-mapa-ink transition-colors cursor-pointer"
-						>
-							Fit View
-						</button>
-					</div>
 
-					<div id="listFilterControl" class="hidden w-full sm:w-52">
-						<input
-							id="stationFilterInput"
-							type="search"
-							placeholder="Filter stations..."
-							aria-label="Filter stations on active line"
-							class="w-full h-8 px-3 rounded-lg border border-mapa-contour bg-mapa-canvas text-xs text-mapa-ink placeholder:text-mapa-muted focus:outline-none focus:ring-2 focus:ring-mapa-green/40"
-						/>
+						<div id="listFilterControl" class="hidden w-full sm:w-48">
+							<input
+								id="stationFilterInput"
+								type="search"
+								placeholder="Filter stations..."
+								aria-label="Filter stations on active line"
+								class="w-full h-8 px-3 rounded-lg border border-mapa-contour bg-mapa-canvas text-xs text-mapa-ink placeholder:text-mapa-muted focus:outline-none focus:ring-2 focus:ring-mapa-green/40"
+							/>
+						</div>
 					</div>
 
 					<div class="flex items-center gap-2.5 flex-wrap ml-auto">
@@ -630,78 +693,51 @@ const defaultDestMrt3 = 'mrt3_ayala';
 								Southbound
 							</span>
 						</div>
-						<h2 class="font-serif text-lg font-bold text-mapa-ink mt-0.5">
-							Ride From <span id="tripOriginLabel">North Avenue</span>
-						</h2>
+						<div class="flex items-baseline justify-between gap-2 flex-wrap mt-0.5">
+							<h2 class="font-serif text-lg font-bold text-mapa-ink">
+								<span id="tripOriginLabel">North Avenue</span> &rarr; <span id="tripDestLabel">Ayala</span>
+							</h2>
+							<span id="tripStopsDist" class="font-mono text-[11px] text-mapa-muted">
+								9 stops &bull; 12.6 km
+							</span>
+						</div>
 						<p class="text-xs text-mapa-muted mt-0.5">
 							Check estimated arrival time at your destination and whether late-evening rail transfers remain open.
 						</p>
 					</div>
 
-					<!-- Destination Picker + Swap -->
-					<div class="space-y-2">
-						<div class="flex items-center justify-between gap-2">
-							<label for="destStationSelect" class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted">
-								Destination / Transfer Stop
-							</label>
-							<span id="tripStopsDist" class="font-mono text-[11px] text-mapa-muted">
-								9 stops &bull; 12.6 km
-							</span>
-						</div>
-						<div class="flex items-center gap-2">
-							<select
-								id="destStationSelect"
-								class="w-full h-10 px-3 rounded-xl border border-mapa-contour bg-mapa-canvas text-xs sm:text-sm font-semibold text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/40 cursor-pointer"
-							>
-								{STATIONS_DATA.mrt3.map((st, idx) => (
-									<option value={st.id} selected={st.id === defaultDestMrt3}>
-										{idx + 1}. {st.name} ({st.city}){st.isTransfer ? ' · Transfer' : ''}
-									</option>
-								))}
-							</select>
-							<button
-								type="button"
-								id="swapStationsBtn"
-								class="shrink-0 h-10 px-3 rounded-xl border border-mapa-contour bg-mapa-canvas text-xs font-bold text-mapa-ink hover:border-mapa-ink transition-colors cursor-pointer whitespace-nowrap"
-								title="Swap Origin and Destination stations"
-							>
-								Swap
-							</button>
-						</div>
-
-						<!-- One-Click Interchange Transfer Presets -->
-						<div class="flex flex-wrap items-center gap-1.5 pt-0.5">
-							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted mr-0.5">
-								Interchanges:
-							</span>
-							<button
-								type="button"
-								data-preset-line="mrt3"
-								data-preset-origin=""
-								data-preset-dest="mrt3_cubao"
-								class="transfer-preset-btn px-2 py-1 rounded-md border border-mapa-contour bg-mapa-canvas text-[11px] font-medium text-mapa-ink hover:border-mapa-green cursor-pointer transition-colors"
-							>
-								Cubao (LRT-2)
-							</button>
-							<button
-								type="button"
-								data-preset-line="lrt1"
-								data-preset-origin=""
-								data-preset-dest="lrt1_doroteo_jose"
-								class="transfer-preset-btn px-2 py-1 rounded-md border border-mapa-contour bg-mapa-canvas text-[11px] font-medium text-mapa-ink hover:border-mapa-green cursor-pointer transition-colors"
-							>
-								D. Jose (LRT-2)
-							</button>
-							<button
-								type="button"
-								data-preset-line="mrt3"
-								data-preset-origin=""
-								data-preset-dest="mrt3_taft"
-								class="transfer-preset-btn px-2 py-1 rounded-md border border-mapa-contour bg-mapa-canvas text-[11px] font-medium text-mapa-ink hover:border-mapa-green cursor-pointer transition-colors"
-							>
-								Taft Ave (LRT-1)
-							</button>
-						</div>
+					<!-- One-Click Interchange Transfer Presets -->
+					<div class="flex flex-wrap items-center gap-1.5">
+						<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted mr-0.5">
+							Interchanges:
+						</span>
+						<button
+							type="button"
+							data-preset-line="mrt3"
+							data-preset-origin=""
+							data-preset-dest="mrt3_cubao"
+							class="transfer-preset-btn px-2 py-1 rounded-md border border-mapa-contour bg-mapa-canvas text-[11px] font-medium text-mapa-ink hover:border-mapa-green cursor-pointer transition-colors"
+						>
+							Cubao (LRT-2)
+						</button>
+						<button
+							type="button"
+							data-preset-line="lrt1"
+							data-preset-origin=""
+							data-preset-dest="lrt1_doroteo_jose"
+							class="transfer-preset-btn px-2 py-1 rounded-md border border-mapa-contour bg-mapa-canvas text-[11px] font-medium text-mapa-ink hover:border-mapa-green cursor-pointer transition-colors"
+						>
+							D. Jose (LRT-2)
+						</button>
+						<button
+							type="button"
+							data-preset-line="mrt3"
+							data-preset-origin=""
+							data-preset-dest="mrt3_taft"
+							class="transfer-preset-btn px-2 py-1 rounded-md border border-mapa-contour bg-mapa-canvas text-[11px] font-medium text-mapa-ink hover:border-mapa-green cursor-pointer transition-colors"
+						>
+							Taft Ave (LRT-1)
+						</button>
 					</div>
 
 					<!-- 3-Metric Journey Output Strip -->
