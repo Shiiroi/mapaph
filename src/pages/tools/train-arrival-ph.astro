@@ -321,10 +321,10 @@ const defaultDestMrt3 = 'mrt3_ayala';
 			</div>
 		</section>
 
-		<!-- Main 2-Column Map + Wait & Transfer Workspace -->
-		<section aria-label="Corridor Visualizer, Wait Cadence, and Transfer Cutoff Planner" class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start mb-12 font-sans">
-			<!-- Left Column (7 cols): Interactive Corridor Map / 2D Schematic / Station Spine -->
-			<div class="lg:col-span-7 bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs">
+		<!-- Full-Width Corridor Map Row + 2-Column Arrivals & Trip Estimate Row -->
+		<section aria-label="Corridor Visualizer, Station Arrivals, and Train Trip Estimate" class="space-y-5 mb-12 font-sans">
+			<!-- Row 1: Full-Width Interactive Corridor Map / 2D Schematic / Station Spine -->
+			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs">
 				<div class="p-4 border-b border-mapa-contour bg-mapa-canvas flex flex-col sm:flex-row sm:items-center justify-between gap-3">
 					<div class="min-w-0">
 						<h2 id="corridorHeading" class="font-serif text-lg font-bold text-mapa-ink truncate">
@@ -441,7 +441,7 @@ const defaultDestMrt3 = 'mrt3_ayala';
 				</div>
 
 				<!-- Panel 1: Leaflet OpenStreetMap View (Default) -->
-				<div id="mapViewPanel" class="relative w-full h-[350px] sm:h-[460px] lg:h-[520px] bg-mapa-canvas-dark">
+				<div id="mapViewPanel" class="relative w-full h-[340px] sm:h-[420px] lg:h-[460px] bg-mapa-canvas-dark">
 					<div id="live-rail-map" class="w-full h-full z-10"></div>
 					<div
 						id="mapFallbackBanner"
@@ -458,7 +458,7 @@ const defaultDestMrt3 = 'mrt3_ayala';
 				</div>
 
 				<!-- Panel 2: 2D Schematic Network Diagram SVG -->
-				<div id="diagramViewPanel" class="hidden w-full h-[350px] sm:h-[460px] lg:h-[520px] bg-mapa-canvas p-2 sm:p-3">
+				<div id="diagramViewPanel" class="hidden w-full h-[340px] sm:h-[420px] lg:h-[460px] bg-mapa-canvas p-2 sm:p-3">
 					<svg
 						id="railDiagramSvg"
 						viewBox="0 0 1260 1280"
@@ -470,35 +470,36 @@ const defaultDestMrt3 = 'mrt3_ayala';
 
 				<!-- Panel 3: Connected Station Timeline List -->
 				<div id="listViewPanel" class="hidden">
-					<div id="stationSpineScroll" class="relative pl-8 pr-3 sm:pr-4 py-3 max-h-[460px] lg:max-h-[520px] overflow-y-auto space-y-2 custom-scrollbar bg-mapa-canvas-dark">
+					<div id="stationSpineScroll" class="relative pl-8 pr-3 sm:pr-4 py-3 max-h-[420px] lg:max-h-[460px] overflow-y-auto space-y-2 custom-scrollbar bg-mapa-canvas-dark">
 						<!-- Populated cleanly via train-arrival-client.ts -->
 					</div>
 				</div>
 			</div>
 
-			<!-- Right Column (5 cols): Primary Station Arrivals Board + Compact Live Report + Secondary Trip Cutoff Planner -->
-			<div class="lg:col-span-5 flex flex-col gap-4">
-				<!-- Primary Card: Selected Station Arrivals + Compact Live Sighting Footer -->
-				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 shadow-xs space-y-3">
-					<div id="selectedStationHeader" class="flex items-center justify-between gap-2 flex-wrap pb-2.5 border-b border-mapa-contour/70">
-						<div class="min-w-0">
-							<span class="block text-[10px] font-bold uppercase tracking-wider text-mapa-muted">
-								Selected Station Arrivals
+			<!-- Row 2: Selected Station Arrivals (Left) + Train Trip Estimate (Right) -->
+			<div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+				<!-- Primary Card (7 cols): Selected Station Arrivals + Compact Live Sighting Footer -->
+				<div class="lg:col-span-7 bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 shadow-xs flex flex-col justify-between gap-3">
+					<div class="space-y-3">
+						<div id="selectedStationHeader" class="flex items-center justify-between gap-2 flex-wrap pb-2.5 border-b border-mapa-contour/70">
+							<div class="min-w-0">
+								<span class="block text-[10px] font-bold uppercase tracking-wider text-mapa-muted">
+									Selected Station Arrivals
+								</span>
+								<h2 id="selectedStationTitle" class="font-serif text-xl font-extrabold text-mapa-ink truncate">
+									North Avenue
+								</h2>
+							</div>
+							<span
+								id="selectedStationFleetBadge"
+								class="text-[11px] font-mono font-bold text-mapa-ink px-2.5 py-1 rounded-lg bg-mapa-canvas border border-mapa-contour"
+							>
+								MRT-3 &bull; 12-15 active trainsets
 							</span>
-							<h2 id="selectedStationTitle" class="font-serif text-xl font-extrabold text-mapa-ink truncate">
-								North Avenue
-							</h2>
 						</div>
-						<span
-							id="selectedStationFleetBadge"
-							class="text-[11px] font-mono font-bold text-mapa-ink px-2.5 py-1 rounded-lg bg-mapa-canvas border border-mapa-contour"
-						>
-							MRT-3 &bull; 12-15 active trainsets
-						</span>
-					</div>
 
-					<!-- Directional Wait & Next-3-Trains Cadence Boards -->
-					<section aria-label="Next 3 Trains Wait Cadence" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3">
+						<!-- Directional Wait & Next-3-Trains Cadence Boards -->
+						<section aria-label="Next 3 Trains Wait Cadence" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
 						<!-- Forward Bound Card -->
 						<div id="cardFwd" class="rounded-xl border border-mapa-contour bg-mapa-canvas p-3 flex flex-col justify-between gap-2.5">
 							<div>
@@ -642,7 +643,8 @@ const defaultDestMrt3 = 'mrt3_ayala';
 								</div>
 							</div>
 						</div>
-					</section>
+						</section>
+					</div>
 
 					<!-- Compact Single-Row Live Train Sighting Footer -->
 					<div id="liveCheckInCard" class="pt-2.5 border-t border-mapa-contour/70 space-y-2">
@@ -678,12 +680,12 @@ const defaultDestMrt3 = 'mrt3_ayala';
 					</div>
 				</div>
 
-				<!-- Secondary Card: Optional Trip & Transfer Cutoff Planner -->
-				<div id="tripPlannerCard" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 shadow-xs space-y-3">
+				<!-- Train Trip Estimate (5 cols) -->
+				<div id="tripPlannerCard" class="lg:col-span-5 bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 shadow-xs space-y-3">
 					<div class="border-b border-mapa-contour/60 pb-2.5">
 						<div class="flex items-center justify-between gap-2">
 							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted">
-								Optional Trip &amp; Transfer Cutoff Planner
+								Train Trip Estimate
 							</span>
 							<span id="tripDirectionBadge" class="font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour text-mapa-ink">
 								Southbound
