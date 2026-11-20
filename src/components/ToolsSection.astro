@@ -4,6 +4,9 @@
  * @description Grid directory of mapping applications with custom schematic previews per tool.
  */
 
+import { Image } from 'astro:assets';
+import lensImg from '../assets/lens.png';
+
 const tools = [
 	{
 		id: "lens",
@@ -12,7 +15,7 @@ const tools = [
 		category: "Web Application",
 		url: "https://lens.mapaph.com",
 		description: "Interactive choropleth map and GeoJSON export for all 82 Philippine provinces and municipalities with census demographics.",
-		image: null,
+		image: lensImg,
 		badge: "Choropleth Mapper"
 	},
 	{
@@ -143,7 +146,7 @@ const tools = [
 			const isExternal = tool.url.startsWith("http");
 			return (
 				<div
-					class="flex flex-col bg-mapa-canvas border border-mapa-contour/80 rounded-xl overflow-hidden transition-all duration-300 group relative hover:border-mapa-green/60 hover:-translate-y-1 cursor-pointer shadow-xs"
+					class={`flex flex-col bg-mapa-canvas border border-mapa-contour/80 rounded-xl overflow-hidden transition-all duration-300 group relative hover:border-mapa-green/60 hover:-translate-y-1 cursor-pointer shadow-xs ${tool.id === "lens" ? "md:col-span-2 lg:col-span-2" : ""}`}
 				>
 					{/* Overlay anchor covering container */}
 					<a
@@ -156,25 +159,19 @@ const tools = [
 
 					<!-- Card Preview Container -->
 					<div class="block border-b border-mapa-contour/50 overflow-hidden relative z-0">
-						<div class="h-44 bg-mapa-canvas-dark flex flex-col items-center justify-center p-5 text-center border-b border-mapa-contour/30 relative overflow-hidden">
-							<div class="absolute inset-0 opacity-15 bg-[radial-gradient(#3d5a45_1px,transparent_1px)] [background-size:16px_16px]" aria-hidden="true"></div>
+						{tool.image ? (
+							<div class="h-44 bg-mapa-canvas-dark overflow-hidden relative">
+								<Image
+									src={tool.image}
+									alt={`${tool.name} preview`}
+									class="w-full h-44 object-cover object-top transition-transform duration-500 group-hover:scale-105"
+								/>
+							</div>
+						) : (
+							<div class="h-44 bg-mapa-canvas-dark flex flex-col items-center justify-center p-5 text-center border-b border-mapa-contour/30 relative overflow-hidden">
+								<div class="absolute inset-0 opacity-15 bg-[radial-gradient(#3d5a45_1px,transparent_1px)] [background-size:16px_16px]" aria-hidden="true"></div>
 
-							{/* Tool-specific schematic preview */}
-							{tool.id === "lens" && (
-								<div class="relative z-10 flex flex-col items-center gap-2 w-full">
-									<div class="inline-flex items-center gap-1">
-										<span class="w-5 h-3 rounded-sm bg-mapa-contour"></span>
-										<span class="w-5 h-3 rounded-sm bg-mapa-clay/70"></span>
-										<span class="w-5 h-3 rounded-sm bg-mapa-green/55"></span>
-										<span class="w-5 h-3 rounded-sm bg-mapa-green"></span>
-										<span class="w-5 h-3 rounded-sm bg-mapa-navy"></span>
-									</div>
-									<span class="font-mono text-[10px] text-mapa-muted uppercase tracking-wider">
-										82 Provinces &bull; GeoJSON Export
-									</span>
-									<span class="font-sans text-[11px] font-semibold text-mapa-green mt-0.5">{tool.badge}</span>
-								</div>
-							)}
+								{/* Tool-specific schematic preview */}
 								{tool.id === "psgc" && (
 									<div class="relative z-10 flex flex-col items-center gap-2 w-full">
 										<div class="inline-flex items-center gap-1 font-mono text-xs font-bold">
@@ -319,6 +316,7 @@ const tools = [
 									</div>
 								)}
 							</div>
+						)}
 					</div>
 
 					<!-- Card Body -->
