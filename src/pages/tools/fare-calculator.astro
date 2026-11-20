@@ -9,8 +9,36 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 
+type FareModeKey =
+	| 'airconBus'
+	| 'ordinaryBus'
+	| 'modernJeep'
+	| 'tradJeep'
+	| 'uvExpress'
+	| 'provBus';
+
+interface FareRateSpec {
+	name: string;
+	type: string;
+	baseFare: number;
+	baseKm: number;
+	perKm: number;
+	discountBase: number;
+	discountPerKm: number;
+	isPerKmOnly?: boolean;
+	tradPerKm?: number;
+	tradDiscountPerKm?: number;
+	airconBase?: number;
+	airconPerKm?: number;
+	airconDiscountBase?: number;
+	airconDiscountPerKm?: number;
+	color: string;
+	bgLight: string;
+	borderColor: string;
+}
+
 // Official LTFRB statutory fare matrices (Effective September 28, 2026)
-const FARE_RATES = {
+const FARE_RATES: Record<FareModeKey, FareRateSpec> = {
 	airconBus: {
 		name: 'Airconditioned City Bus',
 		type: 'City Bus (PUB)',
@@ -18,7 +46,7 @@ const FARE_RATES = {
 		baseKm: 5,
 		perKm: 2.98,
 		discountBase: 14.4,
-		discountPerKm: 2.38,
+		discountPerKm: 2.384,
 		color: 'text-mapa-green',
 		bgLight: 'bg-mapa-green/10',
 		borderColor: 'border-mapa-green/30'
@@ -30,7 +58,7 @@ const FARE_RATES = {
 		baseKm: 5,
 		perKm: 2.49,
 		discountBase: 12.0,
-		discountPerKm: 1.99,
+		discountPerKm: 1.992,
 		color: 'text-mapa-navy',
 		bgLight: 'bg-mapa-navy/10',
 		borderColor: 'border-mapa-navy/30'
@@ -67,6 +95,9 @@ const FARE_RATES = {
 		perKm: 3.0,
 		discountBase: 2.4,
 		discountPerKm: 2.4,
+		isPerKmOnly: true,
+		tradPerKm: 2.6,
+		tradDiscountPerKm: 2.08,
 		color: 'text-mapa-navy',
 		bgLight: 'bg-mapa-navy/10',
 		borderColor: 'border-mapa-navy/30'
@@ -79,6 +110,10 @@ const FARE_RATES = {
 		perKm: 2.2,
 		discountBase: 9.6,
 		discountPerKm: 1.76,
+		airconBase: 12.25,
+		airconPerKm: 2.45,
+		airconDiscountBase: 9.8,
+		airconDiscountPerKm: 1.96,
 		color: 'text-mapa-rust',
 		bgLight: 'bg-mapa-rust/10',
 		borderColor: 'border-mapa-rust/30'
@@ -90,14 +125,15 @@ function roundTo25Centavos(val: number): number {
 	return Math.round(val * 4) / 4;
 }
 
-function computeOfficialFare(modeKey: keyof typeof FARE_RATES, km: number, isDiscounted: boolean): number {
+function computeOfficialFare(modeKey: FareModeKey, km: number, isDiscounted: boolean): number {
 	const conf = FARE_RATES[modeKey];
-	const base = isDiscounted ? conf.discountBase : conf.baseFare;
-	const perKm = isDiscounted ? conf.discountPerKm : conf.perKm;
-	if (km <= conf.baseKm) {
-		return roundTo25Centavos(base);
-	}
-	return roundTo25Centavos(base + (km - conf.baseKm) * perKm);
+	const rawRegular = conf.isPerKmOnly
+		? km * conf.perKm
+		: km <= conf.baseKm
+			? conf.baseFare
+			: conf.baseFare + (km - conf.baseKm) * conf.perKm;
+	const finalVal = isDiscounted ? rawRegular * 0.8 : rawRegular;
+	return roundTo25Centavos(finalVal);
 }
 
 // Pre-compute 1 km to 50 km Official LTFRB Fare Matrix Rows for SSR + Interactive Table
@@ -174,7 +210,7 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 							"name": "What is the official base fare for jeepneys in the Philippines?",
 							"acceptedAnswer": {
 								"@type": "Answer",
-								"text": "Under the LTFRB nationwide fare adjustment effective September 28, 2026, the minimum regular base fare for Traditional Public Utility Jeepneys (TPUJ) is ₱14.00 for the first 4 kilometers (₱2.00 per succeeding kilometer), with a 20% discounted base fare of ₱11.20. For Modern Public Utility Jeepneys (MPUJ), the regular base fare is ₱17.00 for the first 4 kilometers (₱2.40 per succeeding kilometer), with a 20% discounted base fare of ₱13.60."
+								"text": "Under the LTFRB nationwide fare adjustment effective September 28, 2026, the minimum regular base fare for Traditional Public Utility Jeepneys (TPUJ) is ₱14.00 for the first 4 kilometers (₱2.00 per succeeding kilometer), with an official ₱0.25-rounded 20% discounted minimum of ₱11.25 (computed from an exact ₱11.20 base + ₱1.60/km). For Modern Public Utility Jeepneys (MPUJ), the regular base fare is ₱17.00 for the first 4 kilometers (₱2.40 per succeeding kilometer), with an official rounded 20% discounted minimum of ₱13.50 (exact ₱13.60 base + ₱1.92/km)."
 							}
 						},
 						{
@@ -190,7 +226,7 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 							"name": "How is bus fare computed in Metro Manila?",
 							"acceptedAnswer": {
 								"@type": "Answer",
-								"text": "City buses (PUB) use a 5-kilometer base distance. Under the September 28, 2026 LTFRB fare guide, regular ordinary (non-aircon) city buses charge ₱15.00 for the first 5 km plus ₱2.49 for every succeeding kilometer (₱12.00 discounted base). Air-conditioned city buses charge ₱18.00 for the first 5 km plus ₱2.98 for every succeeding kilometer (₱14.40 / ₱14.50 rounded discounted base)."
+								"text": "City buses (PUB) use a 5-kilometer base distance. Under the September 28, 2026 LTFRB fare guide, regular ordinary (non-aircon) city buses charge ₱15.00 for the first 5 km plus ₱2.49 for every succeeding kilometer (₱12.00 discounted base + ₱1.992/km). Air-conditioned city buses charge ₱18.00 for the first 5 km plus ₱2.98 for every succeeding kilometer (₱14.50 rounded discounted minimum, or ₱14.40 exact 20% base + ₱2.384/km before final 25-centavo rounding)."
 							}
 						},
 						{
@@ -198,7 +234,7 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 							"name": "What is the fare difference between Modern Jeepneys and Traditional Jeepneys?",
 							"acceptedAnswer": {
 								"@type": "Answer",
-								"text": "Under official LTFRB guidelines, Modern Jeepneys (MPUJ) charge ₱17.00 for the first 4 km and ₱2.40 for each succeeding kilometer (₱13.60 discounted base + ₱1.92/km). Traditional Jeepneys (TPUJ) charge ₱14.00 for the first 4 km and ₱2.00 for each succeeding kilometer (₱11.20 discounted base + ₱1.60/km). Modern jeepneys carry a higher tariff because they are equipped with air conditioning, Euro-4 or electric powertrains, CCTV monitoring, and GPS tracking."
+								"text": "Under official LTFRB guidelines, Modern Jeepneys (MPUJ) charge ₱17.00 for the first 4 km and ₱2.40 for each succeeding kilometer (₱13.50 rounded discounted minimum; ₱13.60 exact base + ₱1.92/km). Traditional Jeepneys (TPUJ) charge ₱14.00 for the first 4 km and ₱2.00 for each succeeding kilometer (₱11.25 rounded discounted minimum; ₱11.20 exact base + ₱1.60/km). Modern jeepneys carry a higher tariff because they are equipped with air conditioning, Euro-4 or electric powertrains, CCTV monitoring, and GPS tracking."
 							}
 						},
 						{
@@ -439,7 +475,7 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 						<div class="mt-5 pt-3 border-t border-mapa-contour/50">
 							<div class="text-[10px] uppercase font-bold text-mapa-clay">Legal Fare</div>
 							<div id="fare-uvExpress" class="text-2xl sm:text-3xl font-bold font-mono text-mapa-navy mt-0.5">₱30.00</div>
-							<div id="math-uvExpress" class="text-[10px] text-mapa-clay font-mono mt-1">10.0 km × ₱3.00/km</div>
+							<div id="math-uvExpress" class="text-[10px] text-mapa-clay font-mono mt-1">10.0 km × ₱3.00/km (Trad UV: ₱26.00)</div>
 						</div>
 					</div>
 
@@ -460,7 +496,7 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 						<div class="mt-5 pt-3 border-t border-mapa-contour/50">
 							<div class="text-[10px] uppercase font-bold text-mapa-clay">Legal Fare</div>
 							<div id="fare-provBus" class="text-2xl sm:text-3xl font-bold font-mono text-mapa-rust mt-0.5">₱23.00</div>
-							<div id="math-provBus" class="text-[10px] text-mapa-clay font-mono mt-1">₱12.00 + 5.0 km × ₱2.20</div>
+							<div id="math-provBus" class="text-[10px] text-mapa-clay font-mono mt-1">₱12.00 + 5.0 km × ₱2.20 (Aircon: ₱24.50)</div>
 						</div>
 					</div>
 				</div>
@@ -1005,29 +1041,156 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 				</div>
 			</section>
 
-			<!-- Section 6: Official Citations -->
+			<!-- Section 6: Official Citations, Tariff Schedule & Legal References -->
 			<section class="mb-10 font-sans border-t border-mapa-contour/40 pt-8">
 				<h3 class="font-serif text-2xl font-bold text-mapa-ink mb-4">
-					6. Official Citations & Legal Framework
+					6. Official Citations, Tariff Schedule &amp; Legal References
 				</h3>
-				<ul class="list-disc pl-5 space-y-2 text-xs sm:text-sm text-mapa-ink/80 leading-relaxed">
+				<p class="text-sm text-mapa-ink/85 leading-relaxed mb-4">
+					All computations in this tool strictly follow the Land Transportation Franchising and Regulatory Board (LTFRB) nationwide fare schedules implemented on September 28, 2026 under Department of Transportation (DOTr) authorization, including the 25-centavo (₱0.25) final rounding rule.
+				</p>
+
+				<!-- Official LTFRB Land Transport Tariff Schedule (All 11 Classifications) -->
+				<div class="mb-6 rounded-xl border border-mapa-contour bg-mapa-canvas-dark overflow-hidden">
+					<div class="px-4 py-3 border-b border-mapa-contour/60 flex flex-wrap items-center justify-between gap-2">
+						<span class="text-xs font-bold uppercase tracking-wider text-mapa-ink">
+							Official LTFRB Land Transport Tariff Schedule (All 11 Vehicle Classifications)
+						</span>
+						<span class="text-[11px] text-mapa-muted font-mono">25¢ final rounding rule</span>
+					</div>
+					<div class="overflow-x-auto">
+						<table class="w-full text-left text-xs border-collapse">
+							<thead class="bg-mapa-canvas border-b border-mapa-contour text-[11px] uppercase tracking-wider text-mapa-muted">
+								<tr>
+									<th class="py-2.5 px-3 font-bold">Vehicle Classification</th>
+									<th class="py-2.5 px-3 font-bold text-center">Base Dist.</th>
+									<th class="py-2.5 px-3 font-bold text-right">Reg. Base</th>
+									<th class="py-2.5 px-3 font-bold text-right">20% Disc. Base (Rounded / Exact)</th>
+									<th class="py-2.5 px-3 font-bold text-right">Reg. / km</th>
+									<th class="py-2.5 px-3 font-bold text-right">20% Disc. / km</th>
+								</tr>
+							</thead>
+							<tbody class="divide-y divide-mapa-contour/40 font-mono text-[11px]">
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">Traditional PUJ (TPUJ)</td>
+									<td class="py-2 px-3 text-center">First 4 km</td>
+									<td class="py-2 px-3 text-right">₱14.00</td>
+									<td class="py-2 px-3 text-right text-mapa-green">₱11.25 / ₱11.20</td>
+									<td class="py-2 px-3 text-right">₱2.00</td>
+									<td class="py-2 px-3 text-right text-mapa-green">₱1.60</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">Modern PUJ (MPUJ Class 2 &amp; 3)</td>
+									<td class="py-2 px-3 text-center">First 4 km</td>
+									<td class="py-2 px-3 text-right">₱17.00</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱13.50 / ₱13.60</td>
+									<td class="py-2 px-3 text-right">₱2.40</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱1.92</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">City Bus (PUB Ordinary)</td>
+									<td class="py-2 px-3 text-center">First 5 km</td>
+									<td class="py-2 px-3 text-right">₱15.00</td>
+									<td class="py-2 px-3 text-right text-mapa-navy">₱12.00 / ₱12.00</td>
+									<td class="py-2 px-3 text-right">₱2.49</td>
+									<td class="py-2 px-3 text-right text-mapa-navy">₱1.992</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">City Bus (PUB Aircon)</td>
+									<td class="py-2 px-3 text-center">First 5 km</td>
+									<td class="py-2 px-3 text-right">₱18.00</td>
+									<td class="py-2 px-3 text-right text-mapa-green">₱14.50 / ₱14.40</td>
+									<td class="py-2 px-3 text-right">₱2.98</td>
+									<td class="py-2 px-3 text-right text-mapa-green">₱2.384</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">UV Express (Traditional)</td>
+									<td class="py-2 px-3 text-center">Per km</td>
+									<td class="py-2 px-3 text-right">₱2.60/km</td>
+									<td class="py-2 px-3 text-right text-mapa-navy">₱2.00 / ₱2.08</td>
+									<td class="py-2 px-3 text-right">₱2.60</td>
+									<td class="py-2 px-3 text-right text-mapa-navy">₱2.08</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">UV Express (Modern)</td>
+									<td class="py-2 px-3 text-center">Per km</td>
+									<td class="py-2 px-3 text-right">₱3.00/km</td>
+									<td class="py-2 px-3 text-right text-mapa-navy">₱2.50 / ₱2.40</td>
+									<td class="py-2 px-3 text-right">₱3.00</td>
+									<td class="py-2 px-3 text-right text-mapa-navy">₱2.40</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">Provincial Bus (Ordinary)</td>
+									<td class="py-2 px-3 text-center">First 5 km</td>
+									<td class="py-2 px-3 text-right">₱12.00</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱9.50 / ₱9.60</td>
+									<td class="py-2 px-3 text-right">₱2.20</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱1.76</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">Provincial Bus (Regular Aircon)</td>
+									<td class="py-2 px-3 text-center">First 5 km</td>
+									<td class="py-2 px-3 text-right">₱12.25</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱9.75 / ₱9.80</td>
+									<td class="py-2 px-3 text-right">₱2.45</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱1.96</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">Provincial Bus (Deluxe)</td>
+									<td class="py-2 px-3 text-center">First 5 km</td>
+									<td class="py-2 px-3 text-right">₱13.00</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱10.50 / ₱10.40</td>
+									<td class="py-2 px-3 text-right">₱2.60</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱2.08</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">Provincial Bus (Super Deluxe)</td>
+									<td class="py-2 px-3 text-center">First 5 km</td>
+									<td class="py-2 px-3 text-right">₱13.50</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱10.75 / ₱10.80</td>
+									<td class="py-2 px-3 text-right">₱2.70</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱2.16</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">Provincial Bus (Luxury)</td>
+									<td class="py-2 px-3 text-center">First 5 km</td>
+									<td class="py-2 px-3 text-right">₱16.75</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱13.50 / ₱13.40</td>
+									<td class="py-2 px-3 text-right">₱3.35</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱2.68</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<ul class="list-disc pl-5 space-y-2.5 text-xs sm:text-sm text-mapa-ink/85 leading-relaxed">
 					<li>
-						<strong>LTFRB Board Resolution No. 044, Series of 2023:</strong> Approving calibrated fare adjustments for public utility buses and public utility jeepneys.
+						<strong>DOTr Memorandum dated September 24, 2026 &amp; LTFRB Nationwide Fare Guide (Effective September 28, 2026):</strong> Lifts the March 2026 suspension on approved PUV fare adjustments across Traditional PUJ, Modern PUJ, City PUB, Provincial PUB, and UV Express services (<a href="https://ltfrb.gov.ph/fare-rates/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">LTFRB Official Fare Rates Portal</a>).
 					</li>
 					<li>
-						<strong>DOTr-LTO-LTFRB Joint Administrative Order No. 2014-01:</strong> Revised Schedule of Fines and Penalties for Violations of Laws, Rules and Regulations Governing Land Transportation.
+						<strong>LTFRB Board Resolution No. 044, Series of 2023 &amp; Case No. 2022-04709:</strong> Establishes the piecewise base-distance and per-kilometer formula alongside the 25-centavo (₱0.25) rounding standard across land transport matrices (<a href="https://ltfrb.gov.ph/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">ltfrb.gov.ph</a>).
 					</li>
 					<li>
-						<strong>Republic Act No. 11314:</strong> An Act Institutionalizing the Grant of Student Fare Discount from Elementary to Post-Secondary Institutions.
+						<strong>LTFRB Memorandum Circular No. 2019-035 ("No Matrix, No Fare Hike" Policy):</strong> Requires every franchised PUV operator and driver to display an authenticated LTFRB Fare Guide (<em>Talaan ng Pamasahe</em>) inside the passenger cabin before collecting adjusted fares.
 					</li>
 					<li>
-						<strong>Republic Act No. 9994:</strong> The Expanded Senior Citizens Act of 2010.
+						<strong>Republic Act No. 11314 (Student Fare Discount Act) &amp; LTFRB MC No. 2017-024:</strong> Institutionalizes the mandatory 20% student discount 365 days a year including Saturdays, Sundays, summer and semestral breaks, and national holidays (<a href="https://www.officialgazette.gov.ph/2019/04/17/republic-act-no-11314/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">Official Gazette RA 11314</a>).
 					</li>
 					<li>
-						<strong>Republic Act No. 10754:</strong> An Act Expanding the Benefits and Privileges of Persons with Disability (PWD).
+						<strong>Republic Act No. 9994 (Expanded Senior Citizens Act of 2010):</strong> Grants Filipino resident citizens aged 60 and older a mandatory 20% fare discount across all public land, rail, air, and sea transit upon presentation of valid senior citizen identification (<a href="https://www.officialgazette.gov.ph/2010/02/15/republic-act-no-9994/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">Official Gazette RA 9994</a>).
 					</li>
 					<li>
-						<strong>Commonwealth Act No. 146:</strong> The Public Service Act, establishing public carriage tariff regulations.
+						<strong>Republic Act No. 9442 &amp; Republic Act No. 10754 (Magna Carta for Persons with Disabilities):</strong> Guarantees a mandatory 20% fare discount and VAT exemption for Persons with Disabilities presenting a valid NCDA or local PDAO ID (<a href="https://www.officialgazette.gov.ph/2016/03/23/republic-act-no-10754/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">Official Gazette RA 10754</a>).
+					</li>
+					<li>
+						<strong>DOTr Department Order No. 2017-011 (Omnibus Franchising Guidelines / PUVMP) &amp; PNS 2126:2017:</strong> Sets vehicle safety, air-conditioning, emissions, CCTV, GPS, and automated fare collection standards for Class 2 and Class 3 Modern PUJs (<a href="https://dotr.gov.ph/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">dotr.gov.ph</a>).
+					</li>
+					<li>
+						<strong>DOTr Rail Regulatory Unit &amp; LRMC / LRTA / MRT-3 Tariff Schedules:</strong> Governs LRT-1 distance fares effective April 2, 2025 (₱16.25 boarding fee + ₱1.47/km), LRT-2 distance fares (₱13.29 boarding fee + ₱1.21/km), MRT-3 station tiers (₱13 to ₱28), and the 50% concessionary discount for eligible sectors (<a href="/tools/rail-transit" class="text-mapa-green font-semibold hover:underline">Metro Manila Rail Fare Matrix</a>).
+					</li>
+					<li>
+						<strong>DOTr-LTO-LTFRB Joint Administrative Order (JAO) No. 2014-01 &amp; Commonwealth Act No. 146 (Public Service Act):</strong> Establishes statutory fines (₱5,000 first offense, ₱10,000 + 30-day impoundment second offense, ₱15,000 + franchise cancellation third offense) for overcharging or refusing legal passenger discounts.
 					</li>
 				</ul>
 			</section>
@@ -1043,7 +1206,7 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 							What is the official base fare for jeepneys in 2026?
 						</h4>
 						<p class="text-xs sm:text-sm text-mapa-ink/85 leading-relaxed">
-							Under the September 28, 2026 LTFRB fare adjustment, the regular base fare for Traditional PUJs is ₱14.00 for the first 4 km (₱2.00 per succeeding km), with a 20% discounted base fare of ₱11.20 (₱1.60 per succeeding km). For Modern PUJs, the regular base fare is ₱17.00 for the first 4 km (₱2.40 per succeeding km), with a discounted base fare of ₱13.60 (₱1.92 per succeeding km).
+							Under the September 28, 2026 LTFRB fare adjustment, the regular base fare for Traditional PUJs is ₱14.00 for the first 4 km (₱2.00 per succeeding km), with an official ₱0.25-rounded 20% discounted minimum of ₱11.25 (derived from the exact ₱11.20 base + ₱1.60 per succeeding km before rounding). For Modern PUJs, the regular base fare is ₱17.00 for the first 4 km (₱2.40 per succeeding km), with an official rounded 20% discounted minimum of ₱13.50 (exact ₱13.60 base + ₱1.92 per succeeding km).
 						</p>
 					</div>
 
@@ -1079,7 +1242,7 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 							How is city bus fare computed in Metro Manila?
 						</h4>
 						<p class="text-xs sm:text-sm text-mapa-ink/85 leading-relaxed">
-							City buses use a 5-kilometer base distance. Ordinary (non-aircon) buses charge ₱15.00 for the first 5 km plus ₱2.49 for each succeeding kilometer (₱12.00 discounted base). Air-conditioned city buses charge ₱18.00 for the first 5 km plus ₱2.98 for each succeeding kilometer (₱14.50 rounded discounted base).
+							City buses use a 5-kilometer base distance. Ordinary (non-aircon) buses charge ₱15.00 for the first 5 km plus ₱2.49 for each succeeding kilometer (₱12.00 discounted base + ₱1.992/km). Air-conditioned city buses charge ₱18.00 for the first 5 km plus ₱2.98 for each succeeding kilometer (₱14.50 rounded discounted minimum, computed from the exact ₱14.40 base + ₱2.384/km before final 25-centavo rounding).
 						</p>
 					</div>
 				</div>
@@ -1168,22 +1331,53 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 				const baseFare = discount ? conf.discountBase : conf.baseFare;
 				const perKm = discount ? conf.discountPerKm : conf.perKm;
 				const baseKm = conf.baseKm;
+				const perKmLabel =
+					discount && (modeKey === 'airconBus' || modeKey === 'ordinaryBus')
+						? String(Number(perKm.toFixed(3)))
+						: perKm.toFixed(2);
 
-				if (km <= baseKm) {
-					const roundedBase = round25(baseFare);
+				const rawReg = conf.isPerKmOnly
+					? km * conf.perKm
+					: km <= baseKm
+						? conf.baseFare
+						: conf.baseFare + (km - baseKm) * conf.perKm;
+				const rawTotal = round25(discount ? rawReg * 0.8 : rawReg);
+
+				if (modeKey === 'uvExpress') {
+					const tradUvPerKm = discount
+						? (conf.tradDiscountPerKm ?? 2.08)
+						: (conf.tradPerKm ?? 2.6);
+					const tradTotal = round25(km * tradUvPerKm);
 					return {
-						total: roundedBase,
-						math: `₱${roundedBase.toFixed(2)} flat (first ${baseKm} km)`
+						total: rawTotal,
+						math: `${km.toFixed(1)} km × ₱${perKmLabel}/km (Trad UV: ₱${tradTotal.toFixed(2)})`
 					};
 				}
 
-				const extraKm = km - baseKm;
-				const extraCost = extraKm * perKm;
-				const rawTotal = round25(baseFare + extraCost);
+				const baseFormula =
+					km <= baseKm
+						? `₱${rawTotal.toFixed(2)} flat (first ${baseKm} km)`
+						: `₱${baseFare.toFixed(2)} + ${(km - baseKm).toFixed(1)} km × ₱${perKmLabel}`;
+
+				if (modeKey === 'provBus') {
+					const acBase = discount
+						? (conf.airconDiscountBase ?? 9.8)
+						: (conf.airconBase ?? 12.25);
+					const acPerKm = discount
+						? (conf.airconDiscountPerKm ?? 1.96)
+						: (conf.airconPerKm ?? 2.45);
+					const acRaw =
+						km <= baseKm ? acBase : acBase + (km - baseKm) * acPerKm;
+					const acProvTotal = round25(acRaw);
+					return {
+						total: rawTotal,
+						math: `${baseFormula} (Aircon: ₱${acProvTotal.toFixed(2)})`
+					};
+				}
 
 				return {
 					total: rawTotal,
-					math: `₱${baseFare.toFixed(2)} + ${extraKm.toFixed(1)} km × ₱${perKm.toFixed(2)}`
+					math: baseFormula
 				};
 			}
 
@@ -1267,19 +1461,19 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 				const modernFare = modeFares.modernJeep || 0;
 				const airconBusFare = modeFares.airconBus || 0;
 
-				// Cheapest PUV mode
-				const cheapestKey = Object.keys(modeFares).reduce((minKey, key) =>
+				// Cheapest Urban Commuter PUV mode
+				const urbanKeys = ['tradJeep', 'modernJeep', 'ordinaryBus', 'airconBus', 'uvExpress'];
+				const cheapestKey = urbanKeys.reduce((minKey, key) =>
 					modeFares[key] < modeFares[minKey] ? key : minKey
 				, 'tradJeep');
 				const cheapestFare = modeFares[cheapestKey];
 				const cheapestConf = FARE_RATES[cheapestKey];
-				const maxFare = Math.max(...Object.values(modeFares));
-				const savings = Math.max(0, maxFare - cheapestFare);
+				const savings = Math.max(0, airconBusFare - cheapestFare);
 
 				if (rankerCheapestName) {
 					rankerCheapestName.textContent = cheapestConf.name;
 					rankerCheapestFare.textContent = `₱${cheapestFare.toFixed(2)}`;
-					rankerCheapestDesc.textContent = `Saves ₱${savings.toFixed(2)} compared to highest option (${maxFare.toFixed(2)}) for this distance.`;
+					rankerCheapestDesc.textContent = `Saves ₱${savings.toFixed(2)} compared to aircon city bus for this distance.`;
 				}
 
 				if (rankerComfortName) {
