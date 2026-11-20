@@ -9,8 +9,36 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 
+type FareModeKey =
+	| 'airconBus'
+	| 'ordinaryBus'
+	| 'modernJeep'
+	| 'tradJeep'
+	| 'uvExpress'
+	| 'provBus';
+
+interface FareRateSpec {
+	name: string;
+	type: string;
+	baseFare: number;
+	baseKm: number;
+	perKm: number;
+	discountBase: number;
+	discountPerKm: number;
+	isPerKmOnly?: boolean;
+	tradPerKm?: number;
+	tradDiscountPerKm?: number;
+	airconBase?: number;
+	airconPerKm?: number;
+	airconDiscountBase?: number;
+	airconDiscountPerKm?: number;
+	color: string;
+	bgLight: string;
+	borderColor: string;
+}
+
 // Official LTFRB statutory fare matrices (Effective September 28, 2026)
-const FARE_RATES = {
+const FARE_RATES: Record<FareModeKey, FareRateSpec> = {
 	airconBus: {
 		name: 'Airconditioned City Bus',
 		type: 'City Bus (PUB)',
@@ -18,7 +46,7 @@ const FARE_RATES = {
 		baseKm: 5,
 		perKm: 2.98,
 		discountBase: 14.4,
-		discountPerKm: 2.38,
+		discountPerKm: 2.384,
 		color: 'text-mapa-green',
 		bgLight: 'bg-mapa-green/10',
 		borderColor: 'border-mapa-green/30'
@@ -30,7 +58,7 @@ const FARE_RATES = {
 		baseKm: 5,
 		perKm: 2.49,
 		discountBase: 12.0,
-		discountPerKm: 1.99,
+		discountPerKm: 1.992,
 		color: 'text-mapa-navy',
 		bgLight: 'bg-mapa-navy/10',
 		borderColor: 'border-mapa-navy/30'
@@ -67,6 +95,9 @@ const FARE_RATES = {
 		perKm: 3.0,
 		discountBase: 2.4,
 		discountPerKm: 2.4,
+		isPerKmOnly: true,
+		tradPerKm: 2.6,
+		tradDiscountPerKm: 2.08,
 		color: 'text-mapa-navy',
 		bgLight: 'bg-mapa-navy/10',
 		borderColor: 'border-mapa-navy/30'
@@ -79,6 +110,10 @@ const FARE_RATES = {
 		perKm: 2.2,
 		discountBase: 9.6,
 		discountPerKm: 1.76,
+		airconBase: 12.25,
+		airconPerKm: 2.45,
+		airconDiscountBase: 9.8,
+		airconDiscountPerKm: 1.96,
 		color: 'text-mapa-rust',
 		bgLight: 'bg-mapa-rust/10',
 		borderColor: 'border-mapa-rust/30'
@@ -90,14 +125,15 @@ function roundTo25Centavos(val: number): number {
 	return Math.round(val * 4) / 4;
 }
 
-function computeOfficialFare(modeKey: keyof typeof FARE_RATES, km: number, isDiscounted: boolean): number {
+function computeOfficialFare(modeKey: FareModeKey, km: number, isDiscounted: boolean): number {
 	const conf = FARE_RATES[modeKey];
-	const base = isDiscounted ? conf.discountBase : conf.baseFare;
-	const perKm = isDiscounted ? conf.discountPerKm : conf.perKm;
-	if (km <= conf.baseKm) {
-		return roundTo25Centavos(base);
-	}
-	return roundTo25Centavos(base + (km - conf.baseKm) * perKm);
+	const rawRegular = conf.isPerKmOnly
+		? km * conf.perKm
+		: km <= conf.baseKm
+			? conf.baseFare
+			: conf.baseFare + (km - conf.baseKm) * conf.perKm;
+	const finalVal = isDiscounted ? rawRegular * 0.8 : rawRegular;
+	return roundTo25Centavos(finalVal);
 }
 
 // Pre-compute 1 km to 50 km Official LTFRB Fare Matrix Rows for SSR + Interactive Table
@@ -174,7 +210,7 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 							"name": "What is the official base fare for jeepneys in the Philippines?",
 							"acceptedAnswer": {
 								"@type": "Answer",
-								"text": "Under the LTFRB nationwide fare adjustment effective September 28, 2026, the minimum regular base fare for Traditional Public Utility Jeepneys (TPUJ) is ₱14.00 for the first 4 kilometers (₱2.00 per succeeding kilometer), with a 20% discounted base fare of ₱11.20. For Modern Public Utility Jeepneys (MPUJ), the regular base fare is ₱17.00 for the first 4 kilometers (₱2.40 per succeeding kilometer), with a 20% discounted base fare of ₱13.60."
+								"text": "Under the LTFRB nationwide fare adjustment effective September 28, 2026, the minimum regular base fare for Traditional Public Utility Jeepneys (TPUJ) is ₱14.00 for the first 4 kilometers (₱2.00 per succeeding kilometer), with an official ₱0.25-rounded 20% discounted minimum of ₱11.25 (computed from an exact ₱11.20 base + ₱1.60/km). For Modern Public Utility Jeepneys (MPUJ), the regular base fare is ₱17.00 for the first 4 kilometers (₱2.40 per succeeding kilometer), with an official rounded 20% discounted minimum of ₱13.50 (exact ₱13.60 base + ₱1.92/km)."
 							}
 						},
 						{
@@ -190,7 +226,7 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 							"name": "How is bus fare computed in Metro Manila?",
 							"acceptedAnswer": {
 								"@type": "Answer",
-								"text": "City buses (PUB) use a 5-kilometer base distance. Under the September 28, 2026 LTFRB fare guide, regular ordinary (non-aircon) city buses charge ₱15.00 for the first 5 km plus ₱2.49 for every succeeding kilometer (₱12.00 discounted base). Air-conditioned city buses charge ₱18.00 for the first 5 km plus ₱2.98 for every succeeding kilometer (₱14.40 / ₱14.50 rounded discounted base)."
+								"text": "City buses (PUB) use a 5-kilometer base distance. Under the September 28, 2026 LTFRB fare guide, regular ordinary (non-aircon) city buses charge ₱15.00 for the first 5 km plus ₱2.49 for every succeeding kilometer (₱12.00 discounted base + ₱1.992/km). Air-conditioned city buses charge ₱18.00 for the first 5 km plus ₱2.98 for every succeeding kilometer (₱14.50 rounded discounted minimum, or ₱14.40 exact 20% base + ₱2.384/km before final 25-centavo rounding)."
 							}
 						},
 						{
@@ -198,7 +234,7 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 							"name": "What is the fare difference between Modern Jeepneys and Traditional Jeepneys?",
 							"acceptedAnswer": {
 								"@type": "Answer",
-								"text": "Under official LTFRB guidelines, Modern Jeepneys (MPUJ) charge ₱17.00 for the first 4 km and ₱2.40 for each succeeding kilometer (₱13.60 discounted base + ₱1.92/km). Traditional Jeepneys (TPUJ) charge ₱14.00 for the first 4 km and ₱2.00 for each succeeding kilometer (₱11.20 discounted base + ₱1.60/km). Modern jeepneys carry a higher tariff because they are equipped with air conditioning, Euro-4 or electric powertrains, CCTV monitoring, and GPS tracking."
+								"text": "Under official LTFRB guidelines, Modern Jeepneys (MPUJ) charge ₱17.00 for the first 4 km and ₱2.40 for each succeeding kilometer (₱13.50 rounded discounted minimum; ₱13.60 exact base + ₱1.92/km). Traditional Jeepneys (TPUJ) charge ₱14.00 for the first 4 km and ₱2.00 for each succeeding kilometer (₱11.25 rounded discounted minimum; ₱11.20 exact base + ₱1.60/km). Modern jeepneys carry a higher tariff because they are equipped with air conditioning, Euro-4 or electric powertrains, CCTV monitoring, and GPS tracking."
 							}
 						},
 						{
@@ -239,9 +275,14 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
 					Commuting Utility
 				</span>
-				<span class="font-sans text-xs text-mapa-muted">
-					Official LTFRB Sept 28, 2026 Fare Guide
-				</span>
+				<a
+					href="https://ltfrb.gov.ph/fare-rates/"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="font-sans text-xs font-semibold text-mapa-green hover:underline"
+				>
+					Source: Official LTFRB Sept 28, 2026 Fare Guide &rarr;
+				</a>
 			</div>
 			<h1 class="text-3xl sm:text-4xl font-extrabold text-mapa-green font-serif tracking-tight">
 				Philippine Commute Fare Estimator &amp; LTFRB Fare Matrix
@@ -253,123 +294,60 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 
 		<!-- Calculator Interface Card -->
 		<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 shadow-sm mb-12">
-			<!-- Corridor Presets with Region Filter -->
-			<div class="mb-6 font-sans">
-				<div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-					<span class="text-xs font-bold uppercase tracking-wider text-mapa-ink/70">
-						Popular Commuter Corridors (Official Distances):
-					</span>
-					<div class="flex items-center gap-1.5 text-[11px] font-medium" id="preset-region-filters">
-						<button type="button" class="preset-tab active px-2.5 py-0.5 rounded-full bg-mapa-green text-white font-semibold transition-colors cursor-pointer" data-filter="all">All</button>
-						<button type="button" class="preset-tab px-2.5 py-0.5 rounded-full bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green transition-colors cursor-pointer" data-filter="ncr">Metro Manila</button>
-						<button type="button" class="preset-tab px-2.5 py-0.5 rounded-full bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green transition-colors cursor-pointer" data-filter="mega">Greater Suburbs</button>
-						<button type="button" class="preset-tab px-2.5 py-0.5 rounded-full bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green transition-colors cursor-pointer" data-filter="vismin">Visayas / Mindanao</button>
-					</div>
-				</div>
-				<div class="flex flex-wrap gap-2 text-xs" id="preset-container">
-					<!-- NCR Corridors -->
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="6.5" data-region="ncr">
-						Buendia / Makati ↔ BGC Market! (6.5 km)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="5.5" data-region="ncr">
-						Ortigas CBD ↔ Pasig Palengke (5.5 km)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="9.5" data-region="ncr">
-						Cubao ↔ Makati / Buendia (9.5 km)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="12" data-region="ncr">
-						Cubao ↔ Masinag / Antipolo (12 km)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="14" data-region="ncr">
-						Fairview ↔ MRT Quezon Ave (14 km)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="16" data-region="ncr">
-						Commonwealth Market ↔ Quiapo (16 km)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="22" data-region="ncr">
-						Alabang ↔ Lawton Manila (22 km)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="24" data-region="ncr">
-						Monumento ↔ Baclaran (24 km)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="28" data-region="ncr">
-						PITX ↔ Monumento EDSA (28 km)
-					</button>
-
-					<!-- Greater Mega Manila Suburban -->
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="14.5" data-region="mega">
-						Bacoor Molino ↔ PITX Terminal (14.5 km)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="18" data-region="mega">
-						Balintawak ↔ Bocaue Bulacan (18 km)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="26" data-region="mega">
-						Dasmariñas Cavite ↔ Baclaran (26 km)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="19" data-region="mega">
-						Sta. Rosa Laguna ↔ Alabang Hub (19 km)
-					</button>
-
-					<!-- VisMin Corridors -->
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="8" data-region="vismin">
-						Cebu Colon ↔ Mandaue City (8 km)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="16" data-region="vismin">
-						Cebu IT Park ↔ Talisay City (16 km)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="15" data-region="vismin">
-						Davao Roxas ↔ Toril Terminal (15 km)
-					</button>
-				</div>
-			</div>
-
-			<!-- Controls: Distance Slider & Passenger Category Toggle -->
-			<div class="grid grid-cols-1 md:grid-cols-12 gap-8 mb-6 pb-6 border-b border-mapa-contour/60 font-sans">
-				<!-- Left: Distance Slider & Direct KM Input -->
-				<div class="md:col-span-7">
-					<div class="flex items-center justify-between mb-2">
-						<label for="distance-slider" class="text-xs font-semibold uppercase tracking-wider text-mapa-ink/80">
-							Travel Distance:
-						</label>
-						<div class="flex items-center gap-1.5">
+			<!-- Controls: Distance Slider & Passenger Category Toggle (Primary Action First) -->
+			<div class="grid grid-cols-1 md:grid-cols-12 gap-5 mb-6 pb-6 border-b border-mapa-contour/60 font-sans">
+				<!-- Left: Prominent Distance Slider & Direct KM Input -->
+				<div class="md:col-span-7 bg-mapa-canvas border-2 border-mapa-green/45 rounded-xl p-4 sm:p-5 shadow-xs">
+					<div class="flex items-center justify-between gap-3 mb-3.5">
+						<div>
+							<label for="distance-slider" class="text-xs font-extrabold uppercase tracking-wider text-mapa-green block">
+								1. Slide Travel Distance
+							</label>
+							<span class="text-[11px] text-mapa-muted">Drag handle or enter exact kilometers (1 to 100 km)</span>
+						</div>
+						<div class="flex items-center gap-1.5 shrink-0">
 							<input
 								type="number"
 								id="distance-number-input"
 								min="1"
-								max="70"
+								max="100"
 								step="0.5"
 								value="10"
-								class="w-20 px-2 py-1 text-right font-mono font-bold text-base bg-mapa-canvas border border-mapa-contour rounded-lg focus:outline-none focus:ring-2 focus:ring-mapa-green text-mapa-ink"
+								aria-label="Exact travel distance in kilometers"
+								class="w-20 px-2.5 py-1.5 text-right font-mono font-extrabold text-lg bg-mapa-canvas-dark border-2 border-mapa-contour rounded-xl focus:outline-none focus:border-mapa-green focus:ring-2 focus:ring-mapa-green/25 text-mapa-ink"
 							/>
-							<span class="text-xs font-bold text-mapa-clay">km</span>
+							<span class="text-xs font-extrabold uppercase tracking-wider text-mapa-green">km</span>
 						</div>
 					</div>
 
-					<input
-						type="range"
-						id="distance-slider"
-						min="1"
-						max="70"
-						step="0.5"
-						value="10"
-						class="w-full h-2 bg-mapa-contour/60 rounded-lg appearance-none cursor-pointer accent-mapa-green"
-					/>
+					<div class="py-1.5">
+						<input
+							type="range"
+							id="distance-slider"
+							min="1"
+							max="70"
+							step="0.5"
+							value="10"
+							style="background: linear-gradient(to right, #3d5a45 0%, #3d5a45 13.04%, #e5d9c3 13.04%, #e5d9c3 100%);"
+							class="fare-distance-slider w-full h-3.5 rounded-full appearance-none cursor-pointer"
+						/>
+					</div>
 
-					<div class="flex justify-between text-[11px] text-mapa-clay mt-1.5 font-mono">
-						<span>1 km (Short hop)</span>
-						<span>25 km (Cross-city)</span>
-						<span>50 km (Suburban)</span>
+					<div class="flex justify-between text-[11px] font-semibold text-mapa-muted mt-2 font-mono">
+						<span>1 km</span>
+						<span>25 km</span>
+						<span>50 km</span>
 						<span>70 km</span>
 					</div>
 				</div>
 
 				<!-- Right: Passenger Category Switch -->
-				<div class="md:col-span-5 flex flex-col justify-between">
+				<div class="md:col-span-5 bg-mapa-canvas border border-mapa-contour rounded-xl p-4 sm:p-5 shadow-2xs flex flex-col justify-between">
 					<div>
-						<span class="block text-xs font-semibold uppercase tracking-wider text-mapa-ink/80 mb-2">
-							Passenger Fare Category:
+						<span class="block text-xs font-extrabold uppercase tracking-wider text-mapa-ink/85 mb-2.5">
+							2. Passenger Fare Category
 						</span>
-						<div class="grid grid-cols-2 gap-2 p-1 rounded-xl bg-mapa-canvas border border-mapa-contour text-xs font-medium">
+						<div class="grid grid-cols-2 gap-2 p-1 rounded-xl bg-mapa-canvas-dark border border-mapa-contour text-xs font-medium">
 							<button
 								type="button"
 								id="btn-regular-fare"
@@ -387,77 +365,11 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 						</div>
 					</div>
 
-					<div class="text-[11px] text-mapa-clay mt-2 flex items-center gap-1.5">
+					<div class="text-[11px] text-mapa-muted mt-3 flex items-center gap-1.5">
 						<svg class="w-3.5 h-3.5 text-mapa-green shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
 						</svg>
 						<span id="discount-subtext">Standard commuter passenger pricing under LTFRB guidelines.</span>
-					</div>
-				</div>
-			</div>
-
-			<!-- Dynamic Commute Comparison & Budget Insights Bar -->
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8 font-sans text-xs">
-				<div class="p-4 rounded-xl bg-mapa-canvas border border-mapa-contour/80 flex flex-col justify-between">
-					<div>
-						<div class="flex items-center justify-between mb-1">
-							<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-green/10 text-mapa-green border border-mapa-green/20">
-								Cheapest Commute Mode
-							</span>
-							<span class="text-mapa-clay font-mono text-[11px]">Best Value</span>
-						</div>
-						<div id="ranker-cheapest-name" class="font-bold text-sm text-mapa-ink mt-1">Traditional Jeep (TPUJ)</div>
-						<p id="ranker-cheapest-desc" class="text-mapa-clay text-[11px] mt-0.5 leading-tight">
-							Saves ₱7.00 compared to aircon bus for this distance.
-						</p>
-					</div>
-					<div class="mt-3 pt-2 border-t border-mapa-contour/40 flex items-baseline justify-between">
-						<span class="text-[11px] text-mapa-clay">One-way fare:</span>
-						<span id="ranker-cheapest-fare" class="font-mono text-lg font-bold text-mapa-green">₱26.00</span>
-					</div>
-				</div>
-
-				<div class="p-4 rounded-xl bg-mapa-canvas border border-mapa-contour/80 flex flex-col justify-between">
-					<div>
-						<div class="flex items-center justify-between mb-1">
-							<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-rust/10 text-mapa-rust border border-mapa-rust/20">
-								Aircon &amp; CCTV Comfort
-							</span>
-							<span class="text-mapa-clay font-mono text-[11px]">Modern Fleet</span>
-						</div>
-						<div id="ranker-comfort-name" class="font-bold text-sm text-mapa-ink mt-1">Modern PUJ / E-Jeep</div>
-						<p id="ranker-comfort-desc" class="text-mapa-clay text-[11px] mt-0.5 leading-tight">
-							Adds only ₱5.50 for cold AC and Euro-4 cabin air.
-						</p>
-					</div>
-					<div class="mt-3 pt-2 border-t border-mapa-contour/40 flex items-baseline justify-between">
-						<span class="text-[11px] text-mapa-clay">One-way fare:</span>
-						<span id="ranker-comfort-fare" class="font-mono text-lg font-bold text-mapa-rust">₱31.50</span>
-					</div>
-				</div>
-
-				<div class="p-4 rounded-xl bg-mapa-canvas border border-mapa-contour/80 flex flex-col justify-between">
-					<div>
-						<div class="flex items-center justify-between mb-1">
-							<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-navy/10 text-mapa-navy border border-mapa-navy/20">
-								Monthly Work Budget
-							</span>
-							<span class="text-mapa-clay font-mono text-[11px]">20 Days (40 Trips)</span>
-						</div>
-						<div class="text-[11px] text-mapa-ink/80 mt-1 leading-snug">
-							<div>Traditional PUJ: <strong id="monthly-trad" class="font-mono text-mapa-green">₱1,040</strong></div>
-							<div>Modern PUJ: <strong id="monthly-modern" class="font-mono text-mapa-rust">₱1,260</strong></div>
-							<div>Aircon City Bus: <strong id="monthly-bus" class="font-mono text-mapa-navy">₱1,320</strong></div>
-						</div>
-					</div>
-					<div class="mt-2 pt-2 border-t border-mapa-contour/40 flex items-center justify-between">
-						<span class="text-[10px] text-mapa-clay">Roundtrip daily</span>
-						<button type="button" id="btn-copy-comparison" class="text-[11px] font-semibold text-mapa-green hover:underline cursor-pointer flex items-center gap-1">
-							<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-							</svg>
-							<span>Copy All Fares</span>
-						</button>
 					</div>
 				</div>
 			</div>
@@ -575,7 +487,7 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 						<div class="mt-5 pt-3 border-t border-mapa-contour/50">
 							<div class="text-[10px] uppercase font-bold text-mapa-clay">Legal Fare</div>
 							<div id="fare-uvExpress" class="text-2xl sm:text-3xl font-bold font-mono text-mapa-navy mt-0.5">₱30.00</div>
-							<div id="math-uvExpress" class="text-[10px] text-mapa-clay font-mono mt-1">10.0 km × ₱3.00/km</div>
+							<div id="math-uvExpress" class="text-[10px] text-mapa-clay font-mono mt-1">10.0 km × ₱3.00/km (Trad UV: ₱26.00)</div>
 						</div>
 					</div>
 
@@ -596,7 +508,7 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 						<div class="mt-5 pt-3 border-t border-mapa-contour/50">
 							<div class="text-[10px] uppercase font-bold text-mapa-clay">Legal Fare</div>
 							<div id="fare-provBus" class="text-2xl sm:text-3xl font-bold font-mono text-mapa-rust mt-0.5">₱23.00</div>
-							<div id="math-provBus" class="text-[10px] text-mapa-clay font-mono mt-1">₱12.00 + 5.0 km × ₱2.20</div>
+							<div id="math-provBus" class="text-[10px] text-mapa-clay font-mono mt-1">₱12.00 + 5.0 km × ₱2.20 (Aircon: ₱24.50)</div>
 						</div>
 					</div>
 				</div>
@@ -613,102 +525,238 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 				</div>
 			</div>
 
-			<!-- Cash & Change Assistant ("Magkano Sukli Mo?") -->
-			<div class="mt-8 pt-8 border-t border-mapa-contour/60 font-sans">
-				<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-					<div>
-						<div class="flex items-center gap-2">
-							<span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-green/10 text-mapa-green border border-mapa-green/20">
-								Cash &amp; Change Assistant
-							</span>
-							<h3 class="font-serif font-bold text-base sm:text-lg text-mapa-ink">
-								Magkano Sukli Mo? (Change Calculator)
-							</h3>
+			<!-- Corridor Presets Disclosure (Secondary Shortcuts below Result Cards) -->
+			<details class="group mt-6 pt-5 border-t border-mapa-contour/60 font-sans">
+				<summary class="list-none cursor-pointer flex items-center justify-between gap-2 text-xs font-bold uppercase tracking-wider text-mapa-ink/80 hover:text-mapa-green transition-colors">
+					<span>Popular Commuter Corridors (16 official route presets)</span>
+					<span class="text-mapa-muted group-open:rotate-180 transition-transform font-mono">&#9662;</span>
+				</summary>
+				<div class="mt-4">
+					<div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+						<span class="text-[11px] text-mapa-clay font-medium">Filter by metro area:</span>
+						<div class="flex items-center gap-1.5 text-[11px] font-medium" id="preset-region-filters">
+							<button type="button" class="preset-tab active px-2.5 py-0.5 rounded-full bg-mapa-green text-white font-semibold transition-colors cursor-pointer" data-filter="all">All</button>
+							<button type="button" class="preset-tab px-2.5 py-0.5 rounded-full bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green transition-colors cursor-pointer" data-filter="ncr">Metro Manila</button>
+							<button type="button" class="preset-tab px-2.5 py-0.5 rounded-full bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green transition-colors cursor-pointer" data-filter="mega">Greater Suburbs</button>
+							<button type="button" class="preset-tab px-2.5 py-0.5 rounded-full bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green transition-colors cursor-pointer" data-filter="vismin">Visayas / Mindanao</button>
 						</div>
-						<p class="text-xs text-mapa-clay mt-0.5">
-							Avoid disputes with jeepney drivers or bus conductors. Calculate exact change and coin breakdown before handing your payment.
+					</div>
+					<div class="flex flex-wrap gap-2 text-xs" id="preset-container">
+						<!-- NCR Corridors -->
+						<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="6.5" data-region="ncr">
+							Buendia / Makati ↔ BGC Market! (6.5 km)
+						</button>
+						<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="5.5" data-region="ncr">
+							Ortigas CBD ↔ Pasig Palengke (5.5 km)
+						</button>
+						<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="9.5" data-region="ncr">
+							Cubao ↔ Makati / Buendia (9.5 km)
+						</button>
+						<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="12" data-region="ncr">
+							Cubao ↔ Masinag / Antipolo (12 km)
+						</button>
+						<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="14" data-region="ncr">
+							Fairview ↔ MRT Quezon Ave (14 km)
+						</button>
+						<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="16" data-region="ncr">
+							Commonwealth Market ↔ Quiapo (16 km)
+						</button>
+						<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="22" data-region="ncr">
+							Alabang ↔ Lawton Manila (22 km)
+						</button>
+						<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="24" data-region="ncr">
+							Monumento ↔ Baclaran (24 km)
+						</button>
+						<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="28" data-region="ncr">
+							PITX ↔ Monumento EDSA (28 km)
+						</button>
+
+						<!-- Greater Mega Manila Suburban -->
+						<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="14.5" data-region="mega">
+							Bacoor Molino ↔ PITX Terminal (14.5 km)
+						</button>
+						<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="18" data-region="mega">
+							Balintawak ↔ Bocaue Bulacan (18 km)
+						</button>
+						<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="26" data-region="mega">
+							Dasmariñas Cavite ↔ Baclaran (26 km)
+						</button>
+						<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="19" data-region="mega">
+							Sta. Rosa Laguna ↔ Alabang Hub (19 km)
+						</button>
+
+						<!-- VisMin Corridors -->
+						<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="8" data-region="vismin">
+							Cebu Colon ↔ Mandaue City (8 km)
+						</button>
+						<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="16" data-region="vismin">
+							Cebu IT Park ↔ Talisay City (16 km)
+						</button>
+						<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/85 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-km="15" data-region="vismin">
+							Davao Roxas ↔ Toril Terminal (15 km)
+						</button>
+					</div>
+				</div>
+			</details>
+
+			<!-- Dynamic Commute Comparison & Budget Insights Bar -->
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-6 pt-5 border-t border-mapa-contour/60 font-sans text-xs">
+				<div class="p-4 rounded-xl bg-mapa-canvas border border-mapa-contour/80 flex flex-col justify-between">
+					<div>
+						<div class="flex items-center justify-between mb-1">
+							<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-green/10 text-mapa-green border border-mapa-green/20">
+								Cheapest Commute Mode
+							</span>
+							<span class="text-mapa-clay font-mono text-[11px]">Best Value</span>
+						</div>
+						<div id="ranker-cheapest-name" class="font-bold text-sm text-mapa-ink mt-1">Traditional Jeep (TPUJ)</div>
+						<p id="ranker-cheapest-desc" class="text-mapa-clay text-[11px] mt-0.5 leading-tight">
+							Saves ₱7.00 compared to aircon bus for this distance.
 						</p>
 					</div>
-					<div class="flex items-center gap-2 text-xs">
-						<label for="sukli-passengers" class="text-mapa-clay font-medium">Passengers:</label>
-						<select id="sukli-passengers" class="px-2.5 py-1 bg-mapa-canvas border border-mapa-contour rounded-lg font-bold text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green cursor-pointer">
-							<option value="1">1 Passenger (Solo)</option>
-							<option value="2">2 Passengers (Dalawa)</option>
-							<option value="3">3 Passengers (Tatlo)</option>
-							<option value="4">4 Passengers (Apat)</option>
-							<option value="5">5 Passengers (Lima)</option>
-						</select>
+					<div class="mt-3 pt-2 border-t border-mapa-contour/40 flex items-baseline justify-between">
+						<span class="text-[11px] text-mapa-clay">One-way fare:</span>
+						<span id="ranker-cheapest-fare" class="font-mono text-lg font-bold text-mapa-green">₱26.00</span>
 					</div>
 				</div>
 
-				<div class="grid grid-cols-1 md:grid-cols-12 gap-6 bg-mapa-canvas p-5 rounded-xl border border-mapa-contour/80">
-					<!-- Left: Mode selector & Tendered amount -->
-					<div class="md:col-span-7 space-y-4">
-						<div>
-							<label for="sukli-mode-select" class="block text-[11px] font-bold uppercase tracking-wider text-mapa-clay mb-1.5">
-								Select Ride for Payment:
-							</label>
-							<select id="sukli-mode-select" class="w-full px-3 py-2 bg-mapa-canvas-dark border border-mapa-contour rounded-lg text-xs font-semibold text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green cursor-pointer">
-								<option value="tradJeep" selected>Traditional Jeepney (TPUJ)</option>
-								<option value="modernJeep">Modern Jeepney (MPUJ)</option>
-								<option value="ordinaryBus">Ordinary City Bus</option>
-								<option value="airconBus">Aircon City Bus</option>
-								<option value="uvExpress">Modern UV Express</option>
-								<option value="provBus">Provincial Bus</option>
+				<div class="p-4 rounded-xl bg-mapa-canvas border border-mapa-contour/80 flex flex-col justify-between">
+					<div>
+						<div class="flex items-center justify-between mb-1">
+							<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-rust/10 text-mapa-rust border border-mapa-rust/20">
+								Aircon &amp; CCTV Comfort
+							</span>
+							<span class="text-mapa-clay font-mono text-[11px]">Modern Fleet</span>
+						</div>
+						<div id="ranker-comfort-name" class="font-bold text-sm text-mapa-ink mt-1">Modern PUJ / E-Jeep</div>
+						<p id="ranker-comfort-desc" class="text-mapa-clay text-[11px] mt-0.5 leading-tight">
+							Adds only ₱5.50 for cold AC and Euro-4 cabin air.
+						</p>
+					</div>
+					<div class="mt-3 pt-2 border-t border-mapa-contour/40 flex items-baseline justify-between">
+						<span class="text-[11px] text-mapa-clay">One-way fare:</span>
+						<span id="ranker-comfort-fare" class="font-mono text-lg font-bold text-mapa-rust">₱31.50</span>
+					</div>
+				</div>
+
+				<div class="p-4 rounded-xl bg-mapa-canvas border border-mapa-contour/80 flex flex-col justify-between">
+					<div>
+						<div class="flex items-center justify-between mb-1">
+							<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mapa-navy/10 text-mapa-navy border border-mapa-navy/20">
+								Monthly Work Budget
+							</span>
+							<span class="text-mapa-clay font-mono text-[11px]">20 Days (40 Trips)</span>
+						</div>
+						<div class="text-[11px] text-mapa-ink/80 mt-1 leading-snug">
+							<div>Traditional PUJ: <strong id="monthly-trad" class="font-mono text-mapa-green">₱1,040</strong></div>
+							<div>Modern PUJ: <strong id="monthly-modern" class="font-mono text-mapa-rust">₱1,260</strong></div>
+							<div>Aircon City Bus: <strong id="monthly-bus" class="font-mono text-mapa-navy">₱1,320</strong></div>
+						</div>
+					</div>
+					<div class="mt-2 pt-2 border-t border-mapa-contour/40 flex items-center justify-between">
+						<span class="text-[10px] text-mapa-clay">Roundtrip daily</span>
+						<button type="button" id="btn-copy-comparison" class="text-[11px] font-semibold text-mapa-green hover:underline cursor-pointer flex items-center gap-1">
+							<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+							</svg>
+							<span>Copy All Fares</span>
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Cash & Change Assistant ("Magkano Sukli Mo?") (Collapsible Disclosure) -->
+			<details class="group mt-6 pt-5 border-t border-mapa-contour/60 font-sans">
+				<summary class="list-none cursor-pointer flex items-center justify-between gap-2 text-xs font-bold uppercase tracking-wider text-mapa-ink/80 hover:text-mapa-green transition-colors">
+					<span>Magkano Sukli Mo? (Cash &amp; Exact Change Calculator)</span>
+					<span class="text-mapa-muted group-open:rotate-180 transition-transform font-mono">&#9662;</span>
+				</summary>
+				<div class="mt-4">
+					<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+						<p class="text-xs text-mapa-clay">
+							Avoid disputes with jeepney drivers or bus conductors. Calculate exact change and coin breakdown before handing your payment.
+						</p>
+						<div class="flex items-center gap-2 text-xs shrink-0">
+							<label for="sukli-passengers" class="text-mapa-clay font-medium">Passengers:</label>
+							<select id="sukli-passengers" class="px-2.5 py-1 bg-mapa-canvas border border-mapa-contour rounded-lg font-bold text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green cursor-pointer">
+								<option value="1">1 Passenger (Solo)</option>
+								<option value="2">2 Passengers (Dalawa)</option>
+								<option value="3">3 Passengers (Tatlo)</option>
+								<option value="4">4 Passengers (Apat)</option>
+								<option value="5">5 Passengers (Lima)</option>
 							</select>
 						</div>
+					</div>
 
-						<div>
-							<label class="block text-[11px] font-bold uppercase tracking-wider text-mapa-clay mb-1.5">
-								Cash Handed to Driver / Conductor:
-							</label>
-							<div class="flex flex-wrap gap-2 mb-2">
-								<button type="button" class="tender-chip px-3 py-1.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour font-mono font-bold text-xs text-mapa-ink hover:border-mapa-green transition-colors cursor-pointer" data-val="20">₱20</button>
-								<button type="button" class="tender-chip px-3 py-1.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour font-mono font-bold text-xs text-mapa-ink hover:border-mapa-green transition-colors cursor-pointer" data-val="50">₱50</button>
-								<button type="button" class="tender-chip active px-3 py-1.5 rounded-lg bg-mapa-green text-white font-mono font-bold text-xs shadow-xs transition-colors cursor-pointer" data-val="100">₱100</button>
-								<button type="button" class="tender-chip px-3 py-1.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour font-mono font-bold text-xs text-mapa-ink hover:border-mapa-green transition-colors cursor-pointer" data-val="200">₱200</button>
-								<button type="button" class="tender-chip px-3 py-1.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour font-mono font-bold text-xs text-mapa-ink hover:border-mapa-green transition-colors cursor-pointer" data-val="500">₱500</button>
-								<button type="button" class="tender-chip px-3 py-1.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour font-mono font-bold text-xs text-mapa-ink hover:border-mapa-green transition-colors cursor-pointer" data-val="1000">₱1,000</button>
+					<div class="grid grid-cols-1 md:grid-cols-12 gap-6 bg-mapa-canvas p-5 rounded-xl border border-mapa-contour/80">
+						<!-- Left: Mode selector & Tendered amount -->
+						<div class="md:col-span-7 space-y-4">
+							<div>
+								<label for="sukli-mode-select" class="block text-[11px] font-bold uppercase tracking-wider text-mapa-clay mb-1.5">
+									Select Ride for Payment:
+								</label>
+								<select id="sukli-mode-select" class="w-full px-3 py-2 bg-mapa-canvas-dark border border-mapa-contour rounded-lg text-xs font-semibold text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green cursor-pointer">
+									<option value="tradJeep" selected>Traditional Jeepney (TPUJ)</option>
+									<option value="modernJeep">Modern Jeepney (MPUJ)</option>
+									<option value="ordinaryBus">Ordinary City Bus</option>
+									<option value="airconBus">Aircon City Bus</option>
+									<option value="uvExpress">Modern UV Express</option>
+									<option value="provBus">Provincial Bus</option>
+								</select>
 							</div>
-							<div class="flex items-center gap-2">
-								<span class="text-xs text-mapa-clay">Or custom cash:</span>
-								<div class="relative w-32">
-									<span class="absolute left-2.5 top-1.5 text-xs text-mapa-clay font-bold">₱</span>
-									<input type="number" id="sukli-custom-tender" min="1" step="1" value="100" class="w-full pl-6 pr-2 py-1 text-xs font-mono font-bold bg-mapa-canvas-dark border border-mapa-contour rounded-lg text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green" />
+
+							<div>
+								<label class="block text-[11px] font-bold uppercase tracking-wider text-mapa-clay mb-1.5">
+									Cash Handed to Driver / Conductor:
+								</label>
+								<div class="flex flex-wrap gap-2 mb-2">
+									<button type="button" class="tender-chip px-3 py-1.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour font-mono font-bold text-xs text-mapa-ink hover:border-mapa-green transition-colors cursor-pointer" data-val="20">₱20</button>
+									<button type="button" class="tender-chip px-3 py-1.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour font-mono font-bold text-xs text-mapa-ink hover:border-mapa-green transition-colors cursor-pointer" data-val="50">₱50</button>
+									<button type="button" class="tender-chip active px-3 py-1.5 rounded-lg bg-mapa-green text-white font-mono font-bold text-xs shadow-xs transition-colors cursor-pointer" data-val="100">₱100</button>
+									<button type="button" class="tender-chip px-3 py-1.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour font-mono font-bold text-xs text-mapa-ink hover:border-mapa-green transition-colors cursor-pointer" data-val="200">₱200</button>
+									<button type="button" class="tender-chip px-3 py-1.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour font-mono font-bold text-xs text-mapa-ink hover:border-mapa-green transition-colors cursor-pointer" data-val="500">₱500</button>
+									<button type="button" class="tender-chip px-3 py-1.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour font-mono font-bold text-xs text-mapa-ink hover:border-mapa-green transition-colors cursor-pointer" data-val="1000">₱1,000</button>
+								</div>
+								<div class="flex items-center gap-2">
+									<span class="text-xs text-mapa-clay">Or custom cash:</span>
+									<div class="relative w-32">
+										<span class="absolute left-2.5 top-1.5 text-xs text-mapa-clay font-bold">₱</span>
+										<input type="number" id="sukli-custom-tender" min="1" step="1" value="100" class="w-full pl-6 pr-2 py-1 text-xs font-mono font-bold bg-mapa-canvas-dark border border-mapa-contour rounded-lg text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green" />
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Right: Calculated Sukli & Denomination Breakdown -->
+						<div class="md:col-span-5 p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour flex flex-col justify-between">
+							<div>
+								<div class="flex items-center justify-between text-[11px] text-mapa-clay mb-1 font-mono">
+									<span>Total Fare (<span id="sukli-pass-label">1 pax</span>):</span>
+									<span id="sukli-total-fare" class="font-bold text-mapa-ink">₱26.00</span>
+								</div>
+								<div class="flex items-center justify-between text-[11px] text-mapa-clay mb-2 font-mono">
+									<span>Cash Tendered:</span>
+									<span id="sukli-tendered-display" class="font-bold text-mapa-ink">₱100.00</span>
+								</div>
+								<div class="pt-2 border-t border-mapa-contour/50 flex items-baseline justify-between">
+									<span class="text-xs font-bold uppercase tracking-wider text-mapa-green">Exact Sukli Due:</span>
+									<span id="sukli-amount" class="text-2xl sm:text-3xl font-mono font-extrabold text-mapa-green">₱74.00</span>
+								</div>
+							</div>
+
+							<div class="mt-3 pt-3 border-t border-mapa-contour/40">
+								<div class="text-[10px] uppercase font-bold text-mapa-clay mb-1">Expected Change Breakdown:</div>
+								<div id="sukli-breakdown" class="text-xs font-mono text-mapa-ink/90 font-medium">
+									1 × ₱50 bill, 1 × ₱20 bill, 2 × ₱2 coins
+								</div>
+								<div id="sukli-large-bill-warning" class="hidden mt-2 p-2 rounded bg-mapa-rust/10 border border-mapa-rust/30 text-[10px] text-mapa-rust leading-tight">
+									<strong>Commuter Advisory:</strong> Drivers often have limited loose cash for ₱500 or ₱1,000 bills during morning peak hours. Pay with smaller bills whenever possible.
 								</div>
 							</div>
 						</div>
 					</div>
-
-					<!-- Right: Calculated Sukli & Denomination Breakdown -->
-					<div class="md:col-span-5 p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour flex flex-col justify-between">
-						<div>
-							<div class="flex items-center justify-between text-[11px] text-mapa-clay mb-1 font-mono">
-								<span>Total Fare (<span id="sukli-pass-label">1 pax</span>):</span>
-								<span id="sukli-total-fare" class="font-bold text-mapa-ink">₱26.00</span>
-							</div>
-							<div class="flex items-center justify-between text-[11px] text-mapa-clay mb-2 font-mono">
-								<span>Cash Tendered:</span>
-								<span id="sukli-tendered-display" class="font-bold text-mapa-ink">₱100.00</span>
-							</div>
-							<div class="pt-2 border-t border-mapa-contour/50 flex items-baseline justify-between">
-								<span class="text-xs font-bold uppercase tracking-wider text-mapa-green">Exact Sukli Due:</span>
-								<span id="sukli-amount" class="text-2xl sm:text-3xl font-mono font-extrabold text-mapa-green">₱74.00</span>
-							</div>
-						</div>
-
-						<div class="mt-3 pt-3 border-t border-mapa-contour/40">
-							<div class="text-[10px] uppercase font-bold text-mapa-clay mb-1">Expected Change Breakdown:</div>
-							<div id="sukli-breakdown" class="text-xs font-mono text-mapa-ink/90 font-medium">
-								1 × ₱50 bill, 1 × ₱20 bill, 2 × ₱2 coins
-							</div>
-							<div id="sukli-large-bill-warning" class="hidden mt-2 p-2 rounded bg-mapa-rust/10 border border-mapa-rust/30 text-[10px] text-mapa-rust leading-tight">
-								<strong>Commuter Advisory:</strong> Drivers often have limited loose cash for ₱500 or ₱1,000 bills during morning peak hours. Pay with smaller bills whenever possible.
-							</div>
-						</div>
-					</div>
 				</div>
-			</div>
+			</details>
 		</div>
 
 		<!-- COMPLETE OFFICIAL LTFRB FARE MATRIX TABLE (1 KM TO 50 KM) -->
@@ -1005,29 +1053,156 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 				</div>
 			</section>
 
-			<!-- Section 6: Official Citations -->
+			<!-- Section 6: Official Citations, Tariff Schedule & Legal References -->
 			<section class="mb-10 font-sans border-t border-mapa-contour/40 pt-8">
 				<h3 class="font-serif text-2xl font-bold text-mapa-ink mb-4">
-					6. Official Citations & Legal Framework
+					6. Official Citations, Tariff Schedule &amp; Legal References
 				</h3>
-				<ul class="list-disc pl-5 space-y-2 text-xs sm:text-sm text-mapa-ink/80 leading-relaxed">
+				<p class="text-sm text-mapa-ink/85 leading-relaxed mb-4">
+					All computations in this tool strictly follow the Land Transportation Franchising and Regulatory Board (LTFRB) nationwide fare schedules implemented on September 28, 2026 under Department of Transportation (DOTr) authorization, including the 25-centavo (₱0.25) final rounding rule.
+				</p>
+
+				<!-- Official LTFRB Land Transport Tariff Schedule (All 11 Classifications) -->
+				<div class="mb-6 rounded-xl border border-mapa-contour bg-mapa-canvas-dark overflow-hidden">
+					<div class="px-4 py-3 border-b border-mapa-contour/60 flex flex-wrap items-center justify-between gap-2">
+						<span class="text-xs font-bold uppercase tracking-wider text-mapa-ink">
+							Official LTFRB Land Transport Tariff Schedule (All 11 Vehicle Classifications)
+						</span>
+						<span class="text-[11px] text-mapa-muted font-mono">25¢ final rounding rule</span>
+					</div>
+					<div class="overflow-x-auto">
+						<table class="w-full text-left text-xs border-collapse">
+							<thead class="bg-mapa-canvas border-b border-mapa-contour text-[11px] uppercase tracking-wider text-mapa-muted">
+								<tr>
+									<th class="py-2.5 px-3 font-bold">Vehicle Classification</th>
+									<th class="py-2.5 px-3 font-bold text-center">Base Dist.</th>
+									<th class="py-2.5 px-3 font-bold text-right">Reg. Base</th>
+									<th class="py-2.5 px-3 font-bold text-right">20% Disc. Base (Rounded / Exact)</th>
+									<th class="py-2.5 px-3 font-bold text-right">Reg. / km</th>
+									<th class="py-2.5 px-3 font-bold text-right">20% Disc. / km</th>
+								</tr>
+							</thead>
+							<tbody class="divide-y divide-mapa-contour/40 font-mono text-[11px]">
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">Traditional PUJ (TPUJ)</td>
+									<td class="py-2 px-3 text-center">First 4 km</td>
+									<td class="py-2 px-3 text-right">₱14.00</td>
+									<td class="py-2 px-3 text-right text-mapa-green">₱11.25 / ₱11.20</td>
+									<td class="py-2 px-3 text-right">₱2.00</td>
+									<td class="py-2 px-3 text-right text-mapa-green">₱1.60</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">Modern PUJ (MPUJ Class 2 &amp; 3)</td>
+									<td class="py-2 px-3 text-center">First 4 km</td>
+									<td class="py-2 px-3 text-right">₱17.00</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱13.50 / ₱13.60</td>
+									<td class="py-2 px-3 text-right">₱2.40</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱1.92</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">City Bus (PUB Ordinary)</td>
+									<td class="py-2 px-3 text-center">First 5 km</td>
+									<td class="py-2 px-3 text-right">₱15.00</td>
+									<td class="py-2 px-3 text-right text-mapa-navy">₱12.00 / ₱12.00</td>
+									<td class="py-2 px-3 text-right">₱2.49</td>
+									<td class="py-2 px-3 text-right text-mapa-navy">₱1.992</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">City Bus (PUB Aircon)</td>
+									<td class="py-2 px-3 text-center">First 5 km</td>
+									<td class="py-2 px-3 text-right">₱18.00</td>
+									<td class="py-2 px-3 text-right text-mapa-green">₱14.50 / ₱14.40</td>
+									<td class="py-2 px-3 text-right">₱2.98</td>
+									<td class="py-2 px-3 text-right text-mapa-green">₱2.384</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">UV Express (Traditional)</td>
+									<td class="py-2 px-3 text-center">Per km</td>
+									<td class="py-2 px-3 text-right">₱2.60/km</td>
+									<td class="py-2 px-3 text-right text-mapa-navy">₱2.00 / ₱2.08</td>
+									<td class="py-2 px-3 text-right">₱2.60</td>
+									<td class="py-2 px-3 text-right text-mapa-navy">₱2.08</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">UV Express (Modern)</td>
+									<td class="py-2 px-3 text-center">Per km</td>
+									<td class="py-2 px-3 text-right">₱3.00/km</td>
+									<td class="py-2 px-3 text-right text-mapa-navy">₱2.50 / ₱2.40</td>
+									<td class="py-2 px-3 text-right">₱3.00</td>
+									<td class="py-2 px-3 text-right text-mapa-navy">₱2.40</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">Provincial Bus (Ordinary)</td>
+									<td class="py-2 px-3 text-center">First 5 km</td>
+									<td class="py-2 px-3 text-right">₱12.00</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱9.50 / ₱9.60</td>
+									<td class="py-2 px-3 text-right">₱2.20</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱1.76</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">Provincial Bus (Regular Aircon)</td>
+									<td class="py-2 px-3 text-center">First 5 km</td>
+									<td class="py-2 px-3 text-right">₱12.25</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱9.75 / ₱9.80</td>
+									<td class="py-2 px-3 text-right">₱2.45</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱1.96</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">Provincial Bus (Deluxe)</td>
+									<td class="py-2 px-3 text-center">First 5 km</td>
+									<td class="py-2 px-3 text-right">₱13.00</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱10.50 / ₱10.40</td>
+									<td class="py-2 px-3 text-right">₱2.60</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱2.08</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">Provincial Bus (Super Deluxe)</td>
+									<td class="py-2 px-3 text-center">First 5 km</td>
+									<td class="py-2 px-3 text-right">₱13.50</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱10.75 / ₱10.80</td>
+									<td class="py-2 px-3 text-right">₱2.70</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱2.16</td>
+								</tr>
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="py-2 px-3 font-sans font-semibold text-mapa-ink">Provincial Bus (Luxury)</td>
+									<td class="py-2 px-3 text-center">First 5 km</td>
+									<td class="py-2 px-3 text-right">₱16.75</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱13.50 / ₱13.40</td>
+									<td class="py-2 px-3 text-right">₱3.35</td>
+									<td class="py-2 px-3 text-right text-mapa-rust">₱2.68</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<ul class="list-disc pl-5 space-y-2.5 text-xs sm:text-sm text-mapa-ink/85 leading-relaxed">
 					<li>
-						<strong>LTFRB Board Resolution No. 044, Series of 2023:</strong> Approving calibrated fare adjustments for public utility buses and public utility jeepneys.
+						<strong>DOTr Memorandum dated September 24, 2026 &amp; LTFRB Nationwide Fare Guide (Effective September 28, 2026):</strong> Lifts the March 2026 suspension on approved PUV fare adjustments across Traditional PUJ, Modern PUJ, City PUB, Provincial PUB, and UV Express services (<a href="https://ltfrb.gov.ph/fare-rates/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">LTFRB Official Fare Rates Portal</a>).
 					</li>
 					<li>
-						<strong>DOTr-LTO-LTFRB Joint Administrative Order No. 2014-01:</strong> Revised Schedule of Fines and Penalties for Violations of Laws, Rules and Regulations Governing Land Transportation.
+						<strong>LTFRB Board Resolution No. 044, Series of 2023 &amp; Case No. 2022-04709:</strong> Establishes the piecewise base-distance and per-kilometer formula alongside the 25-centavo (₱0.25) rounding standard across land transport matrices (<a href="https://ltfrb.gov.ph/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">ltfrb.gov.ph</a>).
 					</li>
 					<li>
-						<strong>Republic Act No. 11314:</strong> An Act Institutionalizing the Grant of Student Fare Discount from Elementary to Post-Secondary Institutions.
+						<strong>LTFRB Memorandum Circular No. 2019-035 ("No Matrix, No Fare Hike" Policy):</strong> Requires every franchised PUV operator and driver to display an authenticated LTFRB Fare Guide (<em>Talaan ng Pamasahe</em>) inside the passenger cabin before collecting adjusted fares (<a href="https://ltfrb.gov.ph/fare-rates/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">ltfrb.gov.ph/fare-rates</a>).
 					</li>
 					<li>
-						<strong>Republic Act No. 9994:</strong> The Expanded Senior Citizens Act of 2010.
+						<strong>Republic Act No. 11314 (Student Fare Discount Act) &amp; LTFRB MC No. 2017-024:</strong> Institutionalizes the mandatory 20% student discount 365 days a year including Saturdays, Sundays, summer and semestral breaks, and national holidays (<a href="https://www.officialgazette.gov.ph/2019/04/17/republic-act-no-11314/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">Official Gazette RA 11314</a>).
 					</li>
 					<li>
-						<strong>Republic Act No. 10754:</strong> An Act Expanding the Benefits and Privileges of Persons with Disability (PWD).
+						<strong>Republic Act No. 9994 (Expanded Senior Citizens Act of 2010):</strong> Grants Filipino resident citizens aged 60 and older a mandatory 20% fare discount across all public land, rail, air, and sea transit upon presentation of valid senior citizen identification (<a href="https://www.officialgazette.gov.ph/2010/02/15/republic-act-no-9994/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">Official Gazette RA 9994</a>).
 					</li>
 					<li>
-						<strong>Commonwealth Act No. 146:</strong> The Public Service Act, establishing public carriage tariff regulations.
+						<strong>Republic Act No. 9442 &amp; Republic Act No. 10754 (Magna Carta for Persons with Disabilities):</strong> Guarantees a mandatory 20% fare discount and VAT exemption for Persons with Disabilities presenting a valid NCDA or local PDAO ID (<a href="https://www.officialgazette.gov.ph/2016/03/23/republic-act-no-10754/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">Official Gazette RA 10754</a>).
+					</li>
+					<li>
+						<strong>DOTr Department Order No. 2017-011 (Omnibus Franchising Guidelines / PUVMP) &amp; PNS 2126:2017:</strong> Sets vehicle safety, air-conditioning, emissions, CCTV, GPS, and automated fare collection standards for Class 2 and Class 3 Modern PUJs (<a href="https://dotr.gov.ph/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">dotr.gov.ph</a>).
+					</li>
+					<li>
+						<strong>DOTr Rail Regulatory Unit &amp; LRMC / LRTA / MRT-3 Tariff Schedules:</strong> Governs LRT-1 distance fares effective April 2, 2025 (₱16.25 boarding fee + ₱1.47/km), LRT-2 distance fares (₱13.29 boarding fee + ₱1.21/km), MRT-3 station tiers (₱13 to ₱28), and the 50% concessionary discount for eligible sectors (<a href="https://lrmc.ph/fare-matrix/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">LRMC LRT-1 Matrix</a>, <a href="https://www.lrta.gov.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">LRTA LRT-2</a>, <a href="https://www.dotrmrt3.gov.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">DOTr MRT-3</a>, and <a href="/tools/rail-transit" class="text-mapa-green font-semibold hover:underline">mapaPH Rail Fare Matrix</a>).
+					</li>
+					<li>
+						<strong>DOTr-LTO-LTFRB Joint Administrative Order (JAO) No. 2014-01 &amp; Commonwealth Act No. 146 (Public Service Act):</strong> Establishes statutory fines (₱5,000 first offense, ₱10,000 + 30-day impoundment second offense, ₱15,000 + franchise cancellation third offense) for overcharging or refusing legal passenger discounts (<a href="https://ltfrb.gov.ph/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">LTFRB Enforcement</a> &amp; <a href="https://dotr.gov.ph/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">DOTr</a>).
 					</li>
 				</ul>
 			</section>
@@ -1043,7 +1218,7 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 							What is the official base fare for jeepneys in 2026?
 						</h4>
 						<p class="text-xs sm:text-sm text-mapa-ink/85 leading-relaxed">
-							Under the September 28, 2026 LTFRB fare adjustment, the regular base fare for Traditional PUJs is ₱14.00 for the first 4 km (₱2.00 per succeeding km), with a 20% discounted base fare of ₱11.20 (₱1.60 per succeeding km). For Modern PUJs, the regular base fare is ₱17.00 for the first 4 km (₱2.40 per succeeding km), with a discounted base fare of ₱13.60 (₱1.92 per succeeding km).
+							Under the September 28, 2026 LTFRB fare adjustment, the regular base fare for Traditional PUJs is ₱14.00 for the first 4 km (₱2.00 per succeeding km), with an official ₱0.25-rounded 20% discounted minimum of ₱11.25 (derived from the exact ₱11.20 base + ₱1.60 per succeeding km before rounding). For Modern PUJs, the regular base fare is ₱17.00 for the first 4 km (₱2.40 per succeeding km), with an official rounded 20% discounted minimum of ₱13.50 (exact ₱13.60 base + ₱1.92 per succeeding km).
 						</p>
 					</div>
 
@@ -1079,7 +1254,7 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 							How is city bus fare computed in Metro Manila?
 						</h4>
 						<p class="text-xs sm:text-sm text-mapa-ink/85 leading-relaxed">
-							City buses use a 5-kilometer base distance. Ordinary (non-aircon) buses charge ₱15.00 for the first 5 km plus ₱2.49 for each succeeding kilometer (₱12.00 discounted base). Air-conditioned city buses charge ₱18.00 for the first 5 km plus ₱2.98 for each succeeding kilometer (₱14.50 rounded discounted base).
+							City buses use a 5-kilometer base distance. Ordinary (non-aircon) buses charge ₱15.00 for the first 5 km plus ₱2.49 for each succeeding kilometer (₱12.00 discounted base + ₱1.992/km). Air-conditioned city buses charge ₱18.00 for the first 5 km plus ₱2.98 for each succeeding kilometer (₱14.50 rounded discounted minimum, computed from the exact ₱14.40 base + ₱2.384/km before final 25-centavo rounding).
 						</p>
 					</div>
 				</div>
@@ -1108,7 +1283,9 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 				</div>
 				<div class="flex flex-wrap items-center justify-between gap-2">
 					<span>Maintained by the <strong>mapaPH Civic Cartography &amp; Transit Initiative</strong>.</span>
-					<span>Baseline Rates: LTFRB Official Nationwide Circulars.</span>
+					<span>
+						Baseline Rates: <a href="https://ltfrb.gov.ph/fare-rates/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">LTFRB Official Fare Rates Portal (ltfrb.gov.ph/fare-rates/)</a>
+					</span>
 				</div>
 			</section>
 		</article>
@@ -1168,22 +1345,53 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 				const baseFare = discount ? conf.discountBase : conf.baseFare;
 				const perKm = discount ? conf.discountPerKm : conf.perKm;
 				const baseKm = conf.baseKm;
+				const perKmLabel =
+					discount && (modeKey === 'airconBus' || modeKey === 'ordinaryBus')
+						? String(Number(perKm.toFixed(3)))
+						: perKm.toFixed(2);
 
-				if (km <= baseKm) {
-					const roundedBase = round25(baseFare);
+				const rawReg = conf.isPerKmOnly
+					? km * conf.perKm
+					: km <= baseKm
+						? conf.baseFare
+						: conf.baseFare + (km - baseKm) * conf.perKm;
+				const rawTotal = round25(discount ? rawReg * 0.8 : rawReg);
+
+				if (modeKey === 'uvExpress') {
+					const tradUvPerKm = discount
+						? (conf.tradDiscountPerKm ?? 2.08)
+						: (conf.tradPerKm ?? 2.6);
+					const tradTotal = round25(km * tradUvPerKm);
 					return {
-						total: roundedBase,
-						math: `₱${roundedBase.toFixed(2)} flat (first ${baseKm} km)`
+						total: rawTotal,
+						math: `${km.toFixed(1)} km × ₱${perKmLabel}/km (Trad UV: ₱${tradTotal.toFixed(2)})`
 					};
 				}
 
-				const extraKm = km - baseKm;
-				const extraCost = extraKm * perKm;
-				const rawTotal = round25(baseFare + extraCost);
+				const baseFormula =
+					km <= baseKm
+						? `₱${rawTotal.toFixed(2)} flat (first ${baseKm} km)`
+						: `₱${baseFare.toFixed(2)} + ${(km - baseKm).toFixed(1)} km × ₱${perKmLabel}`;
+
+				if (modeKey === 'provBus') {
+					const acBase = discount
+						? (conf.airconDiscountBase ?? 9.8)
+						: (conf.airconBase ?? 12.25);
+					const acPerKm = discount
+						? (conf.airconDiscountPerKm ?? 1.96)
+						: (conf.airconPerKm ?? 2.45);
+					const acRaw =
+						km <= baseKm ? acBase : acBase + (km - baseKm) * acPerKm;
+					const acProvTotal = round25(acRaw);
+					return {
+						total: rawTotal,
+						math: `${baseFormula} (Aircon: ₱${acProvTotal.toFixed(2)})`
+					};
+				}
 
 				return {
 					total: rawTotal,
-					math: `₱${baseFare.toFixed(2)} + ${extraKm.toFixed(1)} km × ₱${perKm.toFixed(2)}`
+					math: baseFormula
 				};
 			}
 
@@ -1246,6 +1454,10 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 
 			function updateFares() {
 				label.textContent = `${currentKm.toFixed(1)} km`;
+				if (slider) {
+					const pct = Math.max(0, Math.min(100, ((Math.min(currentKm, 70) - 1) / 69) * 100));
+					slider.style.background = `linear-gradient(to right, #3d5a45 0%, #3d5a45 ${pct.toFixed(2)}%, #e5d9c3 ${pct.toFixed(2)}%, #e5d9c3 100%)`;
+				}
 
 				const modeFares = {};
 				Object.keys(FARE_RATES).forEach((key) => {
@@ -1267,19 +1479,19 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 				const modernFare = modeFares.modernJeep || 0;
 				const airconBusFare = modeFares.airconBus || 0;
 
-				// Cheapest PUV mode
-				const cheapestKey = Object.keys(modeFares).reduce((minKey, key) =>
+				// Cheapest Urban Commuter PUV mode
+				const urbanKeys = ['tradJeep', 'modernJeep', 'ordinaryBus', 'airconBus', 'uvExpress'];
+				const cheapestKey = urbanKeys.reduce((minKey, key) =>
 					modeFares[key] < modeFares[minKey] ? key : minKey
 				, 'tradJeep');
 				const cheapestFare = modeFares[cheapestKey];
 				const cheapestConf = FARE_RATES[cheapestKey];
-				const maxFare = Math.max(...Object.values(modeFares));
-				const savings = Math.max(0, maxFare - cheapestFare);
+				const savings = Math.max(0, airconBusFare - cheapestFare);
 
 				if (rankerCheapestName) {
 					rankerCheapestName.textContent = cheapestConf.name;
 					rankerCheapestFare.textContent = `₱${cheapestFare.toFixed(2)}`;
-					rankerCheapestDesc.textContent = `Saves ₱${savings.toFixed(2)} compared to highest option (${maxFare.toFixed(2)}) for this distance.`;
+					rankerCheapestDesc.textContent = `Saves ₱${savings.toFixed(2)} compared to aircon city bus for this distance.`;
 				}
 
 				if (rankerComfortName) {
@@ -1516,4 +1728,48 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 			updateFares();
 		})();
 	</script>
+
+	<style is:inline>
+		.fare-distance-slider::-webkit-slider-runnable-track {
+			height: 14px;
+			border-radius: 9999px;
+			background: transparent;
+		}
+		.fare-distance-slider::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			appearance: none;
+			width: 26px;
+			height: 26px;
+			margin-top: -6px;
+			border-radius: 9999px;
+			background: #3d5a45;
+			border: 3px solid #f7f3e9;
+			box-shadow: 0 2px 6px rgba(33, 29, 22, 0.28);
+			cursor: pointer;
+			transition: transform 0.15s ease, background-color 0.15s ease;
+		}
+		.fare-distance-slider:hover::-webkit-slider-thumb {
+			transform: scale(1.1);
+			background: #2f4736;
+		}
+		.fare-distance-slider::-moz-range-track {
+			height: 14px;
+			border-radius: 9999px;
+			background: transparent;
+		}
+		.fare-distance-slider::-moz-range-thumb {
+			width: 26px;
+			height: 26px;
+			border-radius: 9999px;
+			background: #3d5a45;
+			border: 3px solid #f7f3e9;
+			box-shadow: 0 2px 6px rgba(33, 29, 22, 0.28);
+			cursor: pointer;
+			transition: transform 0.15s ease, background-color 0.15s ease;
+		}
+		.fare-distance-slider:hover::-moz-range-thumb {
+			transform: scale(1.1);
+			background: #2f4736;
+		}
+	</style>
 </BaseLayout>

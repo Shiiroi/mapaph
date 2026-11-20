@@ -152,11 +152,24 @@ const defaultDestMrt3 = 'mrt3_ayala';
 			box-shadow: 0 1px 3px rgba(33, 29, 22, 0.16);
 			font-weight: 700;
 		}
+		.rail-train-live {
+			color: #ffffff;
+			border: 2px solid #ffffff;
+			box-shadow: 0 3px 10px rgba(33, 29, 22, 0.34);
+			font-weight: 800;
+			font-size: 11px;
+			padding: 3px 8px;
+		}
 	</style>
 
 	<Navbar />
 
-	<main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 text-mapa-ink">
+	<main
+		id="main-content"
+		data-supabase-url={import.meta.env.PUBLIC_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL || ''}
+		data-supabase-key={import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || ''}
+		class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 text-mapa-ink"
+	>
 		<!-- Clean Editorial Page Header -->
 		<div class="max-w-4xl mb-6">
 			<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs font-sans text-mapa-muted mb-3">
@@ -182,11 +195,11 @@ const defaultDestMrt3 = 'mrt3_ayala';
 			</p>
 		</div>
 
-		<!-- Step 1: Prominent Rail Line Switcher -->
-		<section aria-label="Select Metro Manila Rail Line" class="mb-5 font-sans">
-			<div class="flex items-center justify-between gap-2 mb-2 flex-wrap">
+		<!-- Step 1 & 2: Rail Line Switcher + Inspect Station Controls -->
+		<section aria-label="Rail Line and Station Selection" class="mb-5 font-sans space-y-3">
+			<div class="flex items-center justify-between gap-2 flex-wrap">
 				<span class="text-xs font-bold uppercase tracking-wider text-mapa-muted">
-					1. Select Rail Line
+					1. Rail Line &amp; Station
 				</span>
 				<span id="activeCadenceChip" class="inline-flex items-center gap-1.5 text-[11px] font-medium text-mapa-muted">
 					Checking Manila headway window...
@@ -248,154 +261,70 @@ const defaultDestMrt3 = 'mrt3_ayala';
 					);
 				})}
 			</div>
-		</section>
 
-		<!-- Step 2: Origin & Destination Stations, Manila Clock & Day Mode -->
-		<section aria-label="Station Selection and Clock Controls" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 sm:p-5 mb-5 font-sans shadow-xs space-y-3.5">
-			<div class="flex flex-wrap items-center justify-between gap-2.5">
-				<span class="text-xs font-bold uppercase tracking-wider text-mapa-muted">
-					2. Origin &amp; Destination Stations
-				</span>
-
-				<!-- Manila Clock & Day Type Segmented Toggle -->
-				<div class="flex flex-wrap items-center gap-2.5">
-					<div class="inline-flex items-center gap-2 h-9 px-3 rounded-xl border border-mapa-contour bg-mapa-canvas text-xs">
-						<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted whitespace-nowrap">PHT</span>
-						<span id="manilaClock" class="font-mono text-sm font-bold text-mapa-ink whitespace-nowrap">--:-- --</span>
-						<span id="manilaDayTag" class="hidden sm:inline text-[11px] text-mapa-muted whitespace-nowrap">Manila</span>
+			<!-- Compact Inspect Station Bar -->
+			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-3.5 sm:p-4 shadow-xs space-y-2.5">
+				<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+					<div class="flex-1 flex flex-col sm:flex-row sm:items-center gap-2.5">
+						<label for="stationSelect" class="text-xs font-bold uppercase tracking-wider text-mapa-muted shrink-0 whitespace-nowrap">
+							Inspect Station
+						</label>
+						<div class="flex-1 flex items-center gap-2">
+							<select
+								id="stationSelect"
+								class="w-full h-10 px-3 rounded-xl border border-mapa-contour bg-mapa-canvas text-sm font-semibold text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/40 cursor-pointer"
+							>
+								{STATIONS_DATA.mrt3.map((st, idx) => (
+									<option value={st.id} selected={idx === 0}>
+										{idx + 1}. {st.name} ({st.city})
+									</option>
+								))}
+							</select>
+							<button
+								type="button"
+								id="gpsLocateBtn"
+								class="shrink-0 h-10 px-3 rounded-xl text-xs font-semibold border border-mapa-contour bg-mapa-canvas text-mapa-ink hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap"
+								title="Snap locally to nearest station within 650m (GPS only locates you, it does not report a train)"
+							>
+								<svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06z" />
+								</svg>
+								<span>Nearest via GPS</span>
+							</button>
+						</div>
 					</div>
 
-					<div class="inline-flex items-center gap-0.5 p-1 h-9 rounded-xl border border-mapa-contour bg-mapa-canvas" role="group" aria-label="Schedule day mode">
-						<button type="button" data-day-btn="auto" class="day-mode-btn h-7 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap bg-mapa-green text-white">
-							Auto
-						</button>
-						<button type="button" data-day-btn="weekday" class="day-mode-btn h-7 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap text-mapa-ink/75 hover:text-mapa-ink">
-							Weekday
-						</button>
-						<button type="button" data-day-btn="weekend" class="day-mode-btn h-7 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap text-mapa-ink/75 hover:text-mapa-ink">
-							Weekend
-						</button>
-					</div>
-				</div>
-			</div>
+					<!-- Manila Clock & Day Type Segmented Toggle -->
+					<div class="flex flex-wrap items-center justify-between lg:justify-end gap-2.5">
+						<div class="inline-flex items-center gap-2 h-10 px-3 rounded-xl border border-mapa-contour bg-mapa-canvas text-xs">
+							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted whitespace-nowrap">PHT</span>
+							<span id="manilaClock" class="font-mono text-sm font-bold text-mapa-ink whitespace-nowrap">--:-- --</span>
+							<span id="manilaDayTag" class="hidden sm:inline text-[11px] text-mapa-muted whitespace-nowrap">Manila</span>
+						</div>
 
-			<!-- Side-by-Side From (Origin) + Swap + To (Destination) -->
-			<div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-2.5 items-end">
-				<div class="space-y-1">
-					<label for="stationSelect" class="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-mapa-navy">
-						<span class="w-2 h-2 rounded-full bg-mapa-navy inline-block"></span>
-						<span>From (Origin)</span>
-					</label>
-					<div class="flex items-center gap-2">
-						<select
-							id="stationSelect"
-							class="w-full h-10 px-3 rounded-xl border border-mapa-contour bg-mapa-canvas text-sm font-semibold text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/40 cursor-pointer"
-						>
-							{STATIONS_DATA.mrt3.map((st, idx) => (
-								<option value={st.id} selected={idx === 0}>
-									{idx + 1}. {st.name} ({st.city})
-								</option>
-							))}
-						</select>
-						<button
-							type="button"
-							id="gpsLocateBtn"
-							class="shrink-0 h-10 px-3 rounded-xl text-xs font-semibold border border-mapa-contour bg-mapa-canvas text-mapa-ink hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap"
-							title="Snap locally to nearest station within 650m (coordinates never leave your browser)"
-						>
-							<svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06z" />
-							</svg>
-							<span>Use My GPS</span>
-						</button>
+						<div class="inline-flex items-center gap-0.5 p-1 h-10 rounded-xl border border-mapa-contour bg-mapa-canvas" role="group" aria-label="Schedule day mode">
+							<button type="button" data-day-btn="auto" class="day-mode-btn h-8 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap bg-mapa-green text-white">
+								Auto
+							</button>
+							<button type="button" data-day-btn="weekday" class="day-mode-btn h-8 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap text-mapa-ink/75 hover:text-mapa-ink">
+								Weekday
+							</button>
+							<button type="button" data-day-btn="weekend" class="day-mode-btn h-8 px-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap text-mapa-ink/75 hover:text-mapa-ink">
+								Weekend
+							</button>
+						</div>
 					</div>
 				</div>
 
-				<button
-					type="button"
-					id="swapStationsBtn"
-					class="h-10 px-3 rounded-xl border border-mapa-contour bg-mapa-canvas text-xs font-bold text-mapa-ink hover:border-mapa-ink transition-colors cursor-pointer inline-flex items-center justify-center gap-1.5 whitespace-nowrap"
-					title="Swap Origin and Destination stations"
-				>
-					<svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-					</svg>
-					<span>Swap</span>
-				</button>
-
-				<div class="space-y-1">
-					<label for="destStationSelect" class="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-mapa-rust">
-						<span class="w-2 h-2 rounded-full bg-mapa-rust inline-block"></span>
-						<span>To (Destination)</span>
-					</label>
-					<select
-						id="destStationSelect"
-						class="w-full h-10 px-3 rounded-xl border border-mapa-contour bg-mapa-canvas text-sm font-semibold text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/40 cursor-pointer"
-					>
-						{STATIONS_DATA.mrt3.map((st, idx) => (
-							<option value={st.id} selected={st.id === defaultDestMrt3}>
-								{idx + 1}. {st.name} ({st.city}){st.isTransfer ? ' · Transfer' : ''}
-							</option>
-						))}
-					</select>
-				</div>
-			</div>
-
-			<!-- Quick Hub Shortcuts Row -->
-			<div class="pt-3 border-t border-mapa-contour/60 flex flex-wrap items-center gap-1.5">
-				<span class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted mr-1 whitespace-nowrap">
-					Quick Hubs:
-				</span>
-				{quickHubs.map((hub) => (
-					<button
-						type="button"
-						data-hub-line={hub.line}
-						data-hub-station={hub.st.id}
-						class="quick-hub-btn h-7 px-2.5 rounded-lg text-xs font-medium border border-mapa-contour bg-mapa-canvas text-mapa-ink/85 hover:border-mapa-ink transition-colors cursor-pointer whitespace-nowrap"
-					>
-						{hub.label}
-					</button>
-				))}
-				<span id="stationMetaNote" class="ml-auto text-[11px] text-mapa-muted hidden md:inline">
-					North Avenue (Quezon City) &bull; km 0.0
-				</span>
-			</div>
-
-			<div id="gpsStatusBanner" class="hidden rounded-xl border border-mapa-contour bg-mapa-canvas px-3.5 py-2 text-xs text-mapa-ink/85 leading-snug"></div>
-			<div id="serviceAlertBanner" class="hidden rounded-xl border px-3.5 py-2.5 text-xs font-medium"></div>
-		</section>
-
-		<!-- Clear Operating Cadence & Schedule Simulation Banner -->
-		<section aria-label="Schedule Cadence Status" class="mb-5 font-sans">
-			<div
-				id="scheduleModeBanner"
-				class="rounded-2xl border border-mapa-contour bg-mapa-canvas px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-2xs"
-			>
-				<div class="flex items-start sm:items-center gap-2.5 min-w-0">
-					<span
-						id="scheduleModePill"
-						class="shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-md font-mono text-[11px] font-bold uppercase tracking-wider bg-mapa-ink text-white"
-					>
-						ESTIMATED SCHEDULE
-					</span>
-					<p id="scheduleModeText" class="text-xs text-mapa-ink/85 leading-snug">
-						Computing headway period and simulated train positions from official DOTr, LRMC, and LRTA schedules in Manila Time.
-					</p>
-				</div>
-				<button
-					type="button"
-					id="scheduleModeActionBtn"
-					class="shrink-0 self-start sm:self-auto h-8 px-3 rounded-lg text-xs font-semibold border border-mapa-contour bg-mapa-canvas-dark text-mapa-ink hover:border-mapa-ink transition-colors cursor-pointer whitespace-nowrap"
-				>
-					Check Transfer Cutoff
-				</button>
+				<div id="gpsStatusBanner" class="hidden rounded-xl border border-mapa-contour bg-mapa-canvas px-3.5 py-2 text-xs text-mapa-ink/85 leading-snug"></div>
+				<div id="serviceAlertBanner" class="hidden rounded-xl border px-3.5 py-2 text-xs font-medium"></div>
 			</div>
 		</section>
 
-		<!-- Main 2-Column Map + Wait & Transfer Workspace -->
-		<section aria-label="Corridor Visualizer, Wait Cadence, and Transfer Cutoff Planner" class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start mb-12 font-sans">
-			<!-- Left Column (7 cols): Interactive Corridor Map / 2D Schematic / Station Spine -->
-			<div class="lg:col-span-7 bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs">
+		<!-- Full-Width Corridor Map Row + 2-Column Arrivals & Trip Estimate Row -->
+		<section aria-label="Corridor Visualizer, Station Arrivals, and Train Trip Estimate" class="space-y-5 mb-12 font-sans">
+			<!-- Row 1: Full-Width Interactive Corridor Map / 2D Schematic / Station Spine -->
+			<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs">
 				<div class="p-4 border-b border-mapa-contour bg-mapa-canvas flex flex-col sm:flex-row sm:items-center justify-between gap-3">
 					<div class="min-w-0">
 						<h2 id="corridorHeading" class="font-serif text-lg font-bold text-mapa-ink truncate">
@@ -442,33 +371,9 @@ const defaultDestMrt3 = 'mrt3_ayala';
 					</div>
 				</div>
 
-				<!-- Sub-toolbar: Tap Target Picker + Map Scope vs Station Filter + Legend -->
+				<!-- Sub-toolbar: Map Scope vs Station Filter + Est Toggle + Legend -->
 				<div class="px-4 py-2 border-b border-mapa-contour/70 bg-mapa-canvas-dark flex flex-wrap items-center justify-between gap-2 text-[11px]">
 					<div class="flex items-center gap-2 flex-wrap">
-						<div class="inline-flex items-center gap-1.5">
-							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted whitespace-nowrap">Tap sets:</span>
-							<div class="inline-flex items-center p-0.5 rounded-lg border border-mapa-contour bg-mapa-canvas" role="group" aria-label="Station click target">
-								<button
-									type="button"
-									data-pick-target="origin"
-									aria-pressed="true"
-									class="pick-target-btn px-2 py-1 rounded-md text-[11px] font-bold bg-mapa-ink text-white cursor-pointer transition-colors inline-flex items-center gap-1"
-								>
-									<span class="w-1.5 h-1.5 rounded-full bg-white inline-block"></span>
-									<span>Origin</span>
-								</button>
-								<button
-									type="button"
-									data-pick-target="dest"
-									aria-pressed="false"
-									class="pick-target-btn px-2 py-1 rounded-md text-[11px] font-semibold text-mapa-ink/75 hover:text-mapa-ink cursor-pointer transition-colors inline-flex items-center gap-1"
-								>
-									<span class="w-1.5 h-1.5 rounded-full bg-mapa-rust inline-block"></span>
-									<span>Dest.</span>
-								</button>
-							</div>
-						</div>
-
 						<div id="mapScopeControls" class="flex items-center gap-1.5 flex-wrap">
 							<div class="inline-flex items-center p-0.5 rounded-lg border border-mapa-contour bg-mapa-canvas" role="group" aria-label="Map line scope">
 								<button
@@ -504,29 +409,39 @@ const defaultDestMrt3 = 'mrt3_ayala';
 								class="w-full h-8 px-3 rounded-lg border border-mapa-contour bg-mapa-canvas text-xs text-mapa-ink placeholder:text-mapa-muted focus:outline-none focus:ring-2 focus:ring-mapa-green/40"
 							/>
 						</div>
+
+						<button
+							type="button"
+							id="toggleEstTrainsBtn"
+							aria-pressed="true"
+							class="px-2.5 py-1 rounded-lg border border-mapa-ink bg-mapa-ink text-white text-[11px] font-bold transition-colors cursor-pointer whitespace-nowrap"
+							title="Show or hide schedule-estimated train markers on the map and diagram"
+						>
+							Show Est. Trains: ON
+						</button>
 					</div>
 
 					<div class="flex items-center gap-2.5 flex-wrap ml-auto">
 						<span class="inline-flex items-center gap-1 text-mapa-muted">
 							<span class="w-2.5 h-2.5 rounded-full border-2 border-mapa-ink bg-mapa-navy inline-block"></span>
-							<span>Origin</span>
+							<span>Inspected</span>
 						</span>
 						<span class="inline-flex items-center gap-1 text-mapa-muted">
-							<span class="w-2.5 h-2.5 rounded-full border-2 border-mapa-rust bg-mapa-canvas inline-block"></span>
-							<span>Dest.</span>
+							<span class="px-1.5 py-0.5 leading-none rounded-full bg-mapa-green text-white font-mono text-[9px] font-extrabold">LIVE</span>
+							<span>Rider</span>
 						</span>
 						<span class="inline-flex items-center gap-1 text-mapa-muted">
 							<span class="px-1.5 py-0.5 leading-none rounded-full border border-dashed border-mapa-ink/70 bg-mapa-canvas font-mono text-[9px] font-bold text-mapa-ink">EST</span>
-							<span>Scheduled</span>
+							<span>Schedule</span>
 						</span>
 						<span id="mapTrainCountBadge" class="font-mono font-bold text-[10px] text-mapa-ink px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour">
-							-- EST TRAINS
+							-- ACTIVE TRAINS
 						</span>
 					</div>
 				</div>
 
 				<!-- Panel 1: Leaflet OpenStreetMap View (Default) -->
-				<div id="mapViewPanel" class="relative w-full h-[350px] sm:h-[460px] lg:h-[520px] bg-mapa-canvas-dark">
+				<div id="mapViewPanel" class="relative w-full h-[340px] sm:h-[420px] lg:h-[460px] bg-mapa-canvas-dark">
 					<div id="live-rail-map" class="w-full h-full z-10"></div>
 					<div
 						id="mapFallbackBanner"
@@ -543,7 +458,7 @@ const defaultDestMrt3 = 'mrt3_ayala';
 				</div>
 
 				<!-- Panel 2: 2D Schematic Network Diagram SVG -->
-				<div id="diagramViewPanel" class="hidden w-full h-[350px] sm:h-[460px] lg:h-[520px] bg-mapa-canvas p-2 sm:p-3">
+				<div id="diagramViewPanel" class="hidden w-full h-[340px] sm:h-[420px] lg:h-[460px] bg-mapa-canvas p-2 sm:p-3">
 					<svg
 						id="railDiagramSvg"
 						viewBox="0 0 1260 1280"
@@ -555,155 +470,285 @@ const defaultDestMrt3 = 'mrt3_ayala';
 
 				<!-- Panel 3: Connected Station Timeline List -->
 				<div id="listViewPanel" class="hidden">
-					<div id="stationSpineScroll" class="relative pl-8 pr-3 sm:pr-4 py-3 max-h-[460px] lg:max-h-[520px] overflow-y-auto space-y-2 custom-scrollbar bg-mapa-canvas-dark">
+					<div id="stationSpineScroll" class="relative pl-8 pr-3 sm:pr-4 py-3 max-h-[420px] lg:max-h-[460px] overflow-y-auto space-y-2 custom-scrollbar bg-mapa-canvas-dark">
 						<!-- Populated cleanly via train-arrival-client.ts -->
 					</div>
 				</div>
 			</div>
 
-			<!-- Right Column (5 cols): Wait & Cadence Boards + Trip Runtime & Last-Train Transfer Checker -->
-			<div class="lg:col-span-5 flex flex-col gap-4">
-				<!-- Directional Wait & Next-3-Trains Cadence Boards -->
-				<section aria-label="Next 3 Trains Wait Cadence" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3">
-					<!-- Forward Bound Card -->
-					<div id="cardFwd" class="rounded-2xl border border-mapa-contour bg-mapa-canvas-dark p-3.5 flex flex-col justify-between gap-2.5 shadow-2xs">
-						<div>
-							<div class="flex items-start justify-between gap-2 mb-2">
-								<div class="min-w-0">
-									<div class="flex items-center gap-1.5">
-										<span id="fwdLineDot" class="w-2.5 h-2.5 rounded-full shrink-0" style={`background-color: ${LINE_COLORS.mrt3};`}></span>
-										<h2 id="fwdDirPill" class="font-serif text-base font-bold text-mapa-ink whitespace-nowrap">
-											Southbound
-										</h2>
-									</div>
-									<p id="fwdDestLabel" class="text-[11px] text-mapa-muted mt-0.5 truncate">
-										Towards Taft Avenue
-									</p>
-								</div>
-								<span id="fwdStatusChip" class="shrink-0 text-[11px] font-semibold text-mapa-green whitespace-nowrap">
-									Operating
+			<!-- Row 2: Selected Station Arrivals (Left) + Train Trip Estimate (Right) -->
+			<div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+				<!-- Primary Card (7 cols): Selected Station Arrivals + Compact Live Sighting Footer -->
+				<div class="lg:col-span-7 bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 shadow-xs flex flex-col justify-between gap-3">
+					<div class="space-y-3">
+						<div id="selectedStationHeader" class="flex items-center justify-between gap-2 flex-wrap pb-2.5 border-b border-mapa-contour/70">
+							<div class="min-w-0">
+								<span class="block text-[10px] font-bold uppercase tracking-wider text-mapa-muted">
+									Selected Station Arrivals
 								</span>
+								<h2 id="selectedStationTitle" class="font-serif text-xl font-extrabold text-mapa-ink truncate">
+									North Avenue
+								</h2>
 							</div>
+							<span
+								id="selectedStationFleetBadge"
+								class="text-[11px] font-mono font-bold text-mapa-ink px-2.5 py-1 rounded-lg bg-mapa-canvas border border-mapa-contour"
+							>
+								MRT-3 &bull; 18-21 active trainsets
+							</span>
+						</div>
 
-							<div class="rounded-xl bg-mapa-canvas border border-mapa-contour p-3 space-y-2">
-								<div class="flex items-baseline justify-between gap-1.5 flex-wrap">
-									<div id="fwdCountdown" class="font-mono text-xl sm:text-2xl font-extrabold text-mapa-ink">
-										~4 min
+						<!-- Directional Wait & Next-3-Trains Cadence Boards -->
+						<section aria-label="Next 3 Trains Wait Cadence" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+						<!-- Forward Bound Card -->
+						<div id="cardFwd" class="rounded-xl border border-mapa-contour bg-mapa-canvas p-3 flex flex-col justify-between gap-2.5">
+							<div>
+								<div class="flex items-start justify-between gap-2 mb-2">
+									<div class="min-w-0">
+										<div class="flex items-center gap-1.5">
+											<span id="fwdLineDot" class="w-2.5 h-2.5 rounded-full shrink-0" style={`background-color: ${LINE_COLORS.mrt3};`}></span>
+											<h3 id="fwdDirPill" class="font-serif text-base font-bold text-mapa-ink whitespace-nowrap">
+												Southbound
+											</h3>
+										</div>
+										<p id="fwdDestLabel" class="text-[11px] text-mapa-muted mt-0.5 truncate">
+											Towards Taft Avenue
+										</p>
 									</div>
-									<div id="fwdExactTime" class="font-mono text-[11px] font-semibold text-mapa-ink/75">
-										Est. --:--
-									</div>
-								</div>
-								<div class="flex items-center gap-1.5 flex-wrap text-[11px]">
-									<span id="fwdSourceBadge" class="inline-block px-1.5 py-0.5 rounded font-mono text-[10px] font-bold uppercase tracking-wider bg-mapa-canvas-dark text-mapa-ink border border-mapa-contour">
-										HEADWAY
+									<span id="fwdStatusChip" class="shrink-0 text-[11px] font-semibold text-mapa-green whitespace-nowrap">
+										Operating
 									</span>
 								</div>
-								<!-- Next 3 Trains Cadence Strip -->
-								<div id="fwdNextSlots" class="grid grid-cols-3 gap-1.5 pt-1" aria-label="Next 3 forward trains"></div>
-								<p id="fwdLiveDetail" class="text-[11px] text-mapa-ink/75 leading-snug">
-									Computing headway cadence...
-								</p>
-							</div>
-						</div>
 
-						<div class="grid grid-cols-3 gap-1.5 pt-2 border-t border-mapa-contour/70 text-[11px]">
-							<div>
-								<span class="block text-[9px] uppercase font-bold tracking-wider text-mapa-muted">First</span>
-								<span id="fwdFirstTime" class="font-mono font-bold text-mapa-ink">--:--</span>
-							</div>
-							<div>
-								<span class="block text-[9px] uppercase font-bold tracking-wider text-mapa-muted">Last</span>
-								<span id="fwdLastTime" class="font-mono font-bold text-mapa-rust">--:--</span>
-							</div>
-							<div>
-								<span class="block text-[9px] uppercase font-bold tracking-wider text-mapa-muted">Cutoff</span>
-								<span id="fwdCutoffTime" class="font-mono font-bold text-mapa-ink">--:--</span>
-							</div>
-						</div>
-					</div>
-
-					<!-- Reverse Bound Card -->
-					<div id="cardRev" class="rounded-2xl border border-mapa-contour bg-mapa-canvas-dark p-3.5 flex flex-col justify-between gap-2.5 shadow-2xs">
-						<div>
-							<div class="flex items-start justify-between gap-2 mb-2">
-								<div class="min-w-0">
-									<div class="flex items-center gap-1.5">
-										<span id="revLineDot" class="w-2.5 h-2.5 rounded-full shrink-0" style={`background-color: ${LINE_COLORS.mrt3};`}></span>
-										<h2 id="revDirPill" class="font-serif text-base font-bold text-mapa-ink whitespace-nowrap">
-											Northbound
-										</h2>
+								<div class="rounded-xl bg-mapa-canvas-dark/70 border border-mapa-contour p-2.5 space-y-2">
+									<span class="block text-[9px] font-bold uppercase tracking-wider text-mapa-muted">
+										Next Train Arrives Here
+									</span>
+									<div class="flex items-baseline justify-between gap-1.5 flex-wrap">
+										<div id="fwdCountdown" class="font-mono text-xl sm:text-2xl font-extrabold text-mapa-ink">
+											~4 min
+										</div>
+										<div id="fwdExactTime" class="font-mono text-[11px] font-semibold text-mapa-ink/75">
+											Est. --:--
+										</div>
 									</div>
-									<p id="revDestLabel" class="text-[11px] text-mapa-muted mt-0.5 truncate">
-										Towards North Avenue
+									<div class="flex items-center gap-1.5 flex-wrap text-[11px]">
+										<span id="fwdSourceBadge" class="inline-block px-1.5 py-0.5 rounded font-mono text-[10px] font-bold uppercase tracking-wider bg-mapa-canvas text-mapa-ink border border-mapa-contour">
+											EST. SCHEDULE
+										</span>
+									</div>
+									<div class="rounded-lg bg-mapa-canvas border border-mapa-contour/70 px-2 py-1.5 text-[11px] flex items-center justify-between gap-1.5 flex-wrap">
+										<span class="text-mapa-muted font-semibold">Last train here:</span>
+										<span id="fwdPrevTrain" class="font-mono font-bold text-mapa-ink">-- min ago (--:--)</span>
+									</div>
+									<span class="block text-[9px] font-bold uppercase tracking-wider text-mapa-muted pt-0.5">
+										Following Trains
+									</span>
+									<div id="fwdNextSlots" class="grid grid-cols-3 gap-1.5" aria-label="Next 3 forward trains"></div>
+									<p id="fwdLiveDetail" class="text-[11px] text-mapa-ink/75 leading-snug">
+										Computing headway cadence...
 									</p>
 								</div>
-								<span id="revStatusChip" class="shrink-0 text-[11px] font-semibold text-mapa-green whitespace-nowrap">
-									Operating
-								</span>
 							</div>
 
-							<div class="rounded-xl bg-mapa-canvas border border-mapa-contour p-3 space-y-2">
-								<div class="flex items-baseline justify-between gap-1.5 flex-wrap">
-									<div id="revCountdown" class="font-mono text-xl sm:text-2xl font-extrabold text-mapa-ink">
-										~5 min
+							<div class="pt-2 border-t border-mapa-contour/70">
+								<span class="block text-[9px] uppercase font-bold tracking-wider text-mapa-muted mb-1">
+									Daily Station Operating Hours
+								</span>
+								<div class="grid grid-cols-3 gap-1.5 text-[11px]">
+									<div>
+										<span class="block text-[9px] uppercase font-bold tracking-wider text-mapa-muted">1st AM</span>
+										<span id="fwdFirstTime" class="font-mono font-bold text-mapa-ink">--:--</span>
 									</div>
-									<div id="revExactTime" class="font-mono text-[11px] font-semibold text-mapa-ink/75">
-										Est. --:--
+									<div>
+										<span class="block text-[9px] uppercase font-bold tracking-wider text-mapa-muted">Final</span>
+										<span id="fwdLastTime" class="font-mono font-bold text-mapa-rust">--:--</span>
+									</div>
+									<div>
+										<span class="block text-[9px] uppercase font-bold tracking-wider text-mapa-muted">Cutoff</span>
+										<span id="fwdCutoffTime" class="font-mono font-bold text-mapa-ink">--:--</span>
 									</div>
 								</div>
-								<div class="flex items-center gap-1.5 flex-wrap text-[11px]">
-									<span id="revSourceBadge" class="inline-block px-1.5 py-0.5 rounded font-mono text-[10px] font-bold uppercase tracking-wider bg-mapa-canvas-dark text-mapa-ink border border-mapa-contour">
-										HEADWAY
+							</div>
+						</div>
+
+						<!-- Reverse Bound Card -->
+						<div id="cardRev" class="rounded-xl border border-mapa-contour bg-mapa-canvas p-3 flex flex-col justify-between gap-2.5">
+							<div>
+								<div class="flex items-start justify-between gap-2 mb-2">
+									<div class="min-w-0">
+										<div class="flex items-center gap-1.5">
+											<span id="revLineDot" class="w-2.5 h-2.5 rounded-full shrink-0" style={`background-color: ${LINE_COLORS.mrt3};`}></span>
+											<h3 id="revDirPill" class="font-serif text-base font-bold text-mapa-ink whitespace-nowrap">
+												Northbound
+											</h3>
+										</div>
+										<p id="revDestLabel" class="text-[11px] text-mapa-muted mt-0.5 truncate">
+											Towards North Avenue
+										</p>
+									</div>
+									<span id="revStatusChip" class="shrink-0 text-[11px] font-semibold text-mapa-green whitespace-nowrap">
+										Operating
 									</span>
 								</div>
-								<!-- Next 3 Trains Cadence Strip -->
-								<div id="revNextSlots" class="grid grid-cols-3 gap-1.5 pt-1" aria-label="Next 3 reverse trains"></div>
-								<p id="revLiveDetail" class="text-[11px] text-mapa-ink/75 leading-snug">
-									Computing headway cadence...
-								</p>
-							</div>
-						</div>
 
-						<div class="grid grid-cols-3 gap-1.5 pt-2 border-t border-mapa-contour/70 text-[11px]">
-							<div>
-								<span class="block text-[9px] uppercase font-bold tracking-wider text-mapa-muted">First</span>
-								<span id="revFirstTime" class="font-mono font-bold text-mapa-ink">--:--</span>
+								<div class="rounded-xl bg-mapa-canvas-dark/70 border border-mapa-contour p-2.5 space-y-2">
+									<span class="block text-[9px] font-bold uppercase tracking-wider text-mapa-muted">
+										Next Train Arrives Here
+									</span>
+									<div class="flex items-baseline justify-between gap-1.5 flex-wrap">
+										<div id="revCountdown" class="font-mono text-xl sm:text-2xl font-extrabold text-mapa-ink">
+											~5 min
+										</div>
+										<div id="revExactTime" class="font-mono text-[11px] font-semibold text-mapa-ink/75">
+											Est. --:--
+										</div>
+									</div>
+									<div class="flex items-center gap-1.5 flex-wrap text-[11px]">
+										<span id="revSourceBadge" class="inline-block px-1.5 py-0.5 rounded font-mono text-[10px] font-bold uppercase tracking-wider bg-mapa-canvas text-mapa-ink border border-mapa-contour">
+											EST. SCHEDULE
+										</span>
+									</div>
+									<div class="rounded-lg bg-mapa-canvas border border-mapa-contour/70 px-2 py-1.5 text-[11px] flex items-center justify-between gap-1.5 flex-wrap">
+										<span class="text-mapa-muted font-semibold">Last train here:</span>
+										<span id="revPrevTrain" class="font-mono font-bold text-mapa-ink">-- min ago (--:--)</span>
+									</div>
+									<span class="block text-[9px] font-bold uppercase tracking-wider text-mapa-muted pt-0.5">
+										Following Trains
+									</span>
+									<div id="revNextSlots" class="grid grid-cols-3 gap-1.5" aria-label="Next 3 reverse trains"></div>
+									<p id="revLiveDetail" class="text-[11px] text-mapa-ink/75 leading-snug">
+										Computing headway cadence...
+									</p>
+								</div>
 							</div>
-							<div>
-								<span class="block text-[9px] uppercase font-bold tracking-wider text-mapa-muted">Last</span>
-								<span id="revLastTime" class="font-mono font-bold text-mapa-rust">--:--</span>
-							</div>
-							<div>
-								<span class="block text-[9px] uppercase font-bold tracking-wider text-mapa-muted">Cutoff</span>
-								<span id="revCutoffTime" class="font-mono font-bold text-mapa-ink">--:--</span>
+
+							<div class="pt-2 border-t border-mapa-contour/70">
+								<span class="block text-[9px] uppercase font-bold tracking-wider text-mapa-muted mb-1">
+									Daily Station Operating Hours
+								</span>
+								<div class="grid grid-cols-3 gap-1.5 text-[11px]">
+									<div>
+										<span class="block text-[9px] uppercase font-bold tracking-wider text-mapa-muted">1st AM</span>
+										<span id="revFirstTime" class="font-mono font-bold text-mapa-ink">--:--</span>
+									</div>
+									<div>
+										<span class="block text-[9px] uppercase font-bold tracking-wider text-mapa-muted">Final</span>
+										<span id="revLastTime" class="font-mono font-bold text-mapa-rust">--:--</span>
+									</div>
+									<div>
+										<span class="block text-[9px] uppercase font-bold tracking-wider text-mapa-muted">Cutoff</span>
+										<span id="revCutoffTime" class="font-mono font-bold text-mapa-ink">--:--</span>
+									</div>
+								</div>
 							</div>
 						</div>
+						</section>
 					</div>
-				</section>
 
-				<!-- Interactive Trip Runtime & Last-Train Transfer Cutoff Checker -->
-				<div id="tripPlannerCard" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 sm:p-5 shadow-xs space-y-3.5">
+					<!-- Compact Single-Row Live Train Sighting Footer -->
+					<div id="liveCheckInCard" class="pt-2.5 border-t border-mapa-contour/70 space-y-2">
+						<div class="flex items-center justify-between gap-2 flex-wrap">
+							<span class="text-xs font-semibold text-mapa-ink">
+								Train at <strong id="checkInStationName">North Avenue</strong> right now?
+							</span>
+							<span id="liveFeedStatusText" class="text-[10px] font-mono text-mapa-muted">
+								Checking live feed...
+							</span>
+						</div>
+						<div class="grid grid-cols-2 gap-2">
+							<button
+								type="button"
+								id="reportFwdTrainBtn"
+								data-report-dir="fwd"
+								class="h-9 px-2.5 rounded-xl bg-mapa-green text-white text-xs font-bold hover:bg-mapa-green/90 transition-colors cursor-pointer truncate"
+							>
+								+ Live Southbound Here
+							</button>
+							<button
+								type="button"
+								id="reportRevTrainBtn"
+								data-report-dir="rev"
+								class="h-9 px-2.5 rounded-xl bg-mapa-navy text-white text-xs font-bold hover:bg-mapa-navy/90 transition-colors cursor-pointer truncate"
+							>
+								+ Live Northbound Here
+							</button>
+						</div>
+						<p id="checkInFeedback" class="text-[11px] text-mapa-muted">
+							GPS only finds your station; tap a button above when a train is actually at the platform.
+						</p>
+					</div>
+				</div>
+
+				<!-- Train Trip Estimate (5 cols) -->
+				<div id="tripPlannerCard" class="lg:col-span-5 bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 shadow-xs space-y-3">
 					<div class="border-b border-mapa-contour/60 pb-2.5">
 						<div class="flex items-center justify-between gap-2">
-							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-green">
-								3. Trip &amp; Transfer Cutoff Check
+							<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted">
+								Train Trip Estimate
 							</span>
 							<span id="tripDirectionBadge" class="font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-mapa-canvas border border-mapa-contour text-mapa-ink">
 								Southbound
 							</span>
 						</div>
-						<div class="flex items-baseline justify-between gap-2 flex-wrap mt-0.5">
-							<h2 class="font-serif text-lg font-bold text-mapa-ink">
+						<div class="flex items-baseline justify-between gap-2 flex-wrap mt-1">
+							<h3 class="font-serif text-base font-bold text-mapa-ink">
 								<span id="tripOriginLabel">North Avenue</span> &rarr; <span id="tripDestLabel">Ayala</span>
-							</h2>
+							</h3>
 							<span id="tripStopsDist" class="font-mono text-[11px] text-mapa-muted">
 								9 stops &bull; 12.6 km
 							</span>
 						</div>
-						<p class="text-xs text-mapa-muted mt-0.5">
-							Check estimated arrival time at your destination and whether late-evening rail transfers remain open.
-						</p>
+					</div>
+
+					<!-- Dedicated Trip Route Dropdowns (independent from map station inspection) -->
+					<div class="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] gap-2 items-end">
+						<div class="space-y-1">
+							<div class="flex items-center justify-between gap-1">
+								<label for="tripOriginSelect" class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted">From</label>
+								<button
+									type="button"
+									id="useInspectedAsOriginBtn"
+									class="text-[10px] font-semibold text-mapa-green hover:underline cursor-pointer"
+									title="Copy currently inspected station into From"
+								>
+									Use inspected
+								</button>
+							</div>
+							<select
+								id="tripOriginSelect"
+								class="w-full h-9 px-2.5 rounded-xl border border-mapa-contour bg-mapa-canvas text-xs font-semibold text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/40 cursor-pointer"
+							>
+								{STATIONS_DATA.mrt3.map((st, idx) => (
+									<option value={st.id} selected={idx === 0}>
+										{idx + 1}. {st.name}
+									</option>
+								))}
+							</select>
+						</div>
+
+						<button
+							type="button"
+							id="swapStationsBtn"
+							class="h-9 px-2.5 rounded-xl border border-mapa-contour bg-mapa-canvas text-xs font-bold text-mapa-ink hover:border-mapa-ink transition-colors cursor-pointer whitespace-nowrap"
+							title="Swap From and To stations"
+						>
+							Swap
+						</button>
+
+						<div class="space-y-1">
+							<label for="destStationSelect" class="block text-[10px] font-bold uppercase tracking-wider text-mapa-muted">To</label>
+							<select
+								id="destStationSelect"
+								class="w-full h-9 px-2.5 rounded-xl border border-mapa-contour bg-mapa-canvas text-xs font-semibold text-mapa-ink focus:outline-none focus:ring-2 focus:ring-mapa-green/40 cursor-pointer"
+							>
+								{STATIONS_DATA.mrt3.map((st, idx) => (
+									<option value={st.id} selected={st.id === defaultDestMrt3}>
+										{idx + 1}. {st.name}{st.isTransfer ? ' · Transfer' : ''}
+									</option>
+								))}
+							</select>
+						</div>
 					</div>
 
 					<!-- One-Click Interchange Transfer Presets -->
@@ -923,7 +968,10 @@ const defaultDestMrt3 = 'mrt3_ayala';
 					Peak Rush Hours, Skip-Stop Mechanics, and Evening Gate Cutoffs
 				</h2>
 				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed mb-3">
-					Headways across Metro Manila shift substantially between peak weekday commuter windows and midday or weekend operations. During morning rush hours (6:00 AM to 9:00 AM) and evening rush hours (5:00 PM to 8:00 PM), MRT-3 and LRT-1 typically deploy extra trainsets to sustain 3.5 to 4.5 minute average headways. During off-peak hours (9:00 AM to 5:00 PM), headways widen to roughly 5 to 6.5 minutes on MRT-3 and LRT-1, and 6 to 7.5 minutes along LRT-2 between Recto and Antipolo.
+					Headways across Metro Manila shift substantially between peak weekday commuter windows, midday off-peak runs, and weekend operations because each rail operator deploys a fixed active trainset pool. During weekday morning rush hours (6:00 AM to 9:00 AM) and evening rush hours (5:00 PM to 8:00 PM), LRMC LRT-1 deploys 24 to 30 trainsets across its 25-station stretch at 3.5 to 5 minute headways (scaling down to roughly 18 trainsets off-peak), DOTr MRT-3 runs 18 to 21 three-car trainsets at 4 to 6 minute headways, and LRTA LRT-2 operates with a smaller active fleet of 8 to 10 trainsets (typically 8 to 9 deployed during routine maintenance) at 12 to 15 minute intervals. During off-peak midday hours and weekends, lines withdraw surplus sets for depot checks and space headways slightly wider depending on commuter demand.
+				</p>
+				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed mb-3">
+					To separate real commuter sightings from timetable math, Train Arrival PH supports anonymous live rider check-ins alongside a Show Est. Trains toggle in the map toolbar. Tapping a live train sighting button broadcasts a solid green LIVE marker projected along the track for 15 minutes; turning Show Est. Trains off hides all simulated dashed EST chevrons so only live rider-tracked trains appear on the map and diagram.
 				</p>
 				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed">
 					Commuters catching late evening transfers should always check station passing windows carefully rather than relying only on origin terminal times. For example, although the extended weekday MRT-3 schedule dispatches its final northbound train from Taft Avenue at 11:09 PM, that train takes nearly 30 minutes to reach Cubao or Quezon Avenue, while southbound trains departing North Avenue leave earlier at 10:30 PM. Concourse ticket gates close approximately 5 minutes prior to the final train arrival in each direction so station staff can sweep platforms safely.
@@ -940,6 +988,54 @@ const defaultDestMrt3 = 'mrt3_ayala';
 				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed">
 					Similarly, commuters transferring at EDSA Taft (southbound MRT-3 into LRT-1 toward PITX and Dr. Santos) need an extra 5 minutes to walk the elevated covered footbridge and tap in at the LRT-1 gates. The Trip and Transfer Cutoff Checker above automatically adds realistic footbridge transfer time (5 minutes at Doroteo Jose or Taft, 6 minutes at Araneta Center-Cubao) and warns you in advance whenever connecting lines are tight or closed. If your connecting train has departed, the 24/7 EDSA Carousel busway directly beneath MRT-3 continues serving Monumento through PITX overnight.
 				</p>
+			</section>
+
+			<!-- Official Schedule & Regulatory Sources -->
+			<section class="p-5 rounded-2xl bg-mapa-canvas border border-mapa-contour">
+				<h2 class="font-serif text-lg font-bold text-mapa-ink mb-2">
+					Official Metro Manila Rail Operator &amp; Schedule Sources
+				</h2>
+				<p class="text-xs text-mapa-muted mb-3 leading-relaxed">
+					Station operating hours, terminal dispatch windows, and fare schedules cross-referenced directly with official government and concessionaire publications:
+				</p>
+				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+					<a
+						href="https://www.dotrmrt3.gov.ph"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="p-3 rounded-xl bg-mapa-canvas-dark border border-mapa-contour hover:border-mapa-green transition-colors block"
+					>
+						<span class="font-bold text-mapa-green block mb-0.5">DOTr MRT-3 Portal &rarr;</span>
+						<span class="text-mapa-ink/75">Official MRT Line 3 operating hours and passenger advisories.</span>
+					</a>
+					<a
+						href="https://lrmc.ph/fare-matrix/"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="p-3 rounded-xl bg-mapa-canvas-dark border border-mapa-contour hover:border-mapa-green transition-colors block"
+					>
+						<span class="font-bold text-mapa-green block mb-0.5">LRMC LRT-1 Portal &rarr;</span>
+						<span class="text-mapa-ink/75">Light Rail Manila Corp. LRT-1 train schedules and fare matrix.</span>
+					</a>
+					<a
+						href="https://www.lrta.gov.ph"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="p-3 rounded-xl bg-mapa-canvas-dark border border-mapa-contour hover:border-mapa-green transition-colors block"
+					>
+						<span class="font-bold text-mapa-green block mb-0.5">LRTA LRT-2 Portal &rarr;</span>
+						<span class="text-mapa-ink/75">Light Rail Transit Authority LRT-2 hours and service bulletins.</span>
+					</a>
+					<a
+						href="https://dotr.gov.ph/"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="p-3 rounded-xl bg-mapa-canvas-dark border border-mapa-contour hover:border-mapa-green transition-colors block"
+					>
+						<span class="font-bold text-mapa-green block mb-0.5">DOTr Philippines &rarr;</span>
+						<span class="text-mapa-ink/75">Department of Transportation rail directives and extended-hours orders.</span>
+					</a>
+				</div>
 			</section>
 
 			<!-- Cross-links to Companion mapaPH Tools -->

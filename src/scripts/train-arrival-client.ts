@@ -62,6 +62,40 @@ interface SimTrainMarker {
   svgAngleDeg: number;
 }
 
+interface LiveSightingRecord {
+  id: string;
+  line_key: LineKey;
+  station_id: string;
+  direction: "fwd" | "rev";
+  report_type: "arriving" | "on_board" | "crowded" | "delayed";
+  source_kind: "manual" | "gps_snap";
+  crowd_level: string | null;
+  created_at: string;
+  isLocalOnly?: boolean;
+}
+
+interface LiveTrainMarker {
+  id: string;
+  kind: "live" | "live_delay";
+  lineKey: LineKey;
+  dirKey: "fwd" | "rev";
+  dirShort: string;
+  dirName: string;
+  stationId: string;
+  reportedStationName: string;
+  projectedStationName: string;
+  projectedFloatIdx: number;
+  ageMin: number;
+  ageStr: string;
+  isLocalOnly: boolean;
+  lat: number;
+  lon: number;
+  bearingDeg: number;
+  svgX: number;
+  svgY: number;
+  svgAngleDeg: number;
+}
+
 interface DiagramPoint {
   id: string | null;
   x: number;
@@ -70,6 +104,9 @@ interface DiagramPoint {
 }
 
 const GPS_MAX_RADIUS_METERS = 650;
+const LIVE_WINDOW_MS = 15 * 60 * 1000;
+const CLIENT_TOKEN_KEY = "mapaph_rail_client_token_v1";
+const LOCAL_PREVIEW_KEY = "mapaph_rail_live_sightings_v1";
 
 const TIMETABLES: Record<LineKey, ComputedStationSchedule[]> = {
   mrt3: buildLineTimetable("mrt3"),
@@ -446,6 +483,7 @@ function computeLineSimulatedTrains(
   const dirCodeRev = spec.reverse.shortDir === "Westbound" ? "WB" : "NB";
   const hw = getHeadwayPeriod(lineKey, clock.totalMin, isWeekend);
   const avgHeadway = hw.avgMin;
+  const maxPerDir = hw.maxActiveTrainsPerDir;
 
   const fwdFirst = isWeekend
     ? spec.forward.weekendFirstMin
@@ -462,13 +500,18 @@ function computeLineSimulatedTrains(
 
   const totalFwdTrip = table[maxIdx].offsetForwardMin;
   const totalRevTrip = table[0].offsetReverseMin;
+  const stepFwd = Math.max(avgHeadway, totalFwdTrip / maxPerDir);
+  const stepRev = Math.max(avgHeadway, totalRevTrip / maxPerDir);
 
   const estTrains: SimTrainMarker[] = [];
   const estByIndex: Record<number, { fwd: boolean; rev: boolean }> = {};
 
-  for (let d = fwdFirst; d <= fwdLast + 0.001; d += avgHeadway) {
+  let fwdCount = 0;
+  for (let d = fwdFirst; d <= fwdLast + 0.001; d += stepFwd) {
     const elapsed = clock.exactMin - d;
     if (elapsed >= 0 && elapsed <= totalFwdTrip) {
+      if (fwdCount >= maxPerDir) break;
+      fwdCount++;
       const floatIdx = offsetToStationFloatIndex(lineKey, elapsed, "fwd");
       const geom = getTrackPositionAtFloatIndex(lineKey, floatIdx, false);
       const iFrom = Math.min(maxIdx - 1, Math.floor(floatIdx));
@@ -495,9 +538,12 @@ function computeLineSimulatedTrains(
     }
   }
 
-  for (let d = revFirst; d <= revLast + 0.001; d += avgHeadway) {
+  let revCount = 0;
+  for (let d = revFirst; d <= revLast + 0.001; d += stepRev) {
     const elapsed = clock.exactMin - d;
     if (elapsed >= 0 && elapsed <= totalRevTrip) {
+      if (revCount >= maxPerDir) break;
+      revCount++;
       const floatIdx = offsetToStationFloatIndex(lineKey, elapsed, "rev");
       const geom = getTrackPositionAtFloatIndex(lineKey, floatIdx, true);
       const iFrom = Math.min(maxIdx, Math.ceil(floatIdx));
@@ -525,6 +571,161 @@ function computeLineSimulatedTrains(
   }
 
   return { estTrains, estByIndex };
+}
+
+function getOrCreateClientToken(): string {
+  try {
+    const existing = window.localStorage.getItem(CLIENT_TOKEN_KEY);
+    if (existing && existing.length >= 12) return existing;
+    const rand =
+      typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+        ? crypto.randomUUID().replace(/-/g, "")
+        : String(Date.now()) + Math.random().toString(36).slice(2, 14);
+    window.localStorage.setItem(CLIENT_TOKEN_KEY, rand);
+    return rand;
+  } catch {
+    return "anon_" + Math.random().toString(36).slice(2, 14);
+  }
+}
+
+function loadLocalPreviewSightings(): LiveSightingRecord[] {
+  try {
+    const raw = window.localStorage.getItem(LOCAL_PREVIEW_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    const now = Date.now();
+    return parsed.filter(
+      (item: any) =>
+        item &&
+        item.created_at &&
+        now - Date.parse(item.created_at) <= LIVE_WINDOW_MS,
+    );
+  } catch {
+    return [];
+  }
+}
+
+function saveLocalPreviewSightings(items: LiveSightingRecord[]): void {
+  try {
+    const now = Date.now();
+    const fresh = items.filter(
+      (item) =>
+        item &&
+        item.created_at &&
+        now - Date.parse(item.created_at) <= LIVE_WINDOW_MS,
+    );
+    window.localStorage.setItem(
+      LOCAL_PREVIEW_KEY,
+      JSON.stringify(fresh.slice(0, 30)),
+    );
+  } catch {
+    // Ignore storage quota restrictions in private browsing
+  }
+}
+
+function formatAgeMinutes(isoStr: string, nowMs: number): string {
+  const diffMin = Math.max(0, Math.round((nowMs - Date.parse(isoStr)) / 60000));
+  if (diffMin <= 0) return "just now";
+  return diffMin + "m ago";
+}
+
+function computeLineLiveTrains(
+  lineKey: LineKey,
+  clock: ManilaClock,
+  allSightings: LiveSightingRecord[],
+): {
+  liveTrains: LiveTrainMarker[];
+  crowdedStations: Set<string>;
+  delayedDir: { fwd: boolean; rev: boolean };
+} {
+  const spec = SCHEDULE_SPECS[lineKey];
+  const table = TIMETABLES[lineKey];
+  const maxIdx = table.length - 1;
+  const dirCodeFwd = spec.forward.shortDir === "Eastbound" ? "EB" : "SB";
+  const dirCodeRev = spec.reverse.shortDir === "Westbound" ? "WB" : "NB";
+  const totalFwdTrip = table[maxIdx].offsetForwardMin;
+  const totalRevTrip = table[0].offsetReverseMin;
+
+  const liveTrains: LiveTrainMarker[] = [];
+  const seenKeys = new Set<string>();
+  const crowdedStations = new Set<string>();
+  const delayedDir = { fwd: false, rev: false };
+
+  const lineSightings = allSightings.filter((s) => s.line_key === lineKey);
+  lineSightings.forEach((rep) => {
+    if (rep.report_type === "crowded") {
+      crowdedStations.add(rep.station_id);
+      return;
+    }
+    if (rep.report_type === "delayed") {
+      if (rep.direction === "fwd") delayedDir.fwd = true;
+      else delayedDir.rev = true;
+    }
+    if (
+      rep.report_type !== "arriving" &&
+      rep.report_type !== "on_board" &&
+      rep.report_type !== "delayed"
+    ) {
+      return;
+    }
+
+    const dedupKey =
+      rep.direction +
+      "|" +
+      rep.station_id +
+      "|" +
+      (rep.report_type === "delayed" ? "delay" : "train");
+    if (seenKeys.has(dedupKey)) return;
+    seenKeys.add(dedupKey);
+
+    const repEntry =
+      table.find((r) => r.station.id === rep.station_id) || table[0];
+    const ageMin = Math.max(
+      0,
+      (clock.nowMs - Date.parse(rep.created_at)) / 60000,
+    );
+    const isFwd = rep.direction === "fwd";
+    const isDelayed = rep.report_type === "delayed";
+    const maxTrip = isFwd ? totalFwdTrip : totalRevTrip;
+    const baseOffset = isFwd
+      ? repEntry.offsetForwardMin
+      : repEntry.offsetReverseMin;
+
+    let floatIdx = repEntry.index;
+    if (!isDelayed && ageMin > 0.5 && ageMin <= 15) {
+      const projOffset = Math.min(maxTrip, baseOffset + ageMin);
+      floatIdx = offsetToStationFloatIndex(lineKey, projOffset, rep.direction);
+    }
+
+    const geom = getTrackPositionAtFloatIndex(lineKey, floatIdx, !isFwd);
+    const nearEntry =
+      table[Math.max(0, Math.min(maxIdx, Math.round(floatIdx)))];
+
+    liveTrains.push({
+      id: "live_" + rep.id,
+      kind: isDelayed ? "live_delay" : "live",
+      lineKey,
+      dirKey: rep.direction,
+      dirShort: isFwd ? dirCodeFwd : dirCodeRev,
+      dirName: isFwd ? spec.forward.shortDir : spec.reverse.shortDir,
+      stationId: rep.station_id,
+      reportedStationName: repEntry.station.name,
+      projectedStationName: nearEntry.station.name,
+      projectedFloatIdx: floatIdx,
+      ageMin,
+      ageStr: formatAgeMinutes(rep.created_at, clock.nowMs),
+      isLocalOnly: Boolean(rep.isLocalOnly),
+      lat: geom.lat,
+      lon: geom.lon,
+      bearingDeg: geom.bearingDeg,
+      svgX: geom.svgX,
+      svgY: geom.svgY,
+      svgAngleDeg: geom.svgAngleDeg,
+    });
+  });
+
+  return { liveTrains, crowdedStations, delayedDir };
 }
 
 function getDefaultDestForOrigin(lineKey: LineKey, originId: string): string {
@@ -633,26 +834,40 @@ function getDiagramLabelPos(
 }
 
 export function initTrainArrivalTracker(): void {
+  const mainEl = getEl<HTMLElement>("main-content");
+  const supabaseUrl = (mainEl?.getAttribute("data-supabase-url") || "").replace(
+    /\/$/,
+    "",
+  );
+  const supabaseKey = mainEl?.getAttribute("data-supabase-key") || "";
+
   const stationSelect = getEl<HTMLSelectElement>("stationSelect");
+  const tripOriginSelect = getEl<HTMLSelectElement>("tripOriginSelect");
   const destStationSelect = getEl<HTMLSelectElement>("destStationSelect");
+  const useInspectedAsOriginBtn = getEl<HTMLButtonElement>(
+    "useInspectedAsOriginBtn",
+  );
   const swapStationsBtn = getEl<HTMLButtonElement>("swapStationsBtn");
+  const toggleEstTrainsBtn = getEl<HTMLButtonElement>("toggleEstTrainsBtn");
+  const selectedStationTitle = getEl<HTMLElement>("selectedStationTitle");
+  const selectedStationFleetBadge = getEl<HTMLElement>(
+    "selectedStationFleetBadge",
+  );
+  const checkInStationName = getEl<HTMLElement>("checkInStationName");
+  const liveFeedStatusText = getEl<HTMLElement>("liveFeedStatusText");
+  const reportFwdTrainBtn = getEl<HTMLButtonElement>("reportFwdTrainBtn");
+  const reportRevTrainBtn = getEl<HTMLButtonElement>("reportRevTrainBtn");
+  const checkInFeedback = getEl<HTMLElement>("checkInFeedback");
   const stationFilterInput = getEl<HTMLInputElement>("stationFilterInput");
   const stationSpineScroll = getEl<HTMLElement>("stationSpineScroll");
   const corridorHeading = getEl<HTMLElement>("corridorHeading");
   const lineOperatorMeta = getEl<HTMLElement>("lineOperatorMeta");
-  const stationMetaNote = getEl<HTMLElement>("stationMetaNote");
   const manilaClockEl = getEl<HTMLElement>("manilaClock");
   const manilaDayTagEl = getEl<HTMLElement>("manilaDayTag");
   const activeCadenceChip = getEl<HTMLElement>("activeCadenceChip");
   const gpsLocateBtn = getEl<HTMLButtonElement>("gpsLocateBtn");
   const gpsStatusBanner = getEl<HTMLElement>("gpsStatusBanner");
   const serviceAlertBanner = getEl<HTMLElement>("serviceAlertBanner");
-  const scheduleModeBanner = getEl<HTMLElement>("scheduleModeBanner");
-  const scheduleModePill = getEl<HTMLElement>("scheduleModePill");
-  const scheduleModeText = getEl<HTMLElement>("scheduleModeText");
-  const scheduleModeActionBtn = getEl<HTMLButtonElement>(
-    "scheduleModeActionBtn",
-  );
   const mapViewPanel = getEl<HTMLElement>("mapViewPanel");
   const diagramViewPanel = getEl<HTMLElement>("diagramViewPanel");
   const listViewPanel = getEl<HTMLElement>("listViewPanel");
@@ -667,6 +882,7 @@ export function initTrainArrivalTracker(): void {
 
   if (
     !stationSelect ||
+    !tripOriginSelect ||
     !destStationSelect ||
     !manilaClockEl ||
     !stationSpineScroll
@@ -676,13 +892,17 @@ export function initTrainArrivalTracker(): void {
 
   let currentLine: LineKey = "mrt3";
   let currentStationId: string = STATIONS_DATA.mrt3[0].id;
-  let destStationId: string = getDefaultDestForOrigin("mrt3", currentStationId);
-  let pickTarget: "origin" | "dest" = "origin";
+  let tripOriginId: string = STATIONS_DATA.mrt3[0].id;
+  let destStationId: string = getDefaultDestForOrigin("mrt3", tripOriginId);
+  let showEstTrains = true;
   let dayMode: "auto" | "weekday" | "weekend" = "auto";
   let viewMode: "map" | "diagram" | "list" = "map";
   let mapScope: "focus" | "all" = "focus";
   let stationFilterQuery = "";
   let lastRenderedMinute = -1;
+  let remoteSightings: LiveSightingRecord[] = [];
+  let localSightings: LiveSightingRecord[] = loadLocalPreviewSightings();
+  let cooldownUntilMs = 0;
 
   // Leaflet instance state
   let leafletMap: any = null;
@@ -757,6 +977,7 @@ export function initTrainArrivalTracker(): void {
       const url = new URL(window.location.href);
       url.searchParams.set("line", currentLine);
       url.searchParams.set("station", currentStationId);
+      url.searchParams.set("from", tripOriginId);
       url.searchParams.set("dest", destStationId);
       window.history.replaceState({}, "", url.toString());
     } catch {
@@ -765,19 +986,27 @@ export function initTrainArrivalTracker(): void {
   }
 
   function populateStationDropdowns(
-    preferredOrigin?: string | null,
+    preferredInspected?: string | null,
+    preferredTripOrigin?: string | null,
     preferredDest?: string | null,
   ): void {
     const list = STATIONS_DATA[currentLine];
     stationSelect!.innerHTML = "";
+    tripOriginSelect!.innerHTML = "";
     destStationSelect!.innerHTML = "";
 
     list.forEach((st, idx) => {
       const label = idx + 1 + ". " + st.name + " (" + st.city + ")";
+
+      const optInspect = document.createElement("option");
+      optInspect.value = st.id;
+      optInspect.textContent = label;
+      stationSelect!.appendChild(optInspect);
+
       const optOrig = document.createElement("option");
       optOrig.value = st.id;
-      optOrig.textContent = label;
-      stationSelect!.appendChild(optOrig);
+      optOrig.textContent = st.isTransfer ? label + " · Transfer" : label;
+      tripOriginSelect!.appendChild(optOrig);
 
       const optDest = document.createElement("option");
       optDest.value = st.id;
@@ -785,14 +1014,26 @@ export function initTrainArrivalTracker(): void {
       destStationSelect!.appendChild(optDest);
     });
 
-    let matchedOrig = list.find((s) => s.id === preferredOrigin) || list[0];
-    if (!preferredOrigin && preferredDest && matchedOrig.id === preferredDest) {
-      matchedOrig = list[list.length - 1] || list[0];
-    }
-    currentStationId = matchedOrig.id;
+    const matchedInspected =
+      list.find((s) => s.id === preferredInspected) || list[0];
+    currentStationId = matchedInspected.id;
     stationSelect!.value = currentStationId;
 
-    const fallbackDest = getDefaultDestForOrigin(currentLine, currentStationId);
+    let matchedTripOrig =
+      list.find((s) => s.id === preferredTripOrigin) ||
+      (preferredInspected ? matchedInspected : list[0]);
+    if (
+      !preferredTripOrigin &&
+      preferredDest &&
+      matchedTripOrig.id === preferredDest
+    ) {
+      matchedTripOrig =
+        list[0].id === preferredDest ? list[list.length - 1] : list[0];
+    }
+    tripOriginId = matchedTripOrig.id;
+    tripOriginSelect!.value = tripOriginId;
+
+    const fallbackDest = getDefaultDestForOrigin(currentLine, tripOriginId);
     const matchedDest =
       list.find((s) => s.id === preferredDest) ||
       list.find((s) => s.id === fallbackDest) ||
@@ -801,56 +1042,15 @@ export function initTrainArrivalTracker(): void {
     destStationSelect!.value = destStationId;
   }
 
-  function updatePickTargetUI(): void {
-    document
-      .querySelectorAll<HTMLButtonElement>(".pick-target-btn")
-      .forEach((btn) => {
-        const target = btn.getAttribute("data-pick-target") as
-          "origin" | "dest" | null;
-        const active = target === pickTarget;
-        btn.setAttribute("aria-pressed", active ? "true" : "false");
-        if (active) {
-          btn.className =
-            "pick-target-btn px-2 py-1 rounded-md text-[11px] font-bold text-white cursor-pointer transition-colors inline-flex items-center gap-1 " +
-            (target === "dest" ? "bg-mapa-rust" : "bg-mapa-ink");
-        } else {
-          btn.className =
-            "pick-target-btn px-2 py-1 rounded-md text-[11px] font-semibold text-mapa-ink/75 hover:text-mapa-ink cursor-pointer transition-colors inline-flex items-center gap-1";
-        }
-      });
-  }
-
-  function selectStationFromVisualizer(
-    lineKey: LineKey,
-    stationId: string,
-    overrideTarget?: "origin" | "dest",
-  ): void {
-    const target = overrideTarget ?? pickTarget;
+  function inspectStation(lineKey: LineKey, stationId: string): void {
     hideGpsBanner();
-
     if (lineKey !== currentLine) {
-      if (target === "dest") {
-        switchLine(lineKey, null, stationId);
-      } else {
-        switchLine(lineKey, stationId, null);
-      }
+      switchLine(lineKey, stationId);
       return;
     }
 
-    if (target === "origin") {
-      if (stationId === destStationId) {
-        destStationId = currentStationId;
-      }
-      currentStationId = stationId;
-    } else {
-      if (stationId === currentStationId) {
-        currentStationId = destStationId;
-      }
-      destStationId = stationId;
-    }
-
+    currentStationId = stationId;
     stationSelect!.value = currentStationId;
-    destStationSelect!.value = destStationId;
     updateUrlParams();
     renderAll();
   }
@@ -950,87 +1150,133 @@ export function initTrainArrivalTracker(): void {
       });
   }
 
-  function updateScheduleModeBanner(
-    clock: ManilaClock,
-    isWeekend: boolean,
-    estCount: number,
-  ): void {
-    if (!scheduleModeBanner || !scheduleModePill || !scheduleModeText) return;
-    const hw = getHeadwayPeriod(currentLine, clock.totalMin, isWeekend);
-    const meta = RAIL_LINES.find((l) => l.id === currentLine) || RAIL_LINES[0];
-
-    if (activeCadenceChip) {
-      activeCadenceChip.textContent =
-        hw.label + " · " + hw.rangeMin[0] + "-" + hw.rangeMin[1] + " min";
-    }
-
-    const fwdDeck = computeDirectionScheduleDeck(
-      currentLine,
-      currentStationId,
-      "fwd",
-      clock.exactMin,
-      isWeekend,
-      TIMETABLES[currentLine],
+  function updateToggleEstBtnUI(): void {
+    if (!toggleEstTrainsBtn) return;
+    toggleEstTrainsBtn.setAttribute(
+      "aria-pressed",
+      showEstTrains ? "true" : "false",
     );
-    const revDeck = computeDirectionScheduleDeck(
-      currentLine,
-      currentStationId,
-      "rev",
-      clock.exactMin,
-      isWeekend,
-      TIMETABLES[currentLine],
-    );
-    const bothClosed =
-      fwdDeck.status === "closed" && revDeck.status === "closed";
-    const cutoffSoon =
-      fwdDeck.status === "cutoff_window" || revDeck.status === "cutoff_window";
-
-    if (bothClosed) {
-      scheduleModeBanner.className =
-        "rounded-2xl border border-mapa-rust/40 bg-mapa-canvas text-mapa-ink px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-2xs";
-      scheduleModePill.className =
-        "shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-md font-mono text-[11px] font-bold uppercase tracking-wider bg-mapa-rust text-white";
-      scheduleModePill.textContent = "OUTSIDE OPERATING HOURS";
-      scheduleModeText.textContent =
-        meta.shortName +
-        " is currently closed. Check first morning train times below or use the 24/7 EDSA Carousel busway.";
-    } else if (cutoffSoon) {
-      scheduleModeBanner.className =
-        "rounded-2xl border border-mapa-rust bg-mapa-canvas text-mapa-ink px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-2xs";
-      scheduleModePill.className =
-        "shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-md font-mono text-[11px] font-bold uppercase tracking-wider bg-mapa-rust text-white";
-      scheduleModePill.textContent = "GATE CUTOFF WINDOW";
-      scheduleModeText.textContent =
-        "Final " +
-        meta.shortName +
-        " trips are dispatching now. Verify your destination transfer cutoff below before entering the concourse.";
+    if (showEstTrains) {
+      toggleEstTrainsBtn.className =
+        "px-2.5 py-1 rounded-lg border border-mapa-ink bg-mapa-ink text-white text-[11px] font-bold transition-colors cursor-pointer whitespace-nowrap";
+      toggleEstTrainsBtn.textContent = "Show Est. Trains: ON";
     } else {
-      scheduleModeBanner.className =
-        "rounded-2xl border border-mapa-contour bg-mapa-canvas text-mapa-ink px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-2xs";
-      scheduleModePill.className =
-        "shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-md font-mono text-[11px] font-bold uppercase tracking-wider bg-mapa-ink text-white";
-      scheduleModePill.textContent =
-        hw.shortLabel.toUpperCase() +
-        " · " +
-        hw.rangeMin[0] +
-        "-" +
-        hw.rangeMin[1] +
-        "M";
-      scheduleModeText.textContent =
-        meta.shortName +
-        " headway cadence is " +
-        hw.rangeMin[0] +
-        "-" +
-        hw.rangeMin[1] +
-        " mins (" +
-        estCount +
-        " simulated trains in transit). Estimates come from official dispatch timetables, not live operator GPS.";
+      toggleEstTrainsBtn.className =
+        "px-2.5 py-1 rounded-lg border border-mapa-contour bg-mapa-canvas text-mapa-ink hover:border-mapa-ink text-[11px] font-bold transition-colors cursor-pointer whitespace-nowrap";
+      toggleEstTrainsBtn.textContent = "Show Est. Trains: OFF (Live Only)";
     }
+  }
+
+  function getMergedSightings(): LiveSightingRecord[] {
+    const now = Date.now();
+    const freshRemote = remoteSightings.filter(
+      (s) =>
+        s && s.created_at && now - Date.parse(s.created_at) <= LIVE_WINDOW_MS,
+    );
+    const freshLocal = localSightings.filter(
+      (s) =>
+        s && s.created_at && now - Date.parse(s.created_at) <= LIVE_WINDOW_MS,
+    );
+    const combined = [...freshRemote, ...freshLocal].sort(
+      (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at),
+    );
+    const seenIds = new Set<string>();
+    return combined.filter((s) => {
+      if (seenIds.has(s.id)) return false;
+      seenIds.add(s.id);
+      return true;
+    });
+  }
+
+  function updateCadenceChip(clock: ManilaClock, isWeekend: boolean): void {
+    if (!activeCadenceChip) return;
+    const hw = getHeadwayPeriod(currentLine, clock.totalMin, isWeekend);
+    activeCadenceChip.textContent =
+      hw.label +
+      " · " +
+      hw.deployedTrainsets[0] +
+      "-" +
+      hw.deployedTrainsets[1] +
+      " active trainsets · " +
+      hw.rangeMin[0] +
+      "-" +
+      hw.rangeMin[1] +
+      "m";
+  }
+
+  function formatPrevTrainLabel(
+    prev: DirectionScheduleDeck["previousTrain"],
+  ): string {
+    if (!prev) return "No earlier train today";
+    if (prev.isFinalOfDay && prev.departedMinAgo > 15) {
+      return "Final passed " + prev.formattedTime;
+    }
+    if (prev.departedMinAgo === 0) {
+      return "Just passed (" + prev.formattedTime + ")";
+    }
+    return prev.departedMinAgo + "m ago (" + prev.formattedTime + ")";
+  }
+
+  function findUpcomingLiveMatch(
+    lineKey: LineKey,
+    stationId: string,
+    dirKey: "fwd" | "rev",
+    liveTrains: LiveTrainMarker[],
+  ): { etaMin: number; marker: LiveTrainMarker } | null {
+    const table = TIMETABLES[lineKey];
+    const targetEntry = table.find((r) => r.station.id === stationId);
+    if (!targetEntry) return null;
+
+    const candidates = liveTrains.filter(
+      (t) =>
+        t.lineKey === lineKey &&
+        t.dirKey === dirKey &&
+        t.kind === "live" &&
+        t.ageMin <= 15,
+    );
+    let best: { etaMin: number; marker: LiveTrainMarker } | null = null;
+
+    for (const marker of candidates) {
+      const floatIdx = marker.projectedFloatIdx;
+      const isUpstreamOrHere =
+        dirKey === "fwd"
+          ? floatIdx <= targetEntry.index + 0.25
+          : floatIdx >= targetEntry.index - 0.25;
+      if (!isUpstreamOrHere) continue;
+
+      const idxLow = Math.max(
+        0,
+        Math.min(table.length - 1, Math.floor(floatIdx)),
+      );
+      const idxHigh = Math.min(table.length - 1, idxLow + 1);
+      const frac = floatIdx - idxLow;
+      const interpOffset =
+        dirKey === "fwd"
+          ? table[idxLow].offsetForwardMin +
+            (table[idxHigh].offsetForwardMin - table[idxLow].offsetForwardMin) *
+              frac
+          : table[idxLow].offsetReverseMin +
+            (table[idxHigh].offsetReverseMin - table[idxLow].offsetReverseMin) *
+              frac;
+      const targetOffset =
+        dirKey === "fwd"
+          ? targetEntry.offsetForwardMin
+          : targetEntry.offsetReverseMin;
+      const etaMin = Math.max(0, Math.round(targetOffset - interpOffset));
+      if (!best || etaMin < best.etaMin) {
+        best = { etaMin, marker };
+      }
+    }
+    return best;
   }
 
   function renderDirectionCard(
     prefix: "fwd" | "rev",
     deck: DirectionScheduleDeck,
+    clock: ManilaClock,
+    liveMatch: { etaMin: number; marker: LiveTrainMarker } | null,
+    isCrowded: boolean,
+    isDelayed: boolean,
   ): void {
     const dirPill = getEl<HTMLElement>(prefix + "DirPill");
     const lineDot = getEl<HTMLElement>(prefix + "LineDot");
@@ -1039,6 +1285,7 @@ export function initTrainArrivalTracker(): void {
     const statusChip = getEl<HTMLElement>(prefix + "StatusChip");
     const countdown = getEl<HTMLElement>(prefix + "Countdown");
     const exactTime = getEl<HTMLElement>(prefix + "ExactTime");
+    const prevTrainEl = getEl<HTMLElement>(prefix + "PrevTrain");
     const nextSlots = getEl<HTMLElement>(prefix + "NextSlots");
     const liveDetail = getEl<HTMLElement>(prefix + "LiveDetail");
     const firstEl = getEl<HTMLElement>(prefix + "FirstTime");
@@ -1086,22 +1333,39 @@ export function initTrainArrivalTracker(): void {
     lastEl.textContent = formatMinutesTo12H(deck.lastMin);
     cutoffEl.textContent = formatMinutesTo12H(deck.cutoffMin);
 
-    sourceBadge.textContent =
-      deck.headway.shortLabel.toUpperCase() +
-      " · " +
-      deck.headway.rangeMin[0] +
-      "-" +
-      deck.headway.rangeMin[1] +
-      "M";
+    if (prevTrainEl) {
+      prevTrainEl.textContent = formatPrevTrainLabel(deck.previousTrain);
+    }
 
     const firstSlot = deck.upcomingTrains[0] || null;
-    if (!firstSlot) {
+    if (liveMatch) {
+      const estArrivalMin = clock.totalMin + liveMatch.etaMin;
+      countdown.textContent =
+        liveMatch.etaMin === 0 ? "At station" : "~" + liveMatch.etaMin + " min";
+      exactTime.textContent = "Live est. " + formatMinutesTo12H(estArrivalMin);
+      sourceBadge.className =
+        "inline-block px-1.5 py-0.5 rounded font-mono text-[10px] font-bold uppercase tracking-wider bg-mapa-green text-white";
+      sourceBadge.textContent = liveMatch.marker.isLocalOnly
+        ? "LOCAL LIVE PIN"
+        : "LIVE RIDER REPORT";
+    } else if (!firstSlot) {
       countdown.textContent = "Closed";
-      exactTime.textContent = "Next: " + formatMinutesTo12H(deck.firstMin);
+      exactTime.textContent = "1st AM: " + formatMinutesTo12H(deck.firstMin);
+      sourceBadge.className =
+        "inline-block px-1.5 py-0.5 rounded font-mono text-[10px] font-bold uppercase tracking-wider bg-mapa-canvas-dark text-mapa-muted border border-mapa-contour";
+      sourceBadge.textContent = "CLOSED";
     } else {
       countdown.textContent = formatWaitLabel(firstSlot.waitMin);
       exactTime.textContent =
-        (firstSlot.isLastTrain ? "Last: " : "Est. ") + firstSlot.formattedTime;
+        (firstSlot.isLastTrain ? "Final: " : "Est. ") + firstSlot.formattedTime;
+      sourceBadge.className =
+        "inline-block px-1.5 py-0.5 rounded font-mono text-[10px] font-bold uppercase tracking-wider bg-mapa-canvas-dark text-mapa-ink border border-mapa-contour";
+      sourceBadge.textContent =
+        "EST. SCHEDULE · " +
+        deck.headway.rangeMin[0] +
+        "-" +
+        deck.headway.rangeMin[1] +
+        "M";
     }
 
     // Render Upcoming 3 Trains cadence strip cleanly
@@ -1122,7 +1386,7 @@ export function initTrainArrivalTracker(): void {
       top.className =
         "text-[9px] font-bold uppercase tracking-wider " +
         (slot && slot.isLastTrain ? "text-mapa-rust" : "text-mapa-muted");
-      top.textContent = slot && slot.isLastTrain ? "Last" : labels[i];
+      top.textContent = slot && slot.isLastTrain ? "Final" : labels[i];
 
       const mid = document.createElement("div");
       mid.className =
@@ -1143,7 +1407,22 @@ export function initTrainArrivalTracker(): void {
       nextSlots.appendChild(cell);
     }
 
-    liveDetail.textContent = deck.summaryNote;
+    if (liveMatch) {
+      liveDetail.textContent =
+        "Rider spotted near " +
+        liveMatch.marker.reportedStationName +
+        " (" +
+        liveMatch.marker.ageStr +
+        ")." +
+        (isCrowded ? " Platform crowded." : "") +
+        (isDelayed ? " Delay reported." : "");
+    } else {
+      let detail = deck.summaryNote;
+      if (isDelayed)
+        detail = "Delay reported recently on this bound. " + detail;
+      else if (isCrowded) detail += " Rider alert: platform crowded.";
+      liveDetail.textContent = detail;
+    }
   }
 
   function renderTripPlannerCard(plan: TripAndTransferPlan): void {
@@ -1337,7 +1616,10 @@ export function initTrainArrivalTracker(): void {
     }
   }
 
-  function renderLeafletTracksAndStations(): void {
+  function renderLeafletTracksAndStations(
+    clock: ManilaClock,
+    isWeekend: boolean,
+  ): void {
     ensureLeafletMap();
     if (
       !leafletMap ||
@@ -1357,7 +1639,7 @@ export function initTrainArrivalTracker(): void {
       .slice()
       .sort((a, b) => (a === currentLine ? 1 : b === currentLine ? -1 : 0));
 
-    const origIdx = findStationIndex(currentLine, currentStationId);
+    const origIdx = findStationIndex(currentLine, tripOriginId);
     const destIdx = findStationIndex(currentLine, destStationId);
 
     drawOrder.forEach((lk) => {
@@ -1389,13 +1671,14 @@ export function initTrainArrivalTracker(): void {
       const isActiveLine = lk === currentLine;
       const color = LINE_COLORS[lk] || "#3d5a45";
       STATIONS_DATA[lk].forEach((st) => {
-        const isOrigin = lk === currentLine && st.id === currentStationId;
+        const isInspected = lk === currentLine && st.id === currentStationId;
+        const isTripOrig = lk === currentLine && st.id === tripOriginId;
         const isDest = lk === currentLine && st.id === destStationId;
 
-        if (isDest && !isOrigin) {
+        if ((isDest || isTripOrig) && !isInspected) {
           L.circleMarker([st.lat, st.lon], {
             radius: 10,
-            color: "#9e391a",
+            color: isDest ? "#9e391a" : "#3d5a45",
             weight: 2.5,
             fillColor: "#f7f3e9",
             fillOpacity: 1,
@@ -1404,30 +1687,40 @@ export function initTrainArrivalTracker(): void {
         }
 
         const marker = L.circleMarker([st.lat, st.lon], {
-          radius: isOrigin
+          radius: isInspected
             ? 8.5
-            : isDest
+            : isDest || isTripOrig
               ? 6
               : st.isTransfer
                 ? 5.5
                 : isActiveLine
                   ? 4.5
                   : 3.5,
-          color: isOrigin ? "#211d16" : isDest ? "#9e391a" : color,
-          weight: isOrigin ? 3 : 2,
-          fillColor: isOrigin ? color : isDest ? "#9e391a" : "#f7f3e9",
+          color: isInspected
+            ? "#211d16"
+            : isDest
+              ? "#9e391a"
+              : isTripOrig
+                ? "#3d5a45"
+                : color,
+          weight: isInspected ? 3 : 2,
+          fillColor: isInspected
+            ? color
+            : isDest
+              ? "#9e391a"
+              : isTripOrig
+                ? "#3d5a45"
+                : "#f7f3e9",
           fillOpacity: 1,
         });
 
-        const roleNote = isOrigin
-          ? " · Origin"
-          : isDest
-            ? " · Destination"
-            : "";
+        const roles: string[] = [];
+        if (isInspected) roles.push("Inspected");
+        if (isTripOrig) roles.push("Trip From");
+        if (isDest) roles.push("Trip To");
+        const roleNote = roles.length > 0 ? " · " + roles.join(" / ") : "";
         const clickHint =
-          pickTarget === "dest"
-            ? '<br/><span style="color:#9e391a;font-size:11px;">Click: set Destination</span>'
-            : '<br/><span style="color:#5c5343;font-size:11px;">Click: set Origin (right-click: Dest.)</span>';
+          '<br/><span style="color:#5c5343;font-size:11px;">Tap to inspect arrivals</span>';
         marker.bindTooltip(
           "<strong>" +
             st.name +
@@ -1440,19 +1733,59 @@ export function initTrainArrivalTracker(): void {
         );
 
         marker.on("click", () => {
-          selectStationFromVisualizer(lk, st.id);
+          inspectStation(lk, st.id);
         });
 
-        marker.on("contextmenu", (e: any) => {
-          if (
-            e &&
-            e.originalEvent &&
-            typeof e.originalEvent.preventDefault === "function"
-          ) {
-            e.originalEvent.preventDefault();
-          }
-          selectStationFromVisualizer(lk, st.id, "dest");
-        });
+        const fwdDeckSt = computeDirectionScheduleDeck(
+          lk,
+          st.id,
+          "fwd",
+          clock.exactMin,
+          isWeekend,
+          TIMETABLES[lk],
+        );
+        const revDeckSt = computeDirectionScheduleDeck(
+          lk,
+          st.id,
+          "rev",
+          clock.exactMin,
+          isWeekend,
+          TIMETABLES[lk],
+        );
+        const fwdNext = fwdDeckSt.upcomingTrains[0]
+          ? formatWaitLabel(fwdDeckSt.upcomingTrains[0].waitMin) +
+            " (" +
+            fwdDeckSt.upcomingTrains[0].formattedTime +
+            ")"
+          : "Closed";
+        const revNext = revDeckSt.upcomingTrains[0]
+          ? formatWaitLabel(revDeckSt.upcomingTrains[0].waitMin) +
+            " (" +
+            revDeckSt.upcomingTrains[0].formattedTime +
+            ")"
+          : "Closed";
+        marker.bindPopup(
+          '<div style="font-size:12px;line-height:1.4;min-width:190px;">' +
+            "<strong>" +
+            st.name +
+            " (" +
+            lk.toUpperCase() +
+            ")</strong><br/>" +
+            '<span style="color:#5c5343;">' +
+            fwdDeckSt.dirSpec.shortDir +
+            ":</span> Next <strong>" +
+            fwdNext +
+            "</strong> &middot; Last here: " +
+            formatPrevTrainLabel(fwdDeckSt.previousTrain) +
+            "<br/>" +
+            '<span style="color:#5c5343;">' +
+            revDeckSt.dirSpec.shortDir +
+            ":</span> Next <strong>" +
+            revNext +
+            "</strong> &middot; Last here: " +
+            formatPrevTrainLabel(revDeckSt.previousTrain) +
+            "</div>",
+        );
 
         marker.addTo(stationLayerGroup);
       });
@@ -1483,21 +1816,77 @@ export function initTrainArrivalTracker(): void {
     );
   }
 
-  function renderLeafletTrains(estTrains: SimTrainMarker[]): void {
+  function buildLiveIconHtml(train: LiveTrainMarker): string {
+    const bgHex =
+      train.kind === "live_delay"
+        ? "#9e391a"
+        : LINE_COLORS[train.lineKey] || "#3d5a45";
+    const angle = Math.round(train.bearingDeg);
+    return (
+      '<div class="rail-train-pill rail-train-live" style="background-color:' +
+      bgHex +
+      ';">' +
+      '<svg width="10" height="10" viewBox="0 0 12 12" style="transform:rotate(' +
+      angle +
+      'deg);display:block;flex-shrink:0;" aria-hidden="true"><path d="M6 1L11 11L6 8.5L1 11Z" fill="#ffffff"/></svg>' +
+      "<span>" +
+      (train.kind === "live_delay" ? "DELAY·" : "LIVE·") +
+      train.dirShort +
+      "</span></div>"
+    );
+  }
+
+  function renderLeafletTrains(
+    estTrains: SimTrainMarker[],
+    liveTrains: LiveTrainMarker[],
+  ): void {
     ensureLeafletMap();
     if (!leafletMap || !trainLayerGroup || typeof L === "undefined") return;
     trainLayerGroup.clearLayers();
 
-    estTrains.forEach((t) => {
+    if (showEstTrains) {
+      estTrains.forEach((t) => {
+        const icon = L.divIcon({
+          className: "rail-est-icon",
+          html: buildEstIconHtml(t),
+          iconSize: [0, 0],
+          iconAnchor: [0, 0],
+        });
+        const marker = L.marker([t.lat, t.lon], {
+          icon,
+          zIndexOffset: t.lineKey === currentLine ? 250 : 120,
+        });
+        const lineMeta =
+          RAIL_LINES.find((l) => l.id === t.lineKey) || RAIL_LINES[0];
+        marker.bindPopup(
+          '<div style="font-size:12px;line-height:1.35;">' +
+            "<strong>" +
+            lineMeta.shortName +
+            " " +
+            t.dirName +
+            " (Schedule Estimate)</strong><br/>" +
+            "Between " +
+            t.fromName +
+            " and " +
+            t.toName +
+            ".<br/>" +
+            '<span style="color:#5c5343;">Simulated from official dispatch cadence, not live operator GPS.</span>' +
+            "</div>",
+        );
+        marker.addTo(trainLayerGroup);
+      });
+    }
+
+    liveTrains.forEach((t) => {
       const icon = L.divIcon({
-        className: "rail-est-icon",
-        html: buildEstIconHtml(t),
+        className: "rail-live-icon",
+        html: buildLiveIconHtml(t),
         iconSize: [0, 0],
         iconAnchor: [0, 0],
       });
       const marker = L.marker([t.lat, t.lon], {
         icon,
-        zIndexOffset: t.lineKey === currentLine ? 250 : 120,
+        zIndexOffset: 500,
       });
       const lineMeta =
         RAIL_LINES.find((l) => l.id === t.lineKey) || RAIL_LINES[0];
@@ -1507,20 +1896,25 @@ export function initTrainArrivalTracker(): void {
           lineMeta.shortName +
           " " +
           t.dirName +
-          " (Schedule Estimate)</strong><br/>" +
-          "Between " +
-          t.fromName +
-          " and " +
-          t.toName +
-          ".<br/>" +
-          '<span style="color:#5c5343;">Simulated from official dispatch cadence, not live operator GPS.</span>' +
+          " (Live Rider Sighting)</strong><br/>" +
+          "Reported at " +
+          t.reportedStationName +
+          " (" +
+          t.ageStr +
+          ").<br/>" +
+          "Projected near " +
+          t.projectedStationName +
+          "." +
           "</div>",
       );
       marker.addTo(trainLayerGroup);
     });
   }
 
-  function renderDiagramView(estTrains: SimTrainMarker[]): void {
+  function renderDiagramView(
+    estTrains: SimTrainMarker[],
+    liveTrains: LiveTrainMarker[],
+  ): void {
     if (!railDiagramSvg) return;
     railDiagramSvg.innerHTML = "";
 
@@ -1567,8 +1961,8 @@ export function initTrainArrivalTracker(): void {
         }),
       );
 
-      if (isActive && currentStationId !== destStationId) {
-        const iOrig = diagramIndexByStation[lk][currentStationId];
+      if (isActive && tripOriginId !== destStationId) {
+        const iOrig = diagramIndexByStation[lk][tripOriginId];
         const iDest = diagramIndexByStation[lk][destStationId];
         if (iOrig !== undefined && iDest !== undefined) {
           const lo = Math.min(iOrig, iDest);
@@ -1634,17 +2028,18 @@ export function initTrainArrivalTracker(): void {
       STATIONS_DATA[lk].forEach((st, idx) => {
         const pos = diagramPos[st.id];
         if (!pos) return;
-        const isOrigin = lk === currentLine && st.id === currentStationId;
+        const isInspected = lk === currentLine && st.id === currentStationId;
+        const isTripOrig = lk === currentLine && st.id === tripOriginId;
         const isDest = lk === currentLine && st.id === destStationId;
 
-        if (isDest && !isOrigin) {
+        if ((isDest || isTripOrig) && !isInspected) {
           gStations.appendChild(
             svgEl("circle", {
               cx: pos.x,
               cy: pos.y,
               r: 14,
               fill: "#f7f3e9",
-              stroke: "#9e391a",
+              stroke: isDest ? "#9e391a" : "#3d5a45",
               "stroke-width": 3,
             }),
           );
@@ -1653,20 +2048,33 @@ export function initTrainArrivalTracker(): void {
         const c = svgEl("circle", {
           cx: pos.x,
           cy: pos.y,
-          r: isOrigin ? 11 : isDest ? 8 : st.isTransfer ? 8 : 6.5,
-          fill: isOrigin ? lineHex : isDest ? "#9e391a" : "#f7f3e9",
-          stroke: isOrigin ? "#211d16" : isDest ? "#9e391a" : lineHex,
-          "stroke-width": isOrigin ? 4 : 3,
+          r: isInspected
+            ? 11
+            : isDest || isTripOrig
+              ? 8
+              : st.isTransfer
+                ? 8
+                : 6.5,
+          fill: isInspected
+            ? lineHex
+            : isDest
+              ? "#9e391a"
+              : isTripOrig
+                ? "#3d5a45"
+                : "#f7f3e9",
+          stroke: isInspected
+            ? "#211d16"
+            : isDest
+              ? "#9e391a"
+              : isTripOrig
+                ? "#3d5a45"
+                : lineHex,
+          "stroke-width": isInspected ? 4 : 3,
           style: "cursor:pointer;",
         });
 
         c.addEventListener("click", () => {
-          selectStationFromVisualizer(lk, st.id);
-        });
-
-        c.addEventListener("contextmenu", (e) => {
-          e.preventDefault();
-          selectStationFromVisualizer(lk, st.id, "dest");
+          inspectStation(lk, st.id);
         });
 
         gStations.appendChild(c);
@@ -1676,7 +2084,7 @@ export function initTrainArrivalTracker(): void {
           x: lbl.lx,
           y: lbl.ly,
           "text-anchor": lbl.anchor,
-          fill: isOrigin || isDest ? "#211d16" : "#3a3428",
+          fill: isInspected || isTripOrig || isDest ? "#211d16" : "#3a3428",
         });
         txt.textContent = shortDiagramName(st);
         gLabels.appendChild(txt);
@@ -1687,21 +2095,47 @@ export function initTrainArrivalTracker(): void {
     railDiagramSvg.appendChild(gLabels);
 
     const gTrains = svgEl("g", { id: "dg-trains" });
-    estTrains.forEach((t) => {
+    if (showEstTrains) {
+      estTrains.forEach((t) => {
+        const g = svgEl("g", {
+          transform:
+            "translate(" + t.svgX.toFixed(1) + "," + t.svgY.toFixed(1) + ")",
+        });
+        const halo = svgEl("circle", {
+          r: 12,
+          fill: "#f7f3e9",
+          stroke: LINE_COLORS[t.lineKey] || "#3d5a45",
+          "stroke-width": 2.5,
+          "stroke-dasharray": "4 3",
+        });
+        const tri = svgEl("path", {
+          d: "M0,-7 L6,5 L0,2.5 L-6,5 Z",
+          fill: LINE_COLORS[t.lineKey] || "#3d5a45",
+          transform: "rotate(" + Math.round(t.svgAngleDeg) + ")",
+        });
+        g.appendChild(halo);
+        g.appendChild(tri);
+        gTrains.appendChild(g);
+      });
+    }
+    liveTrains.forEach((t) => {
       const g = svgEl("g", {
         transform:
           "translate(" + t.svgX.toFixed(1) + "," + t.svgY.toFixed(1) + ")",
       });
+      const fillCol =
+        t.kind === "live_delay"
+          ? "#9e391a"
+          : LINE_COLORS[t.lineKey] || "#3d5a45";
       const halo = svgEl("circle", {
-        r: 12,
-        fill: "#f7f3e9",
-        stroke: LINE_COLORS[t.lineKey] || "#3d5a45",
-        "stroke-width": 2.5,
-        "stroke-dasharray": "4 3",
+        r: 14,
+        fill: fillCol,
+        stroke: "#ffffff",
+        "stroke-width": 3,
       });
       const tri = svgEl("path", {
         d: "M0,-7 L6,5 L0,2.5 L-6,5 Z",
-        fill: LINE_COLORS[t.lineKey] || "#3d5a45",
+        fill: "#ffffff",
         transform: "rotate(" + Math.round(t.svgAngleDeg) + ")",
       });
       g.appendChild(halo);
@@ -1753,7 +2187,8 @@ export function initTrainArrivalTracker(): void {
 
     visibleRows.forEach((row, visibleIdx) => {
       const st = row.station;
-      const isOrigin = st.id === currentStationId;
+      const isInspected = st.id === currentStationId;
+      const isTripOrig = st.id === tripOriginId;
       const isDest = st.id === destStationId;
       const isFirstVisible = visibleIdx === 0;
       const isLastVisible = visibleIdx === visibleRows.length - 1;
@@ -1761,16 +2196,17 @@ export function initTrainArrivalTracker(): void {
       const lastTime = isWeekend ? row.weekendLastFwd : row.weekdayLastFwd;
       const estTrain = estByIndex[row.index];
 
-      const btn = document.createElement("div");
-      btn.setAttribute("role", "button");
-      btn.tabIndex = 0;
+      const btn = document.createElement("button");
+      btn.type = "button";
       btn.className =
         "relative w-full text-left flex items-center justify-between gap-3 p-3 rounded-xl transition-colors cursor-pointer group " +
-        (isOrigin
+        (isInspected
           ? "bg-mapa-canvas border-2 border-mapa-ink shadow-2xs"
           : isDest
             ? "bg-mapa-canvas border-2 border-mapa-rust shadow-2xs"
-            : "bg-mapa-canvas-dark border border-transparent hover:border-mapa-contour hover:bg-mapa-canvas");
+            : isTripOrig
+              ? "bg-mapa-canvas border-2 border-mapa-green shadow-2xs"
+              : "bg-mapa-canvas-dark border border-transparent hover:border-mapa-contour hover:bg-mapa-canvas");
 
       if (!isFirstVisible) {
         const segTop = document.createElement("span");
@@ -1792,13 +2228,20 @@ export function initTrainArrivalTracker(): void {
       const node = document.createElement("span");
       node.className =
         "absolute left-[-23px] top-1/2 -translate-y-1/2 w-5 h-5 rounded-full border-2 flex items-center justify-center z-10 pointer-events-none";
-      node.style.borderColor = isDest && !isOrigin ? "#9e391a" : lineHex;
-      node.style.backgroundColor = isOrigin
+      node.style.borderColor =
+        isDest && !isInspected
+          ? "#9e391a"
+          : isTripOrig && !isInspected
+            ? "#3d5a45"
+            : lineHex;
+      node.style.backgroundColor = isInspected
         ? lineHex
         : isDest
           ? "#9e391a"
-          : "#f7f3e9";
-      if (!isOrigin && !isDest && st.isTransfer) {
+          : isTripOrig
+            ? "#3d5a45"
+            : "#f7f3e9";
+      if (!isInspected && !isDest && !isTripOrig && st.isTransfer) {
         const inner = document.createElement("span");
         inner.className = "w-1.5 h-1.5 rounded-full";
         inner.style.backgroundColor = lineHex;
@@ -1817,18 +2260,25 @@ export function initTrainArrivalTracker(): void {
       nameEl.textContent = st.name;
       titleRow.appendChild(nameEl);
 
-      if (isOrigin) {
+      if (isInspected) {
+        const inspectedTag = document.createElement("span");
+        inspectedTag.className =
+          "text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-mapa-ink text-white";
+        inspectedTag.textContent = "Inspected";
+        titleRow.appendChild(inspectedTag);
+      }
+      if (isTripOrig) {
         const origTag = document.createElement("span");
         origTag.className =
-          "text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-mapa-ink text-white";
-        origTag.textContent = "Origin";
+          "text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-mapa-green/15 text-mapa-green";
+        origTag.textContent = "From";
         titleRow.appendChild(origTag);
       }
       if (isDest) {
         const destTag = document.createElement("span");
         destTag.className =
           "text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-mapa-rust text-white";
-        destTag.textContent = "Dest.";
+        destTag.textContent = "To";
         titleRow.appendChild(destTag);
       }
 
@@ -1870,51 +2320,10 @@ export function initTrainArrivalTracker(): void {
         right.appendChild(estTag);
       }
 
-      const pickActions = document.createElement("div");
-      pickActions.className = "flex items-center gap-1";
-
-      const fromBtn = document.createElement("button");
-      fromBtn.type = "button";
-      fromBtn.className =
-        "px-2 py-0.5 rounded border text-[10px] font-bold transition-colors cursor-pointer " +
-        (isOrigin
-          ? "bg-mapa-ink text-white border-mapa-ink"
-          : "bg-mapa-canvas border-mapa-contour text-mapa-ink/80 hover:border-mapa-ink hover:text-mapa-ink");
-      fromBtn.textContent = "From";
-      fromBtn.title = "Set " + st.name + " as Origin";
-      fromBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        selectStationFromVisualizer(currentLine, st.id, "origin");
-      });
-
-      const toBtn = document.createElement("button");
-      toBtn.type = "button";
-      toBtn.className =
-        "px-2 py-0.5 rounded border text-[10px] font-bold transition-colors cursor-pointer " +
-        (isDest
-          ? "bg-mapa-rust text-white border-mapa-rust"
-          : "bg-mapa-canvas border-mapa-contour text-mapa-rust hover:border-mapa-rust");
-      toBtn.textContent = "To";
-      toBtn.title = "Set " + st.name + " as Destination";
-      toBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        selectStationFromVisualizer(currentLine, st.id, "dest");
-      });
-
-      pickActions.appendChild(fromBtn);
-      pickActions.appendChild(toBtn);
-      right.appendChild(pickActions);
-
       btn.appendChild(left);
       btn.appendChild(right);
       btn.addEventListener("click", () => {
-        selectStationFromVisualizer(currentLine, st.id);
-      });
-      btn.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          selectStationFromVisualizer(currentLine, st.id);
-        }
+        inspectStation(currentLine, st.id);
       });
 
       stationSpineScroll!.appendChild(btn);
@@ -1926,37 +2335,67 @@ export function initTrainArrivalTracker(): void {
   function computeScopedTrains(clock: ManilaClock, isWeekend: boolean) {
     const scopeKeys: LineKey[] =
       mapScope === "all" ? ["mrt3", "lrt1", "lrt2"] : [currentLine];
+    const allSightings = getMergedSightings();
     let scopedEst: SimTrainMarker[] = [];
+    let scopedLive: LiveTrainMarker[] = [];
     let activeLineEstByIndex: Record<number, { fwd: boolean; rev: boolean }> =
       {};
+    let activeLineCrowded = new Set<string>();
+    let activeLineDelayed = { fwd: false, rev: false };
+    let activeLineLive: LiveTrainMarker[] = [];
 
     (["mrt3", "lrt1", "lrt2"] as LineKey[]).forEach((lk) => {
-      const snap = computeLineSimulatedTrains(lk, clock, isWeekend);
+      const estSnap = computeLineSimulatedTrains(lk, clock, isWeekend);
+      const liveSnap = computeLineLiveTrains(lk, clock, allSightings);
       if (lk === currentLine) {
-        activeLineEstByIndex = snap.estByIndex;
+        activeLineEstByIndex = estSnap.estByIndex;
+        activeLineCrowded = liveSnap.crowdedStations;
+        activeLineDelayed = liveSnap.delayedDir;
+        activeLineLive = liveSnap.liveTrains;
       }
       if (scopeKeys.includes(lk)) {
-        scopedEst = scopedEst.concat(snap.estTrains);
+        scopedEst = scopedEst.concat(estSnap.estTrains);
+        scopedLive = scopedLive.concat(liveSnap.liveTrains);
       }
     });
 
-    return { scopedEst, activeLineEstByIndex };
+    return {
+      scopedEst,
+      scopedLive,
+      activeLineEstByIndex,
+      activeLineCrowded,
+      activeLineDelayed,
+      activeLineLive,
+    };
+  }
+
+  function updateTrainCountBadge(estCount: number, liveCount: number): void {
+    if (!mapTrainCountBadge) return;
+    if (!showEstTrains) {
+      mapTrainCountBadge.textContent =
+        liveCount === 1 ? "1 LIVE TRAIN" : liveCount + " LIVE TRAINS";
+      return;
+    }
+    if (liveCount > 0) {
+      mapTrainCountBadge.textContent =
+        liveCount + " LIVE · " + estCount + " EST";
+    } else {
+      mapTrainCountBadge.textContent = estCount + " EST TRAINS";
+    }
   }
 
   function refreshVisualizersOnly(): void {
     const clock = getManilaClock();
     const isWeekend = getEffectiveIsWeekend(clock);
-    const { scopedEst } = computeScopedTrains(clock, isWeekend);
+    const { scopedEst, scopedLive } = computeScopedTrains(clock, isWeekend);
 
-    if (mapTrainCountBadge) {
-      mapTrainCountBadge.textContent = scopedEst.length + " EST TRAINS";
-    }
-    updateScheduleModeBanner(clock, isWeekend, scopedEst.length);
+    updateTrainCountBadge(scopedEst.length, scopedLive.length);
+    updateCadenceChip(clock, isWeekend);
 
     if (viewMode === "map") {
-      renderLeafletTrains(scopedEst);
+      renderLeafletTrains(scopedEst, scopedLive);
     } else if (viewMode === "diagram") {
-      renderDiagramView(scopedEst);
+      renderDiagramView(scopedEst, scopedLive);
     }
   }
 
@@ -1964,6 +2403,8 @@ export function initTrainArrivalTracker(): void {
     const clock = getManilaClock();
     lastRenderedMinute = clock.totalMin;
     const isWeekend = getEffectiveIsWeekend(clock);
+    const hw = getHeadwayPeriod(currentLine, clock.totalMin, isWeekend);
+    const spec = SCHEDULE_SPECS[currentLine];
     const lineMeta =
       RAIL_LINES.find((l) => l.id === currentLine) || RAIL_LINES[0];
     const origSt =
@@ -1971,7 +2412,7 @@ export function initTrainArrivalTracker(): void {
       STATIONS_DATA[currentLine][0];
 
     updateLineTabsUI();
-    updatePickTargetUI();
+    updateToggleEstBtnUI();
     updateViewModeUI();
     updateMapScopeUI();
 
@@ -1979,6 +2420,30 @@ export function initTrainArrivalTracker(): void {
     if (manilaDayTagEl) {
       manilaDayTagEl.textContent =
         clock.weekdayLabel + " · " + (isWeekend ? "Weekend" : "Weekday");
+    }
+
+    if (selectedStationTitle) {
+      selectedStationTitle.textContent = origSt.name + " (" + origSt.city + ")";
+    }
+    if (selectedStationFleetBadge) {
+      selectedStationFleetBadge.textContent =
+        lineMeta.shortName +
+        " · " +
+        hw.deployedTrainsets[0] +
+        "-" +
+        hw.deployedTrainsets[1] +
+        " active trainsets";
+    }
+    if (checkInStationName) {
+      checkInStationName.textContent = origSt.name;
+    }
+    if (reportFwdTrainBtn) {
+      reportFwdTrainBtn.textContent =
+        "+ Live " + spec.forward.shortDir + " Train";
+    }
+    if (reportRevTrainBtn) {
+      reportRevTrainBtn.textContent =
+        "+ Live " + spec.reverse.shortDir + " Train";
     }
 
     if (corridorHeading) {
@@ -1992,29 +2457,24 @@ export function initTrainArrivalTracker(): void {
     }
 
     if (lineOperatorMeta) {
-      const targetWord = pickTarget === "dest" ? "Destination" : "Origin";
       lineOperatorMeta.textContent =
         lineMeta.operator +
         " · " +
         lineMeta.stationsCount +
-        " stations · Tap any stop to set " +
-        targetWord;
+        " stations · Tap any stop to inspect";
     }
 
-    if (stationMetaNote) {
-      stationMetaNote.textContent =
-        origSt.name + " (" + origSt.city + ") · km " + origSt.km.toFixed(1);
-    }
+    const {
+      scopedEst,
+      scopedLive,
+      activeLineEstByIndex,
+      activeLineCrowded,
+      activeLineDelayed,
+      activeLineLive,
+    } = computeScopedTrains(clock, isWeekend);
 
-    const { scopedEst, activeLineEstByIndex } = computeScopedTrains(
-      clock,
-      isWeekend,
-    );
-
-    if (mapTrainCountBadge) {
-      mapTrainCountBadge.textContent = scopedEst.length + " EST TRAINS";
-    }
-    updateScheduleModeBanner(clock, isWeekend, scopedEst.length);
+    updateTrainCountBadge(scopedEst.length, scopedLive.length);
+    updateCadenceChip(clock, isWeekend);
 
     const fwdDeck = computeDirectionScheduleDeck(
       currentLine,
@@ -2033,21 +2493,49 @@ export function initTrainArrivalTracker(): void {
       TIMETABLES[currentLine],
     );
 
-    renderDirectionCard("fwd", fwdDeck);
-    renderDirectionCard("rev", revDeck);
+    const fwdLiveMatch = findUpcomingLiveMatch(
+      currentLine,
+      currentStationId,
+      "fwd",
+      activeLineLive,
+    );
+    const revLiveMatch = findUpcomingLiveMatch(
+      currentLine,
+      currentStationId,
+      "rev",
+      activeLineLive,
+    );
+    const isOrigCrowded = activeLineCrowded.has(currentStationId);
+
+    renderDirectionCard(
+      "fwd",
+      fwdDeck,
+      clock,
+      fwdLiveMatch,
+      isOrigCrowded,
+      activeLineDelayed.fwd,
+    );
+    renderDirectionCard(
+      "rev",
+      revDeck,
+      clock,
+      revLiveMatch,
+      isOrigCrowded,
+      activeLineDelayed.rev,
+    );
 
     const tripPlan = computeTripAndTransferPlan(
       currentLine,
-      currentStationId,
+      tripOriginId,
       destStationId,
       clock.exactMin,
       isWeekend,
     );
     renderTripPlannerCard(tripPlan);
 
-    renderLeafletTracksAndStations();
-    renderLeafletTrains(scopedEst);
-    renderDiagramView(scopedEst);
+    renderLeafletTracksAndStations(clock, isWeekend);
+    renderLeafletTrains(scopedEst, scopedLive);
+    renderDiagramView(scopedEst, scopedLive);
     renderStationSpine(isWeekend, activeLineEstByIndex);
 
     if (serviceAlertBanner) {
@@ -2077,16 +2565,161 @@ export function initTrainArrivalTracker(): void {
     }
   }
 
+  async function fetchLiveSightings(): Promise<void> {
+    if (!supabaseUrl || !supabaseKey) {
+      remoteSightings = [];
+      if (liveFeedStatusText) {
+        liveFeedStatusText.textContent =
+          "Local live preview (add Supabase env to share)";
+      }
+      renderAll();
+      return;
+    }
+
+    const sinceIso = new Date(Date.now() - LIVE_WINDOW_MS).toISOString();
+    const endpoint =
+      supabaseUrl +
+      "/rest/v1/rail_sightings?select=id,line_key,station_id,direction,report_type,source_kind,crowd_level,created_at" +
+      "&created_at=gte." +
+      encodeURIComponent(sinceIso) +
+      "&order=created_at.desc&limit=80";
+
+    try {
+      const res = await fetch(endpoint, {
+        headers: {
+          apikey: supabaseKey,
+          Authorization: "Bearer " + supabaseKey,
+          Accept: "application/json",
+        },
+      });
+      if (!res.ok) {
+        if (liveFeedStatusText) {
+          liveFeedStatusText.textContent =
+            "Live feed offline (HTTP " + res.status + ")";
+        }
+        remoteSightings = [];
+        renderAll();
+        return;
+      }
+      const rows = await res.json();
+      remoteSightings = Array.isArray(rows) ? rows : [];
+      if (liveFeedStatusText) {
+        liveFeedStatusText.textContent =
+          remoteSightings.length > 0
+            ? remoteSightings.length + " shared sightings (15m)"
+            : "Shared live feed connected";
+      }
+      renderAll();
+    } catch (err: any) {
+      if (liveFeedStatusText) {
+        liveFeedStatusText.textContent =
+          "Live feed unreachable (" + (err?.message || "network error") + ")";
+      }
+      remoteSightings = [];
+      renderAll();
+    }
+  }
+
+  async function submitLiveSighting(
+    reportType: LiveSightingRecord["report_type"],
+    direction: "fwd" | "rev",
+  ): Promise<void> {
+    const nowMs = Date.now();
+    if (nowMs < cooldownUntilMs) {
+      const remSec = Math.ceil((cooldownUntilMs - nowMs) / 1000);
+      if (checkInFeedback) {
+        checkInFeedback.className = "text-[11px] text-mapa-rust font-semibold";
+        checkInFeedback.textContent =
+          "Please wait " + remSec + "s before posting another sighting.";
+      }
+      return;
+    }
+
+    const station =
+      STATIONS_DATA[currentLine].find((s) => s.id === currentStationId) ||
+      STATIONS_DATA[currentLine][0];
+    const token = getOrCreateClientToken();
+    const nowIso = new Date(nowMs).toISOString();
+    const localRec: LiveSightingRecord = {
+      id: "local_" + nowMs,
+      line_key: currentLine,
+      station_id: station.id,
+      direction,
+      report_type: reportType,
+      source_kind: "manual",
+      crowd_level: reportType === "crowded" ? "packed" : null,
+      created_at: nowIso,
+      isLocalOnly: !supabaseUrl || !supabaseKey,
+    };
+
+    localSightings = [localRec, ...localSightings].slice(0, 30);
+    saveLocalPreviewSightings(localSightings);
+    cooldownUntilMs = nowMs + 20000;
+    renderAll();
+
+    if (!supabaseUrl || !supabaseKey) {
+      if (checkInFeedback) {
+        checkInFeedback.className = "text-[11px] text-mapa-green font-semibold";
+        checkInFeedback.textContent =
+          "Live pin pinned locally at " + station.name + " for 15 mins.";
+      }
+      return;
+    }
+
+    try {
+      const res = await fetch(supabaseUrl + "/rest/v1/rail_sightings", {
+        method: "POST",
+        headers: {
+          apikey: supabaseKey,
+          Authorization: "Bearer " + supabaseKey,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify({
+          line_key: currentLine,
+          station_id: station.id,
+          direction,
+          report_type: reportType,
+          source_kind: "manual",
+          crowd_level: reportType === "crowded" ? "packed" : null,
+          client_token: token,
+        }),
+      });
+      if (!res.ok) {
+        throw new Error("HTTP " + res.status);
+      }
+      if (checkInFeedback) {
+        checkInFeedback.className = "text-[11px] text-mapa-green font-semibold";
+        checkInFeedback.textContent =
+          "Shared live pin posted for " + station.name + "!";
+      }
+      await fetchLiveSightings();
+    } catch (err: any) {
+      if (checkInFeedback) {
+        checkInFeedback.className = "text-[11px] text-mapa-rust font-semibold";
+        checkInFeedback.textContent =
+          "Saved locally, but shared upload failed (" +
+          (err?.message || "network error") +
+          ").";
+      }
+    }
+  }
+
   function switchLine(
     newLine: LineKey,
-    preferredOrigin?: string | null,
+    preferredInspected?: string | null,
+    preferredTripOrigin?: string | null,
     preferredDest?: string | null,
   ): void {
     if (!STATIONS_DATA[newLine]) return;
     currentLine = newLine;
     stationFilterQuery = "";
     if (stationFilterInput) stationFilterInput.value = "";
-    populateStationDropdowns(preferredOrigin, preferredDest);
+    populateStationDropdowns(
+      preferredInspected,
+      preferredTripOrigin,
+      preferredDest,
+    );
     updateUrlParams();
     renderAll();
   }
@@ -2132,11 +2765,12 @@ export function initTrainArrivalTracker(): void {
 
     gpsLocateBtn.disabled = true;
     const origSpan = gpsLocateBtn.querySelector("span");
+    const origLabel = origSpan?.textContent || "Nearest via GPS";
     if (origSpan) origSpan.textContent = "Locating...";
 
     const onSuccess = (pos: GeolocationPosition) => {
       gpsLocateBtn.disabled = false;
-      if (origSpan) origSpan.textContent = "Use My GPS";
+      if (origSpan) origSpan.textContent = origLabel;
 
       const userLat = pos.coords.latitude;
       const userLon = pos.coords.longitude;
@@ -2171,9 +2805,16 @@ export function initTrainArrivalTracker(): void {
             best.lineKey.toUpperCase() +
             ", ~" +
             best.distMeters +
-            "m away). Coordinates never leave your browser.",
+            "m away). Coordinates stay in your browser and do not report a live train until you tap + Live below.",
         );
-        switchLine(best.lineKey, best.stationId, null);
+        if (best.lineKey !== currentLine) {
+          switchLine(best.lineKey, best.stationId);
+        } else {
+          currentStationId = best.stationId;
+          stationSelect!.value = currentStationId;
+          updateUrlParams();
+          renderAll();
+        }
       } else if (best) {
         const chosen = best;
         showGpsBanner(
@@ -2184,13 +2825,9 @@ export function initTrainArrivalTracker(): void {
             (chosen.distMeters / 1000).toFixed(1) +
             " km away, outside 650m station radius).",
           {
-            label: "Use " + chosen.stationName,
+            label: "Inspect " + chosen.stationName,
             onClick: () => {
-              selectStationFromVisualizer(
-                chosen.lineKey,
-                chosen.stationId,
-                "origin",
-              );
+              inspectStation(chosen.lineKey, chosen.stationId);
             },
           },
         );
@@ -2200,10 +2837,10 @@ export function initTrainArrivalTracker(): void {
 
     const onFinalError = (geoErr: GeolocationPositionError) => {
       gpsLocateBtn.disabled = false;
-      if (origSpan) origSpan.textContent = "Use My GPS";
+      if (origSpan) origSpan.textContent = origLabel;
 
       let msg =
-        "Your device could not get a location fix right now. Pick your station from the dropdown, map, or quick hubs below.";
+        "Your device could not get a location fix right now. Pick your station from the dropdown or map below.";
       if (geoErr && geoErr.code === 1) {
         msg =
           "Location access is blocked for this site. Open your browser's site settings (lock or settings icon in the address bar), allow Location, and try again, or pick your station directly below.";
@@ -2242,23 +2879,16 @@ export function initTrainArrivalTracker(): void {
       });
     });
 
-  document
-    .querySelectorAll<HTMLButtonElement>(".pick-target-btn")
-    .forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const target = btn.getAttribute("data-pick-target") as
-          "origin" | "dest" | null;
-        if (target) {
-          pickTarget = target;
-          updatePickTargetUI();
-          renderAll();
-        }
-      });
-    });
-
   stationSelect.addEventListener("change", () => {
     hideGpsBanner();
     currentStationId = stationSelect.value;
+    updateUrlParams();
+    renderAll();
+  });
+
+  tripOriginSelect.addEventListener("change", () => {
+    hideGpsBanner();
+    tripOriginId = tripOriginSelect.value;
     updateUrlParams();
     renderAll();
   });
@@ -2270,13 +2900,27 @@ export function initTrainArrivalTracker(): void {
     renderAll();
   });
 
+  if (useInspectedAsOriginBtn) {
+    useInspectedAsOriginBtn.addEventListener("click", () => {
+      hideGpsBanner();
+      tripOriginId = currentStationId;
+      if (tripOriginId === destStationId) {
+        destStationId = getDefaultDestForOrigin(currentLine, tripOriginId);
+      }
+      tripOriginSelect.value = tripOriginId;
+      destStationSelect.value = destStationId;
+      updateUrlParams();
+      renderAll();
+    });
+  }
+
   if (swapStationsBtn) {
     swapStationsBtn.addEventListener("click", () => {
       hideGpsBanner();
-      const prevOrig = currentStationId;
-      currentStationId = destStationId;
+      const prevOrig = tripOriginId;
+      tripOriginId = destStationId;
       destStationId = prevOrig;
-      stationSelect.value = currentStationId;
+      tripOriginSelect.value = tripOriginId;
       destStationSelect.value = destStationId;
       updateUrlParams();
       renderAll();
@@ -2293,8 +2937,17 @@ export function initTrainArrivalTracker(): void {
         const dest = btn.getAttribute("data-preset-dest");
         if (line && dest) {
           const targetOrig =
-            line === currentLine && !orig ? currentStationId : orig;
-          switchLine(line, targetOrig, dest);
+            orig || (line === currentLine ? tripOriginId : null);
+          if (line === currentLine) {
+            if (targetOrig) tripOriginId = targetOrig;
+            destStationId = dest;
+            tripOriginSelect.value = tripOriginId;
+            destStationSelect.value = destStationId;
+            updateUrlParams();
+            renderAll();
+          } else {
+            switchLine(line, targetOrig || dest, targetOrig, dest);
+          }
         }
       });
     });
@@ -2330,13 +2983,6 @@ export function initTrainArrivalTracker(): void {
     });
   }
 
-  if (scheduleModeActionBtn) {
-    scheduleModeActionBtn.addEventListener("click", () => {
-      const card = document.getElementById("tripPlannerCard");
-      if (card) card.scrollIntoView({ behavior: "smooth", block: "center" });
-    });
-  }
-
   if (stationFilterInput) {
     stationFilterInput.addEventListener("input", () => {
       stationFilterQuery = stationFilterInput.value || "";
@@ -2366,33 +3012,38 @@ export function initTrainArrivalTracker(): void {
       });
     });
 
-  document
-    .querySelectorAll<HTMLButtonElement>(".quick-hub-btn")
-    .forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const hubLine = btn.getAttribute("data-hub-line") as LineKey | null;
-        const hubStation = btn.getAttribute("data-hub-station");
-        if (hubLine && hubStation) {
-          selectStationFromVisualizer(hubLine, hubStation);
-        }
-      });
-    });
-
   gpsLocateBtn?.addEventListener("click", handleGpsLocate);
+
+  if (toggleEstTrainsBtn) {
+    toggleEstTrainsBtn.addEventListener("click", () => {
+      showEstTrains = !showEstTrains;
+      updateToggleEstBtnUI();
+      refreshVisualizersOnly();
+    });
+  }
+
+  reportFwdTrainBtn?.addEventListener("click", () => {
+    void submitLiveSighting("arriving", "fwd");
+  });
+  reportRevTrainBtn?.addEventListener("click", () => {
+    void submitLiveSighting("arriving", "rev");
+  });
 
   // Initial URL hydration
   try {
     const params = new URLSearchParams(window.location.search);
     const qLine = params.get("line") as LineKey | null;
     const qStation = params.get("station");
+    const qFrom = params.get("from");
     const qDest = params.get("dest");
     if (qLine && STATIONS_DATA[qLine]) currentLine = qLine;
-    populateStationDropdowns(qStation, qDest);
+    populateStationDropdowns(qStation, qFrom, qDest);
   } catch {
-    populateStationDropdowns(null, null);
+    populateStationDropdowns(null, null, null);
   }
 
   renderAll();
+  void fetchLiveSightings();
 
   setInterval(() => {
     if (document.hidden) return;
@@ -2407,6 +3058,12 @@ export function initTrainArrivalTracker(): void {
   setInterval(() => {
     if (!document.hidden) refreshVisualizersOnly();
   }, 5000);
+
+  if (supabaseUrl && supabaseKey) {
+    setInterval(() => {
+      if (!document.hidden) void fetchLiveSightings();
+    }, 20000);
+  }
 }
 
 initTrainArrivalTracker();

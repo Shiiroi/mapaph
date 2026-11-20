@@ -146,7 +146,7 @@ const tools = [
 			const isExternal = tool.url.startsWith("http");
 			return (
 				<div
-					class={`flex flex-col bg-mapa-canvas border border-mapa-contour/80 rounded-xl overflow-hidden transition-all duration-300 group relative hover:border-mapa-green/60 hover:-translate-y-1 cursor-pointer shadow-xs ${tool.id === "lens" ? "md:col-span-2 lg:col-span-2" : ""}`}
+					class="flex flex-col bg-mapa-canvas border border-mapa-contour/80 rounded-xl overflow-hidden transition-all duration-300 group relative hover:border-mapa-green/60 hover:-translate-y-1 cursor-pointer shadow-xs"
 				>
 					{/* Overlay anchor covering container */}
 					<a
@@ -160,11 +160,13 @@ const tools = [
 					<!-- Card Preview Container -->
 					<div class="block border-b border-mapa-contour/50 overflow-hidden relative z-0">
 						{tool.image ? (
-							<Image
-								src={tool.image}
-								alt={`${tool.name} preview`}
-								class="w-full h-44 object-cover object-top transition-transform duration-500 group-hover:scale-105"
-							/>
+							<div class="h-44 bg-mapa-canvas-dark overflow-hidden relative">
+								<Image
+									src={tool.image}
+									alt={`${tool.name} preview`}
+									class="w-full h-44 object-cover object-top transition-transform duration-500 group-hover:scale-105"
+								/>
+							</div>
 						) : (
 							<div class="h-44 bg-mapa-canvas-dark flex flex-col items-center justify-center p-5 text-center border-b border-mapa-contour/30 relative overflow-hidden">
 								<div class="absolute inset-0 opacity-15 bg-[radial-gradient(#3d5a45_1px,transparent_1px)] [background-size:16px_16px]" aria-hidden="true"></div>

@@ -370,12 +370,6 @@ const TRIP_PRESETS = [
 						</button>
 					</div>
 
-					<!-- Visual Hint for User -->
-					<div id="toll-click-hint" class="text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium">
-						<span class="w-1.5 h-1.5 rounded-full bg-mapa-green shrink-0"></span>
-						<span>Click any plaza card or select <strong>Entry</strong> / <strong>Exit</strong> to customize your route.</span>
-					</div>
-
 					<!-- Active Route Summary Ribbon -->
 					<div class="bg-mapa-canvas border border-mapa-contour rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
 						<div class="flex items-center gap-2 flex-wrap">
@@ -464,31 +458,6 @@ const TRIP_PRESETS = [
 						<span id="corridor-rfid-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-mapa-green text-white">
 							Easytrip RFID
 						</span>
-					</div>
-				</div>
-
-				<!-- Major Multi-Expressway Highway Presets -->
-				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-5 shadow-xs">
-					<h3 class="font-serif text-lg font-bold text-mapa-ink mb-3">
-						Popular Highway Corridor Presets
-					</h3>
-					<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-						{TRIP_PRESETS.map(preset => (
-							<button
-								class="preset-trip-btn p-3 rounded-xl bg-mapa-canvas border border-mapa-contour/70 hover:border-mapa-green transition-all text-left flex flex-col justify-between cursor-pointer"
-								data-exp={preset.expId}
-								data-orig={preset.orig}
-								data-dest={preset.dest}
-							>
-								<div class="flex items-center justify-between gap-2 mb-1">
-									<span class="font-bold text-mapa-ink text-xs">{preset.name}</span>
-									<span class="text-[10px] text-mapa-green font-semibold shrink-0">Calculate &rarr;</span>
-								</div>
-								<p class="text-[11px] text-mapa-muted leading-relaxed">
-									{preset.desc}
-								</p>
-							</button>
-						))}
 					</div>
 				</div>
 
@@ -702,6 +671,34 @@ const TRIP_PRESETS = [
 
 					</div>
 				</div>
+
+				<!-- Popular Highway Corridor Presets (Collapsible Disclosure below Toll Output) -->
+				<details class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 sm:p-5 shadow-xs group">
+					<summary class="list-none cursor-pointer flex items-center justify-between gap-2">
+						<h3 class="font-serif text-base font-bold text-mapa-ink group-hover:text-mapa-green transition-colors">
+							Popular Highway Corridor Presets ({TRIP_PRESETS.length})
+						</h3>
+						<span class="text-xs font-mono text-mapa-muted group-open:rotate-180 transition-transform">&#9662;</span>
+					</summary>
+					<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs mt-3 pt-3 border-t border-mapa-contour/50">
+						{TRIP_PRESETS.map(preset => (
+							<button
+								class="preset-trip-btn p-3 rounded-xl bg-mapa-canvas border border-mapa-contour/70 hover:border-mapa-green transition-all text-left flex flex-col justify-between cursor-pointer"
+								data-exp={preset.expId}
+								data-orig={preset.orig}
+								data-dest={preset.dest}
+							>
+								<div class="flex items-center justify-between gap-2 mb-1">
+									<span class="font-bold text-mapa-ink text-xs">{preset.name}</span>
+									<span class="text-[10px] text-mapa-green font-semibold shrink-0">Calculate &rarr;</span>
+								</div>
+								<p class="text-[11px] text-mapa-muted leading-relaxed">
+									{preset.desc}
+								</p>
+							</button>
+						))}
+					</div>
+				</details>
 
 				<!-- Emergency Towing & Roadside Assistance Hotlines -->
 				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-5 shadow-xs text-xs">
@@ -1080,9 +1077,17 @@ const TRIP_PRESETS = [
 							<div class="font-bold text-sm text-mapa-ink">Metro Pacific Tollways Corporation (MPTC)</div>
 							<p>Official concessionaire for North Luzon Expressway (NLEX), Subic–Clark–Tarlac Expressway (SCTEX), CAVITEX, CALAX, and C5 South Link.</p>
 						</div>
-						<div class="pt-2 border-t border-mapa-contour/40">
+						<div class="pt-2 border-t border-mapa-contour/40 flex flex-wrap items-center gap-4">
 							<a href="https://nlex.com.ph/toll-rates/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1">
-								<span>NLEX & SCTEX Official Tariff Matrix</span>
+								<span>NLEX &amp; SCTEX Official Tariff Matrix</span>
+								<span>&rarr;</span>
+							</a>
+							<a href="https://easytrip.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1">
+								<span>Easytrip RFID Portal</span>
+								<span>&rarr;</span>
+							</a>
+							<a href="https://www.mptc.com.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1">
+								<span>MPTC</span>
 								<span>&rarr;</span>
 							</a>
 						</div>

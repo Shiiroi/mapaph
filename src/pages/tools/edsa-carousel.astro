@@ -723,23 +723,28 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop, idx) => {
 							<span id="btn-copy-busway-fare-text">Copy Journey Fare Breakdown</span>
 						</button>
 
-						<!-- Magkano Sukli Quick Check -->
-						<div class="mt-4 pt-3 border-t border-mapa-contour/60">
-							<div class="flex items-center justify-between text-[11px] mb-2 font-mono">
-								<span class="font-bold uppercase tracking-wider text-mapa-muted font-sans">Magkano Sukli? (Change Check)</span>
-								<span id="busway-sukli-display" class="font-bold text-mapa-green">₱15.00 sukli</span>
+						<!-- Magkano Sukli Quick Check (Collapsible Disclosure) -->
+						<details class="mt-4 pt-3 border-t border-mapa-contour/60 group">
+							<summary class="list-none cursor-pointer flex items-center justify-between text-[11px] font-mono">
+								<span class="font-bold uppercase tracking-wider text-mapa-muted group-hover:text-mapa-green transition-colors font-sans">Magkano Sukli? (Change Check)</span>
+								<span class="inline-flex items-center gap-1.5">
+									<span id="busway-sukli-display" class="font-bold text-mapa-green">₱15.00 sukli</span>
+									<span class="text-mapa-muted group-open:rotate-180 transition-transform">&#9662;</span>
+								</span>
+							</summary>
+							<div class="pt-2.5">
+								<div class="flex flex-wrap gap-1.5 mb-1.5">
+									<button type="button" class="busway-tender-btn px-2.5 py-1 rounded-lg bg-mapa-canvas-dark border border-mapa-contour font-mono font-bold text-xs text-mapa-ink hover:border-mapa-green cursor-pointer" data-cash="20">₱20</button>
+									<button type="button" class="busway-tender-btn px-2.5 py-1 rounded-lg bg-mapa-canvas-dark border border-mapa-contour font-mono font-bold text-xs text-mapa-ink hover:border-mapa-green cursor-pointer" data-cash="50">₱50</button>
+									<button type="button" class="busway-tender-btn active px-2.5 py-1 rounded-lg bg-mapa-green text-white font-mono font-bold text-xs cursor-pointer" data-cash="100">₱100</button>
+									<button type="button" class="busway-tender-btn px-2.5 py-1 rounded-lg bg-mapa-canvas-dark border border-mapa-contour font-mono font-bold text-xs text-mapa-ink hover:border-mapa-green cursor-pointer" data-cash="200">₱200</button>
+									<button type="button" class="busway-tender-btn px-2.5 py-1 rounded-lg bg-mapa-canvas-dark border border-mapa-contour font-mono font-bold text-xs text-mapa-ink hover:border-mapa-green cursor-pointer" data-cash="500">₱500</button>
+								</div>
+								<div id="busway-sukli-breakdown" class="text-[11px] font-mono text-mapa-clay">
+									Expected change: 1 × ₱10 coin, 1 × ₱5 coin
+								</div>
 							</div>
-							<div class="flex flex-wrap gap-1.5 mb-1.5">
-								<button type="button" class="busway-tender-btn px-2.5 py-1 rounded-lg bg-mapa-canvas-dark border border-mapa-contour font-mono font-bold text-xs text-mapa-ink hover:border-mapa-green cursor-pointer" data-cash="20">₱20</button>
-								<button type="button" class="busway-tender-btn px-2.5 py-1 rounded-lg bg-mapa-canvas-dark border border-mapa-contour font-mono font-bold text-xs text-mapa-ink hover:border-mapa-green cursor-pointer" data-cash="50">₱50</button>
-								<button type="button" class="busway-tender-btn active px-2.5 py-1 rounded-lg bg-mapa-green text-white font-mono font-bold text-xs cursor-pointer" data-cash="100">₱100</button>
-								<button type="button" class="busway-tender-btn px-2.5 py-1 rounded-lg bg-mapa-canvas-dark border border-mapa-contour font-mono font-bold text-xs text-mapa-ink hover:border-mapa-green cursor-pointer" data-cash="200">₱200</button>
-								<button type="button" class="busway-tender-btn px-2.5 py-1 rounded-lg bg-mapa-canvas-dark border border-mapa-contour font-mono font-bold text-xs text-mapa-ink hover:border-mapa-green cursor-pointer" data-cash="500">₱500</button>
-							</div>
-							<div id="busway-sukli-breakdown" class="text-[11px] font-mono text-mapa-clay">
-								Expected change: 1 × ₱10 coin, 1 × ₱5 coin
-							</div>
-						</div>
+						</details>
 					</div>
 
 					<!-- Quick Summary Notice -->
@@ -828,12 +833,6 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop, idx) => {
 							</svg>
 							<span>Swap Stops</span>
 						</button>
-					</div>
-
-					<!-- Visual Hint for User -->
-					<div id="busway-click-hint" class="text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium">
-						<span class="w-1.5 h-1.5 rounded-full bg-mapa-green shrink-0"></span>
-						<span>Click any stop row or use <strong>Board</strong> / <strong>Alight</strong> to select your route.</span>
 					</div>
 
 					<!-- Active Route Summary Ribbon -->
@@ -1243,7 +1242,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop, idx) => {
 					</p>
 				</div>
 				<span class="text-xs text-mapa-muted font-medium">
-					LTFRB Route 1 Fare Guide (Eff. 28 Sept 2026)
+					Source: <a href="https://ltfrb.gov.ph/fare-rates/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline">LTFRB Route 1 Fare Guide (Eff. 28 Sept 2026)</a>
 				</span>
 			</div>
 
@@ -1346,14 +1345,23 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop, idx) => {
 							Authorized under <strong>LTFRB Route 1 (EDSA Busway)</strong> PUB (Aircon) Regular Fare Guide effective <strong>28 September 2026</strong>. Minimum commuter fare is ₱18.00 regular (₱14.50 discounted) for the initial 5.0 km with a succeeding distance rate of ₱2.98/km, rounded to the nearest 25 centavos.
 						</p>
 					</div>
-					<div class="mt-3 pt-2.5 border-t border-mapa-contour/50">
+					<div class="mt-3 pt-2.5 border-t border-mapa-contour/50 flex flex-wrap items-center gap-4">
+						<a
+							href="https://ltfrb.gov.ph/fare-rates/"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1"
+						>
+							<span>LTFRB Official Fare Rates</span>
+							<span>&rarr;</span>
+						</a>
 						<a
 							href="https://ltfrb.gov.ph"
 							target="_blank"
 							rel="noopener noreferrer"
 							class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1"
 						>
-							<span>LTFRB Official Portal</span>
+							<span>LTFRB Portal</span>
 							<span>&rarr;</span>
 						</a>
 					</div>
@@ -1457,13 +1465,17 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop, idx) => {
 				if (mode === 'origin') {
 					targetOriginBtn.className = 'px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer';
 					targetDestBtn.className = 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer';
-					clickHintEl.className = 'text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium';
-					clickHintEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-mapa-green shrink-0"></span><span>Click any stop row or select <strong>Board</strong> to set your origin stop.</span>';
+					if (clickHintEl) {
+						clickHintEl.className = 'text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium';
+						clickHintEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-mapa-green shrink-0"></span><span>Click any stop row or select <strong>Board</strong> to set your origin stop.</span>';
+					}
 				} else {
 					targetDestBtn.className = 'px-3 py-1.5 rounded-lg bg-mapa-navy text-white shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer';
 					targetOriginBtn.className = 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer';
-					clickHintEl.className = 'text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium';
-					clickHintEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-mapa-navy shrink-0"></span><span>Click any stop row or select <strong>Alight</strong> to set your destination stop.</span>';
+					if (clickHintEl) {
+						clickHintEl.className = 'text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium';
+						clickHintEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-mapa-navy shrink-0"></span><span>Click any stop row or select <strong>Alight</strong> to set your destination stop.</span>';
+					}
 				}
 			}
 
@@ -1479,7 +1491,9 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop, idx) => {
 					originSelect.value = stopId;
 					// Automatically advance to destination mode
 					setTargetMode('dest');
-					clickHintEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-mapa-navy shrink-0"></span><span>Boarding set to <strong>${stop.name}</strong>. Now select your <strong>Destination</strong> stop.</span>`;
+					if (clickHintEl) {
+						clickHintEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-mapa-navy shrink-0"></span><span>Boarding set to <strong>${stop.name}</strong>. Now select your <strong>Destination</strong> stop.</span>`;
+					}
 				} else {
 					destSelect.value = stopId;
 				}
