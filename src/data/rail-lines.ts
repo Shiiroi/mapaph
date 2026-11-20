@@ -51,6 +51,9 @@ export interface DirectionSchedule {
   weekendLastMin: number;
 }
 
+export type HeadwayPeriodId =
+  "morning_peak" | "evening_peak" | "off_peak" | "late_night" | "weekend";
+
 export interface LineScheduleSpec {
   lineKey: LineKey;
   totalKm: number;
@@ -66,6 +69,8 @@ export interface LineScheduleSpec {
   offPeakHeadwayMin: [number, number];
   weekendHeadwayMin: [number, number];
   lateNightHeadwayMin: [number, number];
+  deployedTrainsets: Record<HeadwayPeriodId, [number, number]>;
+  maxActiveTrainsPerDir: Record<HeadwayPeriodId, number>;
   forward: DirectionSchedule;
   reverse: DirectionSchedule;
   scheduleNote: string;
@@ -729,9 +734,23 @@ export const SCHEDULE_SPECS: Record<LineKey, LineScheduleSpec> = {
     peakEveningStartMin: 17 * 60,
     peakEveningEndMin: 20 * 60,
     peakHeadwayMin: [3.5, 4.5],
-    offPeakHeadwayMin: [5, 6],
-    weekendHeadwayMin: [6, 8],
-    lateNightHeadwayMin: [7, 10],
+    offPeakHeadwayMin: [5.5, 7],
+    weekendHeadwayMin: [6.5, 8.5],
+    lateNightHeadwayMin: [8, 10],
+    deployedTrainsets: {
+      morning_peak: [18, 20],
+      evening_peak: [18, 20],
+      off_peak: [12, 15],
+      weekend: [10, 12],
+      late_night: [8, 10],
+    },
+    maxActiveTrainsPerDir: {
+      morning_peak: 8,
+      evening_peak: 8,
+      off_peak: 6,
+      weekend: 5,
+      late_night: 4,
+    },
     forward: {
       label: "Southbound (to Taft Ave)",
       shortDir: "Southbound",
@@ -766,10 +785,24 @@ export const SCHEDULE_SPECS: Record<LineKey, LineScheduleSpec> = {
     peakMorningEndMin: 9 * 60,
     peakEveningStartMin: 17 * 60,
     peakEveningEndMin: 20 * 60,
-    peakHeadwayMin: [3.5, 4.5],
-    offPeakHeadwayMin: [5, 6.5],
-    weekendHeadwayMin: [6, 8],
-    lateNightHeadwayMin: [7, 10],
+    peakHeadwayMin: [4.5, 5.5],
+    offPeakHeadwayMin: [6.5, 8],
+    weekendHeadwayMin: [7.5, 9.5],
+    lateNightHeadwayMin: [9, 12],
+    deployedTrainsets: {
+      morning_peak: [20, 24],
+      evening_peak: [20, 24],
+      off_peak: [14, 18],
+      weekend: [12, 16],
+      late_night: [8, 12],
+    },
+    maxActiveTrainsPerDir: {
+      morning_peak: 10,
+      evening_peak: 10,
+      off_peak: 7,
+      weekend: 6,
+      late_night: 4,
+    },
     forward: {
       label: "Southbound (to Dr. Santos / Baclaran)",
       shortDir: "Southbound",
@@ -804,10 +837,24 @@ export const SCHEDULE_SPECS: Record<LineKey, LineScheduleSpec> = {
     peakMorningEndMin: 9 * 60,
     peakEveningStartMin: 17 * 60,
     peakEveningEndMin: 20 * 60,
-    peakHeadwayMin: [4, 5],
-    offPeakHeadwayMin: [6, 7.5],
-    weekendHeadwayMin: [6, 9],
-    lateNightHeadwayMin: [8, 10],
+    peakHeadwayMin: [7, 9],
+    offPeakHeadwayMin: [9, 11],
+    weekendHeadwayMin: [10, 12],
+    lateNightHeadwayMin: [11, 14],
+    deployedTrainsets: {
+      morning_peak: [8, 10],
+      evening_peak: [8, 10],
+      off_peak: [6, 8],
+      weekend: [6, 8],
+      late_night: [4, 6],
+    },
+    maxActiveTrainsPerDir: {
+      morning_peak: 5,
+      evening_peak: 5,
+      off_peak: 4,
+      weekend: 4,
+      late_night: 3,
+    },
     forward: {
       label: "Eastbound (to Antipolo)",
       shortDir: "Eastbound",
@@ -895,15 +942,21 @@ export function buildLineTimetable(
   });
 }
 
-export type HeadwayPeriodId =
-  "morning_peak" | "evening_peak" | "off_peak" | "late_night" | "weekend";
-
 export interface HeadwayPeriodInfo {
   periodId: HeadwayPeriodId;
   label: string;
   shortLabel: string;
   rangeMin: [number, number];
   avgMin: number;
+  deployedTrainsets: [number, number];
+  maxActiveTrainsPerDir: number;
+}
+
+export interface PreviousTrainInfo {
+  departedMinAgo: number;
+  departureMin: number;
+  formattedTime: string;
+  isFinalOfDay: boolean;
 }
 
 export interface UpcomingTrainSlot {
@@ -924,6 +977,7 @@ export interface DirectionScheduleDeck {
   lastMin: number;
   cutoffMin: number;
   minutesUntilCutoff: number | null;
+  previousTrain: PreviousTrainInfo | null;
   upcomingTrains: UpcomingTrainSlot[];
   summaryNote: string;
 }
@@ -1018,59 +1072,47 @@ export function getHeadwayPeriod(
   isWeekend: boolean,
 ): HeadwayPeriodInfo {
   const spec = SCHEDULE_SPECS[lineKey];
+  let periodId: HeadwayPeriodId = "off_peak";
+  let label = "Midday Off-Peak";
+  let shortLabel = "Off-Peak";
+  let rangeMin = spec.offPeakHeadwayMin;
+
   if (totalMin >= 20 * 60 + 30 || totalMin < 5 * 60 + 30) {
-    const [minH, maxH] = spec.lateNightHeadwayMin;
-    return {
-      periodId: "late_night",
-      label: "Late Night Cadence",
-      shortLabel: "Late Night",
-      rangeMin: [minH, maxH],
-      avgMin: (minH + maxH) / 2,
-    };
-  }
-  if (isWeekend) {
-    const [minH, maxH] = spec.weekendHeadwayMin;
-    return {
-      periodId: "weekend",
-      label: "Weekend Schedule",
-      shortLabel: "Weekend",
-      rangeMin: [minH, maxH],
-      avgMin: (minH + maxH) / 2,
-    };
-  }
-  if (
+    periodId = "late_night";
+    label = "Late Night Cadence";
+    shortLabel = "Late Night";
+    rangeMin = spec.lateNightHeadwayMin;
+  } else if (isWeekend) {
+    periodId = "weekend";
+    label = "Weekend Schedule";
+    shortLabel = "Weekend";
+    rangeMin = spec.weekendHeadwayMin;
+  } else if (
     totalMin >= spec.peakMorningStartMin &&
     totalMin <= spec.peakMorningEndMin
   ) {
-    const [minH, maxH] = spec.peakHeadwayMin;
-    return {
-      periodId: "morning_peak",
-      label: "Morning Rush (6:00-9:00 AM)",
-      shortLabel: "AM Peak",
-      rangeMin: [minH, maxH],
-      avgMin: (minH + maxH) / 2,
-    };
-  }
-  if (
+    periodId = "morning_peak";
+    label = "Morning Rush (6:00-9:00 AM)";
+    shortLabel = "AM Peak";
+    rangeMin = spec.peakHeadwayMin;
+  } else if (
     totalMin >= spec.peakEveningStartMin &&
     totalMin <= spec.peakEveningEndMin
   ) {
-    const [minH, maxH] = spec.peakHeadwayMin;
-    return {
-      periodId: "evening_peak",
-      label: "Evening Rush (5:00-8:00 PM)",
-      shortLabel: "PM Peak",
-      rangeMin: [minH, maxH],
-      avgMin: (minH + maxH) / 2,
-    };
+    periodId = "evening_peak";
+    label = "Evening Rush (5:00-8:00 PM)";
+    shortLabel = "PM Peak";
+    rangeMin = spec.peakHeadwayMin;
   }
-  const [minH, maxH] = spec.offPeakHeadwayMin;
+
   return {
-    periodId: "off_peak",
-    label: "Midday Off-Peak",
-    shortLabel: "Off-Peak",
-    rangeMin: [minH, maxH],
-    avgMin: (minH + maxH) / 2,
+    periodId,
+    label,
+    shortLabel,
+    rangeMin,
+    avgMin: (rangeMin[0] + rangeMin[1]) / 2,
+    deployedTrainsets: spec.deployedTrainsets[periodId],
+    maxActiveTrainsPerDir: spec.maxActiveTrainsPerDir[periodId],
   };
 }
 
@@ -1110,7 +1152,31 @@ export function computeDirectionScheduleDeck(
   let status: DirectionScheduleDeck["status"] = "open";
   let statusLabel = "Operating";
   let minutesUntilCutoff: number | null = null;
+  let previousTrain: PreviousTrainInfo | null = null;
   let summaryNote = "";
+
+  if (exactMin >= firstMin && exactMin <= lastMin + headway.avgMin) {
+    const prevK = Math.floor((exactMin - firstMin) / headway.avgMin);
+    const prevMin = Math.min(
+      lastMin,
+      Math.round(firstMin + prevK * headway.avgMin),
+    );
+    if (prevMin >= firstMin && prevMin <= Math.floor(exactMin)) {
+      previousTrain = {
+        departedMinAgo: Math.max(0, Math.round(exactMin - prevMin)),
+        departureMin: prevMin,
+        formattedTime: formatMinutesTo12H(prevMin),
+        isFinalOfDay: prevMin >= lastMin,
+      };
+    }
+  } else if (exactMin > lastMin + headway.avgMin) {
+    previousTrain = {
+      departedMinAgo: Math.max(1, Math.round(exactMin - lastMin)),
+      departureMin: lastMin,
+      formattedTime: formatMinutesTo12H(lastMin),
+      isFinalOfDay: true,
+    };
+  }
 
   if (exactMin > lastMin) {
     status = "closed";
@@ -1207,6 +1273,7 @@ export function computeDirectionScheduleDeck(
     lastMin,
     cutoffMin,
     minutesUntilCutoff,
+    previousTrain,
     upcomingTrains,
     summaryNote,
   };
