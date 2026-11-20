@@ -240,12 +240,6 @@ const LRT2_MATRIX = LRT2_STATIONS.map((stA, i) =>
 						</button>
 					</div>
 
-					<!-- Visual Hint for User -->
-					<div id="rail-click-hint" class="text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium">
-						<span class="w-1.5 h-1.5 rounded-full bg-mapa-green shrink-0"></span>
-						<span>Click any station row or use <strong>Board</strong> / <strong>Alight</strong> to select your route.</span>
-					</div>
-
 					<!-- Active Route Summary Ribbon -->
 					<div class="bg-mapa-canvas border border-mapa-contour rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
 						<div class="flex items-center gap-2 flex-wrap">
@@ -681,14 +675,17 @@ const LRT2_MATRIX = LRT2_STATIONS.map((stA, i) =>
 					</div>
 				</div>
 
-				<!-- Popular Commuter Routes Quick Selector -->
-				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-5 shadow-xs">
-					<h3 class="text-xs font-bold uppercase tracking-wider text-mapa-clay mb-3">
-						Popular Commuter Corridors
-					</h3>
-					<div class="flex flex-wrap gap-2 text-xs">
+				<!-- Popular Commuter Routes Quick Selector (Collapsible Disclosure) -->
+				<details class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-4 sm:p-5 shadow-xs group">
+					<summary class="list-none cursor-pointer flex items-center justify-between gap-2">
+						<h3 class="text-xs font-bold uppercase tracking-wider text-mapa-clay group-hover:text-mapa-green transition-colors">
+							Popular Commuter Corridors (5 quick routes)
+						</h3>
+						<span class="text-xs font-mono text-mapa-muted group-open:rotate-180 transition-transform">&#9662;</span>
+					</summary>
+					<div class="flex flex-wrap gap-2 text-xs mt-3 pt-3 border-t border-mapa-contour/50">
 						<button
-							class="preset-btn px-2.5 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-all text-left"
+							class="preset-btn px-2.5 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-all text-left cursor-pointer"
 							data-origin="mrt3_north"
 							data-dest="mrt3_taft"
 						>
@@ -704,7 +701,7 @@ const LRT2_MATRIX = LRT2_STATIONS.map((stA, i) =>
 							<span class="text-[10px] text-mapa-muted">FPJ ↔ Baclaran</span>
 						</button>
 						<button
-							class="preset-btn px-2.5 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-all text-left"
+							class="preset-btn px-2.5 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-all text-left cursor-pointer"
 							data-origin="lrt2_recto"
 							data-dest="lrt2_antipolo"
 						>
@@ -712,7 +709,7 @@ const LRT2_MATRIX = LRT2_STATIONS.map((stA, i) =>
 							<span class="text-[10px] text-mapa-clay">Recto ↔ Antipolo</span>
 						</button>
 						<button
-							class="preset-btn px-2.5 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-all text-left"
+							class="preset-btn px-2.5 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-all text-left cursor-pointer"
 							data-origin="lrt1_central"
 							data-dest="mrt3_ayala"
 						>
@@ -720,7 +717,7 @@ const LRT2_MATRIX = LRT2_STATIONS.map((stA, i) =>
 							<span class="text-[10px] text-mapa-clay">Central ↔ Ayala (Transfer)</span>
 						</button>
 						<button
-							class="preset-btn px-2.5 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-all text-left"
+							class="preset-btn px-2.5 py-1.5 rounded-lg bg-mapa-canvas border border-mapa-contour hover:border-mapa-green transition-all text-left cursor-pointer"
 							data-origin="lrt2_katipunan"
 							data-dest="mrt3_ortigas"
 						>
@@ -728,7 +725,7 @@ const LRT2_MATRIX = LRT2_STATIONS.map((stA, i) =>
 							<span class="text-[10px] text-mapa-clay">Transfer at Cubao</span>
 						</button>
 					</div>
-				</div>
+				</details>
 
 				<!-- Lines Overview Badge Grid -->
 				<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-5 shadow-xs">
@@ -1241,13 +1238,17 @@ const LRT2_MATRIX = LRT2_STATIONS.map((stA, i) =>
 				if (mode === 'origin') {
 					targetOriginBtn.className = 'px-3 py-1.5 rounded-lg bg-mapa-green text-white shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer';
 					targetDestBtn.className = 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer';
-					clickHintEl.className = 'text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium';
-					clickHintEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-mapa-green shrink-0"></span><span>Click any station row or select <strong>Board</strong> to set your origin station.</span>';
+					if (clickHintEl) {
+						clickHintEl.className = 'text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium';
+						clickHintEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-mapa-green shrink-0"></span><span>Click any station row or select <strong>Board</strong> to set your origin station.</span>';
+					}
 				} else {
 					targetDestBtn.className = 'px-3 py-1.5 rounded-lg bg-mapa-navy text-white shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer';
 					targetOriginBtn.className = 'px-3 py-1.5 rounded-lg text-mapa-ink/70 hover:text-mapa-ink transition-all flex items-center gap-1.5 cursor-pointer';
-					clickHintEl.className = 'text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium';
-					clickHintEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-mapa-navy shrink-0"></span><span>Click any station row or select <strong>Alight</strong> to set your destination station.</span>';
+					if (clickHintEl) {
+						clickHintEl.className = 'text-xs text-mapa-ink/80 bg-mapa-canvas border border-mapa-contour px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium';
+						clickHintEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-mapa-navy shrink-0"></span><span>Click any station row or select <strong>Alight</strong> to set your destination station.</span>';
+					}
 				}
 			}
 
@@ -1293,7 +1294,9 @@ const LRT2_MATRIX = LRT2_STATIONS.map((stA, i) =>
 					originSelect.value = stationId;
 					// Automatically prompt destination next
 					setTargetMode('dest');
-					clickHintEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-mapa-navy shrink-0"></span><span>Boarding set to <strong>${st.name}</strong>. Now select your <strong>Destination</strong> station.</span>`;
+					if (clickHintEl) {
+						clickHintEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-mapa-navy shrink-0"></span><span>Boarding set to <strong>${st.name}</strong>. Now select your <strong>Destination</strong> station.</span>`;
+					}
 				} else {
 					destSelect.value = stationId;
 				}

@@ -145,42 +145,8 @@ for (const entry of entries) {
 
 		<!-- Interactive Lookup & Inspector Card -->
 		<div class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl p-6 sm:p-8 shadow-sm mb-12">
-			<!-- Quick Presets -->
-			<div class="mb-6 font-sans text-xs">
-				<span class="text-mapa-ink/60 font-medium mr-2">Quick presets:</span>
-				<div class="inline-flex flex-wrap gap-2 mt-2 sm:mt-0">
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-search="Manila CPO">
-						Manila (1000)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-search="Diliman">
-						Diliman, QC (1101)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-search="Ayala PO">
-						Ayala, Makati (1226)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-search="Fort Bonifacio">
-						BGC / Taguig (1630)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-search="College Los Baños">
-						College, Laguna / UPLB (4031)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-search="Cebu City">
-						Cebu City (6000)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-search="Davao City">
-						Davao City (8000)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-search="Cagayan de Oro">
-						Cagayan de Oro / Mindanao (9000)
-					</button>
-					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors" data-search="Baguio">
-						Baguio City (2600)
-					</button>
-				</div>
-			</div>
-
-			<!-- Search Controls Grid -->
-			<div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-6 font-sans">
+			<!-- Search Controls Grid (Primary Action First) -->
+			<div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4 font-sans">
 				<div class="md:col-span-8 relative">
 					<label for="zip-search-input" class="block text-xs font-semibold text-mapa-ink/80 uppercase tracking-wider mb-1.5">
 						Search Municipalities, Cities, or 4-Digit Codes:
@@ -223,6 +189,43 @@ for (const entry of entries) {
 					</select>
 				</div>
 			</div>
+
+			<!-- Quick Presets Drawer (Secondary Shortcut below Search) -->
+			<details class="mb-6 font-sans text-xs group rounded-xl border border-mapa-contour/70 bg-mapa-canvas/60 px-3.5 py-2.5">
+				<summary class="list-none cursor-pointer flex items-center justify-between gap-2 text-mapa-ink/80 hover:text-mapa-green font-semibold">
+					<span>Quick presets: Major PH cities &amp; hubs (9 shortcuts)</span>
+					<span class="text-[11px] font-mono text-mapa-muted group-open:rotate-180 transition-transform">&#9662;</span>
+				</summary>
+				<div class="flex flex-wrap gap-2 mt-3 pt-2.5 border-t border-mapa-contour/40">
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-search="Manila CPO">
+						Manila (1000)
+					</button>
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-search="Diliman">
+						Diliman, QC (1101)
+					</button>
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-search="Ayala PO">
+						Ayala, Makati (1226)
+					</button>
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-search="Fort Bonifacio">
+						BGC / Taguig (1630)
+					</button>
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-search="College Los Baños">
+						College, Laguna / UPLB (4031)
+					</button>
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-search="Cebu City">
+						Cebu City (6000)
+					</button>
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-search="Davao City">
+						Davao City (8000)
+					</button>
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-search="Cagayan de Oro">
+						Cagayan de Oro / Mindanao (9000)
+					</button>
+					<button type="button" class="preset-btn px-2.5 py-1 rounded-md bg-mapa-canvas border border-mapa-contour text-mapa-ink/80 hover:border-mapa-green hover:text-mapa-green transition-colors cursor-pointer" data-search="Baguio">
+						Baguio City (2600)
+					</button>
+				</div>
+			</details>
 
 			<!-- Active Inspector Card (Dynamic Details on Selected Code) -->
 			<div id="inspector-card" class="bg-mapa-canvas border border-mapa-contour/80 rounded-xl p-5 mb-6">
