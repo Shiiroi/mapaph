@@ -1242,7 +1242,7 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop, idx) => {
 					</p>
 				</div>
 				<span class="text-xs text-mapa-muted font-medium">
-					LTFRB Route 1 Fare Guide (Eff. 28 Sept 2026)
+					Source: <a href="https://ltfrb.gov.ph/fare-rates/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-bold hover:underline">LTFRB Route 1 Fare Guide (Eff. 28 Sept 2026)</a>
 				</span>
 			</div>
 
@@ -1345,14 +1345,23 @@ const BUSWAY_STOPS_WITH_FARES = BUSWAY_STOPS.map((stop, idx) => {
 							Authorized under <strong>LTFRB Route 1 (EDSA Busway)</strong> PUB (Aircon) Regular Fare Guide effective <strong>28 September 2026</strong>. Minimum commuter fare is ₱18.00 regular (₱14.50 discounted) for the initial 5.0 km with a succeeding distance rate of ₱2.98/km, rounded to the nearest 25 centavos.
 						</p>
 					</div>
-					<div class="mt-3 pt-2.5 border-t border-mapa-contour/50">
+					<div class="mt-3 pt-2.5 border-t border-mapa-contour/50 flex flex-wrap items-center gap-4">
+						<a
+							href="https://ltfrb.gov.ph/fare-rates/"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1"
+						>
+							<span>LTFRB Official Fare Rates</span>
+							<span>&rarr;</span>
+						</a>
 						<a
 							href="https://ltfrb.gov.ph"
 							target="_blank"
 							rel="noopener noreferrer"
 							class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1"
 						>
-							<span>LTFRB Official Portal</span>
+							<span>LTFRB Portal</span>
 							<span>&rarr;</span>
 						</a>
 					</div>

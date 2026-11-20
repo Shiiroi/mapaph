@@ -275,9 +275,14 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 				<span class="font-sans text-xs font-bold uppercase tracking-wider text-mapa-green bg-mapa-green/10 px-2.5 py-0.5 rounded-full">
 					Commuting Utility
 				</span>
-				<span class="font-sans text-xs text-mapa-muted">
-					Official LTFRB Sept 28, 2026 Fare Guide
-				</span>
+				<a
+					href="https://ltfrb.gov.ph/fare-rates/"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="font-sans text-xs font-semibold text-mapa-green hover:underline"
+				>
+					Source: Official LTFRB Sept 28, 2026 Fare Guide &rarr;
+				</a>
 			</div>
 			<h1 class="text-3xl sm:text-4xl font-extrabold text-mapa-green font-serif tracking-tight">
 				Philippine Commute Fare Estimator &amp; LTFRB Fare Matrix
@@ -1172,7 +1177,7 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 						<strong>LTFRB Board Resolution No. 044, Series of 2023 &amp; Case No. 2022-04709:</strong> Establishes the piecewise base-distance and per-kilometer formula alongside the 25-centavo (₱0.25) rounding standard across land transport matrices (<a href="https://ltfrb.gov.ph/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">ltfrb.gov.ph</a>).
 					</li>
 					<li>
-						<strong>LTFRB Memorandum Circular No. 2019-035 ("No Matrix, No Fare Hike" Policy):</strong> Requires every franchised PUV operator and driver to display an authenticated LTFRB Fare Guide (<em>Talaan ng Pamasahe</em>) inside the passenger cabin before collecting adjusted fares.
+						<strong>LTFRB Memorandum Circular No. 2019-035 ("No Matrix, No Fare Hike" Policy):</strong> Requires every franchised PUV operator and driver to display an authenticated LTFRB Fare Guide (<em>Talaan ng Pamasahe</em>) inside the passenger cabin before collecting adjusted fares (<a href="https://ltfrb.gov.ph/fare-rates/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">ltfrb.gov.ph/fare-rates</a>).
 					</li>
 					<li>
 						<strong>Republic Act No. 11314 (Student Fare Discount Act) &amp; LTFRB MC No. 2017-024:</strong> Institutionalizes the mandatory 20% student discount 365 days a year including Saturdays, Sundays, summer and semestral breaks, and national holidays (<a href="https://www.officialgazette.gov.ph/2019/04/17/republic-act-no-11314/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">Official Gazette RA 11314</a>).
@@ -1187,10 +1192,10 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 						<strong>DOTr Department Order No. 2017-011 (Omnibus Franchising Guidelines / PUVMP) &amp; PNS 2126:2017:</strong> Sets vehicle safety, air-conditioning, emissions, CCTV, GPS, and automated fare collection standards for Class 2 and Class 3 Modern PUJs (<a href="https://dotr.gov.ph/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">dotr.gov.ph</a>).
 					</li>
 					<li>
-						<strong>DOTr Rail Regulatory Unit &amp; LRMC / LRTA / MRT-3 Tariff Schedules:</strong> Governs LRT-1 distance fares effective April 2, 2025 (₱16.25 boarding fee + ₱1.47/km), LRT-2 distance fares (₱13.29 boarding fee + ₱1.21/km), MRT-3 station tiers (₱13 to ₱28), and the 50% concessionary discount for eligible sectors (<a href="/tools/rail-transit" class="text-mapa-green font-semibold hover:underline">Metro Manila Rail Fare Matrix</a>).
+						<strong>DOTr Rail Regulatory Unit &amp; LRMC / LRTA / MRT-3 Tariff Schedules:</strong> Governs LRT-1 distance fares effective April 2, 2025 (₱16.25 boarding fee + ₱1.47/km), LRT-2 distance fares (₱13.29 boarding fee + ₱1.21/km), MRT-3 station tiers (₱13 to ₱28), and the 50% concessionary discount for eligible sectors (<a href="https://lrmc.ph/fare-matrix/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">LRMC LRT-1 Matrix</a>, <a href="https://www.lrta.gov.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">LRTA LRT-2</a>, <a href="https://www.dotrmrt3.gov.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">DOTr MRT-3</a>, and <a href="/tools/rail-transit" class="text-mapa-green font-semibold hover:underline">mapaPH Rail Fare Matrix</a>).
 					</li>
 					<li>
-						<strong>DOTr-LTO-LTFRB Joint Administrative Order (JAO) No. 2014-01 &amp; Commonwealth Act No. 146 (Public Service Act):</strong> Establishes statutory fines (₱5,000 first offense, ₱10,000 + 30-day impoundment second offense, ₱15,000 + franchise cancellation third offense) for overcharging or refusing legal passenger discounts.
+						<strong>DOTr-LTO-LTFRB Joint Administrative Order (JAO) No. 2014-01 &amp; Commonwealth Act No. 146 (Public Service Act):</strong> Establishes statutory fines (₱5,000 first offense, ₱10,000 + 30-day impoundment second offense, ₱15,000 + franchise cancellation third offense) for overcharging or refusing legal passenger discounts (<a href="https://ltfrb.gov.ph/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">LTFRB Enforcement</a> &amp; <a href="https://dotr.gov.ph/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">DOTr</a>).
 					</li>
 				</ul>
 			</section>
@@ -1271,7 +1276,9 @@ const KM_MATRIX_ROWS = Array.from({ length: 50 }, (_, idx) => {
 				</div>
 				<div class="flex flex-wrap items-center justify-between gap-2">
 					<span>Maintained by the <strong>mapaPH Civic Cartography &amp; Transit Initiative</strong>.</span>
-					<span>Baseline Rates: LTFRB Official Nationwide Circulars.</span>
+					<span>
+						Baseline Rates: <a href="https://ltfrb.gov.ph/fare-rates/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">LTFRB Official Fare Rates Portal (ltfrb.gov.ph/fare-rates/)</a>
+					</span>
 				</div>
 			</section>
 		</article>

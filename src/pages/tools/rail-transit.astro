@@ -830,7 +830,9 @@ const LRT2_MATRIX = LRT2_STATIONS.map((stA, i) =>
 			<div id="rmat-panel-mrt3" class="bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs">
 				<div class="px-4 py-2.5 bg-mapa-canvas border-b border-mapa-contour flex flex-wrap items-center justify-between gap-2 text-xs">
 					<span class="font-bold text-mapa-ink">DOTr MRT LINE 3 OFFICIAL FARE MATRIX (North Avenue &harr; Taft Avenue)</span>
-					<span class="text-mapa-muted text-[11px]">Source: dotrmrt3.gov.ph/fare-matrix.pdf (₱13.00 to ₱28.00)</span>
+					<span class="text-mapa-muted text-[11px]">
+						Source: <a href="https://www.dotrmrt3.gov.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">dotrmrt3.gov.ph</a> (₱13.00 to ₱28.00)
+					</span>
 				</div>
 				<div class="overflow-x-auto max-h-[540px] overflow-y-auto custom-scrollbar">
 					<table class="w-full text-center text-[11px] border-collapse font-mono">
@@ -879,7 +881,9 @@ const LRT2_MATRIX = LRT2_STATIONS.map((stA, i) =>
 			<div id="rmat-panel-lrt1" class="hidden bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs">
 				<div class="px-4 py-2.5 bg-mapa-canvas border-b border-mapa-contour flex flex-wrap items-center justify-between gap-2 text-xs">
 					<span class="font-bold text-mapa-ink">LRMC LRT LINE 1 OFFICIAL FARE MATRIX (FPJ / Roosevelt &harr; Dr. Santos / Cavite Ext.)</span>
-					<span class="text-mapa-muted text-[11px]">Effective April 2, 2025: ₱16.25 base + ₱1.47/km (beep™ ₱16–₱52 / SJT ₱20–₱55)</span>
+					<span class="text-mapa-muted text-[11px]">
+						Source: <a href="https://lrmc.ph/fare-matrix/" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">lrmc.ph/fare-matrix</a> (₱16.25 base + ₱1.47/km, Eff. April 2, 2025)
+					</span>
 				</div>
 				<div class="overflow-x-auto max-h-[540px] overflow-y-auto custom-scrollbar">
 					<table class="w-full text-center text-[11px] border-collapse font-mono">
@@ -928,7 +932,9 @@ const LRT2_MATRIX = LRT2_STATIONS.map((stA, i) =>
 			<div id="rmat-panel-lrt2" class="hidden bg-mapa-canvas-dark border border-mapa-contour rounded-2xl overflow-hidden shadow-xs">
 				<div class="px-4 py-2.5 bg-mapa-canvas border-b border-mapa-contour flex flex-wrap items-center justify-between gap-2 text-xs">
 					<span class="font-bold text-mapa-ink">LRTA LRT LINE 2 OFFICIAL FARE MATRIX (Recto &harr; Antipolo)</span>
-					<span class="text-mapa-muted text-[11px]">LRTA Tariff Schedule: ₱13.29 base + ₱1.21/km (beep™ ₱14–₱33 / SJT ₱15–₱35)</span>
+					<span class="text-mapa-muted text-[11px]">
+						Source: <a href="https://www.lrta.gov.ph" target="_blank" rel="noopener noreferrer" class="text-mapa-green font-semibold hover:underline">lrta.gov.ph</a> (₱13.29 base + ₱1.21/km; beep™ ₱14 to ₱33 / SJT ₱15 to ₱35)
+					</span>
 				</div>
 				<div class="overflow-x-auto max-h-[540px] overflow-y-auto custom-scrollbar">
 					<table class="w-full text-center text-[11px] border-collapse font-mono">
@@ -1114,14 +1120,23 @@ const LRT2_MATRIX = LRT2_STATIONS.map((stA, i) =>
 								Operated under DOTr Concession Agreement. Fares reflect the approved DOTr &amp; LRMC April 2, 2025 Tariff Schedule covering the 24.5 km alignment across all 25 stations from Fernando Poe Jr. to Dr. Santos (Cavite Extension Phase 1) with ₱16.25 base + ₱1.47/km distance tariff.
 							</p>
 						</div>
-						<div class="mt-3 pt-2.5 border-t border-mapa-contour/50">
+						<div class="mt-3 pt-2.5 border-t border-mapa-contour/50 flex flex-wrap items-center gap-4">
+							<a
+								href="https://lrmc.ph/fare-matrix/"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1"
+							>
+								<span>LRMC Fare Matrix</span>
+								<span>&rarr;</span>
+							</a>
 							<a
 								href="https://lrmc.ph"
 								target="_blank"
 								rel="noopener noreferrer"
 								class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1"
 							>
-								<span>LRMC Official Portal</span>
+								<span>LRMC Portal</span>
 								<span>&rarr;</span>
 							</a>
 						</div>
@@ -1131,20 +1146,29 @@ const LRT2_MATRIX = LRT2_STATIONS.map((stA, i) =>
 						<div>
 							<div class="flex items-center gap-2 mb-1.5">
 								<span class="w-2.5 h-2.5 rounded-full bg-mapa-navy"></span>
-								<h3 class="font-bold text-mapa-ink text-sm">DOTr MRT-3 & LRTA LRT-2</h3>
+								<h3 class="font-bold text-mapa-ink text-sm">DOTr MRT-3 &amp; LRTA LRT-2</h3>
 							</div>
 							<p class="text-mapa-ink/75 leading-relaxed">
 								Administered directly by the Department of Transportation (DOTr) MRT-3 Project Management Office and the Light Rail Transit Authority (LRTA). Fare calculations correspond to DOTr Department Order No. 2023-010 and LRTA Board Resolutions.
 							</p>
 						</div>
-						<div class="mt-3 pt-2.5 border-t border-mapa-contour/50">
+						<div class="mt-3 pt-2.5 border-t border-mapa-contour/50 flex flex-wrap items-center gap-4">
 							<a
-								href="https://dotrmrt3.gov.ph"
+								href="https://www.dotrmrt3.gov.ph"
 								target="_blank"
 								rel="noopener noreferrer"
 								class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1"
 							>
 								<span>DOTr MRT-3 Official Portal</span>
+								<span>&rarr;</span>
+							</a>
+							<a
+								href="https://www.lrta.gov.ph"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="text-mapa-green font-bold hover:underline inline-flex items-center gap-1"
+							>
+								<span>LRTA Official Portal</span>
 								<span>&rarr;</span>
 							</a>
 						</div>
