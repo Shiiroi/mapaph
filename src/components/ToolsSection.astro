@@ -146,7 +146,7 @@ const tools = [
 			const isExternal = tool.url.startsWith("http");
 			return (
 				<div
-					class={`flex flex-col bg-mapa-canvas border border-mapa-contour/80 rounded-xl overflow-hidden transition-all duration-300 group relative hover:border-mapa-green/60 hover:-translate-y-1 cursor-pointer shadow-xs ${tool.id === "lens" ? "md:col-span-2 lg:col-span-2" : ""}`}
+					class="flex flex-col bg-mapa-canvas border border-mapa-contour/80 rounded-xl overflow-hidden transition-all duration-300 group relative hover:border-mapa-green/60 hover:-translate-y-1 cursor-pointer shadow-xs"
 				>
 					{/* Overlay anchor covering container */}
 					<a
