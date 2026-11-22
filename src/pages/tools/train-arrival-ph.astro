@@ -18,6 +18,7 @@ import {
 	buildLineTimetable,
 	type LineKey
 } from '../../data/rail-lines';
+import { getStationPagePath } from '../../data/rail-station-pages';
 
 const timetablesByLine = {
 	mrt3: buildLineTimetable('mrt3'),
@@ -842,7 +843,7 @@ const schemaGraph = {
 					Estimated First &amp; Last Train Windows Across All 51 Stations
 				</h2>
 				<p class="mt-2 text-sm text-mapa-ink/80 leading-relaxed">
-					Use the reference tables below to verify approximate first and last train passing times along MRT-3, LRT-1, and LRT-2. Always arrive at station concourses at least 5 to 10 minutes before the final trip to clear baggage inspection and Stored Value or Single Journey ticket gates.
+					Use the reference tables below to verify approximate first and last train passing times along MRT-3, LRT-1, and LRT-2. Tap any station for its full schedule page. Always arrive at station concourses at least 5 to 10 minutes before the final trip to clear baggage inspection and Stored Value or Single Journey ticket gates.
 				</p>
 			</div>
 
@@ -870,7 +871,11 @@ const schemaGraph = {
 							<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85">
 								{defaultMrt3Timetable.map((row) => (
 									<tr class="hover:bg-mapa-canvas/60">
-										<td class="p-3 font-semibold text-mapa-ink">{row.station.name}</td>
+										<td class="p-3 font-semibold text-mapa-ink">
+											<a href={getStationPagePath('mrt3', row.station.id)} class="hover:underline text-mapa-green">
+												{row.station.name}
+											</a>
+										</td>
 										<td class="p-3 font-mono text-mapa-muted">{row.station.km.toFixed(1)}</td>
 										<td class="p-3 font-mono">{formatMinutesTo12H(row.weekdayFirstFwd)} / {formatMinutesTo12H(row.weekdayFirstRev)}</td>
 										<td class="p-3 font-mono font-bold text-mapa-rust">{formatMinutesTo12H(row.weekdayLastFwd)} / {formatMinutesTo12H(row.weekdayLastRev)}</td>
@@ -905,7 +910,11 @@ const schemaGraph = {
 							<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85">
 								{defaultLrt1Timetable.map((row) => (
 									<tr class="hover:bg-mapa-canvas/60">
-										<td class="p-3 font-semibold text-mapa-ink">{row.station.name}</td>
+										<td class="p-3 font-semibold text-mapa-ink">
+											<a href={getStationPagePath('lrt1', row.station.id)} class="hover:underline text-mapa-green">
+												{row.station.name}
+											</a>
+										</td>
 										<td class="p-3 font-mono text-mapa-muted">{row.station.km.toFixed(1)}</td>
 										<td class="p-3 font-mono">{formatMinutesTo12H(row.weekdayFirstFwd)} / {formatMinutesTo12H(row.weekdayFirstRev)}</td>
 										<td class="p-3 font-mono font-bold text-mapa-rust">{formatMinutesTo12H(row.weekdayLastFwd)} / {formatMinutesTo12H(row.weekdayLastRev)}</td>
@@ -940,7 +949,11 @@ const schemaGraph = {
 							<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85">
 								{defaultLrt2Timetable.map((row) => (
 									<tr class="hover:bg-mapa-canvas/60">
-										<td class="p-3 font-semibold text-mapa-ink">{row.station.name}</td>
+										<td class="p-3 font-semibold text-mapa-ink">
+											<a href={getStationPagePath('lrt2', row.station.id)} class="hover:underline text-mapa-green">
+												{row.station.name}
+											</a>
+										</td>
 										<td class="p-3 font-mono text-mapa-muted">{row.station.km.toFixed(1)}</td>
 										<td class="p-3 font-mono">{formatMinutesTo12H(row.weekdayFirstFwd)} / {formatMinutesTo12H(row.weekdayFirstRev)}</td>
 										<td class="p-3 font-mono font-bold text-mapa-rust">{formatMinutesTo12H(row.weekdayLastFwd)} / {formatMinutesTo12H(row.weekdayLastRev)}</td>
