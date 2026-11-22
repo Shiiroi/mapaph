@@ -482,7 +482,6 @@ function computeLineSimulatedTrains(
   const dirCodeFwd = spec.forward.shortDir === "Eastbound" ? "EB" : "SB";
   const dirCodeRev = spec.reverse.shortDir === "Westbound" ? "WB" : "NB";
   const hw = getHeadwayPeriod(lineKey, clock.totalMin, isWeekend);
-  const avgHeadway = hw.avgMin;
   const maxPerDir = hw.maxActiveTrainsPerDir;
 
   const fwdFirst = isWeekend
@@ -500,11 +499,44 @@ function computeLineSimulatedTrains(
 
   const totalFwdTrip = table[maxIdx].offsetForwardMin;
   const totalRevTrip = table[0].offsetReverseMin;
-  const stepFwd = Math.max(avgHeadway, totalFwdTrip / maxPerDir);
-  const stepRev = Math.max(avgHeadway, totalRevTrip / maxPerDir);
+  // Distribute up to maxPerDir trains cleanly along each bound; stagger rev by half a step so crossing sets never stack.
+  const stepFwd = totalFwdTrip / maxPerDir;
+  const stepRev = totalRevTrip / maxPerDir;
 
   const estTrains: SimTrainMarker[] = [];
   const estByIndex: Record<number, { fwd: boolean; rev: boolean }> = {};
+
+  function pushEstTrain(
+    dirKey: "fwd" | "rev",
+    depMin: number,
+    elapsed: number,
+  ): void {
+    const isFwd = dirKey === "fwd";
+    const floatIdx = offsetToStationFloatIndex(lineKey, elapsed, dirKey);
+    const geom = getTrackPositionAtFloatIndex(lineKey, floatIdx, !isFwd);
+    const iFrom = isFwd
+      ? Math.min(maxIdx - 1, Math.floor(floatIdx))
+      : Math.min(maxIdx, Math.ceil(floatIdx));
+    const iTo = isFwd ? Math.min(maxIdx, iFrom + 1) : Math.max(0, iFrom - 1);
+    const nearIdx = Math.round(floatIdx);
+    if (!estByIndex[nearIdx]) estByIndex[nearIdx] = { fwd: false, rev: false };
+    estByIndex[nearIdx][dirKey] = true;
+    estTrains.push({
+      id: "est_" + lineKey + "_" + dirKey + "_" + depMin.toFixed(2),
+      lineKey,
+      dirKey,
+      dirShort: isFwd ? dirCodeFwd : dirCodeRev,
+      dirName: isFwd ? spec.forward.shortDir : spec.reverse.shortDir,
+      fromName: table[iFrom].station.name,
+      toName: table[iTo].station.name,
+      lat: geom.lat,
+      lon: geom.lon,
+      bearingDeg: geom.bearingDeg,
+      svgX: geom.svgX,
+      svgY: geom.svgY,
+      svgAngleDeg: geom.svgAngleDeg,
+    });
+  }
 
   let fwdCount = 0;
   for (let d = fwdFirst; d <= fwdLast + 0.001; d += stepFwd) {
@@ -512,61 +544,27 @@ function computeLineSimulatedTrains(
     if (elapsed >= 0 && elapsed <= totalFwdTrip) {
       if (fwdCount >= maxPerDir) break;
       fwdCount++;
-      const floatIdx = offsetToStationFloatIndex(lineKey, elapsed, "fwd");
-      const geom = getTrackPositionAtFloatIndex(lineKey, floatIdx, false);
-      const iFrom = Math.min(maxIdx - 1, Math.floor(floatIdx));
-      const iTo = Math.min(maxIdx, iFrom + 1);
-      const nearIdx = Math.round(floatIdx);
-      if (!estByIndex[nearIdx])
-        estByIndex[nearIdx] = { fwd: false, rev: false };
-      estByIndex[nearIdx].fwd = true;
-      estTrains.push({
-        id: "est_" + lineKey + "_fwd_" + d.toFixed(2),
-        lineKey,
-        dirKey: "fwd",
-        dirShort: dirCodeFwd,
-        dirName: spec.forward.shortDir,
-        fromName: table[iFrom].station.name,
-        toName: table[iTo].station.name,
-        lat: geom.lat,
-        lon: geom.lon,
-        bearingDeg: geom.bearingDeg,
-        svgX: geom.svgX,
-        svgY: geom.svgY,
-        svgAngleDeg: geom.svgAngleDeg,
-      });
+      pushEstTrain("fwd", d, elapsed);
     }
   }
 
   let revCount = 0;
-  for (let d = revFirst; d <= revLast + 0.001; d += stepRev) {
+  const firstRevElapsed = clock.exactMin - revFirst;
+  if (
+    firstRevElapsed >= 0 &&
+    firstRevElapsed < stepRev * 0.5 &&
+    firstRevElapsed <= totalRevTrip
+  ) {
+    revCount++;
+    pushEstTrain("rev", revFirst, firstRevElapsed);
+  }
+  const revStart = revFirst + stepRev * 0.5;
+  for (let d = revStart; d <= revLast + 0.001; d += stepRev) {
     const elapsed = clock.exactMin - d;
     if (elapsed >= 0 && elapsed <= totalRevTrip) {
       if (revCount >= maxPerDir) break;
       revCount++;
-      const floatIdx = offsetToStationFloatIndex(lineKey, elapsed, "rev");
-      const geom = getTrackPositionAtFloatIndex(lineKey, floatIdx, true);
-      const iFrom = Math.min(maxIdx, Math.ceil(floatIdx));
-      const iTo = Math.max(0, iFrom - 1);
-      const nearIdx = Math.round(floatIdx);
-      if (!estByIndex[nearIdx])
-        estByIndex[nearIdx] = { fwd: false, rev: false };
-      estByIndex[nearIdx].rev = true;
-      estTrains.push({
-        id: "est_" + lineKey + "_rev_" + d.toFixed(2),
-        lineKey,
-        dirKey: "rev",
-        dirShort: dirCodeRev,
-        dirName: spec.reverse.shortDir,
-        fromName: table[iFrom].station.name,
-        toName: table[iTo].station.name,
-        lat: geom.lat,
-        lon: geom.lon,
-        bearingDeg: geom.bearingDeg,
-        svgX: geom.svgX,
-        svgY: geom.svgY,
-        svgAngleDeg: geom.svgAngleDeg,
-      });
+      pushEstTrain("rev", d, elapsed);
     }
   }
 
@@ -1798,13 +1796,28 @@ export function initTrainArrivalTracker(): void {
     }
   }
 
+  function getLaneOffsetStyle(bearingDeg: number, offsetPx = 10): string {
+    const rad = (bearingDeg * Math.PI) / 180;
+    const ox = Math.round(Math.cos(rad) * offsetPx);
+    const oy = Math.round(Math.sin(rad) * offsetPx);
+    return (
+      "transform:translate(calc(-50% + " +
+      ox +
+      "px),calc(-50% + " +
+      oy +
+      "px));"
+    );
+  }
+
   function buildEstIconHtml(train: SimTrainMarker): string {
     const lineHex = LINE_COLORS[train.lineKey] || "#3d5a45";
     const angle = Math.round(train.bearingDeg);
     return (
       '<div class="rail-train-pill rail-train-est" style="border-color:' +
       lineHex +
-      ';">' +
+      ";" +
+      getLaneOffsetStyle(train.bearingDeg) +
+      '">' +
       '<svg width="9" height="9" viewBox="0 0 12 12" style="transform:rotate(' +
       angle +
       'deg);display:block;flex-shrink:0;" aria-hidden="true"><path d="M6 1L11 11L6 8.5L1 11Z" fill="' +
@@ -1825,7 +1838,9 @@ export function initTrainArrivalTracker(): void {
     return (
       '<div class="rail-train-pill rail-train-live" style="background-color:' +
       bgHex +
-      ';">' +
+      ";" +
+      getLaneOffsetStyle(train.bearingDeg) +
+      '">' +
       '<svg width="10" height="10" viewBox="0 0 12 12" style="transform:rotate(' +
       angle +
       'deg);display:block;flex-shrink:0;" aria-hidden="true"><path d="M6 1L11 11L6 8.5L1 11Z" fill="#ffffff"/></svg>' +
@@ -2095,11 +2110,18 @@ export function initTrainArrivalTracker(): void {
     railDiagramSvg.appendChild(gLabels);
 
     const gTrains = svgEl("g", { id: "dg-trains" });
+    const getSvgLaneCoord = (x: number, y: number, angleDeg: number) => {
+      const rad = (angleDeg * Math.PI) / 180;
+      return {
+        sx: x + Math.cos(rad) * 8,
+        sy: y + Math.sin(rad) * 8,
+      };
+    };
     if (showEstTrains) {
       estTrains.forEach((t) => {
+        const { sx, sy } = getSvgLaneCoord(t.svgX, t.svgY, t.svgAngleDeg);
         const g = svgEl("g", {
-          transform:
-            "translate(" + t.svgX.toFixed(1) + "," + t.svgY.toFixed(1) + ")",
+          transform: "translate(" + sx.toFixed(1) + "," + sy.toFixed(1) + ")",
         });
         const halo = svgEl("circle", {
           r: 12,
@@ -2119,9 +2141,9 @@ export function initTrainArrivalTracker(): void {
       });
     }
     liveTrains.forEach((t) => {
+      const { sx, sy } = getSvgLaneCoord(t.svgX, t.svgY, t.svgAngleDeg);
       const g = svgEl("g", {
-        transform:
-          "translate(" + t.svgX.toFixed(1) + "," + t.svgY.toFixed(1) + ")",
+        transform: "translate(" + sx.toFixed(1) + "," + sy.toFixed(1) + ")",
       });
       const fillCol =
         t.kind === "live_delay"
@@ -2369,18 +2391,48 @@ export function initTrainArrivalTracker(): void {
     };
   }
 
-  function updateTrainCountBadge(estCount: number, liveCount: number): void {
+  function updateTrainCountBadge(
+    estTrains: SimTrainMarker[],
+    liveTrains: LiveTrainMarker[],
+  ): void {
     if (!mapTrainCountBadge) return;
+    const liveCount = liveTrains.length;
+    const estCount = estTrains.length;
     if (!showEstTrains) {
       mapTrainCountBadge.textContent =
         liveCount === 1 ? "1 LIVE TRAIN" : liveCount + " LIVE TRAINS";
       return;
     }
+
+    let estSummary = estCount + " EST TRAINS";
+    if (mapScope === "focus") {
+      const fwdEst = estTrains.filter((t) => t.dirKey === "fwd").length;
+      const revEst = estCount - fwdEst;
+      const dirCodeFwd =
+        SCHEDULE_SPECS[currentLine].forward.shortDir === "Eastbound"
+          ? "EB"
+          : "SB";
+      const dirCodeRev = dirCodeFwd === "EB" ? "WB" : "NB";
+      estSummary =
+        estCount +
+        " EST (" +
+        fwdEst +
+        " " +
+        dirCodeFwd +
+        " · " +
+        revEst +
+        " " +
+        dirCodeRev +
+        ")";
+    }
+
     if (liveCount > 0) {
       mapTrainCountBadge.textContent =
-        liveCount + " LIVE · " + estCount + " EST";
+        liveCount +
+        " LIVE · " +
+        (mapScope === "focus" ? estSummary : estCount + " EST");
     } else {
-      mapTrainCountBadge.textContent = estCount + " EST TRAINS";
+      mapTrainCountBadge.textContent = estSummary;
     }
   }
 
@@ -2389,7 +2441,7 @@ export function initTrainArrivalTracker(): void {
     const isWeekend = getEffectiveIsWeekend(clock);
     const { scopedEst, scopedLive } = computeScopedTrains(clock, isWeekend);
 
-    updateTrainCountBadge(scopedEst.length, scopedLive.length);
+    updateTrainCountBadge(scopedEst, scopedLive);
     updateCadenceChip(clock, isWeekend);
 
     if (viewMode === "map") {
@@ -2473,7 +2525,7 @@ export function initTrainArrivalTracker(): void {
       activeLineLive,
     } = computeScopedTrains(clock, isWeekend);
 
-    updateTrainCountBadge(scopedEst.length, scopedLive.length);
+    updateTrainCountBadge(scopedEst, scopedLive);
     updateCadenceChip(clock, isWeekend);
 
     const fwdDeck = computeDirectionScheduleDeck(
