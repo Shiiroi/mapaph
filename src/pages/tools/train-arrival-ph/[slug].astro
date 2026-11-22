@@ -1,0 +1,867 @@
+---
+/**
+ * @file [slug].astro
+ * @description Static per-station schedule, first/last train, headway cadence,
+ * ride-time matrix, and transfer cutoff page for all 51 MRT-3, LRT-1, and LRT-2 stations.
+ */
+
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Navbar from '../../../components/Navbar.astro';
+import Footer from '../../../components/Footer.astro';
+import {
+	STATION_PAGES,
+	STATION_PAGE_BY_ID,
+	CROSS_LINE_PARTNERS,
+	getStationPagePath,
+	type StationPageData
+} from '../../../data/rail-station-pages';
+import { formatMinutesTo12H, LINE_COLORS } from '../../../data/rail-lines';
+
+export function getStaticPaths() {
+	return STATION_PAGES.map((entry) => ({
+		params: { slug: entry.slug },
+		props: { entry }
+	}));
+}
+
+interface Props {
+	entry: StationPageData;
+}
+
+const { entry } = Astro.props;
+const { slug, lineKey, station, index, total, row, lineMeta, spec, timetable } = entry;
+
+const lineShort = lineMeta.shortName;
+const lineColor = LINE_COLORS[lineKey];
+const canonicalUrl = `https://www.mapaph.com/tools/train-arrival-ph/${slug}`;
+const trackerHref = `/tools/train-arrival-ph?line=${lineKey}&station=${station.id}`;
+
+const isFirstTerminal = index === 0;
+const isLastTerminal = index === total - 1;
+const boardForward = !isLastTerminal;
+const boardReverse = !isFirstTerminal;
+
+const terminalSentence = isFirstTerminal
+	? `Trains toward ${spec.forward.destinationTerminal} start here; ${spec.reverse.shortDir.toLowerCase()} trains from ${spec.reverse.originTerminal} end here.`
+	: isLastTerminal
+		? `Trains toward ${spec.reverse.destinationTerminal} start here; ${spec.forward.shortDir.toLowerCase()} trains from ${spec.forward.originTerminal} end here.`
+		: '';
+
+interface BoardableDirection {
+	dirKey: 'fwd' | 'rev';
+	shortDir: string;
+	originTerminal: string;
+	destinationTerminal: string;
+	weekdayFirstMin: number;
+	weekdayLastMin: number;
+	weekdayCutoffMin: number;
+	weekendFirstMin: number;
+	weekendLastMin: number;
+	weekendCutoffMin: number;
+	firstThreeMorning: number[];
+}
+
+const boardableDirections: BoardableDirection[] = [];
+
+if (boardForward) {
+	const firstMin = row.weekdayFirstFwd;
+	const peakStep = spec.peakHeadwayMin[0];
+	boardableDirections.push({
+		dirKey: 'fwd',
+		shortDir: spec.forward.shortDir,
+		originTerminal: spec.forward.originTerminal,
+		destinationTerminal: spec.forward.destinationTerminal,
+		weekdayFirstMin: firstMin,
+		weekdayLastMin: row.weekdayLastFwd,
+		weekdayCutoffMin: row.weekdayLastFwd - spec.gateCutoffBeforeLastMin,
+		weekendFirstMin: row.weekendFirstFwd,
+		weekendLastMin: row.weekendLastFwd,
+		weekendCutoffMin: row.weekendLastFwd - spec.gateCutoffBeforeLastMin,
+		firstThreeMorning: [
+			firstMin,
+			Math.round(firstMin + peakStep),
+			Math.round(firstMin + peakStep * 2)
+		]
+	});
+}
+
+if (boardReverse) {
+	const firstMin = row.weekdayFirstRev;
+	const peakStep = spec.peakHeadwayMin[0];
+	boardableDirections.push({
+		dirKey: 'rev',
+		shortDir: spec.reverse.shortDir,
+		originTerminal: spec.reverse.originTerminal,
+		destinationTerminal: spec.reverse.destinationTerminal,
+		weekdayFirstMin: firstMin,
+		weekdayLastMin: row.weekdayLastRev,
+		weekdayCutoffMin: row.weekdayLastRev - spec.gateCutoffBeforeLastMin,
+		weekendFirstMin: row.weekendFirstRev,
+		weekendLastMin: row.weekendLastRev,
+		weekendCutoffMin: row.weekendLastRev - spec.gateCutoffBeforeLastMin,
+		firstThreeMorning: [
+			firstMin,
+			Math.round(firstMin + peakStep),
+			Math.round(firstMin + peakStep * 2)
+		]
+	});
+}
+
+const headwayPeriods = [
+	{
+		name: 'Morning Rush Peak',
+		window: '6:00 AM to 9:00 AM (Weekdays)',
+		waitRange: `${spec.peakHeadwayMin[0]} to ${spec.peakHeadwayMin[1]} min`,
+		fleetRange: `${spec.deployedTrainsets.morning_peak[0]} to ${spec.deployedTrainsets.morning_peak[1]} trainsets`
+	},
+	{
+		name: 'Midday Off-Peak',
+		window: '9:00 AM to 5:00 PM (Weekdays)',
+		waitRange: `${spec.offPeakHeadwayMin[0]} to ${spec.offPeakHeadwayMin[1]} min`,
+		fleetRange: `${spec.deployedTrainsets.off_peak[0]} to ${spec.deployedTrainsets.off_peak[1]} trainsets`
+	},
+	{
+		name: 'Evening Rush Peak',
+		window: '5:00 PM to 8:00 PM (Weekdays)',
+		waitRange: `${spec.peakHeadwayMin[0]} to ${spec.peakHeadwayMin[1]} min`,
+		fleetRange: `${spec.deployedTrainsets.evening_peak[0]} to ${spec.deployedTrainsets.evening_peak[1]} trainsets`
+	},
+	{
+		name: 'Late Night Service',
+		window: '8:00 PM to Last Train (Weekdays)',
+		waitRange: `${spec.lateNightHeadwayMin[0]} to ${spec.lateNightHeadwayMin[1]} min`,
+		fleetRange: `${spec.deployedTrainsets.late_night[0]} to ${spec.deployedTrainsets.late_night[1]} trainsets`
+	},
+	{
+		name: 'Weekends & Holidays',
+		window: 'Opening to Closing (Sat, Sun & Holidays)',
+		waitRange: `${spec.weekendHeadwayMin[0]} to ${spec.weekendHeadwayMin[1]} min`,
+		fleetRange: `${spec.deployedTrainsets.weekend[0]} to ${spec.deployedTrainsets.weekend[1]} trainsets`
+	}
+];
+
+const rideTimes = timetable
+	.filter((other) => other.station.id !== station.id)
+	.map((other) => {
+		const isFwd = other.index > index;
+		const dirLabel = isFwd ? spec.forward.shortDir : spec.reverse.shortDir;
+		const stops = Math.abs(other.index - index);
+		const distKm = Math.abs(other.station.km - station.km);
+		const estMin = Math.max(
+			1,
+			isFwd ? other.offsetForwardMin - row.offsetForwardMin : other.offsetReverseMin - row.offsetReverseMin
+		);
+		return {
+			station: other.station,
+			href: getStationPagePath(lineKey, other.station.id),
+			dirLabel,
+			stops,
+			distKm,
+			estMin
+		};
+	});
+
+const prevStationEntry = index > 0 ? STATION_PAGE_BY_ID[timetable[index - 1].station.id] : null;
+const nextStationEntry = index < total - 1 ? STATION_PAGE_BY_ID[timetable[index + 1].station.id] : null;
+
+const partnerSpec = CROSS_LINE_PARTNERS[station.id] || null;
+const partnerPage = partnerSpec ? STATION_PAGE_BY_ID[partnerSpec.partnerStationId] : null;
+
+interface PartnerDirectionInfo {
+	label: string;
+	weekdayLast: string;
+	weekdaySafeCutoff: string;
+	weekendLast: string;
+	weekendSafeCutoff: string;
+}
+
+const partnerDirections: PartnerDirectionInfo[] = [];
+let earliestPartnerWeekdaySafeMin: number | null = null;
+let earliestPartnerWeekendSafeMin: number | null = null;
+
+if (partnerSpec && partnerPage) {
+	const pLastFwd = partnerPage.index < partnerPage.total - 1;
+	const pFirstRev = partnerPage.index > 0;
+	if (pLastFwd) {
+		const wLast = partnerPage.row.weekdayLastFwd;
+		const wkLast = partnerPage.row.weekendLastFwd;
+		const wSafe = wLast - partnerSpec.walkMin;
+		const wkSafe = wkLast - partnerSpec.walkMin;
+		earliestPartnerWeekdaySafeMin =
+			earliestPartnerWeekdaySafeMin === null ? wSafe : Math.min(earliestPartnerWeekdaySafeMin, wSafe);
+		earliestPartnerWeekendSafeMin =
+			earliestPartnerWeekendSafeMin === null ? wkSafe : Math.min(earliestPartnerWeekendSafeMin, wkSafe);
+		partnerDirections.push({
+			label: `${partnerPage.spec.forward.shortDir} toward ${partnerPage.spec.forward.destinationTerminal}`,
+			weekdayLast: formatMinutesTo12H(wLast),
+			weekdaySafeCutoff: formatMinutesTo12H(wSafe),
+			weekendLast: formatMinutesTo12H(wkLast),
+			weekendSafeCutoff: formatMinutesTo12H(wkSafe)
+		});
+	}
+	if (pFirstRev) {
+		const wLast = partnerPage.row.weekdayLastRev;
+		const wkLast = partnerPage.row.weekendLastRev;
+		const wSafe = wLast - partnerSpec.walkMin;
+		const wkSafe = wkLast - partnerSpec.walkMin;
+		earliestPartnerWeekdaySafeMin =
+			earliestPartnerWeekdaySafeMin === null ? wSafe : Math.min(earliestPartnerWeekdaySafeMin, wSafe);
+		earliestPartnerWeekendSafeMin =
+			earliestPartnerWeekendSafeMin === null ? wkSafe : Math.min(earliestPartnerWeekendSafeMin, wkSafe);
+		partnerDirections.push({
+			label: `${partnerPage.spec.reverse.shortDir} toward ${partnerPage.spec.reverse.destinationTerminal}`,
+			weekdayLast: formatMinutesTo12H(wLast),
+			weekdaySafeCutoff: formatMinutesTo12H(wSafe),
+			weekendLast: formatMinutesTo12H(wkLast),
+			weekendSafeCutoff: formatMinutesTo12H(wkSafe)
+		});
+	}
+}
+
+const hasEdsaCarouselFallback =
+	lineKey === 'mrt3' || station.id === 'lrt1_edsa' || station.id === 'lrt1_asia_world';
+
+const dirSummaryText = boardableDirections
+	.map(
+		(d) =>
+			`${d.shortDir} toward ${d.destinationTerminal}: first train at ${formatMinutesTo12H(d.weekdayFirstMin)} and last train at ${formatMinutesTo12H(d.weekdayLastMin)} on weekdays (${formatMinutesTo12H(d.weekendFirstMin)} to ${formatMinutesTo12H(d.weekendLastMin)} on weekends)`
+	)
+	.join('; ');
+
+const faqItems: { question: string; answer: string }[] = [
+	{
+		question: `What time is the first train at ${station.name} (${lineShort})?`,
+		answer: `On ${lineMeta.name}, boarding departures from ${station.name} begin with ${boardableDirections
+			.map(
+				(d) =>
+					`${d.shortDir} toward ${d.destinationTerminal} at ${formatMinutesTo12H(d.weekdayFirstMin)} on weekdays and ${formatMinutesTo12H(d.weekendFirstMin)} on weekends`
+			)
+			.join(', and ')}. Station concourse gates typically open around ${formatMinutesTo12H(spec.gateOpenMin)} before the inaugural revenue trip arrives.`
+	},
+	{
+		question: `What time is the last train at ${station.name} (${lineShort})?`,
+		answer: `Estimated final passenger departures at ${station.name} pass ${boardableDirections
+			.map(
+				(d) =>
+					`${d.shortDir} at ${formatMinutesTo12H(d.weekdayLastMin)} on weekdays (gate cutoff around ${formatMinutesTo12H(d.weekdayCutoffMin)}) and ${formatMinutesTo12H(d.weekendLastMin)} on weekends (cutoff around ${formatMinutesTo12H(d.weekendCutoffMin)})`
+			)
+			.join('; ')}. Arrive at the concourse at least ${spec.gateCutoffBeforeLastMin} minutes early to pass security inspection and tap in before gates sweep shut.`
+	},
+	{
+		question: `How long is the train wait at ${station.name} during rush hour and weekends?`,
+		answer: `During weekday morning and evening rush hours (6:00 AM to 9:00 AM and 5:00 PM to 8:00 PM), trains on ${lineShort} typically arrive every ${spec.peakHeadwayMin[0]} to ${spec.peakHeadwayMin[1]} minutes with ${spec.deployedTrainsets.morning_peak[0]} to ${spec.deployedTrainsets.morning_peak[1]} active trainsets deployed across the line. Off-peak midday waits average ${spec.offPeakHeadwayMin[0]} to ${spec.offPeakHeadwayMin[1]} minutes, while weekend intervals run roughly every ${spec.weekendHeadwayMin[0]} to ${spec.weekendHeadwayMin[1]} minutes.`
+	},
+	{
+		question: `Are ${station.name} ${lineShort} arrival times live GPS or schedule estimates?`,
+		answer: `Metro Manila rail operators (${lineMeta.operator}) do not publish open real-time GPS telemetry feeds. The timetable and wait intervals listed for ${station.name} are computed from official terminal dispatch schedules, deployed trainset counts, and kilometer dwell offsets, while optional anonymous commuter sightings on the main Train Arrival PH live tracker appear as LIVE markers on top of the timetable projection.`
+	}
+];
+
+if (partnerSpec && partnerPage && earliestPartnerWeekdaySafeMin !== null && earliestPartnerWeekendSafeMin !== null) {
+	faqItems.push({
+		question: `Can I transfer to ${partnerPage.lineMeta.shortName} at ${station.name}?`,
+		answer: `Yes. ${station.name} (${lineShort}) connects via a covered pedestrian walkway (approximately a ${partnerSpec.walkMin}-minute walk) to ${partnerPage.station.name} on ${partnerPage.lineMeta.shortName}. To catch all connecting directions comfortably on weekdays, arrive at the walkway entrance before ${formatMinutesTo12H(earliestPartnerWeekdaySafeMin)} (or before ${formatMinutesTo12H(earliestPartnerWeekendSafeMin)} on weekends and holidays).`
+	});
+}
+
+const pageTitle = `${station.name} ${lineShort} Schedule: First & Last Train 2026 | mapaPH`;
+
+let pageDescription: string;
+if (boardableDirections.length === 1) {
+	const d0 = boardableDirections[0];
+	pageDescription = `2026 ${station.name} (${lineShort}) schedule: ${d0.shortDir} first train ${formatMinutesTo12H(d0.weekdayFirstMin)}, last ${formatMinutesTo12H(d0.weekdayLastMin)}. Next-train wait, ride times & transfers.`;
+} else {
+	const dFwd = boardableDirections[0];
+	const dRev = boardableDirections[1];
+	const fullDesc = `${station.name} ${lineShort} (${station.city}) 2026 schedule: ${dFwd.shortDir} ${formatMinutesTo12H(dFwd.weekdayFirstMin)} to ${formatMinutesTo12H(dFwd.weekdayLastMin)}, ${dRev.shortDir} ${formatMinutesTo12H(dRev.weekdayFirstMin)} to ${formatMinutesTo12H(dRev.weekdayLastMin)}. Wait & ride times.`;
+	pageDescription =
+		fullDesc.length <= 165
+			? fullDesc
+			: `${station.name} ${lineShort} 2026 schedule: ${dFwd.shortDir} ${formatMinutesTo12H(dFwd.weekdayFirstMin)} to ${formatMinutesTo12H(dFwd.weekdayLastMin)}, ${dRev.shortDir} ${formatMinutesTo12H(dRev.weekdayFirstMin)} to ${formatMinutesTo12H(dRev.weekdayLastMin)}. Wait & ride times.`;
+}
+
+const nameLower = station.name.toLowerCase();
+const lineLower = lineShort.toLowerCase();
+const pageKeywords = `${nameLower} ${lineLower} schedule, ${nameLower} last train, ${nameLower} first train, ${nameLower} station, ${lineLower} schedule 2026, ${station.city.toLowerCase()} train station, train arrival ph`;
+
+const schemaGraph = {
+	'@context': 'https://schema.org',
+	'@graph': [
+		{
+			'@type': 'TrainStation',
+			name: `${station.name} ${lineShort} Station`,
+			url: canonicalUrl,
+			address: {
+				'@type': 'PostalAddress',
+				addressLocality: station.city,
+				addressCountry: 'PH'
+			},
+			geo: {
+				'@type': 'GeoCoordinates',
+				latitude: station.lat,
+				longitude: station.lon
+			}
+		},
+		{
+			'@type': 'BreadcrumbList',
+			itemListElement: [
+				{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.mapaph.com' },
+				{ '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://www.mapaph.com/tools' },
+				{
+					'@type': 'ListItem',
+					position: 3,
+					name: 'Train Arrival PH',
+					item: 'https://www.mapaph.com/tools/train-arrival-ph'
+				},
+				{
+					'@type': 'ListItem',
+					position: 4,
+					name: `${station.name} (${lineShort})`,
+					item: canonicalUrl
+				}
+			]
+		},
+		{
+			'@type': 'FAQPage',
+			mainEntity: faqItems.map((item) => ({
+				'@type': 'Question',
+				name: item.question,
+				acceptedAnswer: {
+					'@type': 'Answer',
+					text: item.answer
+				}
+			}))
+		}
+	]
+};
+---
+
+<BaseLayout title={pageTitle} description={pageDescription} keywords={pageKeywords}>
+	<script type="application/ld+json" slot="schema" is:inline set:html={JSON.stringify(schemaGraph)} />
+
+	<Navbar />
+
+	<main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 text-mapa-ink">
+		<!-- Section 1: Visible Breadcrumb & Station Header -->
+		<div class="max-w-4xl mb-6">
+			<nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-2 text-xs font-sans text-mapa-muted mb-3">
+				<a href="/" class="hover:text-mapa-green transition-colors">Home</a>
+				<span>/</span>
+				<a href="/tools" class="hover:text-mapa-green transition-colors">Tools</a>
+				<span>/</span>
+				<a href="/tools/train-arrival-ph" class="hover:text-mapa-green transition-colors">Train Arrival PH</a>
+				<span>/</span>
+				<span class="text-mapa-ink font-semibold">{station.name} ({lineShort})</span>
+			</nav>
+			<div class="flex flex-wrap items-center gap-2 mb-2 text-xs font-sans">
+				<span
+					class="inline-flex items-center gap-1.5 font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full text-white"
+					style={`background-color: ${lineColor};`}
+				>
+					{lineShort} Station Schedule
+				</span>
+				<span class="text-mapa-muted">
+					Stop {index + 1} of {total} &bull; KM {station.km.toFixed(1)} &bull; {station.city}
+				</span>
+			</div>
+			<h1 class="font-serif text-3xl sm:text-4xl font-extrabold tracking-tight text-mapa-ink">
+				{station.name} {lineShort} Station Schedule &amp; Next Train
+			</h1>
+			<p class="mt-2 text-sm sm:text-base text-mapa-ink/80 font-sans leading-relaxed max-w-3xl">
+				Official-pattern weekday and weekend first train, last train, gate cutoff, headway interval, and travel-time guide for <strong>{station.name}</strong> ({lineMeta.name}, {station.city}). {terminalSentence}
+			</p>
+		</div>
+
+		<!-- Section 2: Quick Summary Card & Live Tracker CTA -->
+		<section aria-label="Weekday Schedule Summary and Live Tracker" class="mb-8 font-sans">
+			<div class="rounded-2xl border border-mapa-contour bg-mapa-canvas-dark p-5 sm:p-6 shadow-xs space-y-5">
+				<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+					<div>
+						<span class="text-[11px] font-bold uppercase tracking-wider text-mapa-muted block">
+							Real-Time Countdown &amp; Crowd Check-Ins
+						</span>
+						<h2 class="font-serif text-xl sm:text-2xl font-bold text-mapa-ink mt-0.5">
+							{station.name} Weekday Dispatch Snapshot
+						</h2>
+						<p class="text-xs text-mapa-muted mt-1">
+							Concourse ticket gates open near {formatMinutesTo12H(spec.gateOpenMin)} and close roughly {spec.gateCutoffBeforeLastMin} minutes before the last train departs.
+						</p>
+					</div>
+					<div class="flex flex-wrap items-center gap-2.5 shrink-0">
+						<a
+							href={trackerHref}
+							class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-mapa-green text-white font-bold text-xs sm:text-sm hover:bg-mapa-green/90 transition-colors shadow-xs"
+						>
+							Open live next-train tracker for {station.name} &rarr;
+						</a>
+						<a
+							href="/tools/rail-transit"
+							class="inline-flex items-center justify-center px-3.5 py-2.5 rounded-xl bg-mapa-canvas border border-mapa-contour text-xs font-semibold text-mapa-ink hover:border-mapa-green hover:text-mapa-green transition-colors"
+						>
+							Check {lineShort} Fares
+						</a>
+					</div>
+				</div>
+
+				<div class={`grid grid-cols-1 ${boardableDirections.length > 1 ? 'md:grid-cols-2' : ''} gap-4`}>
+					{boardableDirections.map((dir) => (
+						<div class="rounded-xl border border-mapa-contour bg-mapa-canvas p-4 space-y-3">
+							<div class="flex items-center justify-between gap-2 border-b border-mapa-contour/60 pb-2.5">
+								<div>
+									<div class="flex items-center gap-2">
+										<span class="w-2.5 h-2.5 rounded-full shrink-0" style={`background-color: ${lineColor};`}></span>
+										<h3 class="font-serif text-base font-bold text-mapa-ink">
+											{dir.shortDir} toward {dir.destinationTerminal}
+										</h3>
+									</div>
+									<p class="text-[11px] text-mapa-muted mt-0.5">
+										Regular weekday boarding from {station.name}
+									</p>
+								</div>
+								<span class="font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-mapa-canvas-dark border border-mapa-contour text-mapa-ink">
+									{lineShort}
+								</span>
+							</div>
+
+							<div class="grid grid-cols-3 gap-2 text-center">
+								<div class="p-2.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/70">
+									<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted block">
+										First Train
+									</span>
+									<span class="font-mono text-sm sm:text-base font-extrabold text-mapa-green mt-0.5 block">
+										{formatMinutesTo12H(dir.weekdayFirstMin)}
+									</span>
+								</div>
+								<div class="p-2.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/70">
+									<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted block">
+										Last Train
+									</span>
+									<span class="font-mono text-sm sm:text-base font-extrabold text-mapa-rust mt-0.5 block">
+										{formatMinutesTo12H(dir.weekdayLastMin)}
+									</span>
+								</div>
+								<div class="p-2.5 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/70">
+									<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted block">
+										Gate Cutoff
+									</span>
+									<span class="font-mono text-sm sm:text-base font-extrabold text-mapa-ink mt-0.5 block">
+										{formatMinutesTo12H(dir.weekdayCutoffMin)}
+									</span>
+								</div>
+							</div>
+
+							<p class="text-[11px] text-mapa-ink/80">
+								<strong class="text-mapa-ink">First 3 morning weekday trains:</strong>{' '}
+								<span class="font-mono font-semibold">
+									{dir.firstThreeMorning.map((m) => formatMinutesTo12H(m)).join(', ')}
+								</span>
+							</p>
+						</div>
+					))}
+				</div>
+			</div>
+		</section>
+
+		<!-- Section 3: Full Weekday & Weekend Timetable Table -->
+		<section aria-label="Full Weekday and Weekend Timetable" class="mb-8 font-sans">
+			<div class="rounded-2xl border border-mapa-contour bg-mapa-canvas-dark overflow-hidden">
+				<div class="px-5 py-3.5 border-b border-mapa-contour bg-mapa-canvas flex flex-wrap items-center justify-between gap-2">
+					<div>
+						<h2 class="font-serif text-lg sm:text-xl font-bold text-mapa-ink">
+							{station.name} Full First &amp; Last Train Timetable
+						</h2>
+						<p class="text-xs text-mapa-muted">{spec.scheduleNote}</p>
+					</div>
+					<span class="text-[11px] font-mono font-bold text-mapa-ink px-2.5 py-0.5 rounded bg-mapa-canvas-dark border border-mapa-contour">
+						UTC+8 Manila Time
+					</span>
+				</div>
+				<div class="overflow-x-auto">
+					<table class="w-full text-left text-xs sm:text-sm border-collapse">
+						<thead class="bg-mapa-canvas border-b border-mapa-contour text-mapa-muted uppercase text-[10px] font-bold">
+							<tr>
+								<th class="p-3">Service Day</th>
+								<th class="p-3">Direction &amp; Terminal</th>
+								<th class="p-3">First Train</th>
+								<th class="p-3">Last Train</th>
+								<th class="p-3">Concourse Gate Cutoff</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85">
+							{boardableDirections.map((dir) => (
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="p-3 font-semibold text-mapa-ink whitespace-nowrap">Weekdays (Mon to Fri)</td>
+									<td class="p-3">{dir.shortDir} toward {dir.destinationTerminal}</td>
+									<td class="p-3 font-mono font-bold text-mapa-green whitespace-nowrap">
+										{formatMinutesTo12H(dir.weekdayFirstMin)}
+									</td>
+									<td class="p-3 font-mono font-bold text-mapa-rust whitespace-nowrap">
+										{formatMinutesTo12H(dir.weekdayLastMin)}
+									</td>
+									<td class="p-3 font-mono whitespace-nowrap">
+										{formatMinutesTo12H(dir.weekdayCutoffMin)}
+									</td>
+								</tr>
+							))}
+							{boardableDirections.map((dir) => (
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="p-3 font-semibold text-mapa-ink whitespace-nowrap">Weekends &amp; Holidays</td>
+									<td class="p-3">{dir.shortDir} toward {dir.destinationTerminal}</td>
+									<td class="p-3 font-mono font-bold text-mapa-green whitespace-nowrap">
+										{formatMinutesTo12H(dir.weekendFirstMin)}
+									</td>
+									<td class="p-3 font-mono font-bold text-mapa-rust whitespace-nowrap">
+										{formatMinutesTo12H(dir.weekendLastMin)}
+									</td>
+									<td class="p-3 font-mono whitespace-nowrap">
+										{formatMinutesTo12H(dir.weekendCutoffMin)}
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+
+		<!-- Section 4: Headway Frequency & Fleet Table -->
+		<section aria-label="Train Frequency and Active Fleet" class="mb-8 font-sans">
+			<div class="rounded-2xl border border-mapa-contour bg-mapa-canvas-dark overflow-hidden">
+				<div class="px-5 py-3.5 border-b border-mapa-contour bg-mapa-canvas">
+					<h2 class="font-serif text-lg sm:text-xl font-bold text-mapa-ink">
+						How often trains come at {station.name}
+					</h2>
+					<p class="text-xs text-mapa-muted mt-0.5">
+						Typical {lineShort} train spacing and line-wide active trainset pool by time of day.
+					</p>
+				</div>
+				<div class="overflow-x-auto">
+					<table class="w-full text-left text-xs sm:text-sm border-collapse">
+						<thead class="bg-mapa-canvas border-b border-mapa-contour text-mapa-muted uppercase text-[10px] font-bold">
+							<tr>
+								<th class="p-3">Service Period</th>
+								<th class="p-3">Schedule Hours</th>
+								<th class="p-3">Typical Wait Between Trains</th>
+								<th class="p-3">Deployed {lineShort} Fleet</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85">
+							{headwayPeriods.map((period) => (
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="p-3 font-semibold text-mapa-ink">{period.name}</td>
+									<td class="p-3 text-mapa-muted">{period.window}</td>
+									<td class="p-3 font-mono font-bold text-mapa-ink">{period.waitRange}</td>
+									<td class="p-3 font-mono text-mapa-muted">{period.fleetRange}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+
+		<!-- Section 5: Ride Times From This Station -->
+		<section aria-label="Ride Times From This Station" class="mb-8 font-sans">
+			<div class="rounded-2xl border border-mapa-contour bg-mapa-canvas-dark overflow-hidden">
+				<div class="px-5 py-3.5 border-b border-mapa-contour bg-mapa-canvas flex flex-wrap items-center justify-between gap-2">
+					<div>
+						<h2 class="font-serif text-lg sm:text-xl font-bold text-mapa-ink">
+							Estimated Ride Times from {station.name}
+						</h2>
+						<p class="text-xs text-mapa-muted mt-0.5">
+							Point-to-point in-train duration across every destination on {lineMeta.name} (excluding platform wait time).
+						</p>
+					</div>
+					<span class="text-[11px] font-mono font-bold text-mapa-ink px-2.5 py-0.5 rounded bg-mapa-canvas-dark border border-mapa-contour">
+						{rideTimes.length} Destinations
+					</span>
+				</div>
+				<div class="overflow-x-auto">
+					<table class="w-full text-left text-xs sm:text-sm border-collapse">
+						<thead class="bg-mapa-canvas border-b border-mapa-contour text-mapa-muted uppercase text-[10px] font-bold">
+							<tr>
+								<th class="p-3">Destination Station</th>
+								<th class="p-3">Direction</th>
+								<th class="p-3">Stops</th>
+								<th class="p-3">Distance</th>
+								<th class="p-3">Est. Ride Time</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85">
+							{rideTimes.map((dest) => (
+								<tr class="hover:bg-mapa-canvas/60">
+									<td class="p-3 font-semibold">
+										<a href={dest.href} class="text-mapa-green hover:underline">
+											{dest.station.name}
+										</a>
+										<span class="text-[11px] font-normal text-mapa-muted ml-1.5">
+											({dest.station.city})
+										</span>
+									</td>
+									<td class="p-3 text-mapa-muted">{dest.dirLabel}</td>
+									<td class="p-3 font-mono">{dest.stops} {dest.stops === 1 ? 'stop' : 'stops'}</td>
+									<td class="p-3 font-mono text-mapa-muted">{dest.distKm.toFixed(1)} km</td>
+									<td class="p-3 font-mono font-bold text-mapa-ink">{dest.estMin} min</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+
+		<!-- Section 6: Transfers & Connections -->
+		<section aria-label="Transfers and Connections" class="mb-8 font-sans">
+			<div class="rounded-2xl border border-mapa-contour bg-mapa-canvas-dark p-5 space-y-4">
+				<div class="flex flex-wrap items-center justify-between gap-2">
+					<h2 class="font-serif text-lg sm:text-xl font-bold text-mapa-ink">
+						Transfers &amp; Ground Connections at {station.name}
+					</h2>
+					{station.transferLabel && (
+						<span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-mapa-green/10 text-mapa-green border border-mapa-green/30">
+							{station.transferLabel}
+						</span>
+					)}
+				</div>
+
+				{partnerSpec && partnerPage ? (
+					<div class="rounded-xl border border-mapa-contour bg-mapa-canvas p-4 space-y-3">
+						<div class="flex flex-wrap items-center justify-between gap-2">
+							<div>
+								<h3 class="font-serif text-base font-bold text-mapa-ink">
+									Rail Interchange to {partnerPage.lineMeta.shortName} ({partnerPage.station.name})
+								</h3>
+								<p class="text-xs text-mapa-muted mt-0.5">
+									Walking buffer: approximately {partnerSpec.walkMin} minutes between ticket concourses.
+								</p>
+							</div>
+							<a
+								href={getStationPagePath(partnerPage.lineKey, partnerPage.station.id)}
+								class="px-3 py-1.5 rounded-lg bg-mapa-green text-white font-semibold text-xs hover:bg-mapa-green/90 transition-colors"
+							>
+								View {partnerPage.station.name} Schedule &rarr;
+							</a>
+						</div>
+						<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+							{partnerDirections.map((pDir) => (
+								<div class="p-3 rounded-lg bg-mapa-canvas-dark border border-mapa-contour/70 space-y-1">
+									<div class="font-semibold text-mapa-ink">{pDir.label}</div>
+									<div class="text-mapa-ink/80">
+										Weekday last train: <strong class="font-mono text-mapa-rust">{pDir.weekdayLast}</strong> (safe walkway cutoff: <strong class="font-mono text-mapa-ink">{pDir.weekdaySafeCutoff}</strong>)
+									</div>
+									<div class="text-mapa-ink/80">
+										Weekend last train: <strong class="font-mono text-mapa-rust">{pDir.weekendLast}</strong> (safe walkway cutoff: <strong class="font-mono text-mapa-ink">{pDir.weekendSafeCutoff}</strong>)
+									</div>
+								</div>
+							))}
+						</div>
+						{earliestPartnerWeekdaySafeMin !== null && (
+							<p class="text-xs text-mapa-ink/85 leading-relaxed">
+								Latest safe transfer rule: allow at least {partnerSpec.walkMin} minutes on foot and reach the connecting gate before{' '}
+								<strong class="font-mono text-mapa-ink">{formatMinutesTo12H(earliestPartnerWeekdaySafeMin)}</strong> on weekdays
+								{earliestPartnerWeekendSafeMin !== null ? (
+									<>
+										{' '}(or <strong class="font-mono text-mapa-ink">{formatMinutesTo12H(earliestPartnerWeekendSafeMin)}</strong> on weekends)
+									</>
+								) : null}{' '}
+								if you still need any connecting direction on {partnerPage.lineMeta.shortName}.
+							</p>
+						)}
+					</div>
+				) : (
+					<p class="text-xs sm:text-sm text-mapa-ink/85 leading-relaxed">
+						{station.transferLabel
+							? `${station.name} offers direct street-level or terminal access (${station.transferLabel}). Always verify last-trip timing when connecting to surface buses or commuter shuttles.`
+							: `${station.name} is an intermediate passenger station on ${lineMeta.name} within ${station.city}, served by street-level jeepney, bus, and tricycle routes outside the station exits.`}
+					</p>
+				)}
+
+				{hasEdsaCarouselFallback && (
+					<div class="p-3.5 rounded-xl bg-mapa-canvas border border-mapa-green/30 text-xs text-mapa-ink/85 leading-relaxed flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+						<div>
+							<strong class="text-mapa-ink">24/7 Overnight Fallback (EDSA Carousel):</strong> After {lineShort} gates close for the night, the dedicated center-median EDSA Carousel BRT busway continues running 24 hours daily between Monumento and PITX.
+						</div>
+						<a
+							href="/tools/edsa-carousel"
+							class="shrink-0 font-bold text-mapa-green hover:underline whitespace-nowrap"
+						>
+							Open EDSA Carousel Guide &rarr;
+						</a>
+					</div>
+				)}
+			</div>
+		</section>
+
+		<!-- Section 7: Adjacent Stations & Full Line Navigation -->
+		<section aria-label="Adjacent Stations and Full Line Directory" class="mb-10 font-sans space-y-5">
+			<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+				{prevStationEntry ? (
+					<a
+						href={getStationPagePath(lineKey, prevStationEntry.station.id)}
+						class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour hover:border-mapa-green transition-colors block"
+					>
+						<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted block">
+							&larr; Previous Stop ({spec.reverse.shortDir})
+						</span>
+						<span class="font-serif text-base font-bold text-mapa-green mt-0.5 block">
+							{prevStationEntry.station.name}
+						</span>
+						<span class="text-xs text-mapa-muted">{prevStationEntry.station.city}</span>
+					</a>
+				) : (
+					<div class="p-4 rounded-xl bg-mapa-canvas-dark/60 border border-mapa-contour/60">
+						<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted block">
+							Line Start Terminal
+						</span>
+						<span class="font-serif text-base font-bold text-mapa-ink mt-0.5 block">
+							{station.name} is the first stop on {lineShort}
+						</span>
+					</div>
+				)}
+
+				{nextStationEntry ? (
+					<a
+						href={getStationPagePath(lineKey, nextStationEntry.station.id)}
+						class="p-4 rounded-xl bg-mapa-canvas-dark border border-mapa-contour hover:border-mapa-green transition-colors block text-left sm:text-right"
+					>
+						<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted block">
+							Next Stop ({spec.forward.shortDir}) &rarr;
+						</span>
+						<span class="font-serif text-base font-bold text-mapa-green mt-0.5 block">
+							{nextStationEntry.station.name}
+						</span>
+						<span class="text-xs text-mapa-muted">{nextStationEntry.station.city}</span>
+					</a>
+				) : (
+					<div class="p-4 rounded-xl bg-mapa-canvas-dark/60 border border-mapa-contour/60 text-left sm:text-right">
+						<span class="text-[10px] font-bold uppercase tracking-wider text-mapa-muted block">
+							Line End Terminal
+						</span>
+						<span class="font-serif text-base font-bold text-mapa-ink mt-0.5 block">
+							{station.name} is the final stop on {lineShort}
+						</span>
+					</div>
+				)}
+			</div>
+
+			<div class="p-5 rounded-2xl bg-mapa-canvas-dark border border-mapa-contour space-y-3">
+				<div class="flex flex-wrap items-center justify-between gap-2">
+					<h2 class="font-serif text-lg font-bold text-mapa-ink">
+						All {total} {lineShort} Stations
+					</h2>
+					<div class="flex flex-wrap gap-3 text-xs font-semibold">
+						<a href="/tools/train-arrival-ph" class="text-mapa-green hover:underline">
+							Live Wait &amp; Schedule Tracker &rarr;
+						</a>
+						<a href="/tools/rail-transit" class="text-mapa-green hover:underline">
+							MRT &amp; LRT Fare Matrix &rarr;
+						</a>
+					</div>
+				</div>
+				<div class="flex flex-wrap gap-2">
+					{timetable.map((item) =>
+						item.station.id === station.id ? (
+							<span class="px-2.5 py-1 rounded-lg bg-mapa-green text-white text-xs font-bold">
+								{item.index + 1}. {item.station.name}
+							</span>
+						) : (
+							<a
+								href={getStationPagePath(lineKey, item.station.id)}
+								class="px-2.5 py-1 rounded-lg bg-mapa-canvas border border-mapa-contour text-xs font-medium text-mapa-ink hover:border-mapa-green hover:text-mapa-green transition-colors"
+							>
+								{item.index + 1}. {item.station.name}
+							</a>
+						)
+					)}
+				</div>
+			</div>
+		</section>
+
+		<!-- Section 8: Station Commuter Guide Prose -->
+		<article class="max-w-4xl space-y-8 font-sans border-t border-mapa-contour pt-10">
+			<section class="space-y-4">
+				<h2 class="font-serif text-2xl sm:text-3xl font-bold text-mapa-ink">
+					Commuter Schedule &amp; Boarding Guide for {station.name} ({lineShort})
+				</h2>
+				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed">
+					{station.name} sits at station position {index + 1} of {total} along {lineMeta.name} ({lineShort}), at kilometer post {station.km.toFixed(1)} measured from {spec.forward.originTerminal}. Located in {station.city} and operated under {lineMeta.operator}, this stop serves daily office workers, students, and regional bus commuters transferring across Metro Manila's trunk rail network.
+				</p>
+				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed">
+					Train wait times at {station.name} change by time of day depending on active depot dispatches. During weekday morning rush hour (6:00 AM to 9:00 AM) and evening rush hour (5:00 PM to 8:00 PM), {lineShort} fields {spec.deployedTrainsets.morning_peak[0]} to {spec.deployedTrainsets.morning_peak[1]} trainsets along the corridor to maintain {spec.peakHeadwayMin[0]} to {spec.peakHeadwayMin[1]} minute intervals between trains. Outside rush hours, midday service widens slightly to {spec.offPeakHeadwayMin[0]} to {spec.offPeakHeadwayMin[1]} minutes while {spec.deployedTrainsets.off_peak[0]} to {spec.deployedTrainsets.off_peak[1]} active sets stay on the mainline, and weekend or holiday operations space departures every {spec.weekendHeadwayMin[0]} to {spec.weekendHeadwayMin[1]} minutes.
+				</p>
+				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed">
+					Late-evening passengers should plan around platform passing times at {station.name} rather than relying solely on terminal closing headlines. For boarding passengers here, {dirSummaryText}. Station security gates stop admitting riders roughly {spec.gateCutoffBeforeLastMin} minutes prior to the final train arrival in each direction so ticket sellers and guards can clear the concourse safely. {hasEdsaCarouselFallback
+						? 'When evening trips finish for the night, riders along this corridor can switch straight to the 24/7 EDSA Carousel busway running along the center median from Monumento to PITX.'
+						: 'Passengers traveling near closing time should allow extra walking margin if transferring to feeder jeepneys, tricycles, or EDSA Carousel buses.'}
+				</p>
+				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed">
+					Because Philippine rail operators currently run closed signaling infrastructure without public live GTFS-RT train GPS feeds, scheduled arrival times on this page are calculated transparently from published weekday and weekend terminal dispatches, deployed fleet ranges, and kilometer dwell offsets. If you are standing at {station.name} right now and want to see real-time Manila clock countdowns or recent anonymous rider train reports, open the main Train Arrival PH live tracker linked above, where confirmed commuter sightings appear as solid green LIVE markers on top of timetable estimates.
+				</p>
+			</section>
+
+			<!-- Section 9: Visible FAQ -->
+			<section aria-label="Frequently Asked Questions">
+				<h2 class="font-serif text-2xl font-bold text-mapa-ink mb-4">
+					Frequently Asked Questions About {station.name} {lineShort}
+				</h2>
+				<div class="space-y-3">
+					{faqItems.map((item) => (
+						<div class="p-4 rounded-xl bg-mapa-canvas border border-mapa-contour">
+							<h3 class="font-serif text-base font-bold text-mapa-ink mb-1.5">
+								{item.question}
+							</h3>
+							<p class="text-xs sm:text-sm text-mapa-ink/85 leading-relaxed">
+								{item.answer}
+							</p>
+						</div>
+					))}
+				</div>
+			</section>
+
+			<!-- Section 10: Official Sources & Disclaimer -->
+			<section class="p-5 rounded-2xl bg-mapa-canvas border border-mapa-contour">
+				<h2 class="font-serif text-lg font-bold text-mapa-ink mb-2">
+					Official {lineShort} Operator &amp; Schedule Sources
+				</h2>
+				<p class="text-xs text-mapa-muted mb-3 leading-relaxed">
+					Cross-check service interruptions, holiday adjustments, and official fare notices directly through the rail operator and Department of Transportation portals below:
+				</p>
+				<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+					<a
+						href={lineMeta.officialUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="p-3 rounded-xl bg-mapa-canvas-dark border border-mapa-contour hover:border-mapa-green transition-colors block"
+					>
+						<span class="font-bold text-mapa-green block mb-0.5">{lineMeta.shortName} Official Site &rarr;</span>
+						<span class="text-mapa-ink/75">{lineMeta.operator}</span>
+					</a>
+					<a
+						href={lineMeta.advisoryUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="p-3 rounded-xl bg-mapa-canvas-dark border border-mapa-contour hover:border-mapa-green transition-colors block"
+					>
+						<span class="font-bold text-mapa-green block mb-0.5">{lineMeta.advisoryLabel} &rarr;</span>
+						<span class="text-mapa-ink/75">Service advisories, trip extensions, and holiday hours.</span>
+					</a>
+					<a
+						href="https://dotr.gov.ph/"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="p-3 rounded-xl bg-mapa-canvas-dark border border-mapa-contour hover:border-mapa-green transition-colors block"
+					>
+						<span class="font-bold text-mapa-green block mb-0.5">DOTr Philippines &rarr;</span>
+						<span class="text-mapa-ink/75">Department of Transportation directives and policy bulletins.</span>
+					</a>
+				</div>
+			</section>
+
+			<section class="p-4 rounded-xl bg-mapa-canvas-dark/60 border border-mapa-contour/80 text-xs text-mapa-ink/75 leading-relaxed">
+				<strong class="text-mapa-ink">Independent Commuter Utility Disclaimer:</strong> Train Arrival PH is an independent, unofficial open-source utility maintained by mapaPH. It is not affiliated with, endorsed by, or operated by DOTr MRT-3, Light Rail Manila Corporation (LRMC), or the Light Rail Transit Authority (LRTA). Published government schedules and station facts remain in the public domain under Section 176 of Republic Act No. 8293; always check official operator advisories for unscheduled service interruptions or holiday hours.
+			</section>
+		</article>
+	</main>
+
+	<Footer />
+</BaseLayout>

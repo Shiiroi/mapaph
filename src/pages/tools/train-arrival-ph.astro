@@ -18,6 +18,7 @@ import {
 	buildLineTimetable,
 	type LineKey
 } from '../../data/rail-lines';
+import { getStationPagePath } from '../../data/rail-station-pages';
 
 const timetablesByLine = {
 	mrt3: buildLineTimetable('mrt3'),
@@ -47,78 +48,95 @@ const defaultMrt3Timetable = timetablesByLine.mrt3;
 const defaultLrt1Timetable = timetablesByLine.lrt1;
 const defaultLrt2Timetable = timetablesByLine.lrt2;
 const defaultDestMrt3 = 'mrt3_ayala';
+
+const mrt3FwdWeekdayLast = formatMinutesTo12H(SCHEDULE_SPECS.mrt3.forward.weekdayLastMin);
+const mrt3RevWeekdayLast = formatMinutesTo12H(SCHEDULE_SPECS.mrt3.reverse.weekdayLastMin);
+const mrt3FwdWeekendLast = formatMinutesTo12H(SCHEDULE_SPECS.mrt3.forward.weekendLastMin);
+const mrt3RevWeekendLast = formatMinutesTo12H(SCHEDULE_SPECS.mrt3.reverse.weekendLastMin);
+
+const lrt1FwdWeekdayLast = formatMinutesTo12H(SCHEDULE_SPECS.lrt1.forward.weekdayLastMin);
+const lrt1RevWeekdayLast = formatMinutesTo12H(SCHEDULE_SPECS.lrt1.reverse.weekdayLastMin);
+const lrt1FwdWeekendLast = formatMinutesTo12H(SCHEDULE_SPECS.lrt1.forward.weekendLastMin);
+const lrt1RevWeekendLast = formatMinutesTo12H(SCHEDULE_SPECS.lrt1.reverse.weekendLastMin);
+
+const lrt2FwdWeekdayLast = formatMinutesTo12H(SCHEDULE_SPECS.lrt2.forward.weekdayLastMin);
+const lrt2RevWeekdayLast = formatMinutesTo12H(SCHEDULE_SPECS.lrt2.reverse.weekdayLastMin);
+const lrt2WeekendLast = formatMinutesTo12H(SCHEDULE_SPECS.lrt2.forward.weekendLastMin);
+
+const faqItems = [
+	{
+		question: 'How are train wait times and map positions estimated in Manila?',
+		answer:
+			'Philippine rail operators (DOTr MRT-3, LRMC LRT-1, and LRTA LRT-2) do not publish public live GTFS-RT train GPS feeds. Train Arrival PH computes estimated wait windows, next-3-trains cadence, and corridor map positions transparently from published weekday and weekend terminal dispatches, rush-hour versus off-peak headway intervals, and kilometer-based segment travel offsets in Philippine Standard Time, while anonymous live rider sightings are layered on top of timetable estimates as LIVE markers.'
+	},
+	{
+		question: 'How does Use My GPS nearest-station snapping protect my privacy?',
+		answer:
+			'Your device coordinates never leave your browser. When you press Use My GPS, client-side JavaScript computes Haversine distance locally against all 51 rail station coordinates and automatically selects your nearest platform within 650 meters.'
+	},
+	{
+		question: 'What time is the last train on MRT-3, LRT-1, and LRT-2?',
+		answer: `On weekdays, MRT-3 extended operations dispatch the last southbound train from North Avenue at ${mrt3FwdWeekdayLast} and the last northbound train from Taft Avenue at ${mrt3RevWeekdayLast} (${mrt3FwdWeekendLast} and ${mrt3RevWeekendLast} on weekends). On LRT-1, weekday last southbound trips leave Fernando Poe Jr. at ${lrt1FwdWeekdayLast} and last northbound trips leave Dr. Santos at ${lrt1RevWeekdayLast} (${lrt1FwdWeekendLast} and ${lrt1RevWeekendLast} on weekends). LRT-2 closes earlier: ${lrt2RevWeekdayLast} from Antipolo and ${lrt2FwdWeekdayLast} from Recto on weekdays, or ${lrt2WeekendLast} from both terminals on weekends. Concourse gates close roughly ${SCHEDULE_SPECS.mrt3.gateCutoffBeforeLastMin} minutes prior.`
+	},
+	{
+		question: 'What can commuters ride after MRT-3 or LRT-1 closes for the night?',
+		answer: `After rail services conclude around ${lrt2RevWeekdayLast} to ${mrt3RevWeekdayLast}, the EDSA Carousel BRT busway operates 24/7 along the dedicated EDSA center median from Monumento to PITX, directly serving major transfer points including North Avenue, Quezon Avenue, Ortigas, Guadalupe, Ayala, and Taft Avenue.`
+	}
+];
+
+const schemaGraph = {
+	'@context': 'https://schema.org',
+	'@graph': [
+		{
+			'@type': 'WebApplication',
+			name: 'Train Arrival PH: MRT-3, LRT-1 & LRT-2 Live Train Tracker',
+			url: 'https://www.mapaph.com/tools/train-arrival-ph',
+			applicationCategory: 'TravelApplication',
+			operatingSystem: 'All',
+			isAccessibleForFree: true,
+			browserRequirements: 'Requires JavaScript',
+			description:
+				'Metro Manila live rail tracker and schedule estimator providing next-3-trains wait windows, anonymous live rider sightings, peak versus off-peak headway cadence, last-train gate cutoffs, and interactive corridor maps across MRT-3, LRT-1, and LRT-2.',
+			offers: {
+				'@type': 'Offer',
+				price: '0',
+				priceCurrency: 'PHP'
+			}
+		},
+		{
+			'@type': 'BreadcrumbList',
+			itemListElement: [
+				{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.mapaph.com' },
+				{ '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://www.mapaph.com/tools' },
+				{
+					'@type': 'ListItem',
+					position: 3,
+					name: 'Train Arrival PH',
+					item: 'https://www.mapaph.com/tools/train-arrival-ph'
+				}
+			]
+		},
+		{
+			'@type': 'FAQPage',
+			mainEntity: faqItems.map((item) => ({
+				'@type': 'Question',
+				name: item.question,
+				acceptedAnswer: {
+					'@type': 'Answer',
+					text: item.answer
+				}
+			}))
+		}
+	]
+};
 ---
 
 <BaseLayout
-	title="MRT-3, LRT-1 & LRT-2 Schedule 2026: Live Wait Time & Last Train | mapaPH"
-	description="Check 2026 MRT-3, LRT-1 & LRT-2 first and last train times, live Manila clock wait estimates, next-3-trains headway cadence, and Cubao, Recto & Taft transfer cutoffs across all 51 stations."
-	keywords="mrt 3 schedule 2026, lrt 1 schedule 2026, lrt 2 schedule 2026, train arrival ph, mrt 3 arrival time, lrt 1 arrival time, mrt 3 operating hours, lrt 1 operating hours, lrt 2 operating hours, last train mrt 3, last train lrt 1, lrt 2 last trip, mrt 3 live tracker, edsa carousel overnight"
+	title="MRT-3, LRT-1 & LRT-2 Live Train Tracker & Schedule 2026 | mapaPH"
+	description="Free MRT-3, LRT-1 & LRT-2 tracker: next 3 trains, live rider sightings, first & last train for all 51 stations, and transfer cutoffs. No app or sign-up."
+	keywords="mrt live tracker, lrt live tracker, train tracker ph, mrt 3 train tracker, next train mrt, mrt 3 schedule 2026, lrt 1 schedule 2026, lrt 2 schedule 2026, train arrival ph, mrt 3 arrival time, lrt 1 arrival time, mrt 3 operating hours, lrt 1 operating hours, lrt 2 operating hours, last train mrt 3, last train lrt 1, lrt 2 last trip, mrt 3 live tracker, edsa carousel overnight"
 >
-	<script type="application/ld+json" slot="schema" is:inline>
-		{
-			"@context": "https://schema.org",
-			"@graph": [
-				{
-					"@type": "WebApplication",
-					"name": "Train Arrival PH: MRT-3, LRT-1 & LRT-2 Wait Time & Schedule Tracker",
-					"url": "https://www.mapaph.com/tools/train-arrival-ph",
-					"applicationCategory": "Public Transit & Commuter Utility",
-					"operatingSystem": "All",
-					"description": "Metro Manila rail schedule estimator providing real-time Manila clock wait windows, next-3-trains headway cadence, origin-to-destination transfer cutoff checks, and interactive corridor maps across MRT-3, LRT-1, and LRT-2.",
-					"offers": {
-						"@type": "Offer",
-						"price": "0",
-						"priceCurrency": "PHP"
-					}
-				},
-				{
-					"@type": "BreadcrumbList",
-					"itemListElement": [
-						{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.mapaph.com" },
-						{ "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://www.mapaph.com/tools" },
-						{ "@type": "ListItem", "position": 3, "name": "Train Arrival PH", "item": "https://www.mapaph.com/tools/train-arrival-ph" }
-					]
-				},
-				{
-					"@type": "FAQPage",
-					"mainEntity": [
-						{
-							"@type": "Question",
-							"name": "How are train wait times and map positions estimated in Manila?",
-							"acceptedAnswer": {
-								"@type": "Answer",
-								"text": "Philippine rail operators (DOTr MRT-3, LRMC LRT-1, and LRTA LRT-2) do not publish public live GTFS-RT train GPS feeds. Train Arrival PH computes estimated wait windows, next-3-trains cadence, and corridor map positions transparently from published weekday/weekend first and last terminal dispatches, rush-hour versus off-peak headway intervals, and kilometer-based segment travel offsets in Philippine Standard Time."
-							}
-						},
-						{
-							"@type": "Question",
-							"name": "How does Use My GPS nearest-station snapping protect my privacy?",
-							"acceptedAnswer": {
-								"@type": "Answer",
-								"text": "Your device coordinates never leave your browser. When you press Use My GPS, client-side JavaScript computes Haversine distance locally against all 51 rail station coordinates and automatically selects your nearest platform within 650 meters."
-							}
-						},
-						{
-							"@type": "Question",
-							"name": "What time is the last train on MRT-3, LRT-1, and LRT-2?",
-							"acceptedAnswer": {
-								"@type": "Answer",
-								"text": "On weekdays, MRT-3 extended operations dispatch the last southbound train from North Avenue at 10:30 PM and the last northbound train from Taft Avenue at 11:09 PM (9:30 PM and 10:09 PM on weekends). LRT-1 weekday last trips leave Fernando Poe Jr. at 10:30 PM and Dr. Santos at 10:45 PM. LRT-2 closes earlier: 9:00 PM from Antipolo and 9:30 PM from Recto on weekdays, or 9:00 PM both ways on weekends. Concourse gates close roughly 5 minutes prior."
-							}
-						},
-						{
-							"@type": "Question",
-							"name": "What can commuters ride after MRT-3 or LRT-1 closes for the night?",
-							"acceptedAnswer": {
-								"@type": "Answer",
-								"text": "After rail services conclude around 9:30 PM to 11:09 PM, the EDSA Carousel BRT busway operates 24/7 along the dedicated EDSA center median from Monumento to PITX, directly serving major transfer points including North Avenue, Quezon Avenue, Ortigas, Guadalupe, Ayala, and Taft Avenue."
-							}
-						}
-					]
-				}
-			]
-		}
-	</script>
+	<script type="application/ld+json" slot="schema" is:inline set:html={JSON.stringify(schemaGraph)} />
 
 	<link
 		rel="stylesheet"
@@ -188,10 +206,10 @@ const defaultDestMrt3 = 'mrt3_ayala';
 				</span>
 			</div>
 			<h1 class="font-serif text-3xl sm:text-4xl font-extrabold tracking-tight text-mapa-ink">
-				Train Arrival PH: MRT-3, LRT-1 &amp; LRT-2 Wait &amp; Schedule Estimator
+				Train Arrival PH: MRT-3, LRT-1 &amp; LRT-2 Live Train Tracker &amp; Schedule
 			</h1>
 			<p class="mt-2 text-sm sm:text-base text-mapa-ink/80 font-sans leading-relaxed max-w-3xl">
-				Operators in Metro Manila do not publish public live train GPS telemetry. This tool calculates next-3-trains wait windows, peak versus off-peak headway intervals, last-train gate cutoffs, and interchange transfer buffers directly from official weekday and weekend dispatch timetables in Philippine Standard Time.
+				Operators in Metro Manila do not publish public live train GPS telemetry. This browser tool calculates next-3-trains wait windows, peak versus off-peak headway intervals, last-train gate cutoffs, and interchange transfer buffers directly from official weekday and weekend dispatch timetables in Philippine Standard Time, while layering anonymous live rider sightings as LIVE markers on top of timetable estimates with no app install or account required.
 			</p>
 		</div>
 
@@ -825,7 +843,7 @@ const defaultDestMrt3 = 'mrt3_ayala';
 					Estimated First &amp; Last Train Windows Across All 51 Stations
 				</h2>
 				<p class="mt-2 text-sm text-mapa-ink/80 leading-relaxed">
-					Use the reference tables below to verify approximate first and last train passing times along MRT-3, LRT-1, and LRT-2. Always arrive at station concourses at least 5 to 10 minutes before the final trip to clear baggage inspection and Stored Value or Single Journey ticket gates.
+					Use the reference tables below to verify approximate first and last train passing times along MRT-3, LRT-1, and LRT-2. Tap any station for its full schedule page. Always arrive at station concourses at least 5 to 10 minutes before the final trip to clear baggage inspection and Stored Value or Single Journey ticket gates.
 				</p>
 			</div>
 
@@ -853,7 +871,11 @@ const defaultDestMrt3 = 'mrt3_ayala';
 							<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85">
 								{defaultMrt3Timetable.map((row) => (
 									<tr class="hover:bg-mapa-canvas/60">
-										<td class="p-3 font-semibold text-mapa-ink">{row.station.name}</td>
+										<td class="p-3 font-semibold text-mapa-ink">
+											<a href={getStationPagePath('mrt3', row.station.id)} class="hover:underline text-mapa-green">
+												{row.station.name}
+											</a>
+										</td>
 										<td class="p-3 font-mono text-mapa-muted">{row.station.km.toFixed(1)}</td>
 										<td class="p-3 font-mono">{formatMinutesTo12H(row.weekdayFirstFwd)} / {formatMinutesTo12H(row.weekdayFirstRev)}</td>
 										<td class="p-3 font-mono font-bold text-mapa-rust">{formatMinutesTo12H(row.weekdayLastFwd)} / {formatMinutesTo12H(row.weekdayLastRev)}</td>
@@ -888,7 +910,11 @@ const defaultDestMrt3 = 'mrt3_ayala';
 							<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85">
 								{defaultLrt1Timetable.map((row) => (
 									<tr class="hover:bg-mapa-canvas/60">
-										<td class="p-3 font-semibold text-mapa-ink">{row.station.name}</td>
+										<td class="p-3 font-semibold text-mapa-ink">
+											<a href={getStationPagePath('lrt1', row.station.id)} class="hover:underline text-mapa-green">
+												{row.station.name}
+											</a>
+										</td>
 										<td class="p-3 font-mono text-mapa-muted">{row.station.km.toFixed(1)}</td>
 										<td class="p-3 font-mono">{formatMinutesTo12H(row.weekdayFirstFwd)} / {formatMinutesTo12H(row.weekdayFirstRev)}</td>
 										<td class="p-3 font-mono font-bold text-mapa-rust">{formatMinutesTo12H(row.weekdayLastFwd)} / {formatMinutesTo12H(row.weekdayLastRev)}</td>
@@ -923,7 +949,11 @@ const defaultDestMrt3 = 'mrt3_ayala';
 							<tbody class="divide-y divide-mapa-contour/50 text-mapa-ink/85">
 								{defaultLrt2Timetable.map((row) => (
 									<tr class="hover:bg-mapa-canvas/60">
-										<td class="p-3 font-semibold text-mapa-ink">{row.station.name}</td>
+										<td class="p-3 font-semibold text-mapa-ink">
+											<a href={getStationPagePath('lrt2', row.station.id)} class="hover:underline text-mapa-green">
+												{row.station.name}
+											</a>
+										</td>
 										<td class="p-3 font-mono text-mapa-muted">{row.station.km.toFixed(1)}</td>
 										<td class="p-3 font-mono">{formatMinutesTo12H(row.weekdayFirstFwd)} / {formatMinutesTo12H(row.weekdayFirstRev)}</td>
 										<td class="p-3 font-mono font-bold text-mapa-rust">{formatMinutesTo12H(row.weekdayLastFwd)} / {formatMinutesTo12H(row.weekdayLastRev)}</td>
@@ -988,6 +1018,25 @@ const defaultDestMrt3 = 'mrt3_ayala';
 				<p class="text-sm sm:text-base text-mapa-ink/85 leading-relaxed">
 					Similarly, commuters transferring at EDSA Taft (southbound MRT-3 into LRT-1 toward PITX and Dr. Santos) need an extra 5 minutes to walk the elevated covered footbridge and tap in at the LRT-1 gates. The Trip and Transfer Cutoff Checker above automatically adds realistic footbridge transfer time (5 minutes at Doroteo Jose or Taft, 6 minutes at Araneta Center-Cubao) and warns you in advance whenever connecting lines are tight or closed. If your connecting train has departed, the 24/7 EDSA Carousel busway directly beneath MRT-3 continues serving Monumento through PITX overnight.
 				</p>
+			</section>
+
+			<!-- Visible Frequently Asked Questions (synced 1:1 with FAQPage JSON-LD) -->
+			<section aria-label="Frequently Asked Questions">
+				<h2 class="font-serif text-2xl font-bold text-mapa-ink mb-4">
+					Frequently Asked Questions About MRT &amp; LRT Schedules
+				</h2>
+				<div class="space-y-3">
+					{faqItems.map((item) => (
+						<div class="p-4 rounded-xl bg-mapa-canvas border border-mapa-contour">
+							<h3 class="font-serif text-base font-bold text-mapa-ink mb-1.5">
+								{item.question}
+							</h3>
+							<p class="text-xs sm:text-sm text-mapa-ink/85 leading-relaxed">
+								{item.answer}
+							</p>
+						</div>
+					))}
+				</div>
 			</section>
 
 			<!-- Official Schedule & Regulatory Sources -->
