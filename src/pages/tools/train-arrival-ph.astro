@@ -88,12 +88,14 @@ const schemaGraph = {
 	'@graph': [
 		{
 			'@type': 'WebApplication',
-			name: 'Train Arrival PH: MRT-3, LRT-1 & LRT-2 Wait Time & Schedule Tracker',
+			name: 'Train Arrival PH: MRT-3, LRT-1 & LRT-2 Live Train Tracker',
 			url: 'https://www.mapaph.com/tools/train-arrival-ph',
-			applicationCategory: 'Public Transit & Commuter Utility',
+			applicationCategory: 'TravelApplication',
 			operatingSystem: 'All',
+			isAccessibleForFree: true,
+			browserRequirements: 'Requires JavaScript',
 			description:
-				'Metro Manila rail schedule estimator providing real-time Manila clock wait windows, next-3-trains headway cadence, origin-to-destination transfer cutoff checks, and interactive corridor maps across MRT-3, LRT-1, and LRT-2.',
+				'Metro Manila live rail tracker and schedule estimator providing next-3-trains wait windows, anonymous live rider sightings, peak versus off-peak headway cadence, last-train gate cutoffs, and interactive corridor maps across MRT-3, LRT-1, and LRT-2.',
 			offers: {
 				'@type': 'Offer',
 				price: '0',
@@ -129,9 +131,9 @@ const schemaGraph = {
 ---
 
 <BaseLayout
-	title="MRT-3, LRT-1 & LRT-2 Schedule 2026: Live Wait Time & Last Train | mapaPH"
-	description="Check 2026 MRT-3, LRT-1 & LRT-2 first and last train times, live Manila clock wait estimates, next-3-trains headway cadence, and Cubao, Recto & Taft transfer cutoffs across all 51 stations."
-	keywords="mrt 3 schedule 2026, lrt 1 schedule 2026, lrt 2 schedule 2026, train arrival ph, mrt 3 arrival time, lrt 1 arrival time, mrt 3 operating hours, lrt 1 operating hours, lrt 2 operating hours, last train mrt 3, last train lrt 1, lrt 2 last trip, mrt 3 live tracker, edsa carousel overnight"
+	title="MRT-3, LRT-1 & LRT-2 Live Train Tracker & Schedule 2026 | mapaPH"
+	description="Free MRT-3, LRT-1 & LRT-2 tracker: next 3 trains, live rider sightings, first & last train for all 51 stations, and transfer cutoffs. No app or sign-up."
+	keywords="mrt live tracker, lrt live tracker, train tracker ph, mrt 3 train tracker, next train mrt, mrt 3 schedule 2026, lrt 1 schedule 2026, lrt 2 schedule 2026, train arrival ph, mrt 3 arrival time, lrt 1 arrival time, mrt 3 operating hours, lrt 1 operating hours, lrt 2 operating hours, last train mrt 3, last train lrt 1, lrt 2 last trip, mrt 3 live tracker, edsa carousel overnight"
 >
 	<script type="application/ld+json" slot="schema" is:inline set:html={JSON.stringify(schemaGraph)} />
 
@@ -203,10 +205,10 @@ const schemaGraph = {
 				</span>
 			</div>
 			<h1 class="font-serif text-3xl sm:text-4xl font-extrabold tracking-tight text-mapa-ink">
-				Train Arrival PH: MRT-3, LRT-1 &amp; LRT-2 Wait &amp; Schedule Estimator
+				Train Arrival PH: MRT-3, LRT-1 &amp; LRT-2 Live Train Tracker &amp; Schedule
 			</h1>
 			<p class="mt-2 text-sm sm:text-base text-mapa-ink/80 font-sans leading-relaxed max-w-3xl">
-				Operators in Metro Manila do not publish public live train GPS telemetry. This tool calculates next-3-trains wait windows, peak versus off-peak headway intervals, last-train gate cutoffs, and interchange transfer buffers directly from official weekday and weekend dispatch timetables in Philippine Standard Time.
+				Operators in Metro Manila do not publish public live train GPS telemetry. This browser tool calculates next-3-trains wait windows, peak versus off-peak headway intervals, last-train gate cutoffs, and interchange transfer buffers directly from official weekday and weekend dispatch timetables in Philippine Standard Time, while layering anonymous live rider sightings as LIVE markers on top of timetable estimates with no app install or account required.
 			</p>
 		</div>
 
