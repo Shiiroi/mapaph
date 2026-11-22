@@ -2565,6 +2565,31 @@ export function initTrainArrivalTracker(): void {
     }
   }
 
+  function buildSupabaseHeaders(
+    extra?: Record<string, string>,
+  ): Record<string, string> {
+    const headers: Record<string, string> = {
+      apikey: supabaseKey,
+      ...(extra || {}),
+    };
+    // Legacy JWT anon keys (eyJ...) require Authorization: Bearer; sb_publishable_ keys use apikey only.
+    if (supabaseKey.startsWith("eyJ")) {
+      headers.Authorization = "Bearer " + supabaseKey;
+    }
+    return headers;
+  }
+
+  function formatSupabaseHttpError(status: number): string {
+    if (
+      status === 401 &&
+      !supabaseKey.startsWith("eyJ") &&
+      !supabaseKey.startsWith("sb_publishable_")
+    ) {
+      return "HTTP 401 (check PUBLIC_SUPABASE_PUBLISHABLE_KEY prefix)";
+    }
+    return "HTTP " + status;
+  }
+
   async function fetchLiveSightings(): Promise<void> {
     if (!supabaseUrl || !supabaseKey) {
       remoteSightings = [];
@@ -2586,16 +2611,12 @@ export function initTrainArrivalTracker(): void {
 
     try {
       const res = await fetch(endpoint, {
-        headers: {
-          apikey: supabaseKey,
-          Authorization: "Bearer " + supabaseKey,
-          Accept: "application/json",
-        },
+        headers: buildSupabaseHeaders({ Accept: "application/json" }),
       });
       if (!res.ok) {
         if (liveFeedStatusText) {
           liveFeedStatusText.textContent =
-            "Live feed offline (HTTP " + res.status + ")";
+            "Live feed offline (" + formatSupabaseHttpError(res.status) + ")";
         }
         remoteSightings = [];
         renderAll();
@@ -2669,12 +2690,10 @@ export function initTrainArrivalTracker(): void {
     try {
       const res = await fetch(supabaseUrl + "/rest/v1/rail_sightings", {
         method: "POST",
-        headers: {
-          apikey: supabaseKey,
-          Authorization: "Bearer " + supabaseKey,
+        headers: buildSupabaseHeaders({
           "Content-Type": "application/json",
           Prefer: "return=minimal",
-        },
+        }),
         body: JSON.stringify({
           line_key: currentLine,
           station_id: station.id,
@@ -2686,7 +2705,7 @@ export function initTrainArrivalTracker(): void {
         }),
       });
       if (!res.ok) {
-        throw new Error("HTTP " + res.status);
+        throw new Error(formatSupabaseHttpError(res.status));
       }
       if (checkInFeedback) {
         checkInFeedback.className = "text-[11px] text-mapa-green font-semibold";
